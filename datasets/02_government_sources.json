@@ -42,7 +42,7 @@
     "gov_id": "GOV-AUH-01",
     "jurisdiction": "Abu Dhabi",
     "authority": "Department of Municipalities and Transport (DMT) & ADREC / DARI",
-    "portal_url": "https://www.dmt.gov.ae / https://adrec.gov.ae / https:// www.dari.ae / https://data.abudhabi",
+    "portal_url": "https://www.dmt.gov.ae / https://adrec.gov.ae / https://www.dari.ae / https://data.abudhabi",
     "datasets_provided": "DARI Off-Plan Project Directory, Licensed Developers/Brokers, Escrow Accounts, Sales & Rental Transaction Indices, Estidama Pearl ratings, GIS land layers",
     "access_terms": "Public web search on DARI + Open Data on data.abudhabi",
     "public_availability_verified": "Verified",
