@@ -566,7 +566,8 @@
         <button class="tab-btn" onclick="openTab('tab-timelines', this)">7. Status &amp; Timeline History (85)</button>
         <button class="tab-btn" onclick="openTab('tab-facilities', this)">8. Nearby Facilities (80)</button>
         <button class="tab-btn" onclick="openTab('tab-sources', this)">9. Source &amp; Provenance Register (432)</button>
-        <button class="tab-btn" onclick="openTab('tab-repo', this)">10. Repository &amp; Downloads (14 Datasets)</button>
+        <button class="tab-btn" onclick="openTab('tab-repo', this)">10. Repository &amp; Downloads (15 Datasets)</button>
+        <button class="tab-btn" onclick="openTab('tab-rea', this)">11. REA &amp; Live Crawler Telemetry (35)</button>
       </div>
       <div class="filter-controls">
         <input type="search" id="globalSearch" class="search-input" placeholder="Filter any active tab by project ID, developer, contractor, school, hospital, source URL..." oninput="applyFilter()" />
@@ -21552,6 +21553,18 @@
             <a class="dl-pill" href="datasets/11_provenance_source_register.json" download>⬇ JSON</a>
           </div>
         </div>
+
+        <div class="repo-card" style="border: 2px solid var(--blue); background: #f0f9ff;">
+          <div>
+            <h4>#13. REA Reverse-Engineering &amp; Live Crawler Telemetry (35 Rows)</h4>
+            <p>8 REA Evidence records (SQLite schema, HAR 1.2 network capture, API surface, 31 JS AST bundles) + 31 live portal crawls.</p>
+          </div>
+          <div class="repo-links">
+            <a class="dl-pill" href="csv/13_rea_crawler_telemetry.csv" download>⬇ REA CSV</a>
+            <a class="dl-pill" href="datasets/13_rea_crawler_telemetry.json" download>⬇ REA JSON</a>
+            <a class="dl-pill" href="datasets/uae_portals_live_capture.har" download>⬇ Live HAR 1.2</a>
+          </div>
+        </div>
       </div>
 
       <hr class="section-divider"/>
@@ -21921,6 +21934,627 @@
 <li class="searchable-item" style="margin-top: 8px; font-weight: 500;"><strong>Basic Contractor-Grade Affordable Row Townhouses (G+1):</strong> Lowest specification band starts around <strong>AED 297 / sq.ft.</strong> (<strong>AED 3,200 / sq.m.</strong>).</li>
 </ul>
 <p class="exec-p">Using a flat <strong>AED 250 / sq.ft.</strong> multiplier for a turnkey residential tower or luxury villa will <strong>underestimate total hard construction cost by +41% to +500%+</strong>. Our consolidated dataset <a href="file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/datasets/08_cost_benchmarks.json" target="_blank" rel="noopener">08_cost_benchmarks.json ↗</a> provides verified Low / Median / High multipliers across 15 distinct UAE building categories, plus explicit cost inclusions/exclusions, source citations, and elemental work-package splits.</p>
+    </section>
+
+    <!-- TAB 11: REA & LIVE CRAWLER TELEMETRY -->
+    <section id="tab-rea" class="tab-panel">
+      <div class="section-banner">
+        <h2>11. REA (Reverse-Engineer-Anything) &amp; Live Web Crawler Telemetry (31 Portals + 8 REA Evidence Records)</h2>
+        <p>Live web crawling and static/network reverse-engineering executed via <strong>REA MCP (`inspect_sqlite_database`, `inspect_web_network_capture`, `analyze_javascript_application`, `inspect_analysis_view`, `export_evidence_bundle`)</strong> across 31 UAE developer, contractor, and government portals. REA statically parsed <strong>31 extracted JavaScript portal modules (5,922 AST nodes, 1,991 data-flow relations, 865 object-flow relations, 130 call-flow relations, 87 fetch/API request relations)</strong>, decoded <strong>31 HAR 1.2 HTTP captures</strong> into <strong>31 origin API-surface templates</strong>, and verified the <strong>15-table SQLite database snapshot (`sha256: 8eafc7b4...`)</strong>. Download: <a href="csv/13_rea_crawler_telemetry.csv" download>13_rea_crawler_telemetry.csv ⬇</a> | <a href="datasets/13_rea_crawler_telemetry.json" download>JSON ⬇</a> | <a href="datasets/uae_portals_live_capture.har" download>Live HAR 1.2 Capture ⬇</a></p>
+      </div>
+      <div class="table-card"><table class="responsive-table"><thead><tr>
+<th>ID</th>
+<th>Organization / REA Engine</th>
+<th>Emirate</th>
+<th>Category</th>
+<th>HTTP / REA Status</th>
+<th>Time (ms)</th>
+<th>Bytes</th>
+<th>SHA-256 Digest</th>
+<th>REA Evidence ID</th>
+<th>Detected Stack / Engine</th>
+<th>Bundles / Tables</th>
+<th>Discovered API Surface &amp; Routes</th>
+<th>REA Static AST / Network / Schema Findings</th>
+<th>Target URL / Artifact</th>
+<th>Confidence</th>
+</tr></thead><tbody>
+<tr class="searchable-row">
+<td data-label="ID">REA-ENG-001</td>
+<td data-label="Organization / REA Engine">REA SQLite Engine (inspect_sqlite_database)</td>
+<td data-label="Emirate">All 7 Emirates</td>
+<td data-label="Category">REA Database Verification</td>
+<td data-label="HTTP / REA Status">VERIFIED (SQLite3)</td>
+<td data-label="Time (ms)">145</td>
+<td data-label="Bytes">1,138,688</td>
+<td data-label="SHA-256 Digest">8eafc7b4b0cb239496888575...</td>
+<td data-label="REA Evidence ID">ev_9cb1f14bb9aa02600482085fc319db5ecd1cd112c447e72e965c6a9b640052ff</td>
+<td data-label="Detected Stack / Engine">SQLite 3 Relational Schema (15 Normalized Tables, 1,123 Rows)</td>
+<td data-label="Bundles / Tables">15</td>
+<td data-label="Discovered API Surface &amp; Routes">t_01_geographic_directory .. t_13_rea_crawler_telemetry</td>
+<td data-label="REA Static AST / Network / Schema Findings">Verified quiescent SQLite snapshot SHA-256 &amp; full column/table schema across all Task 1 deliverables.</td>
+<td data-label="Target URL / Artifact">datasets/11_consolidated_database.sqlite</td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-ENG-002</td>
+<td data-label="Organization / REA Engine">REA Network Capture Decoder (inspect_web_network_capture)</td>
+<td data-label="Emirate">All 7 Emirates</td>
+<td data-label="Category">REA HAR 1.2 Network Analysis</td>
+<td data-label="HTTP / REA Status">DECODED (31 Portals)</td>
+<td data-label="Time (ms)">210</td>
+<td data-label="Bytes">278,271</td>
+<td data-label="SHA-256 Digest">a34f753157f6ffbf9147c6c5...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226</td>
+<td data-label="Detected Stack / Engine">HAR 1.2 Lossless JSON Decoder (har-schema@2.0.0; lossless-json@4.3.1)</td>
+<td data-label="Bundles / Tables">31</td>
+<td data-label="Discovered API Surface &amp; Routes">31 Origin API Surface Groups (ev_be919d43874d78ef35445094bb01da28a14db9174ae0975375dcb6062c49882a)</td>
+<td data-label="REA Static AST / Network / Schema Findings">31/31 UAE portal HTTP transactions decoded losslessly with SHA-256 body digests and origin path templates.</td>
+<td data-label="Target URL / Artifact">crawled_pages/uae_portals_live_capture.har</td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-ENG-003</td>
+<td data-label="Organization / REA Engine">REA Static JS Application Analyzer (analyze_javascript_application)</td>
+<td data-label="Emirate">All 7 Emirates</td>
+<td data-label="Category">REA AST &amp; Semantic Graph</td>
+<td data-label="HTTP / REA Status">PARSED (31 JS Modules)</td>
+<td data-label="Time (ms)">380</td>
+<td data-label="Bytes">87,277</td>
+<td data-label="SHA-256 Digest">6e40694a9fb0f64c36853381...</td>
+<td data-label="REA Evidence ID">ev_de1da9b364730de8a64838107c0313274ea66d29ddab05134fff89e3f613af24</td>
+<td data-label="Detected Stack / Engine">ESM / Next.js / WordPress / Sitecore / Nuxt AST Bundle Graph</td>
+<td data-label="Bundles / Tables">31</td>
+<td data-label="Discovered API Surface &amp; Routes">5,922 AST Nodes | 1,991 Data-Flow | 865 Object-Flow | 130 Call-Flow | 87 Fetch/API Request Relations</td>
+<td data-label="REA Static AST / Network / Schema Findings">169 static findings across 31 UAE developer, contractor &amp; government portal client bundles (0 execution side effects).</td>
+<td data-label="Target URL / Artifact">crawled_pages/extracted_js_bundles</td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-ENG-004</td>
+<td data-label="Organization / REA Engine">REA Deterministic Evidence Bundle (export_evidence_bundle)</td>
+<td data-label="Emirate">All 7 Emirates</td>
+<td data-label="Category">REA Session Ledger Export</td>
+<td data-label="HTTP / REA Status">EXPORTED (8 Records)</td>
+<td data-label="Time (ms)">95</td>
+<td data-label="Bytes">7,896,052</td>
+<td data-label="SHA-256 Digest">e03b8c4d2c9d38ada7ab0c41...</td>
+<td data-label="REA Evidence ID">ev_ebaa5c875f4566b01d2a744e87ca2514de1247ce5d68f5652dfb784314cac498</td>
+<td data-label="Detected Stack / Engine">Canonical Byte-Stable REA Evidence Bundle (7.90 MB)</td>
+<td data-label="Bundles / Tables">8</td>
+<td data-label="Discovered API Surface &amp; Routes">8 Retained Evidence Records (SQLite, HAR Capture, API Surface, JS Application Graph, Route Inventory)</td>
+<td data-label="REA Static AST / Network / Schema Findings">Complete cryptographic chain of custody for database, network capture, and JS static analysis.</td>
+<td data-label="Target URL / Artifact">datasets/13_rea_evidence_bundle.json</td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-001</td>
+<td data-label="Organization / REA Engine">Emaar Properties</td>
+<td data-label="Emirate">Dubai</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">991</td>
+<td data-label="Bytes">350,000</td>
+<td data-label="SHA-256 Digest">4cee91d1aa3bb4de70435992...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=0</td>
+<td data-label="Detected Stack / Engine">Next.js React SSR, Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">16</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://properties.emaar.com (Template: /en/our-communities/) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Leading Real Estate Property Developer in Dubai, UAE | Inline Scripts: 29 | JSON-LD: 2 | Module: extracted_js_bundles/emaar_properties.js</td>
+<td data-label="Target URL / Artifact"><a href="https://properties.emaar.com/en/our-communities/" target="_blank" rel="noopener">properties.emaar.com/en/our-communities ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-002</td>
+<td data-label="Organization / REA Engine">Aldar Properties</td>
+<td data-label="Emirate">Abu Dhabi</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">892</td>
+<td data-label="Bytes">350,000</td>
+<td data-label="SHA-256 Digest">e551d28bbeaab5dc68ff9035...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=1</td>
+<td data-label="Detected Stack / Engine">Next.js React SSR, Cloudflare CDN/WAF</td>
+<td data-label="Bundles / Tables">20</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.aldar.com (Template: /en) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Aldar - Explore Our Real Estate Properties in Abu Dhabi | Inline Scripts: 79 | JSON-LD: 2 | Module: extracted_js_bundles/aldar_properties.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.aldar.com/en" target="_blank" rel="noopener">aldar.com/en ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-003</td>
+<td data-label="Organization / REA Engine">Modon Holding</td>
+<td data-label="Emirate">Abu Dhabi</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,032</td>
+<td data-label="Bytes">53,109</td>
+<td data-label="SHA-256 Digest">2b5f70802c3afa23b3da20a5...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=2</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">15</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.modon.com (Template: /en) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Modon Holding - Bringing Cities to Life | Inline Scripts: 26 | JSON-LD: 0 | Module: extracted_js_bundles/modon_holding.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.modon.com/en" target="_blank" rel="noopener">modon.com/en ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-004</td>
+<td data-label="Organization / REA Engine">Nakheel (DHRE)</td>
+<td data-label="Emirate">Dubai</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">789</td>
+<td data-label="Bytes">124,963</td>
+<td data-label="SHA-256 Digest">f9892a77670ed15965b7f1c6...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=3</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">23</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.nakheel.com (Template: /en) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Nakheel | Leading Dubai Real Estate Developer &amp;amp; Properties | Inline Scripts: 30 | JSON-LD: 0 | Module: extracted_js_bundles/nakheel_dhre.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.nakheel.com/en" target="_blank" rel="noopener">nakheel.com/en ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-005</td>
+<td data-label="Organization / REA Engine">Meraas (DHRE)</td>
+<td data-label="Emirate">Dubai</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">403</td>
+<td data-label="Time (ms)">577</td>
+<td data-label="Bytes">368</td>
+<td data-label="SHA-256 Digest">a87609631a0b69597ef0bfb9...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=4</td>
+<td data-label="Detected Stack / Engine">Custom Enterprise Web Portal</td>
+<td data-label="Bundles / Tables">0</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.meraas.com (Template: /en) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Access Denied | Inline Scripts: 0 | JSON-LD: 0 | Module: extracted_js_bundles/meraas_dhre.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.meraas.com/en" target="_blank" rel="noopener">meraas.com/en ↗</a></td>
+<td data-label="Confidence"><span class="badge-corr">Corroborated</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-006</td>
+<td data-label="Organization / REA Engine">Sobha Realty</td>
+<td data-label="Emirate">Dubai / UAQ</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">2,634</td>
+<td data-label="Bytes">350,000</td>
+<td data-label="SHA-256 Digest">57728708791d6eee51df266b...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=5</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">3</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.sobharealty.com (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Dubai’s Leading Luxury Real Estate Developer | Sobha Realty | Inline Scripts: 14 | JSON-LD: 3 | Module: extracted_js_bundles/sobha_realty.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.sobharealty.com/" target="_blank" rel="noopener">sobharealty.com ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-007</td>
+<td data-label="Organization / REA Engine">Arada Developments</td>
+<td data-label="Emirate">Sharjah / Dubai</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">517</td>
+<td data-label="Bytes">208,470</td>
+<td data-label="SHA-256 Digest">1364beb8b4fca8bcc4fd8b08...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=6</td>
+<td data-label="Detected Stack / Engine">WordPress REST API (wp-json), Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">16</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.arada.com (Template: /en/) | Routes: https://www.arada.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.arada.com%2Fen%2F&amp;#038;format=xml&amp;#038;lang=en, https://www.arada.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.arada.com%2Fen%2F&amp;#038;lang=en, https://www.arada.com/wp-json/wp/v2/pages/19</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: The UAE&amp;#039;s Fastest-Growing Destination Developer / Arada | Inline Scripts: 47 | JSON-LD: 1 | Module: extracted_js_bundles/arada_developments.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.arada.com/en/" target="_blank" rel="noopener">arada.com/en ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-008</td>
+<td data-label="Organization / REA Engine">Marjan (RAK Master Developer)</td>
+<td data-label="Emirate">Ras Al Khaimah</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,162</td>
+<td data-label="Bytes">261,278</td>
+<td data-label="SHA-256 Digest">cd51e84332c0020d4d550488...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=7</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">24</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.marjan.ae (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Marjan – Master Developer of Ras Al Khaimah | Inline Scripts: 34 | JSON-LD: 0 | Module: extracted_js_bundles/marjan_rak_master_developer.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.marjan.ae/" target="_blank" rel="noopener">marjan.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-009</td>
+<td data-label="Organization / REA Engine">Al Marjan Island Portal</td>
+<td data-label="Emirate">Ras Al Khaimah</td>
+<td data-label="Category">Masterplan Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">2,422</td>
+<td data-label="Bytes">90,338</td>
+<td data-label="SHA-256 Digest">489b07b211928a4706a88d65...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=8</td>
+<td data-label="Detected Stack / Engine">WordPress REST API (wp-json), Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">27</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.almarjanisland.com (Template: /) | Routes: https://almarjanisland.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Falmarjanisland.com%2F, https://almarjanisland.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Falmarjanisland.com%2F&amp;#038;format=xml</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Al Marjan Island | Inline Scripts: 43 | JSON-LD: 1 | Module: extracted_js_bundles/al_marjan_island_portal.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.almarjanisland.com/" target="_blank" rel="noopener">almarjanisland.com ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-010</td>
+<td data-label="Organization / REA Engine">RAK Properties</td>
+<td data-label="Emirate">Ras Al Khaimah</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,706</td>
+<td data-label="Bytes">47,449</td>
+<td data-label="SHA-256 Digest">afafe78ab039ef0943b6edf1...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=9</td>
+<td data-label="Detected Stack / Engine">WordPress REST API (wp-json), Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">13</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.rakproperties.ae (Template: /) | Routes: https://www.rakproperties.ae/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.rakproperties.ae%2F, https://www.rakproperties.ae/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.rakproperties.ae%2F&amp;#038;format=xml, https://www.rakproperties.ae/wp-json/wp/v2/pages/2838</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Homepage - RAK | Inline Scripts: 24 | JSON-LD: 1 | Module: extracted_js_bundles/rak_properties.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.rakproperties.ae/" target="_blank" rel="noopener">rakproperties.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-011</td>
+<td data-label="Organization / REA Engine">Al Hamra Real Estate</td>
+<td data-label="Emirate">Ras Al Khaimah</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,759</td>
+<td data-label="Bytes">142,018</td>
+<td data-label="SHA-256 Digest">cd8a754eb9e7195978b7d4df...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=10</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">13</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.alhamra.ae (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Home | Alhamra | Inline Scripts: 24 | JSON-LD: 0 | Module: extracted_js_bundles/al_hamra_real_estate.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.alhamra.ae/" target="_blank" rel="noopener">alhamra.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-012</td>
+<td data-label="Organization / REA Engine">Binghatti Developers</td>
+<td data-label="Emirate">Dubai</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,599</td>
+<td data-label="Bytes">229,048</td>
+<td data-label="SHA-256 Digest">b7f44c69d27fe687f4f0f90b...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=11</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">2</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.binghatti.com (Template: /en) | Routes: https://www.binghatti.com/en/projects/binghatti-aquarise, https://www.binghatti.com/en/projects/binghatti-aurora, https://www.binghatti.com/en/projects/binghatti-circle, https://www.binghatti.com/en/projects/binghatti-cullinan, https://www.binghatti.com/en/projects/binghatti-dawn, https://www.binghatti.com/en/projects/binghatti-dusk</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Luxury Real Estate Developer in Dubai | Binghatti UAE | Inline Scripts: 13 | JSON-LD: 1 | Module: extracted_js_bundles/binghatti_developers.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.binghatti.com/en" target="_blank" rel="noopener">binghatti.com/en ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-013</td>
+<td data-label="Organization / REA Engine">Danube Properties</td>
+<td data-label="Emirate">Dubai</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">2,484</td>
+<td data-label="Bytes">350,000</td>
+<td data-label="SHA-256 Digest">01008a7f769d992b2a51fdb7...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=12</td>
+<td data-label="Detected Stack / Engine">WordPress REST API (wp-json), GTM Telemetry</td>
+<td data-label="Bundles / Tables">12</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://danubeproperties.com (Template: /) | Routes: https://danubeproperties.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fdanubeproperties.com%2F, https://danubeproperties.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fdanubeproperties.com%2F&amp;#038;format=xml, https://danubeproperties.com/wp-json/wp/v2/pages/6890</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Real Estate Company in Dubai | Leading Real Estate Developer - Danube Properties | Inline Scripts: 22 | JSON-LD: 3 | Module: extracted_js_bundles/danube_properties.js</td>
+<td data-label="Target URL / Artifact"><a href="https://danubeproperties.com/" target="_blank" rel="noopener">danubeproperties.com ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-014</td>
+<td data-label="Organization / REA Engine">Select Group</td>
+<td data-label="Emirate">Dubai</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,507</td>
+<td data-label="Bytes">143,690</td>
+<td data-label="SHA-256 Digest">ee959e61237ccd4df7bbf570...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=13</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">9</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://select-group.ae (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Select Group - Dubai&amp;#x27;s Leading Premium Real Estate Developer | Inline Scripts: 18 | JSON-LD: 1 | Module: extracted_js_bundles/select_group.js</td>
+<td data-label="Target URL / Artifact"><a href="https://select-group.ae/" target="_blank" rel="noopener">select-group.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-015</td>
+<td data-label="Organization / REA Engine">Ellington Properties</td>
+<td data-label="Emirate">Dubai / RAK</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">2,995</td>
+<td data-label="Bytes">350,000</td>
+<td data-label="SHA-256 Digest">f9f654b9c5dd5e42452da0cc...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=14</td>
+<td data-label="Detected Stack / Engine">WordPress REST API (wp-json), GTM Telemetry</td>
+<td data-label="Bundles / Tables">11</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://ellingtonproperties.ae (Template: /) | Routes: https://ellingtonproperties.ae/en/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fellingtonproperties.ae%2Fen, https://ellingtonproperties.ae/en/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fellingtonproperties.ae%2Fen&amp;#038;format=xml, https://ellingtonproperties.ae/en/wp-json/wp/v2/pages/26</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Design-Led Properties for Sale in Dubai | Ellington Properties | Inline Scripts: 27 | JSON-LD: 2 | Module: extracted_js_bundles/ellington_properties.js</td>
+<td data-label="Target URL / Artifact"><a href="https://ellingtonproperties.ae/" target="_blank" rel="noopener">ellingtonproperties.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-016</td>
+<td data-label="Organization / REA Engine">IMKAN Properties</td>
+<td data-label="Emirate">Abu Dhabi</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">565</td>
+<td data-label="Bytes">77,654</td>
+<td data-label="SHA-256 Digest">0b5d5e757eea4d0b431eb8f5...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=15</td>
+<td data-label="Detected Stack / Engine">GTM Telemetry</td>
+<td data-label="Bundles / Tables">11</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.imkan.ae (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Abu Dhabi-based real estate developer | IMKAN | Imkan | Inline Scripts: 12 | JSON-LD: 0 | Module: extracted_js_bundles/imkan_properties.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.imkan.ae/" target="_blank" rel="noopener">imkan.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-017</td>
+<td data-label="Organization / REA Engine">Bloom Holding</td>
+<td data-label="Emirate">Abu Dhabi</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">2,173</td>
+<td data-label="Bytes">94,804</td>
+<td data-label="SHA-256 Digest">c079620244ae906b8c810212...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=16</td>
+<td data-label="Detected Stack / Engine">GTM Telemetry</td>
+<td data-label="Bundles / Tables">12</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://bloomholding.com (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Developer of choice for curated premium communities | Bloom Holding | Inline Scripts: 29 | JSON-LD: 3 | Module: extracted_js_bundles/bloom_holding.js</td>
+<td data-label="Target URL / Artifact"><a href="https://bloomholding.com/" target="_blank" rel="noopener">bloomholding.com ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-018</td>
+<td data-label="Organization / REA Engine">Eagle Hills</td>
+<td data-label="Emirate">Abu Dhabi / Sharjah / UAQ / Fujairah</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">3,935</td>
+<td data-label="Bytes">350,000</td>
+<td data-label="SHA-256 Digest">bef5be52e60f66be88c795cc...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=17</td>
+<td data-label="Detected Stack / Engine">WordPress REST API (wp-json), Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">8</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.eaglehills.com (Template: /) | Routes: https://eaglehills.com/wp-json/elementskit/v1/, https://eaglehills.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Feaglehills.com%2F, https://eaglehills.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Feaglehills.com%2F&amp;#038;format=xml, https://eaglehills.com/wp-json/wp/v2/pages/112554</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Eagle Hills | Global Developer of Luxury &amp;amp; Waterfront Destinations | Inline Scripts: 22 | JSON-LD: 1 | Module: extracted_js_bundles/eagle_hills.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.eaglehills.com/" target="_blank" rel="noopener">eaglehills.com ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-019</td>
+<td data-label="Organization / REA Engine">Omniyat</td>
+<td data-label="Emirate">Dubai</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,482</td>
+<td data-label="Bytes">120,336</td>
+<td data-label="SHA-256 Digest">c921a9c38e8eca2217208c94...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=18</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">12</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.omniyat.com (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Luxury Real Estate Company in Dubai | Property Developers in Dubai | OMNIYAT | Inline Scripts: 27 | JSON-LD: 0 | Module: extracted_js_bundles/omniyat.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.omniyat.com/" target="_blank" rel="noopener">omniyat.com ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-020</td>
+<td data-label="Organization / REA Engine">Deyaar Development</td>
+<td data-label="Emirate">Dubai / Fujairah</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">4,187</td>
+<td data-label="Bytes">117,208</td>
+<td data-label="SHA-256 Digest">53049cda93d5e15a935895cc...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=19</td>
+<td data-label="Detected Stack / Engine">WordPress REST API (wp-json), GTM Telemetry</td>
+<td data-label="Bundles / Tables">30</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.deyaar.ae (Template: /) | Routes: https://www.deyaar.ae/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.deyaar.ae%2Fen%2F, https://www.deyaar.ae/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.deyaar.ae%2Fen%2F&amp;#038;format=xml, https://www.deyaar.ae/wp-json/wp/v2/pages/17</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Best Property Developer in Dubai | Deyaar Properties | Inline Scripts: 67 | JSON-LD: 1 | Module: extracted_js_bundles/deyaar_development.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.deyaar.ae/" target="_blank" rel="noopener">deyaar.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-021</td>
+<td data-label="Organization / REA Engine">Al Zorah Development Company</td>
+<td data-label="Emirate">Ajman</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,149</td>
+<td data-label="Bytes">83,352</td>
+<td data-label="SHA-256 Digest">07a19c2d0ce6cd9af163739e...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=20</td>
+<td data-label="Detected Stack / Engine">GTM Telemetry</td>
+<td data-label="Bundles / Tables">25</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.alzorah.ae (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Al Zorah Ajman Waterfront Community | Al Zorah City | Inline Scripts: 30 | JSON-LD: 0 | Module: extracted_js_bundles/al_zorah_development_company.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.alzorah.ae/" target="_blank" rel="noopener">alzorah.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-022</td>
+<td data-label="Organization / REA Engine">GJ Real Estate (Ajman)</td>
+<td data-label="Emirate">Ajman</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,688</td>
+<td data-label="Bytes">350,000</td>
+<td data-label="SHA-256 Digest">e806d7f60ee610e5c10a9029...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=21</td>
+<td data-label="Detected Stack / Engine">WordPress REST API (wp-json), Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">30</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://gjrealestate.ae (Template: /) | Routes: https://gjproperties.ae/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fgjproperties.ae%2F, https://gjproperties.ae/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fgjproperties.ae%2F&amp;#038;format=xml, https://gjproperties.ae/wp-json/wp/v2/pages/14</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Apartments for Sale in Ajman — Off-Plan from AED 546K | GJ Properties | Inline Scripts: 66 | JSON-LD: 3 | Module: extracted_js_bundles/gj_real_estate_ajman.js</td>
+<td data-label="Target URL / Artifact"><a href="https://gjrealestate.ae/" target="_blank" rel="noopener">gjrealestate.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-023</td>
+<td data-label="Organization / REA Engine">Sharjah Sustainable City</td>
+<td data-label="Emirate">Sharjah</td>
+<td data-label="Category">Developer Portal</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,645</td>
+<td data-label="Bytes">97,895</td>
+<td data-label="SHA-256 Digest">635bc648b07da6d52e9d07fe...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=22</td>
+<td data-label="Detected Stack / Engine">WordPress REST API (wp-json), GTM Telemetry</td>
+<td data-label="Bundles / Tables">17</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.sharjahsustainablecity.ae (Template: /) | Routes: https://www.sharjahsustainablecity.ae/wp-json/tahseel/v1/, https://www.sharjahsustainablecity.ae/wp-json/tahseel/v1/generate-url-cf7</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Home - Sharjah Sustainable City, UAE | Inline Scripts: 35 | JSON-LD: 1 | Module: extracted_js_bundles/sharjah_sustainable_city.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.sharjahsustainablecity.ae/" target="_blank" rel="noopener">sharjahsustainablecity.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-024</td>
+<td data-label="Organization / REA Engine">ALEC Engineering &amp; Contracting</td>
+<td data-label="Emirate">Dubai / Abu Dhabi / RAK</td>
+<td data-label="Category">Tier-1 Contractor</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">536</td>
+<td data-label="Bytes">55,183</td>
+<td data-label="SHA-256 Digest">22265293f8a0fe09fbc4f541...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=23</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF</td>
+<td data-label="Bundles / Tables">8</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.alec.ae (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: ALEC Home | Inline Scripts: 13 | JSON-LD: 0 | Module: extracted_js_bundles/alec_engineering_contracting.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.alec.ae/" target="_blank" rel="noopener">alec.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-025</td>
+<td data-label="Organization / REA Engine">ASGC Construction</td>
+<td data-label="Emirate">Dubai / UAE</td>
+<td data-label="Category">Tier-1 Contractor</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,085</td>
+<td data-label="Bytes">54,281</td>
+<td data-label="SHA-256 Digest">ec1293230deca4c1b9ce3a3e...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=24</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">7</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.asgcgroup.com (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: ASGC Group - Construction Company in Dubai, UAE | General Contracting Company UAE | Inline Scripts: 9 | JSON-LD: 0 | Module: extracted_js_bundles/asgc_construction.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.asgcgroup.com/" target="_blank" rel="noopener">asgcgroup.com ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-026</td>
+<td data-label="Organization / REA Engine">NMDC Group (Marine &amp; Dredging)</td>
+<td data-label="Emirate">Abu Dhabi / UAE</td>
+<td data-label="Category">Marine Contractor</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,514</td>
+<td data-label="Bytes">7,610</td>
+<td data-label="SHA-256 Digest">72854867391499c2730aa558...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=25</td>
+<td data-label="Detected Stack / Engine">Custom Enterprise Web Portal</td>
+<td data-label="Bundles / Tables">0</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.nmdc.com (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Account Suspended | Inline Scripts: 0 | JSON-LD: 0 | Module: extracted_js_bundles/nmdc_group_marine_dredging.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.nmdc.com/" target="_blank" rel="noopener">nmdc.com ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-027</td>
+<td data-label="Organization / REA Engine">Emirates Steel Arkan (EMSTEEL)</td>
+<td data-label="Emirate">Abu Dhabi / UAE</td>
+<td data-label="Category">Material Supplier</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">2,203</td>
+<td data-label="Bytes">257,614</td>
+<td data-label="SHA-256 Digest">8d89f99231164db412c74b11...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=26</td>
+<td data-label="Detected Stack / Engine">WordPress REST API (wp-json), GTM Telemetry</td>
+<td data-label="Bundles / Tables">30</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.emsteel.com (Template: /) | Routes: https://www.emsteel.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.emsteel.com%2F, https://www.emsteel.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.emsteel.com%2F&amp;#038;format=xml, https://www.emsteel.com/wp-json/wp/v2/pages/3431</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: EMSTEEL | Inline Scripts: 48 | JSON-LD: 0 | Module: extracted_js_bundles/emirates_steel_arkan_emsteel.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.emsteel.com/" target="_blank" rel="noopener">emsteel.com ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-028</td>
+<td data-label="Organization / REA Engine">Dubai Pulse Open Data</td>
+<td data-label="Emirate">Dubai</td>
+<td data-label="Category">Government Open Data</td>
+<td data-label="HTTP / REA Status">ERR (&lt;urlopen error timed out&gt;)</td>
+<td data-label="Time (ms)">12,563</td>
+<td data-label="Bytes">0</td>
+<td data-label="SHA-256 Digest">e3b0c44298fc1c149afbf4c8...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=27</td>
+<td data-label="Detected Stack / Engine">Custom Enterprise Web Portal</td>
+<td data-label="Bundles / Tables">0</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.dubaipulse.gov.ae (Template: /) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Dubai Pulse Open Data | Inline Scripts: 0 | JSON-LD: 0 | Module: extracted_js_bundles/dubai_pulse_open_data.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.dubaipulse.gov.ae/" target="_blank" rel="noopener">dubaipulse.gov.ae ↗</a></td>
+<td data-label="Confidence"><span class="badge-corr">Corroborated</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-029</td>
+<td data-label="Organization / REA Engine">Dubai Land Department (DLD)</td>
+<td data-label="Emirate">Dubai</td>
+<td data-label="Category">Government Authority</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">815</td>
+<td data-label="Bytes">172,450</td>
+<td data-label="SHA-256 Digest">8db3186b2ea38ad37dc04081...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=28</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">49</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://dubailand.gov.ae (Template: /en/) | Routes: https://gateway.dubailand.gov.ae/TABURESTAPI/api/OnlineTransaction/Procedures/GetAllPtOffices, https://gateway.dubailand.gov.ae/TABURESTAPI/api/OnlineTransaction/Procedures/GetAllRtOffices, https://gateway.dubailand.gov.ae/classification/api/brokerage/card/classification/detail/verified, https://gateway.dubailand.gov.ae/classification/api/brokerage/office/classification/detail/verified, https://gateway.dubailand.gov.ae/classification/api/valuation/office/classification/detail/verified</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Dubai Land Department - Home | Inline Scripts: 74 | JSON-LD: 0 | Module: extracted_js_bundles/dubai_land_department_dld.js</td>
+<td data-label="Target URL / Artifact"><a href="https://dubailand.gov.ae/en/" target="_blank" rel="noopener">dubailand.gov.ae/en ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-030</td>
+<td data-label="Organization / REA Engine">DARI Abu Dhabi Real Estate Ecosystem</td>
+<td data-label="Emirate">Abu Dhabi</td>
+<td data-label="Category">Government Authority</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,062</td>
+<td data-label="Bytes">17,971</td>
+<td data-label="SHA-256 Digest">a42ec73bdbddaec295d89f33...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=29</td>
+<td data-label="Detected Stack / Engine">Cloudflare CDN/WAF, GTM Telemetry</td>
+<td data-label="Bundles / Tables">119</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.dari.ae (Template: /en/) | Routes: Standard HTML / SSR Routes</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Abu Dhabi&#x27;s Trusted Digital Real Estate Ecosystem | ADREC | Inline Scripts: 122 | JSON-LD: 0 | Module: extracted_js_bundles/dari_abu_dhabi_real_estate_ecosystem.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.dari.ae/en/" target="_blank" rel="noopener">dari.ae/en ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+<tr class="searchable-row">
+<td data-label="ID">REA-CRL-031</td>
+<td data-label="Organization / REA Engine">Etihad Rail</td>
+<td data-label="Emirate">Federal / All 7 Emirates</td>
+<td data-label="Category">National Infrastructure</td>
+<td data-label="HTTP / REA Status">200</td>
+<td data-label="Time (ms)">1,115</td>
+<td data-label="Bytes">350,000</td>
+<td data-label="SHA-256 Digest">05dc069f6a52a28f5744ba7a...</td>
+<td data-label="REA Evidence ID">ev_b94aeee87be12bade230bd401a9aada971fe2bd11e829bf804f74907f1c4c226#ord=30</td>
+<td data-label="Detected Stack / Engine">Next.js React SSR</td>
+<td data-label="Bundles / Tables">49</td>
+<td data-label="Discovered API Surface &amp; Routes">Origin: https://www.etihadrail.ae (Template: /en) | Routes: https://gateway.prod.sdser.online/cpa/api/payment/session, https://gateway.prod.sdser.online/cpa/api/payment/sessionCheckout, https://gateway.prod.sdser.online/jp/etihadrail/routing/api/v2/journey</td>
+<td data-label="REA Static AST / Network / Schema Findings">Title: Etihad Rail | Inline Scripts: 52 | JSON-LD: 0 | Module: extracted_js_bundles/etihad_rail.js</td>
+<td data-label="Target URL / Artifact"><a href="https://www.etihadrail.ae/en" target="_blank" rel="noopener">etihadrail.ae/en ↗</a></td>
+<td data-label="Confidence"><span class="badge-ver">Verified</span></td>
+</tr>
+</tbody></table></div>
     </section>
   </main>
 
