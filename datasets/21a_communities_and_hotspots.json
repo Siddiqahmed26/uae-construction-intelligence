@@ -1,0 +1,422 @@
+[
+  {
+    "community_id": "COM-DXB-01",
+    "community_name": "Jumeirah Village Circle (JVC) & Al Barsha South Corridor",
+    "emirate": "Dubai",
+    "planning_authority": "Dubai Municipality (Community 381) / Nakheel Master Developer",
+    "center_lat": 25.0565,
+    "center_lon": 55.209,
+    "recommended_zoom": 14,
+    "polygon_wgs84": [
+      [
+        55.194,
+        25.068
+      ],
+      [
+        55.222,
+        25.068
+      ],
+      [
+        55.224,
+        25.044
+      ],
+      [
+        55.194,
+        25.044
+      ],
+      [
+        55.194,
+        25.068
+      ]
+    ],
+    "flagship_project_ids": "PRJ-D16, PRJ-D19 (Direct Hessa St D61 Corridor) + 8 Tracked JVC High-Rise Cluster Developments (Binghatti, Ellington, Samana, Danube, Tiger)",
+    "active_developments_count": 38,
+    "active_towers_and_buildings": 64,
+    "scheduled_units_2025_2029": 28500,
+    "active_structural_gfa_sqm": 3420000,
+    "primary_road_corridors": "RD-DXB-05 (Hessa St D61 West), RD-DXB-06 (Hessa St D61 East), RD-DXB-03 (Al Khail Rd E44), RD-DXB-07 (JVC Circle Blvd), RD-DXB-08 (E311)",
+    "observed_congestion_severity": "Severe (AM Peak 07:30–09:30 & PM Peak 17:00–20:00 on Hessa St D61 & Al Khail Rd E44 slip ramps)",
+    "construction_activity_index_score": "94.5 / 100 (Rank #1 High-Density Mid-Rise/High-Rise Construction Hotspot in Dubai)",
+    "activity_index_formula_and_limitations": "Formula: CAI = 0.35*(Active_Units / 30,000) + 0.35*(Active_Structural_GFA_m2 / 4,000,000) + 0.30*(Active_Towers / 70) * 100. Limitation: Reflects spatial concentration of simultaneous multi-developer vertical construction; does not by itself prove causal share of Hessa St commuter congestion.",
+    "source_id": "SRC-016",
+    "confidence": "Verified"
+  },
+  {
+    "community_id": "COM-DXB-02",
+    "community_name": "Business Bay, Downtown Dubai & DIFC Corridor",
+    "emirate": "Dubai",
+    "planning_authority": "Dubai Municipality (Communities 345, 343, 336) / Dubai Holding & Emaar",
+    "center_lat": 25.1965,
+    "center_lon": 55.2745,
+    "recommended_zoom": 14,
+    "polygon_wgs84": [
+      [
+        55.252,
+        25.228
+      ],
+      [
+        55.298,
+        25.228
+      ],
+      [
+        55.298,
+        25.174
+      ],
+      [
+        55.252,
+        25.174
+      ],
+      [
+        55.252,
+        25.228
+      ]
+    ],
+    "flagship_project_ids": "PRJ-D10 (Burj Azizi), PRJ-D11 (Burj Binghatti Jacob & Co), PRJ-D20 (DIFC Zabeel District Expansion)",
+    "active_developments_count": 29,
+    "active_towers_and_buildings": 42,
+    "scheduled_units_2025_2029": 19400,
+    "active_structural_gfa_sqm": 3850000,
+    "primary_road_corridors": "RD-DXB-01 (Sheikh Zayed Rd E11), RD-DXB-04 (Al Khail Rd E44), RD-DXB-12 (Financial Centre Rd D71), RD-DXB-13 (Marasi Dr / Al Amal St)",
+    "observed_congestion_severity": "High to Severe (PM Peak 17:00–20:00 on Financial Centre Rd D71, Al Amal St & Al Khail Rd E44)",
+    "construction_activity_index_score": "91.2 / 100 (Rank #1 Supertall & CBD Construction Hotspot)",
+    "activity_index_formula_and_limitations": "Formula: Weighted active structural GFA (3.85M m² across supertall towers up to 133 floors) + active tower count. Limitation: CBD congestion is heavily driven by 400k+ daily office/retail commuters; heavy construction trucks are restricted to 22:00–06:00 night windows.",
+    "source_id": "SRC-016",
+    "confidence": "Verified"
+  },
+  {
+    "community_id": "COM-DXB-03",
+    "community_name": "Dubai Creek Harbour, Bukadra & Ras Al Khor Corridor",
+    "emirate": "Dubai",
+    "planning_authority": "Dubai Municipality / Emaar Properties & Sobha Realty",
+    "center_lat": 25.1945,
+    "center_lon": 55.342,
+    "recommended_zoom": 13,
+    "polygon_wgs84": [
+      [
+        55.318,
+        25.218
+      ],
+      [
+        55.368,
+        25.218
+      ],
+      [
+        55.368,
+        25.171
+      ],
+      [
+        55.318,
+        25.171
+      ],
+      [
+        55.318,
+        25.218
+      ]
+    ],
+    "flagship_project_ids": "PRJ-D3 (Dubai Creek Harbour & Creek Tower), PRJ-D8 (Dubai Metro Blue Line Creek Crossing), PRJ-D17 (Sobha Hartland II & Bukadra)",
+    "active_developments_count": 24,
+    "active_towers_and_buildings": 58,
+    "scheduled_units_2025_2029": 24200,
+    "active_structural_gfa_sqm": 4650000,
+    "primary_road_corridors": "RD-DXB-11 (Ras Al Khor Rd E44/D62), RD-DXB-04 (Al Khail Rd E44 Business Bay Crossing)",
+    "observed_congestion_severity": "High (AM Peak westbound & PM Peak eastbound on Ras Al Khor Rd D62 & Nad Al Hamar interchange)",
+    "construction_activity_index_score": "92.8 / 100 (Major Masterplan & Metro Infrastructure Hotspot)",
+    "activity_index_formula_and_limitations": "Combines 4.65M m² active residential/commercial GFA with AED 18B Dubai Metro Blue Line viaduct/tunnel civil works and AED 670M Ras Al Khor Rd widening.",
+    "source_id": "SRC-016",
+    "confidence": "Verified"
+  },
+  {
+    "community_id": "COM-DXB-04",
+    "community_name": "Dubai South, Expo City & Al Maktoum Int'l Airport (DWC) Megaproject Zone",
+    "emirate": "Dubai",
+    "planning_authority": "Dubai Aviation City Corporation (DACC) / Expo City Dubai Authority",
+    "center_lat": 24.912,
+    "center_lon": 55.158,
+    "recommended_zoom": 12,
+    "polygon_wgs84": [
+      [
+        55.095,
+        24.975
+      ],
+      [
+        55.215,
+        24.975
+      ],
+      [
+        55.215,
+        24.845
+      ],
+      [
+        55.095,
+        24.845
+      ],
+      [
+        55.095,
+        24.975
+      ]
+    ],
+    "flagship_project_ids": "PRJ-D1 (Al Maktoum Int'l Airport DWC AED 128B), PRJ-D15 (Azizi Venice), PRJ-D18 (Expo City Dubai), PRJ-D9 (Tasreef Deep Tunnel South)",
+    "active_developments_count": 22,
+    "active_towers_and_buildings": 85,
+    "scheduled_units_2025_2029": 31500,
+    "active_structural_gfa_sqm": 7850000,
+    "primary_road_corridors": "RD-DXB-15 (Expo Rd E77), RD-DXB-08 (E311), RD-DXB-09 (Emirates Rd E611 24/7 HGV Corridor)",
+    "observed_congestion_severity": "Low to Moderate (High highway reserve capacity on 12-lane E311/E611/E77; localized heavy HGV freight activity)",
+    "construction_activity_index_score": "96.0 / 100 (#1 Megaproject Earthworks & Aviation/Residential CapEx Zone in UAE)",
+    "activity_index_formula_and_limitations": "Highest active construction GFA (7.85M m²) and HGV concrete/earthworks volume in Dubai, but lowest passenger-car congestion due to direct 24/7 E611/E77 freight access.",
+    "source_id": "SRC-016",
+    "confidence": "Verified"
+  },
+  {
+    "community_id": "COM-DXB-05",
+    "community_name": "Dubailand, Tilal Al Ghaf, DAMAC Lagoons & Emaar Oasis Belt (E311–E611)",
+    "emirate": "Dubai",
+    "planning_authority": "Dubai Municipality / Majid Al Futtaim, DAMAC & Emaar",
+    "center_lat": 25.005,
+    "center_lon": 55.238,
+    "recommended_zoom": 13,
+    "polygon_wgs84": [
+      [
+        55.198,
+        25.042
+      ],
+      [
+        55.285,
+        25.042
+      ],
+      [
+        55.285,
+        24.952
+      ],
+      [
+        55.198,
+        24.952
+      ],
+      [
+        55.198,
+        25.042
+      ]
+    ],
+    "flagship_project_ids": "PRJ-D5 (The Oasis), PRJ-D6 (The Heights), PRJ-D7 (Grand Polo Club), PRJ-D16 (DAMAC Lagoons/Islands), PRJ-D19 (Tilal Al Ghaf & Ghaf Woods)",
+    "active_developments_count": 26,
+    "active_towers_and_buildings": 110,
+    "scheduled_units_2025_2029": 34800,
+    "active_structural_gfa_sqm": 6120000,
+    "primary_road_corridors": "RD-DXB-06 (Hessa St D61 East), RD-DXB-10 (Umm Suqeim–Al Qudra D63), RD-DXB-08 (E311), RD-DXB-09 (E611)",
+    "observed_congestion_severity": "Moderate to High (Peak bottleneck at Hessa St D61 / E311 and Umm Suqeim D63 / E311 interchanges)",
+    "construction_activity_index_score": "93.4 / 100 (#1 Master-Planned Villa & Lagoon Community Construction Belt)",
+    "activity_index_formula_and_limitations": "Reflects 34,800 scheduled villa/townhouse/apartment units across 5 contiguous masterplans between E311 and E611.",
+    "source_id": "SRC-016",
+    "confidence": "Verified"
+  },
+  {
+    "community_id": "COM-DXB-06",
+    "community_name": "Dubai Marina, Palm Jumeirah & Palm Jebel Ali Coastal Belt",
+    "emirate": "Dubai",
+    "planning_authority": "Dubai Municipality / Nakheel, Select Group & London Gate",
+    "center_lat": 25.0885,
+    "center_lon": 55.144,
+    "recommended_zoom": 13,
+    "polygon_wgs84": [
+      [
+        55.115,
+        25.128
+      ],
+      [
+        55.165,
+        25.128
+      ],
+      [
+        55.165,
+        25.068
+      ],
+      [
+        55.115,
+        25.068
+      ],
+      [
+        55.115,
+        25.128
+      ]
+    ],
+    "flagship_project_ids": "PRJ-D2 (Palm Jebel Ali), PRJ-D12 (Six Senses Marina), PRJ-D13 (Franck Muller Aeternitas), PRJ-D14 (Como Residences Palm)",
+    "active_developments_count": 16,
+    "active_towers_and_buildings": 28,
+    "scheduled_units_2025_2029": 11200,
+    "active_structural_gfa_sqm": 2890000,
+    "primary_road_corridors": "RD-DXB-01 (Sheikh Zayed Rd E11), RD-DXB-02 (E11 Jebel Ali), RD-DXB-16 (King Salman St D94 & Palm Trunk)",
+    "observed_congestion_severity": "High (Evening & weekend leisure/commuter congestion on D94 Marina ring and Palm Jumeirah gateway)",
+    "construction_activity_index_score": "82.5 / 100 (Ultra-Luxury Supertall & Coastal Reclamation Zone)",
+    "activity_index_formula_and_limitations": "Marina supertalls operate on tight infill plots with strict overnight concrete delivery windows; Palm Jebel Ali marine/bridge works access directly from E11 South.",
+    "source_id": "SRC-016",
+    "confidence": "Verified"
+  },
+  {
+    "community_id": "COM-DXB-07",
+    "community_name": "Dubai Islands & Deira Waterfront (Al Shindagha / Infinity Bridge Corridor)",
+    "emirate": "Dubai",
+    "planning_authority": "Dubai Municipality / Nakheel (Dubai Holding Real Estate)",
+    "center_lat": 25.302,
+    "center_lon": 55.312,
+    "recommended_zoom": 13,
+    "polygon_wgs84": [
+      [
+        55.285,
+        25.325
+      ],
+      [
+        55.345,
+        25.325
+      ],
+      [
+        55.345,
+        25.275
+      ],
+      [
+        55.285,
+        25.275
+      ],
+      [
+        55.285,
+        25.325
+      ]
+    ],
+    "flagship_project_ids": "PRJ-D4 (Dubai Islands — 5-Island Masterplan, 80+ Hotels & Rixos/Bay Villas)",
+    "active_developments_count": 14,
+    "active_towers_and_buildings": 36,
+    "scheduled_units_2025_2029": 14500,
+    "active_structural_gfa_sqm": 2450000,
+    "primary_road_corridors": "RD-DXB-14 (Al Khaleej St D92 / Infinity Bridge & Airport Rd D89)",
+    "observed_congestion_severity": "Moderate (Relieved by RTA 12-lane Infinity Bridge & Al Khaleej Street Tunnel project)",
+    "construction_activity_index_score": "79.8 / 100 (Major Coastal Island Masterplan)",
+    "activity_index_formula_and_limitations": "Island access is concentrated on Al Khaleej St (D92) bridges; RTA is currently constructing a new direct bridge from Bur Dubai/Al Khaleej St to Dubai Islands.",
+    "source_id": "SRC-016",
+    "confidence": "Verified"
+  },
+  {
+    "community_id": "COM-SHJ-01",
+    "community_name": "Muwaileh, Aljada & Al Zahia Master Corridor (Sharjah Priority 2)",
+    "emirate": "Sharjah",
+    "planning_authority": "Sharjah Department of Town Planning and Survey (SDTPS) / Arada & Majid Al Futtaim",
+    "center_lat": 25.3155,
+    "center_lon": 55.4685,
+    "recommended_zoom": 14,
+    "polygon_wgs84": [
+      [
+        55.445,
+        25.335
+      ],
+      [
+        55.492,
+        25.335
+      ],
+      [
+        55.492,
+        25.295
+      ],
+      [
+        55.445,
+        25.295
+      ],
+      [
+        55.445,
+        25.335
+      ]
+    ],
+    "flagship_project_ids": "PRJ-SH2 (Aljada 25,000-unit Masterplan), PRJ-SH6 (Al Mamsha), PRJ-SH8 (Olfah & Nama), PRJ-SH9 (Al Zahia Final Phase)",
+    "active_developments_count": 19,
+    "active_towers_and_buildings": 72,
+    "scheduled_units_2025_2029": 22400,
+    "active_structural_gfa_sqm": 3180000,
+    "primary_road_corridors": "RD-SHJ-01 (E311 Muwaileh), RD-SHJ-03 (E88 Al Dhaid Rd & University City Rd)",
+    "observed_congestion_severity": "Severe (AM Peak southbound toward Dubai on E311 & PM Peak northbound + University City/Muwaileh school-commercial traffic)",
+    "construction_activity_index_score": "90.6 / 100 (#1 Construction & Commuter Hotspot in Sharjah)",
+    "activity_index_formula_and_limitations": "Concentrates >22,000 active units (Aljada, Al Zahia, Al Mamsha, Olfah) directly at the E311 / University City Rd / Airport Rd E88 nexus.",
+    "source_id": "SRC-091",
+    "confidence": "Verified"
+  },
+  {
+    "community_id": "COM-SHJ-02",
+    "community_name": "Emirates Road (E611) East Sharjah Belt — Masaar, Tilal, Sustainable City & KBS City",
+    "emirate": "Sharjah",
+    "planning_authority": "Sharjah Department of Town Planning and Survey (SDTPS) / Arada, Tilal, BEEAH & Alef",
+    "center_lat": 25.292,
+    "center_lon": 55.598,
+    "recommended_zoom": 13,
+    "polygon_wgs84": [
+      [
+        55.535,
+        25.345
+      ],
+      [
+        55.675,
+        25.345
+      ],
+      [
+        55.675,
+        25.255
+      ],
+      [
+        55.535,
+        25.255
+      ],
+      [
+        55.535,
+        25.345
+      ]
+    ],
+    "flagship_project_ids": "PRJ-SH3 (Masaar 1–3), PRJ-SH5 (Khalid Bin Sultan City), PRJ-SH6 (Hayyan), PRJ-SH7 (Tilal City), PRJ-SH10 (Sharjah Sustainable City), PRJ-SH12 (Jawaher Boston Medical)",
+    "active_developments_count": 15,
+    "active_towers_and_buildings": 68,
+    "scheduled_units_2025_2029": 18600,
+    "active_structural_gfa_sqm": 2950000,
+    "primary_road_corridors": "RD-SHJ-02 (Emirates Rd E611), RD-SHJ-03 (Al Dhaid Rd E88)",
+    "observed_congestion_severity": "Moderate (High capacity on E611; localized evening queues at Al Badiyah / Maliha E102 & Al Dhaid E88 interchanges)",
+    "construction_activity_index_score": "86.4 / 100 (#1 Master-Planned Villa & Eco-City Growth Corridor in Sharjah)",
+    "activity_index_formula_and_limitations": "6 major masterplans (Masaar, Tilal, Hayyan, Sustainable City, KBS City, Jawaher Medical) feed directly onto Emirates Rd E611.",
+    "source_id": "SRC-091",
+    "confidence": "Verified"
+  },
+  {
+    "community_id": "COM-SHJ-03",
+    "community_name": "Al Khan, Al Mamzar Lagoon & Maryam Island Waterfront (Sharjah Priority 2)",
+    "emirate": "Sharjah",
+    "planning_authority": "SDTPS / Eagle Hills Sharjah (Shurooq JV)",
+    "center_lat": 25.321,
+    "center_lon": 55.358,
+    "recommended_zoom": 14,
+    "polygon_wgs84": [
+      [
+        55.345,
+        25.335
+      ],
+      [
+        55.378,
+        25.335
+      ],
+      [
+        55.378,
+        25.305
+      ],
+      [
+        55.345,
+        25.305
+      ],
+      [
+        55.345,
+        25.335
+      ]
+    ],
+    "flagship_project_ids": "PRJ-SH4 (Maryam Island Waterfront Masterplan — 18+ residential buildings & 4/5-star resorts)",
+    "active_developments_count": 8,
+    "active_towers_and_buildings": 18,
+    "scheduled_units_2025_2029": 4800,
+    "active_structural_gfa_sqm": 620000,
+    "primary_road_corridors": "RD-SHJ-04 (Al Ittihad Rd E11 & Al Taawun / Al Khan Corniche)",
+    "observed_congestion_severity": "Severe (Cross-border Sharjah–Dubai AM/PM peak commuter bottleneck at Al Khan / Al Taawun / Al Mamzar E11)",
+    "construction_activity_index_score": "76.2 / 100 (High-Friction Cross-Border Waterfront Hotspot)",
+    "activity_index_formula_and_limitations": "Even moderate construction truck volume at Maryam Island interacts with extreme baseline E11/Al Taawun commuter congestion.",
+    "source_id": "SRC-091",
+    "confidence": "Verified"
+  }
+]

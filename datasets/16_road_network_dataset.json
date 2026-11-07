@@ -1,0 +1,786 @@
+[
+  {
+    "road_id": "RD-DXB-01",
+    "road_code": "E11-SZR-CORE",
+    "road_name": "Sheikh Zayed Road (E11) — Trade Centre to Dubai Marina Corridor",
+    "emirate": "Dubai",
+    "road_type": "Primary Federal Freeway (FRC0)",
+    "authority": "Roads and Transport Authority (RTA)",
+    "speed_limit_kmh": "100 km/h (Published RTA Statutory Limit; 20 km/h radar grace)",
+    "lanes_per_direction": 6,
+    "capacity_vph_per_dir": "12,000 vph/dir [Published RTA Highway Design Capacity; 24,000 vph total]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (RTA Strategic Highway Inventory & Salik Dynamic Toll Filing 2025)",
+    "direction": "Bidirectional (NE toward Trade Centre/Deira ↔ SW toward Jebel Ali/Abu Dhabi)",
+    "hgv_truck_ban_window": "Banned 06:00–22:00 daily (16-hour HGV prohibition; overnight 22:00–06:00 permit only)",
+    "salik_toll_status": "Active Dynamic Toll (Al Safa North & South, Al Barsha, Trade Centre — AED 6 Peak / AED 4 Off-Peak / AED 0 Night)",
+    "geometry_wgs84": [
+      [
+        55.1405,
+        25.0765
+      ],
+      [
+        55.1695,
+        25.106
+      ],
+      [
+        55.1975,
+        25.1265
+      ],
+      [
+        55.2285,
+        25.1585
+      ],
+      [
+        55.258,
+        25.1915
+      ],
+      [
+        55.2798,
+        25.2215
+      ],
+      [
+        55.2915,
+        25.236
+      ]
+    ],
+    "served_communities": "Sheikh Zayed Road, DIFC, Downtown Dubai, Business Bay, Al Barsha, Dubai Marina, Palm Jumeirah",
+    "source_id": "SRC-022",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-02",
+    "road_code": "E11-SZR-SOUTH",
+    "road_name": "Sheikh Zayed Road (E11) — Jebel Ali & Palm Jebel Ali Waterfront Corridor",
+    "emirate": "Dubai",
+    "road_type": "Primary Federal Freeway (FRC0)",
+    "authority": "Roads and Transport Authority (RTA) / MOEI",
+    "speed_limit_kmh": "120 km/h (Published RTA Statutory Limit)",
+    "lanes_per_direction": 5,
+    "capacity_vph_per_dir": "10,000 vph/dir [Published RTA Highway Standard; 20,000 vph total]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (RTA / MOEI Federal E11 Specification)",
+    "direction": "Bidirectional (Dubai Marina ↔ Jebel Ali Port & Palm Jebel Ali)",
+    "hgv_truck_ban_window": "Peak restrictions 06:30–08:30 & 17:30–20:00; dedicated Jebel Ali Port freight interchanges",
+    "salik_toll_status": "Jebel Ali Toll Gate (AED 6 Peak / AED 4 Off-Peak)",
+    "geometry_wgs84": [
+      [
+        54.965,
+        24.962
+      ],
+      [
+        55.005,
+        24.992
+      ],
+      [
+        55.052,
+        25.0195
+      ],
+      [
+        55.098,
+        25.048
+      ],
+      [
+        55.1405,
+        25.0765
+      ]
+    ],
+    "served_communities": "Palm Jebel Ali, Jebel Ali Industrial, Dubai Waterfront, Dubai Marina South",
+    "source_id": "SRC-022",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-03",
+    "road_code": "E44-ALKHAIL-JVC",
+    "road_name": "Al Khail Road (E44) — JVC, Al Quoz & Dubai Hills Corridor",
+    "emirate": "Dubai",
+    "road_type": "Primary Urban Expressway (FRC0)",
+    "authority": "Roads and Transport Authority (RTA)",
+    "speed_limit_kmh": "100 km/h (Published RTA Statutory Limit)",
+    "lanes_per_direction": 5,
+    "capacity_vph_per_dir": "11,500 vph/dir [Published RTA Post-Upgrade Capacity: +19,600 vph total added via AED 700M Al Khail Improvement Project]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (RTA AED 700M Al Khail Road Improvement Project Release 2024/2025 — 3,300m bridges across JVC, Al Quoz 1, Meydan & Zabeel)",
+    "direction": "Bidirectional (Jebel Ali/E311 ↔ JVC, Dubai Hills, Al Quoz & Business Bay)",
+    "hgv_truck_ban_window": "Banned during 3 peak windows: 06:30–08:30, 13:00–15:00, 17:30–20:00",
+    "salik_toll_status": "Toll-free on JVC–Al Quoz segment (Business Bay Crossing gate lies further north)",
+    "geometry_wgs84": [
+      [
+        55.175,
+        25.032
+      ],
+      [
+        55.1985,
+        25.056
+      ],
+      [
+        55.2175,
+        25.0785
+      ],
+      [
+        55.2385,
+        25.112
+      ],
+      [
+        55.259,
+        25.148
+      ]
+    ],
+    "served_communities": "Jumeirah Village Circle (JVC), Jumeirah Village Triangle (JVT), Dubai Hills Estate, Al Barsha South, Al Quoz",
+    "source_id": "SRC-023",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-04",
+    "road_code": "E44-ALKHAIL-BBAY",
+    "road_name": "Al Khail Road (E44) — Business Bay, Meydan & Business Bay Crossing Corridor",
+    "emirate": "Dubai",
+    "road_type": "Primary Urban Expressway (FRC0)",
+    "authority": "Roads and Transport Authority (RTA)",
+    "speed_limit_kmh": "100 km/h (Published RTA Statutory Limit)",
+    "lanes_per_direction": 6,
+    "capacity_vph_per_dir": "13,000 vph/dir [Published RTA Capacity including Zabeel 700m Bridge & Business Bay Crossing]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (RTA Al Khail Road Improvement & Salik Business Bay Crossing Technical Disclosure)",
+    "direction": "Bidirectional (Al Quoz/Meydan ↔ Business Bay, Zabeel & Deira/Creek)",
+    "hgv_truck_ban_window": "Banned 06:30–08:30, 13:00–15:00, 17:30–20:00",
+    "salik_toll_status": "Active Dynamic Toll at Business Bay Crossing (AED 6 Peak / AED 4 Off-Peak; launched Nov 24, 2024)",
+    "geometry_wgs84": [
+      [
+        55.259,
+        25.148
+      ],
+      [
+        55.2785,
+        25.1765
+      ],
+      [
+        55.298,
+        25.195
+      ],
+      [
+        55.324,
+        25.2165
+      ],
+      [
+        55.3415,
+        25.228
+      ]
+    ],
+    "served_communities": "Business Bay, Downtown Dubai, MBR City / Meydan, Sobha Hartland, Dubai Design District (d3), Festival City",
+    "source_id": "SRC-023",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-05",
+    "road_code": "D61-HESSA-WEST",
+    "road_name": "Hessa Street (D61) — Sheikh Zayed Road to Al Khail Road (JVC North Feeder)",
+    "emirate": "Dubai",
+    "road_type": "Major East-West Arterial (FRC1)",
+    "authority": "Roads and Transport Authority (RTA)",
+    "speed_limit_kmh": "80 km/h (Published RTA Statutory Limit)",
+    "lanes_per_direction": 4,
+    "capacity_vph_per_dir": "8,000 vph/dir [Published RTA Target: Doubled from 4,000 to 8,000 vph/dir (16,000 vph total) under AED 689M Hessa St Upgrade]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (RTA AED 689M Hessa Street Improvement Project — 4.5 km widening from 2 to 4 lanes/dir + 4 grade-separated interchanges)",
+    "direction": "Bidirectional (Al Sufouh/SZR E11 ↔ Barsha Heights, Al Barsha, JVC & Al Khail Rd E44)",
+    "hgv_truck_ban_window": "Peak HGV restrictions 06:30–08:30 & 17:30–20:00; active RTA bridge work zone speed/lane management",
+    "salik_toll_status": "Toll-free arterial",
+    "geometry_wgs84": [
+      [
+        55.162,
+        25.095
+      ],
+      [
+        55.178,
+        25.084
+      ],
+      [
+        55.195,
+        25.0725
+      ],
+      [
+        55.2095,
+        25.0645
+      ]
+    ],
+    "served_communities": "Jumeirah Village Circle (JVC), Al Barsha, Barsha Heights (Tecom), Dubai Science Park",
+    "source_id": "SRC-022",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-06",
+    "road_code": "D61-HESSA-EAST",
+    "road_name": "Hessa Street (D61) Extension — JVC South/East to E311, Tilal Al Ghaf & DAMAC Lagoons",
+    "emirate": "Dubai",
+    "road_type": "Major East-West Arterial (FRC1)",
+    "authority": "Roads and Transport Authority (RTA)",
+    "speed_limit_kmh": "80 km/h (Published RTA Statutory Limit)",
+    "lanes_per_direction": 3,
+    "capacity_vph_per_dir": "4,860 vph/dir [Modelled HCM 7th Ed: 3 lanes × 1,900 base × f_HV(0.90) × f_zone(0.95); Published RTA baseline pre-widening: 4,000–5,400 vph/dir]",
+    "capacity_basis": "HCM_7TH_EDITION_ESTIMATE corroborated with RTA D61 Corridor Study (high concrete/earthworks HGV share f_HV=0.90 feeding Tilal Al Ghaf & DAMAC Lagoons)",
+    "direction": "Bidirectional (Al Khail Rd/JVC ↔ E311 Remraam/Sports City, Tilal Al Ghaf & DAMAC Lagoons)",
+    "hgv_truck_ban_window": "Peak restrictions 06:30–08:30 & 17:30–20:00; heavy concrete mixer & dump-truck activity 09:00–17:00 & 20:30–05:00",
+    "salik_toll_status": "Toll-free arterial",
+    "geometry_wgs84": [
+      [
+        55.2095,
+        25.0645
+      ],
+      [
+        55.2195,
+        25.051
+      ],
+      [
+        55.228,
+        25.0355
+      ],
+      [
+        55.2355,
+        25.019
+      ]
+    ],
+    "served_communities": "Jumeirah Village Circle (JVC), Dubai Sports City, Motor City, Tilal Al Ghaf (PRJ-D19), DAMAC Lagoons (PRJ-D16)",
+    "source_id": "SRC-022",
+    "confidence": "Corroborated"
+  },
+  {
+    "road_id": "RD-DXB-07",
+    "road_code": "JVC-CIRCLE-BLVD",
+    "road_name": "JVC Circle Boulevard (Bijada Blvd North/South & Lazuward SW Collector Ring)",
+    "emirate": "Dubai",
+    "road_type": "Community Collector Ring & Internal Access (FRC3)",
+    "authority": "Nakheel Master Community / RTA Right-of-Way",
+    "speed_limit_kmh": "60 km/h (Published Internal Community Limit; 40 km/h residential sectors)",
+    "lanes_per_direction": 2,
+    "capacity_vph_per_dir": "2,430 vph/dir [Modelled HCM 7th Ed Urban Collector: 2 lanes × 1,500 saturation × g/C(0.90) × f_HV(0.90) with active tower crane/concrete pump curb friction]",
+    "capacity_basis": "HCM_7TH_EDITION_ESTIMATE (Explicitly labelled engineering estimate; official internal road capacity not published separately by RTA)",
+    "direction": "Bidirectional Orbital Collector Ring feeding Districts 10–18 and Hessa/Al Khail slip ramps",
+    "hgv_truck_ban_window": "Nakheel/RTA community NOC required for concrete pours and mobile crane staging; peak commuter friction 07:30–09:30 & 17:30–20:00",
+    "salik_toll_status": "Toll-free internal community collector",
+    "geometry_wgs84": [
+      [
+        55.2015,
+        25.0595
+      ],
+      [
+        55.2095,
+        25.064
+      ],
+      [
+        55.217,
+        25.0585
+      ],
+      [
+        55.2155,
+        25.0495
+      ],
+      [
+        55.2065,
+        25.0475
+      ],
+      [
+        55.1995,
+        25.0525
+      ],
+      [
+        55.2015,
+        25.0595
+      ]
+    ],
+    "served_communities": "Jumeirah Village Circle (JVC Districts 10, 11, 12, 13, 14, 15, 16, 17, 18)",
+    "source_id": "SRC-022",
+    "confidence": "Estimated"
+  },
+  {
+    "road_id": "RD-DXB-08",
+    "road_code": "E311-SMBZ-DUBAI",
+    "road_name": "Sheikh Mohammed bin Zayed Road (E311) — Dubai South to Dubailand & JVC South",
+    "emirate": "Dubai",
+    "road_type": "Primary Federal Freeway (FRC0)",
+    "authority": "Roads and Transport Authority (RTA) / MOEI",
+    "speed_limit_kmh": "110 km/h (Published RTA Statutory Limit)",
+    "lanes_per_direction": 6,
+    "capacity_vph_per_dir": "12,000 vph/dir [Published RTA / MOEI 6-Lane Freeway Capacity]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (RTA Strategic Road Network Specification)",
+    "direction": "Bidirectional (Jebel Ali/Dubai South ↔ JVC South, Dubailand, Global Village & Sharjah Border)",
+    "hgv_truck_ban_window": "Banned during 3 peak windows: 06:30–08:30, 13:00–15:00, 17:30–20:00",
+    "salik_toll_status": "Toll-free along southern/central Dubai corridor",
+    "geometry_wgs84": [
+      [
+        55.132,
+        24.945
+      ],
+      [
+        55.178,
+        24.992
+      ],
+      [
+        55.215,
+        25.035
+      ],
+      [
+        55.265,
+        25.068
+      ],
+      [
+        55.335,
+        25.132
+      ],
+      [
+        55.405,
+        25.215
+      ]
+    ],
+    "served_communities": "Dubai South, Expo City, JVC South, Motor City, Tilal Al Ghaf, The Oasis, Global Village, International City",
+    "source_id": "SRC-022",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-09",
+    "road_code": "E611-EMIRATES-RD",
+    "road_name": "Emirates Road (E611) — Primary 24/7 Heavy Freight & Outer Mega-Project Bypass",
+    "emirate": "Dubai",
+    "road_type": "Primary Federal Freight & Outer Freeway (FRC0)",
+    "authority": "Roads and Transport Authority (RTA) / MOEI",
+    "speed_limit_kmh": "110 km/h (Published Statutory Limit; 80 km/h for Heavy Trucks)",
+    "lanes_per_direction": 6,
+    "capacity_vph_per_dir": "11,400 vph/dir [Published 6-Lane Design Capacity adjusted for 24/7 HGV Freight Mix]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (MOEI / RTA E611 Outer Freight Corridor Specification)",
+    "direction": "Bidirectional (Abu Dhabi/DWC South ↔ The Oasis, The Heights, Grand Polo, DAMAC Lagoons & Sharjah Masaar/Tilal)",
+    "hgv_truck_ban_window": "EXEMPT — 24/7 Permitted Heavy Goods Vehicle (HGV) Corridor in Dubai (primary construction haul artery)",
+    "salik_toll_status": "Toll-free 24/7",
+    "geometry_wgs84": [
+      [
+        55.158,
+        24.868
+      ],
+      [
+        55.205,
+        24.925
+      ],
+      [
+        55.248,
+        24.965
+      ],
+      [
+        55.288,
+        25.012
+      ],
+      [
+        55.365,
+        25.095
+      ],
+      [
+        55.465,
+        25.195
+      ]
+    ],
+    "served_communities": "Dubai South (DWC PRJ-D1, Azizi Venice PRJ-D15), The Heights (PRJ-D6), Grand Polo (PRJ-D7), The Oasis (PRJ-D5), Al Marmoom",
+    "source_id": "SRC-023",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-10",
+    "road_code": "D63-UMMSUQEIM-ALQUDRA",
+    "road_name": "Umm Suqeim – Al Qudra Corridor (D63) — Jumeirah to E44, E311 & E611",
+    "emirate": "Dubai",
+    "road_type": "Major East-West Arterial (FRC1)",
+    "authority": "Roads and Transport Authority (RTA)",
+    "speed_limit_kmh": "80–100 km/h (Published RTA Limit)",
+    "lanes_per_direction": 4,
+    "capacity_vph_per_dir": "8,000 vph/dir [Published RTA Capacity: 16,000 vph total across both directions under AED 700M Umm Suqeim–Al Qudra Upgrade]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (RTA Umm Suqeim–Al Qudra 16 km Corridor Improvement Release)",
+    "direction": "Bidirectional (E11/Al Barsha ↔ Dubai Hills, Arjan, Arabian Ranches, Tilal Al Ghaf & Al Qudra)",
+    "hgv_truck_ban_window": "24-hour HGV ban on Al Qudra recreational section; peak ban 06:30–08:30 & 17:30–20:00 on Umm Suqeim arterial",
+    "salik_toll_status": "Toll-free arterial",
+    "geometry_wgs84": [
+      [
+        55.195,
+        25.132
+      ],
+      [
+        55.225,
+        25.102
+      ],
+      [
+        55.249,
+        25.072
+      ],
+      [
+        55.272,
+        25.041
+      ],
+      [
+        55.298,
+        25.012
+      ]
+    ],
+    "served_communities": "Dubai Hills Estate, Al Barsha South, Arjan, Motor City, Arabian Ranches, Tilal Al Ghaf, DAMAC Hills",
+    "source_id": "SRC-022",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-11",
+    "road_code": "D62-RASALKHOR-CORR",
+    "road_name": "Ras Al Khor Road (E44 / D62) — Dubai Creek Harbour, Bukadra & Marabea Corridor",
+    "emirate": "Dubai",
+    "road_type": "Primary Urban Expressway / Arterial (FRC1)",
+    "authority": "Roads and Transport Authority (RTA)",
+    "speed_limit_kmh": "100 km/h (Published RTA Statutory Limit)",
+    "lanes_per_direction": 4,
+    "capacity_vph_per_dir": "8,000–10,000 vph/dir [Published RTA Capacity: Widened from 3 to 4–6 lanes under AED 670M Ras Al Khor / Sheikh Rashid bin Saeed Corridor Upgrade]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (RTA Ras Al Khor & Nad Al Hamar Corridor Improvement Release — 10,000 vph main corridor + 3,000 vph slip bridges)",
+    "direction": "Bidirectional (Business Bay/Bukadra ↔ Dubai Creek Harbour, Ras Al Khor Industrial & Nad Al Hamar)",
+    "hgv_truck_ban_window": "Peak restrictions 06:30–08:30, 13:00–15:00, 17:30–20:00",
+    "salik_toll_status": "Toll-free east of Business Bay Crossing",
+    "geometry_wgs84": [
+      [
+        55.292,
+        25.181
+      ],
+      [
+        55.322,
+        25.1825
+      ],
+      [
+        55.348,
+        25.1895
+      ],
+      [
+        55.368,
+        25.185
+      ],
+      [
+        55.392,
+        25.176
+      ]
+    ],
+    "served_communities": "Dubai Creek Harbour (PRJ-D3), Sobha Hartland II / Bukadra (PRJ-D17), Ras Al Khor, Nad Al Hamar, International City",
+    "source_id": "SRC-023",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-12",
+    "road_code": "D71-FIN-CENTRE-BBAY",
+    "road_name": "Financial Centre Road (D71) & Al Mustaqbal Street — DIFC, Downtown & Business Bay",
+    "emirate": "Dubai",
+    "road_type": "Major Urban Arterial (FRC1)",
+    "authority": "Roads and Transport Authority (RTA)",
+    "speed_limit_kmh": "80 km/h (Published RTA Statutory Limit)",
+    "lanes_per_direction": 4,
+    "capacity_vph_per_dir": "4,400–6,000 vph/dir [Published RTA Al Mustaqbal St Upgrade: 8,800 vph both directions (+33%) + 3,000 vph Ras Al Khor exit ramp]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (RTA Al Mustaqbal Street & Financial Centre Road Improvement Release)",
+    "direction": "Bidirectional (E11 Sheikh Zayed Rd / DIFC ↔ Downtown Dubai, Business Bay & E44 Al Khail Rd)",
+    "hgv_truck_ban_window": "Strict CBD heavy vehicle ban 06:00–22:00 (night concrete & steel delivery permits only)",
+    "salik_toll_status": "Toll-free arterial connecting E11 and E44",
+    "geometry_wgs84": [
+      [
+        55.268,
+        25.204
+      ],
+      [
+        55.2785,
+        25.1995
+      ],
+      [
+        55.2865,
+        25.1945
+      ],
+      [
+        55.295,
+        25.188
+      ]
+    ],
+    "served_communities": "DIFC Zabeel District (PRJ-D20), Downtown Dubai, Business Bay (PRJ-D11), Burj Azizi Corridor (PRJ-D10)",
+    "source_id": "SRC-022",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-13",
+    "road_code": "BBAY-MARASI-AMAL",
+    "road_name": "Business Bay Internal Collector Grid (Marasi Drive, Al Amal St & Al A'amal St)",
+    "emirate": "Dubai",
+    "road_type": "High-Density CBD Collector Network (FRC3)",
+    "authority": "Roads and Transport Authority (RTA) / Dubai Holding",
+    "speed_limit_kmh": "60 km/h (Published RTA Urban Collector Limit)",
+    "lanes_per_direction": 2,
+    "capacity_vph_per_dir": "2,560 vph/dir [Modelled HCM 7th Ed Signalized Urban Street: 2 lanes × 1,600 base × g/C(0.85) × f_HV(0.94)]",
+    "capacity_basis": "HCM_7TH_EDITION_ESTIMATE (Signalized CBD collector capacity accounting for signal intersections and tower site access)",
+    "direction": "Bidirectional grid along Dubai Water Canal and Business Bay supertall cluster",
+    "hgv_truck_ban_window": "Daytime HGV restrictions; night concrete pouring NOCs for supertall towers (Burj Binghatti Jacob & Co PRJ-D11)",
+    "salik_toll_status": "Toll-free internal CBD collector",
+    "geometry_wgs84": [
+      [
+        55.2585,
+        25.1835
+      ],
+      [
+        55.2665,
+        25.1855
+      ],
+      [
+        55.2755,
+        25.187
+      ],
+      [
+        55.2845,
+        25.185
+      ]
+    ],
+    "served_communities": "Business Bay (PRJ-D11 Burj Binghatti Jacob & Co, Canal Front Towers)",
+    "source_id": "SRC-022",
+    "confidence": "Estimated"
+  },
+  {
+    "road_id": "RD-DXB-14",
+    "road_code": "D89-AIRPORT-INFINITY",
+    "road_name": "Airport Road (D89) & Al Khaleej Street (D92 / Infinity Bridge) — Deira & Dubai Islands",
+    "emirate": "Dubai",
+    "road_type": "Major Urban Arterial & Coastal Bridge Corridor (FRC1)",
+    "authority": "Roads and Transport Authority (RTA)",
+    "speed_limit_kmh": "80 km/h (Published RTA Statutory Limit)",
+    "lanes_per_direction": 6,
+    "capacity_vph_per_dir": "12,000 vph/dir [Published RTA Shindagha / Infinity Bridge 12-lane capacity: 24,000 vph total; Airport Rd D89 +5,000 vph upgrade]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (RTA Al Shindagha Corridor & Airport Road D89 Improvement Releases)",
+    "direction": "Bidirectional (Bur Dubai/Infinity Bridge ↔ Deira Waterfront, Dubai Islands PRJ-D4, DXB Airport & E311)",
+    "hgv_truck_ban_window": "24-hour HGV ban in Al Shindagha & Airport Tunnels; dedicated surface/bridge construction access to Dubai Islands",
+    "salik_toll_status": "Active Salik at Airport Tunnel & Al Maktoum Bridge (Infinity Bridge is toll-free)",
+    "geometry_wgs84": [
+      [
+        55.295,
+        25.269
+      ],
+      [
+        55.312,
+        25.298
+      ],
+      [
+        55.335,
+        25.268
+      ],
+      [
+        55.368,
+        25.249
+      ],
+      [
+        55.405,
+        25.235
+      ]
+    ],
+    "served_communities": "Dubai Islands (PRJ-D4), Deira, Mina Rashid, DXB Airport, Al Rashidiya",
+    "source_id": "SRC-022",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-15",
+    "road_code": "E77-EXPO-DWC-CORR",
+    "road_name": "Expo Road (E77) & Aviation Boulevard — Expo City, DWC Airport & Azizi Venice",
+    "emirate": "Dubai",
+    "road_type": "Primary Strategic Express Arterial (FRC1)",
+    "authority": "Roads and Transport Authority (RTA)",
+    "speed_limit_kmh": "100 km/h (Published RTA Statutory Limit)",
+    "lanes_per_direction": 6,
+    "capacity_vph_per_dir": "11,400 vph/dir [Published RTA 6-Lane Expo 2020 / DWC Express Corridor Capacity]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (RTA Expo Road E77 & DWC Access Corridor Specification)",
+    "direction": "Bidirectional (E11 Jebel Ali ↔ Expo City PRJ-D18, Al Maktoum Int'l Airport DWC PRJ-D1, E311 & E611 Azizi Venice PRJ-D15)",
+    "hgv_truck_ban_window": "Dedicated heavy construction logistics corridors serving DWC AED 128B expansion and Dubai South",
+    "salik_toll_status": "Toll-free express arterial",
+    "geometry_wgs84": [
+      [
+        55.105,
+        24.985
+      ],
+      [
+        55.145,
+        24.96
+      ],
+      [
+        55.1614,
+        24.915
+      ],
+      [
+        55.165,
+        24.885
+      ]
+    ],
+    "served_communities": "Dubai South, Al Maktoum International Airport DWC (PRJ-D1), Expo City Dubai (PRJ-D18), Azizi Venice (PRJ-D15)",
+    "source_id": "SRC-021",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-DXB-16",
+    "road_code": "MARINA-PALM-RING",
+    "road_name": "King Salman bin Abdulaziz Al Saud St (D94) & Palm Jumeirah Trunk Corridor",
+    "emirate": "Dubai",
+    "road_type": "Urban Waterfront Arterial & Island Causeway (FRC2)",
+    "authority": "Roads and Transport Authority (RTA) / Nakheel",
+    "speed_limit_kmh": "70–80 km/h (Published RTA Statutory Limit)",
+    "lanes_per_direction": 3,
+    "capacity_vph_per_dir": "4,320 vph/dir [Modelled HCM 7th Ed Signalized Waterfront Arterial: 3 lanes × 1,600 × f_HV(0.90)]",
+    "capacity_basis": "HCM_7TH_EDITION_ESTIMATE (Signalized waterfront arterial serving Dubai Marina supertalls & Palm Jumeirah)",
+    "direction": "Bidirectional (Dubai Marina Six Senses PRJ-D12 / Aeternitas PRJ-D13 ↔ Palm Jumeirah Como Residences PRJ-D14 & E11)",
+    "hgv_truck_ban_window": "Strict daytime HGV & concrete mixer restrictions; Nakheel/RTA night logistics window 22:00–06:00",
+    "salik_toll_status": "Toll-free waterfront arterial",
+    "geometry_wgs84": [
+      [
+        55.134,
+        25.075
+      ],
+      [
+        55.145,
+        25.087
+      ],
+      [
+        55.151,
+        25.098
+      ],
+      [
+        55.139,
+        25.1124
+      ]
+    ],
+    "served_communities": "Dubai Marina (PRJ-D12, PRJ-D13), Palm Jumeirah (PRJ-D14), Dubai Harbour, JBR",
+    "source_id": "SRC-022",
+    "confidence": "Estimated"
+  },
+  {
+    "road_id": "RD-SHJ-01",
+    "road_code": "E311-SHJ-MUWAILEH",
+    "road_name": "Sheikh Mohammed bin Zayed Road (E311) — Sharjah Muwaileh, Al Zahia & Aljada Corridor",
+    "emirate": "Sharjah",
+    "road_type": "Primary Federal Commuter & Freight Freeway (FRC0)",
+    "authority": "Sharjah Roads and Transport Authority (SRTA) / MOEI",
+    "speed_limit_kmh": "110 km/h (Published Statutory Limit)",
+    "lanes_per_direction": 5,
+    "capacity_vph_per_dir": "10,000 vph/dir [Published MOEI / SRTA 5-Lane Federal Freeway Capacity]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (MOEI / SRTA E311 Corridor Specification)",
+    "direction": "Bidirectional (Sharjah–Dubai Commuter Border ↔ Muwaileh, Al Zahia PRJ-SH9, Aljada PRJ-SH2 & Ajman)",
+    "hgv_truck_ban_window": "Peak HGV commuter bans 06:30–08:30, 13:00–15:00 & 17:30–20:00 toward Dubai border",
+    "salik_toll_status": "Toll-free federal highway",
+    "geometry_wgs84": [
+      [
+        55.415,
+        25.265
+      ],
+      [
+        55.448,
+        25.298
+      ],
+      [
+        55.465,
+        25.318
+      ],
+      [
+        55.485,
+        25.345
+      ]
+    ],
+    "served_communities": "Muwaileh, Aljada (PRJ-SH2), Al Zahia (PRJ-SH9), Al Mamsha & Olfah (PRJ-SH6, PRJ-SH8)",
+    "source_id": "SRC-091",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-SHJ-02",
+    "road_code": "E611-SHJ-MASAAR",
+    "road_name": "Emirates Road (E611) — Sharjah Al Rahmaniya, Masaar, Tilal City & KBS City Corridor",
+    "emirate": "Sharjah",
+    "road_type": "Primary Federal Outer Freeway (FRC0)",
+    "authority": "Sharjah Roads and Transport Authority (SRTA) / MOEI",
+    "speed_limit_kmh": "110 km/h (Published Statutory Limit)",
+    "lanes_per_direction": 5,
+    "capacity_vph_per_dir": "9,500 vph/dir [Published MOEI 5-Lane Outer Corridor Capacity]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (MOEI / SRTA Emirates Road E611 Specification)",
+    "direction": "Bidirectional (Dubai E611 Border ↔ Tilal City PRJ-SH7, Masaar PRJ-SH3, Hayyan PRJ-SH6, Sharjah Sustainable City PRJ-SH10 & Khalid Bin Sultan City PRJ-SH5)",
+    "hgv_truck_ban_window": "Primary 24/7 inter-emirate heavy logistics corridor (localized peak controls at Al Badiyah interchange)",
+    "salik_toll_status": "Toll-free federal highway",
+    "geometry_wgs84": [
+      [
+        55.515,
+        25.235
+      ],
+      [
+        55.558,
+        25.272
+      ],
+      [
+        55.588,
+        25.298
+      ],
+      [
+        55.625,
+        25.335
+      ]
+    ],
+    "served_communities": "Masaar (PRJ-SH3), Tilal City (PRJ-SH7), Hayyan (PRJ-SH6), Sharjah Sustainable City (PRJ-SH10), Khalid Bin Sultan City (PRJ-SH5), Jawaher Medical District (PRJ-SH12)",
+    "source_id": "SRC-091",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-SHJ-03",
+    "road_code": "E88-ALDHAID-AIRPORT",
+    "road_name": "Al Dhaid Road (E88) & University City Road — Sharjah Airport, Aljada & Al Rahmaniya",
+    "emirate": "Sharjah",
+    "road_type": "Major East-West Arterial Highway (FRC1)",
+    "authority": "Sharjah Roads and Transport Authority (SRTA) / Mubadara",
+    "speed_limit_kmh": "100 km/h (Published SRTA Limit)",
+    "lanes_per_direction": 4,
+    "capacity_vph_per_dir": "7,200 vph/dir [Published SRTA 4-Lane Upgraded Corridor Capacity including Airport & Aljada Bridges]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (SRTA / Mubadara Al Dhaid Road & University City Interchange Upgrades)",
+    "direction": "Bidirectional (Sharjah City/E11 ↔ E311, Aljada PRJ-SH2, Sharjah Airport, E611 Sharjah Sustainable City PRJ-SH10 & Al Dhaid)",
+    "hgv_truck_ban_window": "Peak urban commuter restrictions 06:30–08:30 & 17:00–20:00 west of Sharjah Airport",
+    "salik_toll_status": "Toll-free arterial",
+    "geometry_wgs84": [
+      [
+        55.435,
+        25.318
+      ],
+      [
+        55.475,
+        25.321
+      ],
+      [
+        55.518,
+        25.328
+      ],
+      [
+        55.565,
+        25.335
+      ]
+    ],
+    "served_communities": "Aljada (PRJ-SH2), Muwaileh, University City, Sharjah Sustainable City (PRJ-SH10)",
+    "source_id": "SRC-091",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-SHJ-04",
+    "road_code": "E11-SHJ-ALKHAN",
+    "road_name": "Al Ittihad Road (E11) & Al Taawun / Al Khan Corniche — Maryam Island Corridor",
+    "emirate": "Sharjah",
+    "road_type": "Primary Urban Commuter Highway & Waterfront Arterial (FRC0/FRC1)",
+    "authority": "Sharjah Roads and Transport Authority (SRTA)",
+    "speed_limit_kmh": "80–100 km/h (Published SRTA Limit)",
+    "lanes_per_direction": 5,
+    "capacity_vph_per_dir": "9,500 vph/dir [Published SRTA E11 / Al Taawun Bridge Corridor Capacity]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (SRTA Al Ittihad & Al Taawun Interchange Upgrade Specification)",
+    "direction": "Bidirectional (Dubai Al Mamzar Border ↔ Al Khan / Maryam Island PRJ-SH4 & Sharjah City Centre)",
+    "hgv_truck_ban_window": "Banned 06:00–22:00 through Al Ittihad / Al Khan urban commuter corridor",
+    "salik_toll_status": "Al Mamzar North/South Salik Gates at Dubai border (AED 6 Peak / AED 4 Off-Peak)",
+    "geometry_wgs84": [
+      [
+        55.352,
+        25.302
+      ],
+      [
+        55.358,
+        25.321
+      ],
+      [
+        55.372,
+        25.335
+      ],
+      [
+        55.388,
+        25.348
+      ]
+    ],
+    "served_communities": "Al Khan, Al Mamzar, Maryam Island (PRJ-SH4), Al Taawun",
+    "source_id": "SRC-091",
+    "confidence": "Verified"
+  }
+]
