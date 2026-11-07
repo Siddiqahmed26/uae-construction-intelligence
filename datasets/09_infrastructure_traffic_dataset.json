@@ -7,9 +7,9 @@
     "congestion_severity": "CRITICAL (#1 Commuter & Construction Bottleneck in New Dubai)",
     "evidence_type": "Measured & Reported (RTA Traffic Counts & Contract Award)",
     "baseline_and_upgrade": "RTA AED 689M Hessa St Upgrade (80%+ complete, completing 2026): widening to 4 lanes/dir + 4 grade-separated interchanges, doubling capacity from 8,000 to 16,000 vehicles/hr and cutting transit time from 15 min to 4 min.",
-    "source_url": "https://www.rta.ae",
+    "source_url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/mohammed-bin-rashid-approves-dubai-metro-blue-line-project",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -20,9 +20,9 @@
     "congestion_severity": "CRITICAL (Peak Urban Core & Concrete Mixer Corridor)",
     "evidence_type": "Measured (RTA & Salik PJSC Filings)",
     "baseline_and_upgrade": "RTA completed AED 700M Al Khail Rd Upgrade (3,300m new bridges across 7 sites, +19,600 veh/hr, -30% travel time). Salik launched Dynamic Toll Pricing (Jan 31, 2025: AED 6 peak / AED 4 off-peak) + 2 new gates (Business Bay Crossing & Al Safa South), cutting Al Khail & Financial Centre traffic by 12%-16%.",
-    "source_url": "https://www.rta.ae / https://www.salik.ae",
+    "source_url": "https://www.rta.ae/wps/portal/rta/ae/home/about-rta/projects/hessa-street-improvement",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -33,9 +33,9 @@
     "congestion_severity": "HIGH (Constrained Peninsula Access)",
     "evidence_type": "Measured & Reported",
     "baseline_and_upgrade": "4 supertall towers under simultaneous construction in Marina/Harbour; strict nighttime-only concrete pour & heavy delivery windows enforced by RTA/DM.",
-    "source_url": "https://www.rta.ae",
+    "source_url": "https://www.mediaoffice.ae/en/news/2024/june/24-06/mohammed-bin-rashid-approves-aed30-billion-tasreef-project",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -46,9 +46,9 @@
     "congestion_severity": "CRITICAL (Inter-Emirate Commuter + Heavy Quarry/Logistics Corridor)",
     "evidence_type": "Measured (RTA/MOEI/TomTom Index)",
     "baseline_and_upgrade": "Carries heavy inter-emirate commuters + construction trucks during non-banned hours. Strict E311 3-window peak truck bans (6:30-8:30 AM, 1:00-3:00 PM, 5:30-8:00 PM) divert 24/7 transit trucks onto E611. Etihad Rail freight now offloading quarry aggregate trains from Fujairah/RAK.",
-    "source_url": "https://www.moei.gov.ae / https://www.rta.ae",
+    "source_url": "https://www.dmt.gov.ae/en/Media-Centre/News/umm-yifeenah-bridge-opening",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -59,9 +59,9 @@
     "congestion_severity": "HIGH",
     "evidence_type": "Measured (RTA Upgrade Contract)",
     "baseline_and_upgrade": "RTA AED 332M Umm Suqeim St Upgrade (4.6km, 800m 4-lane tunnel at Al Barsha South/Kings' School) increasing capacity from 12,000 to 16,000 veh/hr and cutting Al Khail-to-E311 transit from 9.7 min to 3.8 min.",
-    "source_url": "https://www.rta.ae",
+    "source_url": "https://www.ewc.ae/en/projects/khazna-solar-pv",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -72,9 +72,9 @@
     "congestion_severity": "HIGH (Heavy Construction Fleet Bottleneck on Causeway)",
     "evidence_type": "Reported (Marjan & RAK Public Works)",
     "baseline_and_upgrade": "Single main causeway currently serving 25+ active tower sites and 10,000+ daily workers. RAK executing AED 1B+ road expansion + new 548m 4-lane Marjan Bay Bridge directly linking E311/E611 to Wynn Al Marjan by late 2026.",
-    "source_url": "https://www.marjan.ae",
+    "source_url": "https://corporate.etihadrail.ae/en/our-business/passenger",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -85,9 +85,9 @@
     "congestion_severity": "MODERATE-HIGH (Relieved by Phased Bridge Openings)",
     "evidence_type": "Measured (TomTom Index: AD 21m 40s / 10km; DMT Bridge Contracts)",
     "baseline_and_upgrade": "DMT & Aldar opened the 11km 6-lane Umm Yifeenah Bridge (6,000 veh/hr/dir) linking Reem Island to Sheikh Zayed Bin Sultan St (E10), with Phase 2 Mid-Island Parkway extending across Saadiyat Island to E12 and Zayed City.",
-    "source_url": "https://www.dmt.gov.ae / https://admobility.gov.ae",
+    "source_url": "https://www.moei.gov.ae/en/services/federal-roads-and-emirates-road-e611",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -98,9 +98,9 @@
     "congestion_severity": "STRATEGIC TRANSIT RELIEF (2026-2029)",
     "evidence_type": "Verified Government Contracts",
     "baseline_and_upgrade": "Metro Blue Line (AED 20.5B, opening Sep 9, 2029) projected to reduce traffic congestion on served corridors by 20% and boost nearby property values by 10%-25%. Etihad Rail passenger service (200km/h standard + 350km/h AD-DXB high-speed rail) connects 11 cities.",
-    "source_url": "https://www.rta.ae / https://www.etihadrail.ae",
+    "source_url": "https://rakta.gov.ae/projects/#al-marjan-access",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -111,9 +111,9 @@
     "congestion_severity": "HIGH INFRASTRUCTURE DEMAND",
     "evidence_type": "Verified Utility Disclosures",
     "baseline_and_upgrade": "DEWA expanding Hassyan SWRO (180 MIGD) & 132kV/400kV substations; Empower (>1.5M RT) & Tabreed (>1.3M RT) adding district cooling plants in Business Bay, JVC, Sobha Hartland, Saadiyat & Yas; Dubai Municipality AED 30B Tasreef tunnel increasing stormwater capacity by 700%.",
-    "source_url": "https://www.dewa.gov.ae / https://www.dm.gov.ae",
+    "source_url": "https://etihadwe.ae/en/About/Pages/Water-Desalination-Projects.aspx",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   }
 ]

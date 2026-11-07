@@ -9,7 +9,7 @@
     "public_availability_verified": "Verified (200 OK)",
     "limitations": "High-level policy; plot-level data delegated to emirate authorities",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -22,7 +22,7 @@
     "public_availability_verified": "Verified",
     "limitations": "Detailed engineering drawings require contractor registration",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -35,7 +35,7 @@
     "public_availability_verified": "Verified",
     "limitations": "Aggregated by emirate/year; not project-by-project",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -48,7 +48,7 @@
     "public_availability_verified": "Verified",
     "limitations": "Plot-specific Affection Plans & FAR require owner/consultant UAE Pass login",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -61,7 +61,7 @@
     "public_availability_verified": "Verified",
     "limitations": "Real-time loop detector streams require API partnership",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -74,7 +74,7 @@
     "public_availability_verified": "Verified (Gold standard in UAE)",
     "limitations": "Owner personal names redacted under UAE PDPL",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -87,7 +87,7 @@
     "public_availability_verified": "Verified",
     "limitations": "Plot FAR/setback Affection Plans & structural drawings require Dubai BPS consultant login",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -100,7 +100,7 @@
     "public_availability_verified": "Verified",
     "limitations": "Project-specific Traffic Impact Study (TIS) models are confidential",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -113,7 +113,7 @@
     "public_availability_verified": "Verified",
     "limitations": "No bulk CSV download portal comparable to Dubai Pulse",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -126,7 +126,7 @@
     "public_availability_verified": "Verified",
     "limitations": "Granular unit-level datasets not published as bulk CSV",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -139,7 +139,7 @@
     "public_availability_verified": "Verified (Note: marjan.ae is official; marjan.ae is unrelated US art site)",
     "limitations": "Plot-level permits require RAK e-Government consultant login",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -152,7 +152,7 @@
     "public_availability_verified": "Verified",
     "limitations": "Project documents primarily hosted by joint-venture developer (Sobha)",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   },
   {
@@ -165,7 +165,7 @@
     "public_availability_verified": "Verified",
     "limitations": "No open REST API for real estate transactions",
     "retrieval_date": "2026-11-06",
-    "last_verified_date": "2026-11-06",
+    "last_verified_date": "2026-11-07",
     "confidence_classification": "Verified"
   }
 ]
