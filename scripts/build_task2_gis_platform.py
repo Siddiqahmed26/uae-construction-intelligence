@@ -287,41 +287,41 @@ def main():
     a {{ color: var(--cyan); text-decoration: none; }}
     a:hover {{ text-decoration: underline; }}
 
-    /* 1. Clean Single-Row Executive Header */
+    /* 1. Clean Single-Row Executive Header (Never Overlaps Map or Toolbars) */
     .exec-header {{
-      background: rgba(9, 13, 22, 0.96);
-      backdrop-filter: blur(12px);
+      background: #090d16;
       border-bottom: 1px solid var(--border);
-      padding: 8px 16px;
+      padding: 6px 14px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 12px;
-      position: sticky;
-      top: 0;
+      gap: 10px;
+      position: relative;
       z-index: 2500;
-      min-height: 54px;
+      min-height: 48px;
     }}
     .brand-cluster {{
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 8px;
+      flex-wrap: nowrap;
+      min-width: 0;
     }}
     .brand-title {{
       font-weight: 800;
-      font-size: 0.96rem;
+      font-size: 0.90rem;
       letter-spacing: -0.01em;
       color: #fff;
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 7px;
+      white-space: nowrap;
     }}
     .brand-badge {{
       background: linear-gradient(135deg, #0284c7, #2563eb);
       color: #fff;
-      font-size: 0.68rem;
-      padding: 2px 8px;
+      font-size: 0.65rem;
+      padding: 2px 7px;
       border-radius: 999px;
       font-weight: 700;
       text-transform: uppercase;
@@ -330,14 +330,14 @@ def main():
     .kpi-strip {{
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
     }}
     .kpi-chip {{
       background: rgba(30, 41, 59, 0.8);
       border: 1px solid var(--border);
       border-radius: 6px;
-      padding: 3px 8px;
-      font-size: 0.72rem;
+      padding: 2px 7px;
+      font-size: 0.70rem;
       color: var(--muted);
       white-space: nowrap;
     }}
@@ -350,24 +350,28 @@ def main():
     /* 5 Main Executive Product Areas (Mode Switcher) */
     .mode-switcher {{
       display: flex;
-      background: #090e1a;
+      background: #060a12;
       border: 1px solid var(--border);
-      border-radius: 9px;
-      padding: 3px;
-      gap: 3px;
-      flex-wrap: wrap;
+      border-radius: 8px;
+      padding: 2px;
+      gap: 2px;
+      flex-wrap: nowrap;
+      overflow-x: auto;
+      scrollbar-width: none;
     }}
+    .mode-switcher::-webkit-scrollbar {{ display: none; }}
     .mode-btn {{
       background: transparent;
       border: 1px solid transparent;
       color: #cbd5e1;
-      padding: 6px 11px;
+      padding: 5px 9px;
       border-radius: 6px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s ease;
       white-space: nowrap;
+      flex-shrink: 0;
     }}
     .mode-btn:hover {{
       color: #fff;
@@ -384,16 +388,17 @@ def main():
     .header-actions {{
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 6px;
       position: relative;
+      flex-shrink: 0;
     }}
     .emirate-pill-select {{
       background: #152036;
       border: 1px solid #3b82f6;
       color: #fff;
-      padding: 5px 10px;
-      border-radius: 7px;
-      font-size: 0.75rem;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
     }}
@@ -405,12 +410,13 @@ def main():
       background: rgba(255, 255, 255, 0.06);
       border: 1px solid var(--border);
       color: #e2e8f0;
-      padding: 5px 10px;
-      border-radius: 7px;
-      font-size: 0.74rem;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 0.72rem;
       font-weight: 600;
       cursor: pointer;
       user-select: none;
+      white-space: nowrap;
     }}
     .export-dropdown summary::-webkit-details-marker {{ display: none; }}
     .export-menu {{
@@ -445,9 +451,9 @@ def main():
     /* 2. Map-Centric Two-Column Executive Workbench with Multi-Stage Breakpoints */
     .workbench {{
       display: grid;
-      grid-template-columns: 1fr 420px;
-      height: calc(100vh - 55px);
-      min-height: 620px;
+      grid-template-columns: 1fr 410px;
+      height: calc(100vh - 50px);
+      min-height: 580px;
       position: relative;
       border-bottom: 1px solid var(--border);
       transition: grid-template-columns 0.22s ease;
@@ -459,13 +465,12 @@ def main():
       display: none;
     }}
     @media (max-width: 1440px) {{
-      .workbench {{ grid-template-columns: 1fr 375px; }}
+      .workbench {{ grid-template-columns: 1fr 370px; }}
       .kpi-strip {{ display: none; }}
     }}
     @media (max-width: 1024px) {{
       .workbench {{
         grid-template-columns: 1fr;
-        grid-template-rows: 62vh 1fr;
         height: auto;
       }}
       .sidebar-right {{
@@ -474,104 +479,91 @@ def main():
       }}
     }}
     @media (max-width: 768px) {{
-      .exec-header {{ padding: 8px 10px; }}
+      .exec-header {{ padding: 6px 8px; }}
       .mode-switcher {{ width: 100%; overflow-x: auto; flex-wrap: nowrap; }}
-      .workbench {{ grid-template-rows: 54vh 1fr; }}
     }}
 
-    /* 3. Center Map Stage & Floating HUD Controls */
+    /* 3. Center Map Stage & Non-Overlapping Top/Bottom Toolbars */
     .map-stage {{
       position: relative;
       display: flex;
       flex-direction: column;
       background: #060a12;
       overflow: hidden;
+      height: 100%;
     }}
     #mapCanvas {{
-      flex: 1;
+      flex: 1 1 auto;
       width: 100%;
-      height: 100%;
+      min-height: 400px;
       z-index: 1;
       background: #080d18;
-      transition: transform 0.35s ease;
     }}
-    #mapCanvas.tilt-3d {{
-      transform: perspective(1400px) rotateX(22deg) scale(1.06);
-      transform-origin: center 60%;
-    }}
-    .leaflet-tile.gis-dark-tiles {{
+    .leaflet-tile.gis-dark-tiles,
+    #mapCanvas.basemap-dark .leaflet-tile-pane {{
       filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
     }}
 
-    /* Top Floating Bar: Guided 5-Step Storytelling Sequence + Basemap/Engine Switcher */
+    /* Top Map Toolbar: Static Flex Row Above Map (Zero Overlap Guaranteed) */
     .map-hud-top {{
-      position: absolute;
-      top: 10px;
-      left: 50px;
-      right: 12px;
-      z-index: 900;
+      position: relative;
+      flex: 0 0 auto;
+      z-index: 20;
+      background: #0b111e;
+      border-bottom: 1px solid var(--border);
+      padding: 6px 10px;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
-      pointer-events: none;
+      align-items: center;
       gap: 8px;
       flex-wrap: wrap;
     }}
     .story-bar {{
-      pointer-events: auto;
-      background: rgba(13, 20, 36, 0.92);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      padding: 4px 6px;
       display: flex;
       align-items: center;
       gap: 4px;
       flex-wrap: wrap;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.45);
     }}
     .story-lbl {{
-      font-size: 0.68rem;
+      font-size: 0.67rem;
       font-weight: 800;
       text-transform: uppercase;
       color: var(--cyan);
-      padding: 0 6px;
+      padding-right: 4px;
       letter-spacing: 0.04em;
     }}
     .story-step {{
       background: rgba(30, 41, 59, 0.75);
-      border: 1px solid transparent;
+      border: 1px solid #334155;
       color: #cbd5e1;
-      padding: 4px 9px;
-      border-radius: 6px;
-      font-size: 0.72rem;
+      padding: 3px 8px;
+      border-radius: 5px;
+      font-size: 0.69rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s;
     }}
-    .story-step:hover {{ color: #fff; border-color: #475569; }}
+    .story-step:hover {{ color: #fff; border-color: #38bdf8; }}
     .story-step.active {{
       background: #0284c7;
       color: #fff;
       border-color: #38bdf8;
     }}
-    .story-arrow {{ color: #475569; font-size: 0.70rem; }}
+    .story-arrow {{ color: #475569; font-size: 0.68rem; }}
 
     .hud-right-stack {{
       display: flex;
       gap: 6px;
       align-items: center;
-      pointer-events: auto;
       flex-wrap: wrap;
     }}
     .basemap-switcher {{
-      background: rgba(13, 20, 36, 0.92);
-      backdrop-filter: blur(10px);
+      background: #060a12;
       border: 1px solid var(--border);
-      padding: 3px;
-      border-radius: 8px;
+      padding: 2px;
+      border-radius: 7px;
       display: flex;
-      gap: 3px;
+      gap: 2px;
     }}
     .bm-btn {{
       background: transparent;
@@ -579,103 +571,76 @@ def main():
       color: var(--muted);
       padding: 4px 8px;
       border-radius: 5px;
-      font-size: 0.71rem;
+      font-size: 0.70rem;
       font-weight: 700;
       cursor: pointer;
+      white-space: nowrap;
     }}
     .bm-btn.active {{
       background: #0284c7;
       color: #fff;
     }}
 
-    /* Prominent Epistemic Traffic Banner on Map */
-    .epistemic-banner {{
-      position: absolute;
-      top: 52px;
-      left: 50px;
-      z-index: 890;
-      pointer-events: auto;
-      background: rgba(13, 20, 36, 0.90);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(245, 158, 11, 0.45);
-      border-radius: 8px;
-      padding: 4px 10px;
-      font-size: 0.70rem;
+    /* Bottom Map Footer Bar: Static Flex Row Below Map (Zero Overlap Guaranteed) */
+    .map-hud-bottom {{
+      position: relative;
+      flex: 0 0 auto;
+      z-index: 20;
+      background: #0b111e;
+      border-top: 1px solid var(--border);
+      padding: 6px 10px;
       display: flex;
+      justify-content: space-between;
       align-items: center;
       gap: 8px;
       flex-wrap: wrap;
     }}
-
-    /* Bottom Floating Dock: Compact Layer Pills, Time Window Switcher & Collapsible Filter/Layer Popover */
-    .map-hud-bottom {{
-      position: absolute;
-      bottom: 14px;
-      left: 14px;
-      right: 14px;
-      z-index: 900;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      pointer-events: none;
-      gap: 10px;
-      flex-wrap: wrap;
-    }}
     .layer-pill-bar {{
-      pointer-events: auto;
-      background: rgba(13, 20, 36, 0.94);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      padding: 5px 8px;
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       flex-wrap: wrap;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
     }}
     .quick-layer-pill {{
       background: rgba(30, 41, 59, 0.8);
       border: 1px solid #334155;
       color: #94a3b8;
-      padding: 4px 9px;
+      padding: 4px 8px;
       border-radius: 6px;
-      font-size: 0.72rem;
+      font-size: 0.70rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 5px;
+      white-space: nowrap;
     }}
     .quick-layer-pill.on, .quick-layer-pill.active {{
       background: rgba(2, 132, 199, 0.28);
       border-color: #38bdf8;
       color: #f8fafc;
-      box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
     }}
     .time-group {{
-      pointer-events: auto;
       display: flex;
       gap: 4px;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       align-items: center;
-      background: rgba(13, 20, 36, 0.96);
-      backdrop-filter: blur(10px);
-      padding: 4px 6px;
-      border-radius: 9px;
-      border: 1px solid #38bdf8;
-      box-shadow: 0 6px 20px rgba(0,0,0,0.55);
+      background: #060a12;
+      padding: 3px;
+      border-radius: 7px;
+      border: 1px solid #0284c7;
     }}
     .time-btn {{
       background: rgba(30, 41, 59, 0.75);
       border: 1px solid transparent;
       color: #cbd5e1;
-      padding: 5px 10px;
-      border-radius: 6px;
-      font-size: 0.73rem;
+      padding: 4px 9px;
+      border-radius: 5px;
+      font-size: 0.71rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s ease;
+      white-space: nowrap;
     }}
     .time-btn:hover {{
       color: #fff;
@@ -685,7 +650,6 @@ def main():
       background: linear-gradient(135deg, #0d9488, #0284c7);
       color: #fff;
       border-color: #2dd4bf;
-      box-shadow: 0 2px 10px rgba(20, 184, 166, 0.45);
     }}
     .road-speed-pill {{
       background: rgba(9, 14, 26, 0.92);
@@ -707,9 +671,9 @@ def main():
       background: rgba(30, 41, 59, 0.75);
       border: 1px solid #334155;
       color: #cbd5e1;
-      padding: 5px 9px;
+      padding: 5px 8px;
       border-radius: 6px;
-      font-size: 0.72rem;
+      font-size: 0.71rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s;
@@ -724,41 +688,38 @@ def main():
       background: linear-gradient(90deg, rgba(13,148,136,0.22), rgba(2,132,199,0.20));
       border: 1px solid #14b8a6;
       border-radius: 8px;
-      padding: 8px 10px;
-      margin-bottom: 10px;
-      font-size: 0.73rem;
+      padding: 7px 10px;
+      margin-bottom: 8px;
+      font-size: 0.72rem;
       color: #f8fafc;
     }}
 
     /* Compact Popover for All 11 Layers & Advanced Filters */
     .layers-drawer-popover {{
       position: absolute;
-      bottom: 56px;
-      left: 14px;
+      top: 44px;
+      right: 12px;
       width: 340px;
-      max-height: 72vh;
+      max-height: 75vh;
       overflow-y: auto;
-      background: rgba(13, 20, 36, 0.97);
+      background: rgba(13, 20, 36, 0.98);
       backdrop-filter: blur(14px);
       border: 1px solid #3b82f6;
       border-radius: 12px;
       padding: 12px;
       z-index: 1200;
-      box-shadow: 0 14px 34px rgba(0,0,0,0.65);
+      box-shadow: 0 14px 34px rgba(0,0,0,0.75);
       display: none;
     }}
     .layers-drawer-popover.open {{ display: block; }}
 
     /* Compact Map Legend Pill */
     .map-legend {{
-      pointer-events: auto;
-      background: rgba(13, 20, 36, 0.94);
-      backdrop-filter: blur(10px);
-      border: 1px solid var(--border);
-      border-radius: 9px;
-      padding: 6px 10px;
-      font-size: 0.70rem;
-      max-width: 440px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.69rem;
+      flex-wrap: wrap;
     }}
     .legend-inline {{
       display: flex;
@@ -1177,33 +1138,26 @@ def main():
         height: auto;
         overflow: visible;
       }}
-      /* Move floating HUDs out of absolute map overlay so 100% of #mapCanvas is unobstructed */
       .map-hud-top {{
-        position: static !important;
         width: 100%;
-        background: #090e1a;
-        border-bottom: 1px solid var(--border);
         padding: 6px 8px;
-        display: flex;
         flex-direction: column;
+        align-items: stretch;
         gap: 5px;
-        pointer-events: auto;
       }}
-      .story-bar {{
+      .time-group {{
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
         width: 100%;
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        background: transparent;
-        border: none;
-        padding: 0;
-        box-shadow: none;
         gap: 4px;
+        padding: 3px;
       }}
-      .story-bar::-webkit-scrollbar {{ display: none; }}
-      .story-lbl, .story-step, .story-arrow {{
-        flex-shrink: 0;
+      .time-btn {{
+        padding: 6px 4px;
+        font-size: 0.69rem;
+        text-align: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }}
       .hud-right-stack {{
         width: 100%;
@@ -1213,26 +1167,6 @@ def main():
       #collapseRightBtn {{
         display: none !important;
       }}
-      .epistemic-banner {{
-        position: static !important;
-        width: 100%;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-        border-top: none;
-        padding: 5px 8px;
-        overflow-x: auto;
-        flex-wrap: nowrap;
-        white-space: nowrap;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        gap: 6px;
-        font-size: 0.67rem;
-      }}
-      .epistemic-banner::-webkit-scrollbar {{ display: none; }}
-      .epistemic-banner > * {{
-        flex-shrink: 0;
-      }}
       #mapCanvas {{
         width: 100%;
         height: 46vh !important;
@@ -1241,46 +1175,19 @@ def main():
         flex: none;
       }}
       .map-hud-bottom {{
-        position: static !important;
         width: 100%;
-        background: #090e1a;
-        border-top: 1px solid var(--border);
-        border-bottom: 1px solid var(--border);
         padding: 6px 8px;
-        display: flex;
         flex-direction: column;
         gap: 6px;
         align-items: stretch;
-        pointer-events: auto;
-      }}
-      .time-group {{
-        order: 1;
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        width: 100%;
-        gap: 4px;
-        padding: 3px;
-        box-shadow: none;
-      }}
-      .time-btn {{
-        padding: 6px 4px;
-        font-size: 0.69rem;
-        text-align: center;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
       }}
       .layer-pill-bar {{
-        order: 2;
         width: 100%;
         overflow-x: auto;
         flex-wrap: nowrap;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
         padding: 2px 0;
-        background: transparent;
-        border: none;
-        box-shadow: none;
         gap: 5px;
       }}
       .layer-pill-bar::-webkit-scrollbar {{ display: none; }}
@@ -1290,12 +1197,9 @@ def main():
         font-size: 0.69rem;
       }}
       .map-legend {{
-        order: 3;
         width: 100%;
-        max-width: 100%;
         overflow-x: auto;
-        padding: 4px 6px;
-        background: rgba(15, 23, 42, 0.75);
+        padding: 2px 0;
       }}
       .legend-inline {{
         flex-wrap: nowrap;
@@ -1323,8 +1227,7 @@ def main():
         overflow: visible;
       }}
       .drawer-tabs {{
-        position: sticky;
-        top: 82px;
+        position: relative;
         z-index: 1500;
       }}
       .drawer-body {{
@@ -1410,31 +1313,30 @@ def main():
   <header class="exec-header">
     <div class="brand-cluster">
       <div class="brand-title">
-        <span class="brand-badge">UAE Intelligence</span>
-        <span>Construction &amp; Traffic Platform</span>
+        <span class="brand-badge">UAE GIS</span>
+        <span>Construction &amp; Traffic Intelligence</span>
       </div>
       <div class="kpi-strip">
         <span class="kpi-chip">Scope <strong id="hudScope">Dubai</strong></span>
         <span class="kpi-chip">Sites <strong id="hudProjects">25</strong></span>
-        <span class="kpi-chip">Corridors <strong id="hudRoads">23</strong></span>
-        <span class="kpi-chip" style="border-color:#14b8a6;">Avg Speed <strong id="hudAvgSpeed" style="color:#34d399;">41.8 km/h</strong></span>
+        <span class="kpi-chip" style="border-color:#14b8a6;">Avg Speed <strong id="hudAvgSpeed" style="color:#34d399;">43.9 km/h</strong></span>
       </div>
     </div>
 
     <!-- 5 MAIN AREAS (SECTION 4 REDESIGN) -->
     <nav class="mode-switcher" aria-label="Primary Platform Modes">
       <button class="mode-btn active" id="mode-overview" onclick="setPlatformMode('overview', this)">1. Overview</button>
-      <button class="mode-btn" id="mode-construction" onclick="setPlatformMode('construction', this)">2. Construction Map</button>
-      <button class="mode-btn" id="mode-traffic" onclick="setPlatformMode('traffic', this)">3. Traffic Intelligence</button>
-      <button class="mode-btn" id="mode-project" onclick="setPlatformMode('project', this)">4. Project Explorer</button>
-      <button class="mode-btn" id="mode-evidence" onclick="setPlatformMode('evidence', this)">5. Evidence &amp; Methodology</button>
+      <button class="mode-btn" id="mode-construction" onclick="setPlatformMode('construction', this)">2. Construction</button>
+      <button class="mode-btn" id="mode-traffic" onclick="setPlatformMode('traffic', this)">3. Traffic</button>
+      <button class="mode-btn" id="mode-project" onclick="setPlatformMode('project', this)">4. Explorer</button>
+      <button class="mode-btn" id="mode-evidence" onclick="setPlatformMode('evidence', this)">5. Full Data ↓</button>
     </nav>
 
     <div class="header-actions">
       <select id="emirateSelect" class="emirate-pill-select" onchange="onEmirateChange()" aria-label="Select Emirate">
         <option value="Dubai" selected>Dubai (25 Sites)</option>
         <option value="Sharjah">Sharjah (12 Sites)</option>
-        <option value="ALL">Dubai + Sharjah (37 Sites)</option>
+        <option value="ALL">Dubai + Sharjah (37)</option>
       </select>
 
       <details class="export-dropdown">
@@ -1454,46 +1356,37 @@ def main():
   <!-- 2. TWO-COLUMN MAP-CENTRIC WORKBENCH -->
   <main class="workbench" id="mainWorkbench">
 
-    <!-- FULL-BLEED INTERACTIVE MAP STAGE -->
+    <!-- FULL-BLEED INTERACTIVE MAP STAGE (STATIC TOP/BOTTOM TOOLBARS = ZERO OVERLAP) -->
     <section class="map-stage">
-      <!-- Top Floating Guided Storytelling Bar & Basemap Switcher -->
+      <!-- Single Unified Top Map Toolbar: Time Window Selector + Live HGV Status + Basemap & Filters -->
       <div class="map-hud-top">
-        <div class="story-bar" role="region" aria-label="Guided Visual Storytelling Sequence">
-          <span class="story-lbl">Story Tour:</span>
-          <button class="story-step" id="story-1" onclick="runStoryStep(1)">1. UAE Overview</button>
-          <span class="story-arrow">→</span>
-          <button class="story-step active" id="story-2" onclick="runStoryStep(2)">2. Dubai</button>
-          <span class="story-arrow">→</span>
-          <button class="story-step" id="story-3" onclick="runStoryStep(3)">3. Community (JVC)</button>
-          <span class="story-arrow">→</span>
-          <button class="story-step" id="story-4" onclick="runStoryStep(4)">4. Project</button>
-          <span class="story-arrow">→</span>
-          <button class="story-step" id="story-5" onclick="runStoryStep(5)">5. Road Impact</button>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <div class="time-group" aria-label="Traffic Time Window Selector">
+            <button class="time-btn" data-tp="Morning Peak (07:30–09:30)" onclick="setTimeWindow('Morning Peak (07:30–09:30)', this)">🌅 AM Peak</button>
+            <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday HGV</button>
+            <button class="time-btn active" data-tp="Evening Peak (17:00–20:00)" onclick="setTimeWindow('Evening Peak (17:00–20:00)', this)">🌇 PM Peak</button>
+            <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night</button>
+          </div>
+          <span id="hudTime" style="display:none;">Evening Peak (17:00–20:00)</span>
+          <span id="hudHgvStatus" class="conf-pill" style="background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444; font-size:0.68rem;">🚫 HGV Ban 17:00–20:00 (E11/E44/D61)</span>
         </div>
 
         <div class="hud-right-stack">
           <div class="basemap-switcher">
-            <button class="bm-btn active" onclick="setBasemap('dark', this)">Dark GIS</button>
+            <button class="bm-btn active" onclick="setBasemap('dark', this)">Dark</button>
             <button class="bm-btn" onclick="setBasemap('light', this)">Street</button>
-            <button class="bm-btn" onclick="setBasemap('sat', this)">Satellite</button>
-            <button class="bm-btn" id="btn3dTilt" onclick="toggle3DPerspective(this)" title="Toggle WebGL / 3D Perspective Pitch">3D Pitch</button>
+            <button class="bm-btn" onclick="setBasemap('sat', this)">Sat</button>
           </div>
-          <button class="bm-btn" id="collapseRightBtn" style="background:rgba(13,20,36,0.92);border:1px solid var(--border);color:#e2e8f0;padding:5px 9px;border-radius:7px;" onclick="toggleRightPanel()" title="Expand / Collapse Side Panel">▸ Collapse</button>
+          <button class="quick-layer-pill" style="color:var(--cyan); border-color:#0284c7;" onclick="toggleLayersPopover()">⚙ Filters &amp; Layers (11)</button>
+          <button class="quick-layer-pill" onclick="resetAllFilters()" title="Reset Map View to Dubai">🎯 Reset</button>
+          <button class="bm-btn" id="collapseRightBtn" style="background:#060a12;border:1px solid var(--border);color:#e2e8f0;padding:4px 8px;border-radius:6px;" onclick="toggleRightPanel()" title="Expand / Collapse Side Panel">▸ Panel</button>
         </div>
       </div>
 
-      <!-- Prominent Epistemic Differentiation Banner + Live Time Window Status -->
-      <div class="epistemic-banner">
-        <span class="conf-pill b-ver">PUBLISHED: RTA/SRTA Capacities &amp; TomTom City Index (31.3 km/h)</span>
-        <span class="conf-pill b-est">MODELLED: BPR + Bottleneck Speeds &amp; Daily HGV Loads</span>
-        <span style="color:#cbd5e1;">Active Window: <strong id="hudTime" style="color:#38bdf8;">Evening Peak (17:00–20:00)</strong></span>
-        <span id="hudHgvStatus" class="conf-pill" style="background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444;">🚫 HGVs Banned on E11/E44/D61 (17:00–20:00)</span>
-      </div>
+      <!-- Primary Map Canvas (100% Unobstructed, Locked to UAE Bounds) -->
+      <div id="mapCanvas" class="basemap-dark"></div>
 
-      <!-- Primary Map Canvas -->
-      <div id="mapCanvas"></div>
-
-      <!-- Hidden/Collapsible Advanced Layers & Filters Popover (All 11 Layers Preserved without Clutter) -->
+      <!-- Collapsible Advanced Layers & Filters Popover (All 11 Layers Preserved without Clutter) -->
       <div class="layers-drawer-popover" id="layersPopover">
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
           <strong style="font-size:0.80rem; color:var(--cyan);">Map Layers (11) &amp; Filters</strong>
@@ -1593,67 +1486,63 @@ def main():
         </div>
       </div>
 
-      <!-- Bottom Floating Bar: Compact Quick Layer Pills, Time Window Selector & Compact Legend -->
+      <!-- Single Unified Bottom Map Footer: 4 Quick Layer Toggles + Compact Legend & Epistemic Notice -->
       <div class="map-hud-bottom">
         <div class="layer-pill-bar">
           <button class="quick-layer-pill on" id="qpill-projects" onclick="quickToggle('projects', 'chk-L1', this)"><span class="layer-dot" style="background:#38bdf8;"></span> Projects</button>
           <button class="quick-layer-pill on" id="qpill-communities" onclick="quickToggle('communities', 'chk-L3', this)"><span class="layer-dot" style="background:#c084fc;"></span> Communities</button>
-          <button class="quick-layer-pill on" id="qpill-traffic" onclick="quickToggle('traffic', 'chk-L6', this)"><span class="layer-dot" style="background:#ef4444;"></span> Modelled Traffic</button>
+          <button class="quick-layer-pill on" id="qpill-traffic" onclick="quickToggle('traffic', 'chk-L6', this)"><span class="layer-dot" style="background:#ef4444;"></span> Traffic</button>
           <button class="quick-layer-pill" id="qpill-impacts" onclick="quickToggle('impacts', 'chk-L11', this)"><span class="layer-dot" style="background:#f59e0b;"></span> Impact Links</button>
-          <button class="quick-layer-pill" style="color:var(--cyan); border-color:#0284c7;" onclick="toggleLayersPopover()">⚙ Filters &amp; All 11 Layers</button>
-        </div>
-
-        <div class="time-group" aria-label="Traffic Time Window Selector">
-          <button class="time-btn" data-tp="Morning Peak (07:30–09:30)" onclick="setTimeWindow('Morning Peak (07:30–09:30)', this)">🌅 AM Peak</button>
-          <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday HGV</button>
-          <button class="time-btn active" data-tp="Evening Peak (17:00–20:00)" onclick="setTimeWindow('Evening Peak (17:00–20:00)', this)">🌇 PM Peak</button>
-          <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night</button>
         </div>
 
         <div class="map-legend">
           <div class="legend-inline">
-            <span class="leg-row"><span class="layer-dot" style="width:12px;height:12px;background:#0ea5e9;border:2px solid #fff;"></span> Mega ≥AED 25B</span>
-            <span class="leg-row"><span class="layer-dot" style="width:9px;height:9px;background:#38bdf8;"></span> Major 5–25B</span>
-            <span class="leg-row"><span class="layer-dot" style="width:6px;height:6px;background:#93c5fd;"></span> Tower &lt;5B</span>
+            <span class="leg-row"><span class="layer-dot" style="width:10px;height:10px;background:#fbbf24;border:1.5px solid #fff;"></span> Mega ≥25B</span>
+            <span class="leg-row"><span class="layer-dot" style="width:8px;height:8px;background:#38bdf8;"></span> Major 5–25B</span>
             <span class="leg-row"><span class="leg-line" style="background:#ef4444;"></span> Severe</span>
             <span class="leg-row"><span class="leg-line" style="background:#f97316;"></span> High</span>
             <span class="leg-row"><span class="leg-line" style="background:#eab308;"></span> Mod</span>
             <span class="leg-row"><span class="leg-line" style="background:#10b981;"></span> Low</span>
+            <span class="conf-pill b-ver" style="font-size:0.62rem;">Published RTA/TomTom (31.3 km/h) vs Modelled BPR</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- RIGHT CONTEXTUAL EXECUTIVE PANEL (ADAPTS TO 5 MODES + PROGRESSIVE DISCLOSURE) -->
+    <!-- RIGHT CONTEXTUAL EXECUTIVE PANEL (CLEAN 3-TAB DRAWER + PROGRESSIVE DISCLOSURE) -->
     <aside class="sidebar-right">
       <div class="drawer-tabs">
-        <button class="dtab-btn active" id="dtab-uc" onclick="switchDrawerTab('uc')">📌 Overview &amp; Scenarios</button>
-        <button class="dtab-btn" id="dtab-insp" onclick="switchDrawerTab('insp')">🔍 Project / Road Explorer</button>
-        <button class="dtab-btn" id="dtab-qa" onclick="switchDrawerTab('qa')">💬 Evidence &amp; Q&amp;A</button>
-      </div>
-
-      <!-- Persistent Time Window & Live Corridor Speed Strip inside Right Panel -->
-      <div style="padding:8px 12px; background:#090f1d; border-bottom:1px solid var(--border);">
-        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.69rem; color:var(--muted); margin-bottom:5px;">
-          <span>TIME WINDOW SELECTOR (UPDATES MAP &amp; PANEL)</span>
-          <strong id="panelWindowSpeedSummary" style="color:#34d399;">PM Peak • Avg 41.8 km/h</strong>
-        </div>
-        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px;">
-          <button class="time-btn" data-tp="Morning Peak (07:30–09:30)" onclick="setTimeWindow('Morning Peak (07:30–09:30)', this)">🌅 AM</button>
-          <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday</button>
-          <button class="time-btn active" data-tp="Evening Peak (17:00–20:00)" onclick="setTimeWindow('Evening Peak (17:00–20:00)', this)">🌇 PM</button>
-          <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night</button>
-        </div>
+        <button class="dtab-btn active" id="dtab-uc" onclick="switchDrawerTab('uc')">📌 Scenarios</button>
+        <button class="dtab-btn" id="dtab-insp" onclick="switchDrawerTab('insp')">🔍 Inspector</button>
+        <button class="dtab-btn" id="dtab-qa" onclick="switchDrawerTab('qa')">💬 Q&amp;A</button>
       </div>
 
       <!-- TAB 1: OVERVIEW, HOTSPOTS & GUIDED SCENARIOS -->
       <div class="drawer-body" id="dpanel-uc">
-        <div style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px;">
-          <button class="uc-btn active" id="btn-uc1" onclick="runUseCase(1)">1. Dubai Hotspots</button>
-          <button class="uc-btn" id="btn-uc2" onclick="runUseCase(2)">2. JVC Traffic</button>
-          <button class="uc-btn" id="btn-uc3" onclick="runUseCase(3)">3. AM vs PM &amp; 2024–26</button>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-bottom:8px;">
+          <button class="uc-btn active" id="btn-uc1" onclick="runUseCase(1)">1. Hotspots</button>
+          <button class="uc-btn" id="btn-uc2" onclick="runUseCase(2)">2. JVC</button>
+          <button class="uc-btn" id="btn-uc3" onclick="runUseCase(3)">3. AM/PM</button>
           <button class="uc-btn" id="btn-uc4" onclick="runUseCase(4)">4. Sharjah</button>
         </div>
+
+        <details class="tech-accordion" style="margin-bottom:8px;">
+          <summary style="font-size:0.71rem; padding:6px 10px;">🧭 Guided 5-Step Story Tour (UAE → Dubai → JVC → Project → Road)</summary>
+          <div class="tech-body" style="padding:6px 8px;">
+            <div class="story-bar" role="region" aria-label="Guided Visual Storytelling Sequence">
+              <button class="story-step" id="story-1" onclick="runStoryStep(1)">1. UAE Overview</button>
+              <span class="story-arrow">→</span>
+              <button class="story-step active" id="story-2" onclick="runStoryStep(2)">2. Dubai</button>
+              <span class="story-arrow">→</span>
+              <button class="story-step" id="story-3" onclick="runStoryStep(3)">3. Community (JVC)</button>
+              <span class="story-arrow">→</span>
+              <button class="story-step" id="story-4" onclick="runStoryStep(4)">4. Project</button>
+              <span class="story-arrow">→</span>
+              <button class="story-step" id="story-5" onclick="runStoryStep(5)">5. Road Impact</button>
+            </div>
+          </div>
+        </details>
+
         <div id="useCaseContainer"></div>
       </div>
 
@@ -1992,39 +1881,39 @@ def main():
       if (tp.includes("Morning")) {
         return {
           shortTp: "AM Peak (07:30–09:30)",
-          hgvBadge: "🚫 HGVs Banned on E11/E44/D61 (06:30–08:30 AM Rush)",
+          hgvBadge: "🚫 HGV Ban 06:30–08:30 (E11/E44/D61)",
           text: "🚫 HGVs Banned on E11/E44/D61 (06:30–08:30 AM Rush) — Commuter Queue Window",
           color: "#fca5a5",
-          hgvStyle: "background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444; padding:1px 6px; border-radius:4px; font-weight:700;",
+          hgvStyle: "background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem;",
           narrative: "Morning commuter wave toward Business Bay, DIFC & Dubai/Sharjah employment hubs. Heavy construction trucks are restricted on primary passenger arterials; commuter queues dominate Hessa St (29 km/h) and E311 Southbound (28 km/h)."
         };
       }
       if (tp.includes("Midday")) {
         return {
           shortTp: "Midday HGV (12:00–14:00)",
-          hgvBadge: "🚛 ACTIVE HGV CONCRETE & REBAR HAULAGE WINDOW (08:30–16:30)",
+          hgvBadge: "🚛 HGV Haulage Active (08:30–16:30)",
           text: "🚛 ACTIVE HGV CONCRETE & REBAR HAULAGE WINDOW (08:30–16:30 Permitted)",
           color: "#fde68a",
-          hgvStyle: "background:rgba(245,158,11,0.24); color:#fde68a; border:1px solid #f59e0b; padding:1px 6px; border-radius:4px; font-weight:700;",
+          hgvStyle: "background:rgba(245,158,11,0.24); color:#fde68a; border:1px solid #f59e0b; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem;",
           narrative: "Passenger commuter peaks subside (Hessa St rises to 48 km/h; Al Khail Rd rises to 78 km/h), while active daytime HGV concrete mixers, rebar trailers, and earthworks tippers operate across JVC, Business Bay, Creek Harbour & Dubai South."
         };
       }
       if (tp.includes("Night")) {
         return {
           shortTp: "Night Pour Window (22:00–05:00)",
-          hgvBadge: "🌙 NIGHT MASS CONCRETE POUR & HEAVY FREIGHT WINDOW (22:00–05:00)",
+          hgvBadge: "🌙 Night Concrete Pours (22:00–05:00)",
           text: "🌙 NIGHT MASS CONCRETE POUR & HEAVY FREIGHT WINDOW (22:00–05:00 Free-Flow)",
           color: "#6ee7b7",
-          hgvStyle: "background:rgba(16,185,129,0.22); color:#6ee7b7; border:1px solid #10b981; padding:1px 6px; border-radius:4px; font-weight:700;",
+          hgvStyle: "background:rgba(16,185,129,0.22); color:#6ee7b7; border:1px solid #10b981; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem;",
           narrative: "Free-flow passenger conditions across all corridors (Hessa St 68 km/h; SZR 88 km/h; Al Khail 92 km/h). Continuous nocturnal raft-foundation concrete pours and oversized structural steel deliveries operate unimpeded."
         };
       }
       return {
         shortTp: "PM Peak (17:00–20:00)",
-        hgvBadge: "🚫 HGVs Banned on E11/E44/D61 (17:00–20:00 PM Rush)",
+        hgvBadge: "🚫 HGV Ban 17:00–20:00 (E11/E44/D61)",
         text: "🚫 HGVs Banned on E11/E44/D61 (17:00–20:00 PM Rush) — Peak Commuter Bottlenecks",
         color: "#fca5a5",
-        hgvStyle: "background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444; padding:1px 6px; border-radius:4px; font-weight:700;",
+        hgvStyle: "background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem;",
         narrative: "Highest diurnal congestion across the network. Return commuter flows create severe bottlenecks on Hessa St West (25 km/h), JVC Circle Blvd (21 km/h), Financial Centre Rd (22 km/h), and SZR (44 km/h)."
       };
     }
@@ -2044,6 +1933,10 @@ def main():
       map = L.map("mapCanvas", {
         center: [25.115, 55.245],
         zoom: window.innerWidth <= 768 ? 10 : 11,
+        minZoom: 9,
+        maxZoom: 18,
+        maxBounds: [[22.4, 51.0], [26.5, 56.8]],
+        maxBoundsViscosity: 0.9,
         zoomControl: true
       });
 
@@ -2054,11 +1947,11 @@ def main():
         layerGroups[k].addTo(map);
       });
 
-      let lastMobileZoomTier = map.getZoom() >= 12;
+      let lastZoomTier = map.getZoom() >= 12;
       map.on("zoomend", () => {
         const curTier = map.getZoom() >= 12;
-        if (window.innerWidth <= 768 && curTier !== lastMobileZoomTier) {
-          lastMobileZoomTier = curTier;
+        if (curTier !== lastZoomTier) {
+          lastZoomTier = curTier;
           renderAllMapLayers();
         }
       });
@@ -2206,20 +2099,28 @@ def main():
         });
         btnEl.classList.add("active");
       }
+      const mc = document.getElementById("mapCanvas");
+      if (mc) mc.classList.toggle("basemap-dark", mode === "dark" || !mode);
       if (baseTileLayer) map.removeLayer(baseTileLayer);
       if (mode === "sat") {
         baseTileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-          maxZoom: 19,
+          minZoom: 9,
+          maxZoom: 18,
+          noWrap: true,
           attribution: "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics"
         });
       } else if (mode === "light") {
         baseTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
+          minZoom: 9,
+          maxZoom: 18,
+          noWrap: true,
           attribution: "&copy; OpenStreetMap contributors (ODbL — No API Key Required)"
         });
       } else {
         baseTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          maxZoom: 19,
+          minZoom: 9,
+          maxZoom: 18,
+          noWrap: true,
           className: "gis-dark-tiles",
           attribution: "&copy; OpenStreetMap contributors (ODbL Dark GIS — No API Key Required)"
         });
@@ -2369,21 +2270,33 @@ def main():
 
       let speedSum = 0;
       let speedCount = 0;
-      const badgeRoadIds = new Set(["RD-DXB-01", "RD-DXB-03", "RD-DXB-05", "RD-DXB-07", "RD-DXB-09", "RD-DXB-11", "RD-DXB-13", "RD-SHJ-01", "RD-SHJ-02", "RD-SHJ-06"]);
-      const mobileCorePills = new Set(["RD-DXB-01", "RD-DXB-03", "RD-DXB-05", "RD-SHJ-01"]);
+      const badgeRoadIds = new Set(["RD-DXB-01", "RD-DXB-03", "RD-DXB-05", "RD-DXB-07", "RD-DXB-09", "RD-DXB-11", "RD-DXB-12", "RD-DXB-15", "RD-SHJ-01", "RD-SHJ-02"]);
+      const overviewCorePills = new Set(["RD-DXB-01", "RD-DXB-05", "RD-DXB-09", "RD-SHJ-01"]);
       const shortRoadLabels = {
         "RD-DXB-01": "E11 SZR",
         "RD-DXB-03": "E44 Khail",
         "RD-DXB-05": "D61 Hessa",
         "RD-DXB-07": "JVC Blvd",
-        "RD-DXB-09": "D71 FinCtr",
+        "RD-DXB-09": "E611 Freight",
         "RD-DXB-11": "D62 Khor",
-        "RD-DXB-13": "E611 Freight",
+        "RD-DXB-12": "D71 FinCtr",
+        "RD-DXB-15": "E77 DWC",
         "RD-SHJ-01": "E311 Shj",
-        "RD-SHJ-02": "E611 Shj",
-        "RD-SHJ-06": "S142 Coast"
+        "RD-SHJ-02": "E611 Shj"
       };
-      const isMobileLowZoom = (window.innerWidth <= 768) && map && (map.getZoom() < 12);
+      const pillCoords = {
+        "RD-DXB-01": [25.175, 55.242],
+        "RD-DXB-03": [25.095, 55.228],
+        "RD-DXB-05": [25.092, 55.162],
+        "RD-DXB-07": [25.049, 55.215],
+        "RD-DXB-09": [25.012, 55.288],
+        "RD-DXB-11": [25.189, 55.348],
+        "RD-DXB-12": [25.204, 55.272],
+        "RD-DXB-15": [24.915, 55.161],
+        "RD-SHJ-01": [25.318, 55.465],
+        "RD-SHJ-02": [25.298, 55.588]
+      };
+      const isOverviewZoom = map && (map.getZoom() < 12);
 
       // 2. Layer 4 & Layer 6: Road Network & Dynamic 4-Window Traffic Speed/Congestion Overlay + Floating Speed Pills
       DATA.roads.forEach(r => {
@@ -2438,9 +2351,10 @@ def main():
         trafLine.addTo(layerGroups.traffic);
 
         // Floating On-Map Speed Pill for Key Corridors (Instantly updates when AM/Midday/PM/Night is clicked)
-        const showPill = obs && (isMobileLowZoom ? mobileCorePills.has(r.road_id) : badgeRoadIds.has(r.road_id));
+        const showPill = obs && (isOverviewZoom ? overviewCorePills.has(r.road_id) : badgeRoadIds.has(r.road_id));
         if (showPill) {
           const midPt = r.geometry_wgs84[Math.floor(r.geometry_wgs84.length / 2)];
+          const anchorLatLng = pillCoords[r.road_id] || [midPt[1], midPt[0]];
           const shortCode = shortRoadLabels[r.road_id] || r.road_code.split("/")[0].trim();
           const pillIcon = L.divIcon({
             className: "",
@@ -2448,7 +2362,7 @@ def main():
             iconSize: [86, 20],
             iconAnchor: [43, 10]
           });
-          const pillMarker = L.marker([midPt[1], midPt[0]], { icon: pillIcon });
+          const pillMarker = L.marker(anchorLatLng, { icon: pillIcon });
           pillMarker.on("click", () => showRoadInspector(r.road_id));
           pillMarker.addTo(layerGroups.traffic);
         }
@@ -2710,7 +2624,7 @@ def main():
               <strong style="color:#38bdf8;">⏱️ Active Window: ${currentTimeWindow}</strong>
               <span style="color:${congestionColor(primRoadObs.congestion_level)}; font-weight:800;">~${primRoadObs.average_speed_kmh} km/h (${primRoadObs.travel_time_min_per_10km} min/10km)</span>
             </div>
-            <div style="margin-top:3px; color:#cbd5e1;">Primary Corridor (<strong>${link.primary_road_name}</strong>): <strong>${primRoadObs.congestion_level}</strong> | Volume: ${primRoadObs.traffic_volume_vph}</div>
+            <div style="margin-top:3px; color:#cbd5e1;">Primary Corridor (<strong>${link.primary_road_name}</strong>): <strong>${primRoadObs.congestion_level.split('(')[0].trim()} Congestion</strong> | V/C = ${primRoadObs.vc_ratio} (${primRoadObs.modelled_demand_vph_dir}/${primRoadObs.reference_capacity_vph_dir} vph/dir)</div>
             <div style="margin-top:2px; font-size:0.68rem; color:${hgvInfo.color};">${hgvInfo.text}</div>
           </div>` : ""}
 
@@ -2827,7 +2741,7 @@ def main():
             <span style="color:${congestionColor(o.congestion_level)};">Modelled ~${o.average_speed_kmh} km/h (${o.travel_time_min_per_10km} min/10km)</span>
           </div>
           <div style="font-size:0.72rem; color:#34d399; margin-top:4px;"><span class="ep-pill-pub">PUBLISHED</span> ${o.officially_published_corridor_benchmark}</div>
-          <div style="font-size:0.72rem; color:#cbd5e1; margin-top:4px;"><span class="ep-pill-mod">MODELLED</span> <strong>${o.congestion_level}</strong> | Volume: ${o.traffic_volume_vph}</div>
+          <div style="font-size:0.72rem; color:#cbd5e1; margin-top:4px;"><span class="ep-pill-mod">MODELLED</span> <strong>${o.congestion_level.split('(')[0].trim()} Congestion (V/C=${o.vc_ratio})</strong> | Volume: ${o.traffic_volume_vph}</div>
           <details class="tech-accordion" style="margin-top:6px;" onclick="event.stopPropagation()">
             <summary>BPR Equation Breakdown &amp; Source (${o.observation_id})</summary>
             <div class="tech-body">
@@ -2862,7 +2776,7 @@ def main():
               <strong style="color:#38bdf8;">⏱️ ${currentTimeWindow}</strong>
               <span style="color:${congestionColor(activeObs.congestion_level)}; font-weight:800;">~${activeObs.average_speed_kmh} km/h (${activeObs.travel_time_min_per_10km} min/10km)</span>
             </div>
-            <div style="margin-top:3px; color:#cbd5e1;"><strong>${activeObs.congestion_level}</strong> | V/C = ${activeObs.vc_ratio} (${activeObs.modelled_demand_vph_dir}/${activeObs.reference_capacity_vph_dir} vph/dir)</div>
+            <div style="margin-top:3px; color:#cbd5e1;"><strong>${activeObs.congestion_level.split('(')[0].trim()} Congestion</strong> | V/C = ${activeObs.vc_ratio} (${activeObs.modelled_demand_vph_dir}/${activeObs.reference_capacity_vph_dir} vph/dir)</div>
           </div>` : ""}
 
           <div class="exec-metric-grid">
@@ -2950,12 +2864,12 @@ def main():
 
       const commRoadMap = {
         "COM-DXB-01": "RD-DXB-05",
-        "COM-DXB-02": "RD-DXB-08",
-        "COM-DXB-03": "RD-DXB-09",
-        "COM-DXB-04": "RD-DXB-11",
-        "COM-DXB-05": "RD-DXB-12",
-        "COM-DXB-06": "RD-DXB-06",
-        "COM-DXB-07": "RD-DXB-13"
+        "COM-DXB-02": "RD-DXB-12",
+        "COM-DXB-03": "RD-DXB-11",
+        "COM-DXB-04": "RD-DXB-09",
+        "COM-DXB-05": "RD-DXB-06",
+        "COM-DXB-06": "RD-DXB-16",
+        "COM-DXB-07": "RD-DXB-14"
       };
 
       if (num === 1) {
@@ -2983,6 +2897,7 @@ def main():
             ${dxbComms.map(c => {
               const rId = commRoadMap[c.community_id] || "RD-DXB-05";
               const rObs = getRoadObsForWindow(rId, currentTimeWindow);
+              const shortTier = rObs ? rObs.congestion_level.split('(')[0].trim() : c.observed_congestion_severity.split('(')[0].trim();
               return `
               <div style="background:#090d16; border:1px solid #334155; padding:8px; border-radius:7px; margin-bottom:7px; cursor:pointer;" onclick="map.flyTo([${c.center_lat}, ${c.center_lon}], ${c.recommended_zoom}); showCommunityInspector(DATA.communities.find(x=>x.community_id==='${c.community_id}'))">
                 <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:700; color:#fff;">
@@ -2992,7 +2907,7 @@ def main():
                 <div style="font-size:0.72rem; color:#94a3b8; margin-top:3px;">
                   <strong>${c.active_developments_count} Devs</strong> • <strong>${c.active_towers_and_buildings} Towers/Clusters</strong> • <strong>${c.scheduled_units_2025_2029.toLocaleString()} Units</strong> • <strong>${(c.active_structural_gfa_sqm/1e6).toFixed(2)}M m² GFA</strong>
                 </div>
-                ${rObs ? `<div style="font-size:0.71rem; color:${congestionColor(rObs.congestion_level)}; margin-top:3px; font-weight:700;">⏱️ ${currentTimeWindow.split(' ')[0]} Corridor (${rId}): ~${rObs.average_speed_kmh} km/h (${rObs.travel_time_min_per_10km} min/10km) — ${rObs.congestion_level}</div>` : `<div style="font-size:0.71rem; color:${congestionColor(c.observed_congestion_severity)}; margin-top:2px;">Traffic: ${c.observed_congestion_severity}</div>`}
+                ${rObs ? `<div style="font-size:0.71rem; color:${congestionColor(rObs.congestion_level)}; margin-top:3px; font-weight:700;">⏱️ ${currentTimeWindow.split(' ')[0]} (${rId}): ~${rObs.average_speed_kmh} km/h (${rObs.travel_time_min_per_10km} min/10km) • ${shortTier} Congestion (V/C=${rObs.vc_ratio})</div>` : `<div style="font-size:0.71rem; color:${congestionColor(c.observed_congestion_severity)}; margin-top:2px;">Traffic: ${shortTier}</div>`}
               </div>
             `;
             }).join("")}
@@ -3146,14 +3061,14 @@ def main():
                 <div class="kv-lbl">1. Muwaileh, Aljada &amp; Al Zahia Nexus (E311 × E88)</div>
                 <div class="kv-val">
                   • <strong>Projects:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH2')">PRJ-SH2 Aljada (25,000 units)</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH9')">PRJ-SH9 Al Zahia</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH8')">PRJ-SH8 Olfah</a>.<br/>
-                  • <strong>Traffic (${currentTimeWindow}):</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-01')">E311 Industrial / National Paints</a> operates at <strong>~${shjObs ? shjObs.average_speed_kmh : 28} km/h (${shjObs ? shjObs.congestion_level : 'Severe'})</strong>. SRTA &amp; Arada built dedicated Aljada/Airport Rd (E88) grade-separated bridges to bypass E311 queues.
+                  • <strong>Traffic (${currentTimeWindow}):</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-01')">E311 Industrial / National Paints</a> operates at <strong>~${shjObs ? shjObs.average_speed_kmh : 28} km/h (${shjObs ? shjObs.congestion_level.split('(')[0].trim() : 'Severe'})</strong>. SRTA &amp; Arada built dedicated Aljada/Airport Rd (E88) grade-separated bridges to bypass E311 queues.
                 </div>
               </div>
               <div class="kv-row">
                 <div class="kv-lbl">2. Emirates Road (E611) Forest &amp; Eco-City Belt</div>
                 <div class="kv-val">
                   • <strong>Projects:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH3')">PRJ-SH3 Masaar 1–3</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH5')">PRJ-SH5 Khalid Bin Sultan City (Zaha Hadid)</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH6')">PRJ-SH6 Hayyan</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH7')">PRJ-SH7 Tilal City</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH10')">PRJ-SH10 Sharjah Sustainable City</a>.<br/>
-                  • <strong>Traffic (${currentTimeWindow}):</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-02')">Emirates Rd (E611)</a> operates at <strong>~${e611ShjObs ? e611ShjObs.average_speed_kmh : 62} km/h (${e611ShjObs ? e611ShjObs.congestion_level : 'Moderate'})</strong>; SRTA's 320m Al Dhaid Bridge (E88) opens November 15, 2026.
+                  • <strong>Traffic (${currentTimeWindow}):</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-02')">Emirates Rd (E611)</a> operates at <strong>~${e611ShjObs ? e611ShjObs.average_speed_kmh : 62} km/h (${e611ShjObs ? e611ShjObs.congestion_level.split('(')[0].trim() : 'Moderate'})</strong>; SRTA's 320m Al Dhaid Bridge (E88) opens November 15, 2026.
                 </div>
               </div>
               <div class="kv-row">
