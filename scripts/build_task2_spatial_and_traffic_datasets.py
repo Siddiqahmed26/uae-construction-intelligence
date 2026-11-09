@@ -2327,12 +2327,12 @@ TASK2_PROVENANCE_SOURCES = [
         "original_url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/rta-opens-key-bridges-under-al-khail-road-improvement-project",
         "publisher": "Roads and Transport Authority (RTA)",
         "emirate_or_scope": "Dubai",
-        "publication_date": "2024-11-10",
+        "publication_date": "2024-09-01",
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Al Khail Road (E44) Improvement Project Completion Report (AED 700M; 3,300m bridges across 7 sites including JVC, Al Quoz 1, Meydan, Zabeel)",
-        "supported_entity_and_extracted_fact": "Officially Published Corridor Capacity & Upgrade Facts (RD-DXB-03, RD-DXB-04, INT-DXB-03, TIS-DXB-02): Adds ~15,000–19,600 vph corridor capacity across E44 and reduces peak corridor travel time by 30% between JVC, Al Quoz, and Business Bay/Zabeel. Note: Specific segment speeds (58.0–64.0 km/h) and directional hourly volumes (9,348–9,804 vph/dir) in OBS-DXB-005..006 are Modelled Corridor Estimates derived via a Two-Term BPR Uninterrupted Link + HCM Weaving/Ramp Delay Model calibrated to E44's 100 km/h speed limit and RTA's 30% travel-time reduction benchmark.",
-        "derivation_method": "Official RTA post-opening capacity/travel-time reduction release + Two-Term BPR + HCM Weaving/Ramp Delay model for segment estimates",
+        "supported_entity_and_extracted_fact": "Officially Published Corridor Capacity & Upgrade Facts (RD-DXB-03, RD-DXB-04, INT-DXB-03, TIS-DXB-02): Adds ~15,000–19,600 vph corridor capacity across E44 and reduces peak corridor travel time by 30% between JVC, Al Quoz, and Business Bay/Zabeel. Note: Specific segment speeds (58.0–64.0 km/h) and directional hourly volumes (9,348–9,804 vph/dir) in OBS-DXB-005..006 are Modelled Corridor Estimates derived via a Two-Term BPR Uninterrupted Link + Modelled HCM-Informed Weaving/Ramp Delay Assumption calibrated to E44's 100 km/h speed limit and RTA's 30% travel-time reduction benchmark.",
+        "derivation_method": "Official RTA post-opening capacity/travel-time reduction release + Two-Term BPR + Modelled HCM-Informed Weaving/Ramp Delay assumption for segment estimates",
         "verification_status": "Verified (HTTP 200 Official Release for Capacity/30% Reduction; Speeds/Volumes Modelled)",
         "confidence_classification": "Verified"
     },
@@ -2345,8 +2345,8 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "Salik PJSC Dynamic Toll Pricing Framework & Business Bay Crossing / Al Safa South Gate Disclosures (2025–2026)",
-        "supported_entity_and_extracted_fact": "Officially Published Toll & Tariff Facts (TDS-02, RD-DXB-01, RD-DXB-02, INT-DXB-08): Peak toll AED 6 (06:00–10:00 & 16:00–20:00), Off-Peak AED 4, Night AED 0; ~9–12% peak traffic redistribution on Sheikh Zayed Rd (E11) and Al Khail Rd (E44). Note: Segment speeds (44.0–52.0 km/h) and directional hourly volumes (10,540–11,160 vph/dir) in OBS-DXB-009..010 are Modelled Corridor Estimates derived via a Two-Term BPR + HCM Interchange Weaving Delay Model.",
-        "derivation_method": "Direct extraction from DFM regulatory disclosures + Two-Term BPR + HCM Interchange Weaving Delay model",
+        "supported_entity_and_extracted_fact": "Officially Published Toll & Tariff Facts (TDS-02, RD-DXB-01, RD-DXB-02, INT-DXB-08): Peak toll AED 6 (06:00–10:00 & 16:00–20:00), Off-Peak AED 4, Night AED 0; ~9–12% peak traffic redistribution on Sheikh Zayed Rd (E11) and Al Khail Rd (E44). Note: Segment speeds (44.0–52.0 km/h) and directional hourly volumes (10,540–11,160 vph/dir) in OBS-DXB-009..010 are Modelled Corridor Estimates derived via a Two-Term BPR + Modelled HCM-Informed Interchange Weaving Delay Assumption.",
+        "derivation_method": "Direct extraction from DFM regulatory disclosures + Two-Term BPR + Modelled HCM-Informed Interchange Weaving Delay assumption",
         "verification_status": "Verified (HTTP 200 Official Filing for Tariffs; Segment Speeds/Volumes Modelled)",
         "confidence_classification": "Verified"
     },
@@ -2359,8 +2359,8 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "TomTom Dubai Traffic Index (Published 2025 City-Wide Annual & Rush-Hour Statistics) & TomTom Traffic API Documentation",
-        "supported_entity_and_extracted_fact": "Published City-Wide Macro Traffic Benchmark & API Specification (OBS-DXB-CITY-00, TDS-10, PRV-01, PRV-02): Officially published TomTom Dubai Traffic Index city-wide metrics: Average speed = 31.3 km/h; Travel time per 10 km = 19 min 10 sec (19.17 min/10km); Annual congestion level = 42.7%; Overall rush-hour average speed = 26.3 km/h; Morning rush-hour speed = 32.1 km/h (18 min 40 sec per 10 km, 46% congestion); Evening rush-hour speed = 22.6 km/h (26 min 35 sec per 10 km, 69% congestion). Free-flow speed is not separately published as a standalone city-wide km/h figure in the public index. Explicitly used ONLY at city level (OBS-DXB-CITY-00); does NOT publish road-segment speeds, vph volumes, or jam factors for Hessa St, Al Khail Rd, or JVC.",
-        "derivation_method": "Direct extraction from published TomTom Dubai Traffic Index (city-level only: 31.3 km/h, 19m 10s / 10 km, 42.7% congestion, AM 32.1 km/h, PM 22.6 km/h, overall rush 26.3 km/h) and developer portal documentation",
+        "supported_entity_and_extracted_fact": "Published City-Wide Macro Traffic Benchmark & API Specification (OBS-DXB-CITY-00, TDS-10, PRV-01, PRV-02): Officially published TomTom Dubai Traffic Index city-wide metrics: Average speed = 31.3 km/h; Travel time per 10 km = 19 min 10 sec (19.17 min/10km); Annual congestion level = 42.7%; Overall rush-hour average speed = 26.3 km/h; Morning rush-hour speed = 32.1 km/h (18 min 41 sec per 10 km, 42.3% congestion); Evening rush-hour speed = 22.6 km/h (26 min 33 sec per 10 km, 94.4% congestion). Free-flow speed is not separately published as a standalone city-wide km/h figure in the public index. Explicitly used ONLY at city level (OBS-DXB-CITY-00); does NOT publish road-segment speeds, vph volumes, or jam factors for Hessa St, Al Khail Rd, or JVC.",
+        "derivation_method": "Direct extraction from published TomTom Dubai Traffic Index (city-level only: 31.3 km/h, 19m 10s / 10 km, 42.7% annual congestion, AM 32.1 km/h [18m 41s, 42.3% congestion], PM 22.6 km/h [26m 33s, 94.4% congestion], overall rush 26.3 km/h) and developer portal documentation",
         "verification_status": "Verified (HTTP 200 Official Portal — City-Level Aggregate Only)",
         "confidence_classification": "Verified"
     },
@@ -2373,8 +2373,8 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Heavy Goods Vehicle (HGV) Truck Movement Ban Schedule & MOEI E311/E611 Federal Freight Corridor Specifications",
-        "supported_entity_and_extracted_fact": "Officially Published Freight & HGV Ban Regulations (TDS-08, TDS-16, RD-DXB-08, RD-DXB-09): 16-hr HGV ban on E11 (06:00–22:00); 3-window peak ban on E311/E44/D61 (06:30–08:30, 13:00–15:00, 17:30–20:00); 24/7 HGV exemption on Emirates Rd (E611) 6-lane freight bypass. Note: Midday speed (86.0 km/h) and volume (5,814 vph/dir) in OBS-DXB-015 are Modelled Corridor Estimates derived via a Two-Term BPR + HCM Heavy-Vehicle Grade/Interchange Friction Model.",
-        "derivation_method": "Direct extraction from RTA regulatory schedule + Two-Term BPR + HCM HGV Friction model for OBS-DXB-015",
+        "supported_entity_and_extracted_fact": "Officially Published Freight & HGV Ban Regulations (TDS-08, TDS-16, RD-DXB-08, RD-DXB-09): 16-hr HGV ban on E11 (06:00–22:00); 3-window peak ban on E311/E44/D61 (06:30–08:30, 13:00–15:00, 17:30–20:00); 24/7 HGV exemption on Emirates Rd (E611) 6-lane freight bypass. Note: Midday speed (86.0 km/h) and volume (5,814 vph/dir) in OBS-DXB-015 are Modelled Corridor Estimates derived via a Two-Term BPR + Modelled HCM-Informed Heavy-Vehicle Grade/Interchange Friction Assumption.",
+        "derivation_method": "Direct extraction from RTA regulatory schedule + Two-Term BPR + Modelled HCM-Informed HGV Friction assumption for OBS-DXB-015",
         "verification_status": "Verified (HTTP 200 Official Portal for HGV Rules; Segment Speed/Volume Modelled)",
         "confidence_classification": "Verified"
     },
@@ -2383,12 +2383,12 @@ TASK2_PROVENANCE_SOURCES = [
         "original_url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/rta-awards-contract-for-al-mustaqbal-street-development-project",
         "publisher": "Roads and Transport Authority (RTA)",
         "emirate_or_scope": "Dubai",
-        "publication_date": "2025-04-20",
+        "publication_date": "2025-07-13",
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Al Mustaqbal Street, Financial Centre Road (D71) & Business Bay Corridor Upgrade Release",
-        "supported_entity_and_extracted_fact": "Officially Published CBD Corridor Upgrade Facts (COM-DXB-02, RD-DXB-12, RD-DXB-13, INT-DXB-05, INC-DXB-04, TIS-DXB-04): Widens Al Mustaqbal St from 3 to 4 lanes/dir + 1,700m tunnels, expanding capacity 33% from 6,600 to 8,800 vph (3,300 to 4,400 vph/dir) and cutting corridor travel time from 13 to 6 min, plus Zabeel 700m bridge (3,000 vph). Note: Segment speeds (22.0–34.0 km/h) and volumes (2,325–4,092 vph/dir) in OBS-DXB-011..012 are Modelled Corridor Estimates derived via a Two-Term BPR + HCM Signalized Intersection Delay Model.",
-        "derivation_method": "Official RTA contract award release + Two-Term BPR + HCM Signalized Control Delay model",
+        "supported_entity_and_extracted_fact": "Officially Published CBD Corridor Upgrade Facts (COM-DXB-02, RD-DXB-12, RD-DXB-13, INT-DXB-05, INC-DXB-04, TIS-DXB-04): Widens Al Mustaqbal St from 3 to 4 lanes/dir + 1,700m tunnels, expanding capacity 33% from 6,600 to 8,800 vph (3,300 to 4,400 vph/dir) and cutting corridor travel time from 13 to 6 min, plus Zabeel 700m bridge (3,000 vph). Note: Segment speeds (22.0–34.0 km/h) and volumes (2,325–4,092 vph/dir) in OBS-DXB-011..012 are Modelled Corridor Estimates derived via a Two-Term BPR + Modelled HCM-Informed Signalized Intersection Delay Assumption.",
+        "derivation_method": "Official RTA contract award release + Two-Term BPR + Modelled HCM-Informed Signalized Control Delay assumption",
         "verification_status": "Verified (HTTP 200 Official Release for Capacity; Segment Speeds/Volumes Modelled)",
         "confidence_classification": "Verified"
     },
@@ -2397,12 +2397,12 @@ TASK2_PROVENANCE_SOURCES = [
         "original_url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/opening-of-phase-i-of-sheikh-rashid-bin-saeed-corridor-project",
         "publisher": "Roads and Transport Authority (RTA)",
         "emirate_or_scope": "Dubai",
-        "publication_date": "2024-09-29",
+        "publication_date": "2022-12-25",
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Opening of Phase I of Sheikh Rashid bin Saeed Corridor Improvement Project (Ras Al Khor Road E44/D62 Widening to 4 Lanes per Direction & Nad Al Hamar Bridges)",
         "supported_entity_and_extracted_fact": "Officially Published Ras Al Khor Corridor Upgrade Facts (COM-DXB-03, RD-DXB-11, INT-DXB-06, INC-DXB-03, TIS-DXB-03, IMP-003, IMP-008, IMP-017): Widens Ras Al Khor Road from 3 to 4 lanes in each direction, increasing road capacity to 10,000 vehicles per hour (published by RTA without a '/dir' qualifier) and slashing travel time from 20 minutes to 7 minutes, with major intersection bridges serving Dubai Creek Harbour and Nad Al Hamar rated up to 30,000 vehicles per hour. Separate Modelling Note: The 7,600 vph/dir directional reference capacity used in OBS-DXB-013..014 is an explicit HCM 7th Edition 4-lane directional estimate (4 lanes × 1,900 pcphpl), and segment speeds (38.0–41.0 km/h) and volumes (6,688–6,916 vph/dir) are Modelled Corridor Estimates.",
-        "derivation_method": "Official RTA Sheikh Rashid bin Saeed Corridor release (10,000 vph without /dir qualifier; 20→7 min) + HCM 4-lane directional capacity (7,600 vph/dir) & Two-Term BPR + Work-Zone Delay model",
+        "derivation_method": "Official RTA Sheikh Rashid bin Saeed Corridor release (10,000 vph without /dir qualifier; 20→7 min) + HCM 4-lane directional capacity (7,600 vph/dir) & Two-Term BPR + Modelled Work-Zone Delay assumption",
         "verification_status": "Verified (HTTP 200 Official RTA Corridor Release; Directional 7,600 vph/dir & Segment Speeds/Volumes Modelled)",
         "confidence_classification": "Verified"
     },
@@ -2411,7 +2411,7 @@ TASK2_PROVENANCE_SOURCES = [
         "original_url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/AllProjects/ongoing-project-details/70+of+umm+suqeim+street+improvement+project",
         "publisher": "Roads and Transport Authority (RTA)",
         "emirate_or_scope": "Dubai (4.6 km Section between Al Khail Rd E44 and Sheikh Mohammed bin Zayed Rd E311)",
-        "publication_date": "2024-08-11",
+        "publication_date": "2025-05-25",
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA 70% Completion of Umm Suqeim Street Improvement Project (4.6 km Section from Al Khail Road E44 to Sheikh Mohammed bin Zayed Road E311)",
@@ -2579,7 +2579,7 @@ TASK2_PROVENANCE_SOURCES = [
         "original_url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/hamdan-bin-mohammed-reviews-progress-of-key-strategic-road-corridors",
         "publisher": "Roads and Transport Authority (RTA) & Dubai Media Office",
         "emirate_or_scope": "Dubai (Wider 16 km Umm Suqeim–Al Qudra Strategic Corridor from Jumeirah St to Emirates Rd E611)",
-        "publication_date": "2024-11-03",
+        "publication_date": "2025-05-04",
         "retrieval_date": "2026-11-09",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Strategic Road Corridors Progress Review — 16 km Umm Suqeim–Al Qudra Corridor from Jumeirah Street to Emirates Road (E611)",
@@ -2876,18 +2876,18 @@ def main():
         "bpr_uninterrupted_time_min_per_10km": "N/A (City-Wide Aggregate)",
         "bpr_uninterrupted_speed_kmh": "N/A (City-Wide Aggregate)",
         "bottleneck_and_control_delay_min_per_10km": "N/A (City-Wide Aggregate)",
-        "bottleneck_delay_parameters": "Published TomTom 2025 City-Wide Aggregate: Annual Congestion = 42.7% | Overall Rush-Hour Avg Speed = 26.3 km/h | Morning Rush Speed = 32.1 km/h (18 min 40 sec / 10 km) | Evening Rush Speed = 22.6 km/h (26 min 35 sec / 10 km)",
+        "bottleneck_delay_parameters": "Published TomTom 2025 City-Wide Aggregate: Annual Congestion = 42.7% | Overall Rush-Hour Avg Speed = 26.3 km/h | Morning Rush Speed = 32.1 km/h (18 min 41 sec / 10 km; 42.3% congestion) | Evening Rush Speed = 22.6 km/h (26 min 33 sec / 10 km; 94.4% congestion)",
         "travel_time_min_per_10km": 19.17,
         "travel_time_formatted": "19 min 10 sec (19.17 min/10km)",
         "average_speed_kmh": 31.3,
         "tomtom_annual_congestion_pct": "42.7%",
         "tomtom_rush_hour_avg_speed_kmh": "26.3 km/h",
-        "tomtom_morning_rush_speed_kmh": "32.1 km/h (18 min 40 sec per 10 km; 46% congestion)",
-        "tomtom_evening_rush_speed_kmh": "22.6 km/h (26 min 35 sec per 10 km; 69% congestion)",
+        "tomtom_morning_rush_speed_kmh": "32.1 km/h (18 min 41 sec per 10 km; 42.3% congestion)",
+        "tomtom_evening_rush_speed_kmh": "22.6 km/h (26 min 33 sec per 10 km; 94.4% congestion)",
         "traffic_volume_vph": "City-Wide Aggregate Only (TomTom public index does not publish road-segment vph volumes)",
-        "congestion_level": "42.7% Annual Congestion Level [Published TomTom 2025 Dubai Index: 31.3 km/h Annual Avg; 26.3 km/h Rush-Hour Avg; 32.1 km/h AM Rush; 22.6 km/h PM Rush]",
+        "congestion_level": "42.7% Annual Congestion Level [Published TomTom 2025 Dubai Index: 31.3 km/h Annual Avg; 26.3 km/h Rush-Hour Avg; 32.1 km/h AM Rush (42.3% congestion); 22.6 km/h PM Rush (94.4% congestion)]",
         "observation_type": "Published Official City-Wide Benchmark [TomTom Dubai Traffic Index — City-Level Aggregate Only]",
-        "data_limitations": "TomTom's public Dubai Traffic Index provides city-wide annual and rush-hour statistics only (31.3 km/h average, 19m 10s per 10 km, 42.7% congestion, AM 32.1 km/h, PM 22.6 km/h), NOT segment-specific measurements for Hessa St, Al Khail Rd, or JVC.",
+        "data_limitations": "TomTom's public Dubai Traffic Index provides city-wide annual and rush-hour statistics only (31.3 km/h average, 19m 10s per 10 km, 42.7% annual congestion, AM 32.1 km/h [18m 41s, 42.3% congestion], PM 22.6 km/h [26m 33s, 94.4% congestion]), NOT segment-specific measurements for Hessa St, Al Khail Rd, or JVC.",
         "source_id": "SRC-436",
         "confidence": "Verified"
     }
@@ -3059,8 +3059,8 @@ def main():
                 "Officially Published by TomTom (https://www.tomtom.com/traffic-index/city/dubai/): "
                 "City-wide average speed = 31.3 km/h; Travel time per 10 km = 19 min 10 sec (19.17 min/10km); "
                 "Annual congestion level = 42.7%; Overall rush-hour average speed = 26.3 km/h; "
-                "Morning rush-hour speed = 32.1 km/h (18 min 40 sec / 10 km, 46% congestion); "
-                "Evening rush-hour speed = 22.6 km/h (26 min 35 sec / 10 km, 69% congestion). "
+                "Morning rush-hour speed = 32.1 km/h (18 min 41 sec / 10 km, 42.3% congestion); "
+                "Evening rush-hour speed = 22.6 km/h (26 min 33 sec / 10 km, 94.4% congestion). "
                 "Free-flow speed is not separately published as a standalone city-wide km/h figure."
             )
             o["modelled_assumptions_and_derivation"] = (
@@ -3083,6 +3083,7 @@ def main():
             speed_ratio = round(v_fin / v0, 2)
 
             s_rec = src_by_id[sid]
+            labelled_delay_desc = f"Modelled, HCM-Informed Bottleneck-Delay Assumption (Not Independently Validated Signal/Queue Telemetry): {delay_desc}"
             o["free_flow_speed_kmh"] = v0
             o["free_flow_time_min_per_10km"] = t0
             o["modelled_demand_vph_dir"] = V
@@ -3093,9 +3094,9 @@ def main():
             o["bpr_uninterrupted_time_min_per_10km"] = t_bpr
             o["bpr_uninterrupted_speed_kmh"] = v_bpr
             o["bottleneck_and_control_delay_min_per_10km"] = d_adj
-            o["bottleneck_delay_parameters"] = delay_desc
+            o["bottleneck_delay_parameters"] = labelled_delay_desc
             o["travel_time_min_per_10km"] = t_tot
-            o["travel_time_formatted"] = f"{t_tot:.2f} min/10km (t_BPR={t_bpr:.2f} + d_adj={d_adj:.2f})"
+            o["travel_time_formatted"] = f"{t_tot:.2f} min/10km (t_BPR={t_bpr:.2f} + d_adj={d_adj:.2f} [Modelled Assumption])"
             o["average_speed_kmh"] = v_fin
             o["tomtom_annual_congestion_pct"] = "N/A (Corridor Modelled Estimate — Not TomTom Telemetry)"
             o["tomtom_rush_hour_avg_speed_kmh"] = "N/A (Corridor Modelled Estimate)"
@@ -3106,10 +3107,10 @@ def main():
             )
             sev_label = "Severe" if v_fin <= 32.0 else ("High" if v_fin <= 52.0 else ("Moderate" if v_fin <= 66.0 else "Low"))
             o["congestion_level"] = (
-                f"{sev_label} (Modelled Estimate: v_corridor/v_0 = {speed_ratio:.2f}; v_BPR = {v_bpr:.1f} km/h -> v_corridor = {v_fin:.1f} km/h after +{d_adj:.2f} min/10km bottleneck/control delay)"
+                f"{sev_label} (Modelled Estimate: v_corridor/v_0 = {speed_ratio:.2f}; v_BPR = {v_bpr:.1f} km/h -> v_corridor = {v_fin:.1f} km/h after +{d_adj:.2f} min/10km modelled bottleneck-delay assumption)"
             )
             o["observation_type"] = (
-                "Modelled Corridor Estimate [Two-Term BPR Uninterrupted Link (t_BPR) + HCM Bottleneck/Control Delay (+d_adj) Model "
+                "Modelled Corridor Estimate [Formula-Derived BPR Link Term (t_BPR) + Modelled, HCM-Informed Bottleneck-Delay Assumption (+d_adj) "
                 "— Not Direct Segment Telemetry]"
             )
             o["comparison_period"] = re.sub(r"^2024", "Modelled 2024", o["comparison_period"])
@@ -3117,20 +3118,24 @@ def main():
             o["source_report_title"] = s_rec["document_or_page_reference"]
             o["source_url"] = s_rec["original_url"]
             o["publication_date"] = s_rec.get("publication_date", "2026-11-09")
-            o["evidence_level"] = "Modelled Corridor Estimate (Two-Term BPR Link + HCM Bottleneck/Control Delay Model)"
+            o["evidence_level"] = "Modelled Corridor Estimate (Formula BPR Link + Modelled HCM-Informed Bottleneck-Delay Assumption)"
             o["measurement_period"] = m_period
             o["officially_published_corridor_benchmark"] = pub_fact
             o["modelled_assumptions_and_derivation"] = (
                 f"Two-Term Reproducible Formula: "
-                f"(1) Uninterrupted BPR Link Term: t_0 = 600/{v0} = {t0:.2f} min/10km, V/C = {V:,}/{C:,} = {vc:.2f}, "
+                f"(1) Formula-Derived Uninterrupted BPR Link Term: t_0 = 600/{v0} = {t0:.2f} min/10km, V/C = {V:,}/{C:,} = {vc:.2f}, "
                 f"t_BPR = round((600/{v0})*[1 + 0.15*({vc:.2f})^4], 2) = {t_bpr:.2f} min/10km (v_BPR = {v_bpr:.1f} km/h); "
-                f"(2) HCM Bottleneck/Control Delay Term: d_adj = +{d_adj:.2f} min/10km ({delay_desc}); "
+                f"(2) Modelled, HCM-Informed Bottleneck-Delay Assumption (Not Independently Measured Signal/Queue Telemetry): d_adj = +{d_adj:.2f} min/10km ({delay_desc}); "
                 f"(3) Total Corridor Travel Time & Speed: t_total = {t_bpr:.2f} + {d_adj:.2f} = {t_tot:.2f} min/10km -> "
                 f"v_corridor = round(600 / {t_tot:.2f}, 1) = {v_fin:.1f} km/h."
             )
+            o["data_limitations"] = (
+                f"{o['data_limitations']} The BPR link term (t_BPR={t_bpr:.2f} min/10km, v_BPR={v_bpr:.1f} km/h) is formula-derived from V/C={vc:.2f}, "
+                f"whereas the additional bottleneck delay (+d_adj=+{d_adj:.2f} min/10km) is a modelled, HCM-informed scenario assumption, not an independently measured signal or queue observation."
+            )
             o["confidence"] = "Estimated"
             o["series_scope_note"] = (
-                "Modelled Corridor Scenario Derived from Two-Term BPR Uninterrupted Link + HCM Bottleneck/Control Delay Equation — "
+                "Modelled Corridor Scenario Derived from Formula BPR Uninterrupted Link + Modelled HCM-Informed Bottleneck-Delay Assumption — "
                 "Not a Direct Road-Segment Sensor Feed or Published Loop-Detector Time Series"
             )
 

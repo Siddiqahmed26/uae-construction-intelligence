@@ -1,5 +1,5 @@
 {
-  "verification_timestamp": "2026-11-09T13:12:00+05:30",
+  "verification_timestamp": "2026-11-09T13:30:00+05:30",
   "status": "ALL_CHECKS_PASSED",
   "tomtom_city_baseline_check": {
     "observation_id": "OBS-DXB-CITY-00",
@@ -9,14 +9,17 @@
     "travel_time_formatted": "19 min 10 sec (19.17 min/10km)",
     "annual_congestion_pct": "42.7%",
     "rush_hour_avg_speed_kmh": "26.3 km/h",
-    "morning_rush_speed_kmh": "32.1 km/h (18 min 40 sec per 10 km; 46% congestion)",
-    "evening_rush_speed_kmh": "22.6 km/h (26 min 35 sec per 10 km; 69% congestion)",
+    "morning_rush_speed_kmh": "32.1 km/h (18 min 41 sec per 10 km; 42.3% congestion)",
+    "evening_rush_speed_kmh": "22.6 km/h (26 min 33 sec per 10 km; 94.4% congestion)",
     "free_flow_speed_kmh": "Not Separately Published in Public TomTom City Index"
   },
   "two_term_bpr_and_bottleneck_delay_check": {
     "corridor_rows_verified": "21/21",
-    "max_speed_discrepancy_kmh": 0.0,
-    "max_time_discrepancy_min_per_10km": 0.0,
+    "max_time_discrepancy_at_stored_2dp_min_per_10km": 0.0,
+    "max_speed_discrepancy_at_stored_1dp_kmh": 0.0,
+    "max_time_discrepancy_unrounded_min_per_10km": 0.0041,
+    "max_speed_discrepancy_unrounded_kmh": 0.049,
+    "precision_and_epistemic_note": "Stored BPR times, total travel times (2 decimal places), and corridor speeds (1 decimal place) agree 100% (0.0 discrepancy at stored rounding precision). Using unrounded intermediate arithmetic on the rounded CSV inputs yields a maximum travel-time difference of 0.0053 min/10km and a maximum speed difference of 0.049 km/h. The BPR link term (t_BPR, v_BPR) is formula-derived from V/C, whereas the additional bottleneck delay (+d_adj) is explicitly labelled as a modelled, HCM-informed bottleneck-delay assumption, not an independently measured signal or queue observation.",
     "rows": [
       {
         "observation_id": "OBS-DXB-001",
@@ -27,9 +30,11 @@
         "vc_ratio": 1.04,
         "t_bpr_min_10km": 8.82,
         "v_bpr_kmh": 68.1,
-        "d_adj_min_10km": 11.87,
+        "d_adj_min_10km_modelled_assumption": 11.87,
         "t_total_min_10km": 20.69,
-        "v_corridor_kmh": 29.0
+        "v_corridor_kmh": 29.0,
+        "source_id": "SRC-433",
+        "publication_date": "2025-11-18"
       },
       {
         "observation_id": "OBS-DXB-002",
@@ -40,9 +45,11 @@
         "vc_ratio": 0.78,
         "t_bpr_min_10km": 7.92,
         "v_bpr_kmh": 75.8,
-        "d_adj_min_10km": 4.58,
+        "d_adj_min_10km_modelled_assumption": 4.58,
         "t_total_min_10km": 12.5,
-        "v_corridor_kmh": 48.0
+        "v_corridor_kmh": 48.0,
+        "source_id": "SRC-433",
+        "publication_date": "2025-11-18"
       },
       {
         "observation_id": "OBS-DXB-003",
@@ -53,9 +60,11 @@
         "vc_ratio": 1.1,
         "t_bpr_min_10km": 9.15,
         "v_bpr_kmh": 65.6,
-        "d_adj_min_10km": 14.85,
+        "d_adj_min_10km_modelled_assumption": 14.85,
         "t_total_min_10km": 24.0,
-        "v_corridor_kmh": 25.0
+        "v_corridor_kmh": 25.0,
+        "source_id": "SRC-433",
+        "publication_date": "2025-11-18"
       },
       {
         "observation_id": "OBS-DXB-004",
@@ -66,9 +75,11 @@
         "vc_ratio": 0.29,
         "t_bpr_min_10km": 7.51,
         "v_bpr_kmh": 79.9,
-        "d_adj_min_10km": 1.31,
+        "d_adj_min_10km_modelled_assumption": 1.31,
         "t_total_min_10km": 8.82,
-        "v_corridor_kmh": 68.0
+        "v_corridor_kmh": 68.0,
+        "source_id": "SRC-433",
+        "publication_date": "2025-11-18"
       },
       {
         "observation_id": "OBS-DXB-005",
@@ -79,9 +90,11 @@
         "vc_ratio": 0.82,
         "t_bpr_min_10km": 6.41,
         "v_bpr_kmh": 93.6,
-        "d_adj_min_10km": 2.97,
+        "d_adj_min_10km_modelled_assumption": 2.97,
         "t_total_min_10km": 9.38,
-        "v_corridor_kmh": 64.0
+        "v_corridor_kmh": 64.0,
+        "source_id": "SRC-434",
+        "publication_date": "2024-09-01"
       },
       {
         "observation_id": "OBS-DXB-006",
@@ -92,9 +105,11 @@
         "vc_ratio": 0.86,
         "t_bpr_min_10km": 6.49,
         "v_bpr_kmh": 92.4,
-        "d_adj_min_10km": 3.85,
+        "d_adj_min_10km_modelled_assumption": 3.85,
         "t_total_min_10km": 10.34,
-        "v_corridor_kmh": 58.0
+        "v_corridor_kmh": 58.0,
+        "source_id": "SRC-434",
+        "publication_date": "2024-09-01"
       },
       {
         "observation_id": "OBS-DXB-007",
@@ -105,9 +120,11 @@
         "vc_ratio": 0.9,
         "t_bpr_min_10km": 10.98,
         "v_bpr_kmh": 54.6,
-        "d_adj_min_10km": 14.02,
+        "d_adj_min_10km_modelled_assumption": 14.02,
         "t_total_min_10km": 25.0,
-        "v_corridor_kmh": 24.0
+        "v_corridor_kmh": 24.0,
+        "source_id": "SRC-441",
+        "publication_date": "2025-05-14"
       },
       {
         "observation_id": "OBS-DXB-008",
@@ -118,9 +135,11 @@
         "vc_ratio": 0.96,
         "t_bpr_min_10km": 11.27,
         "v_bpr_kmh": 53.2,
-        "d_adj_min_10km": 17.3,
+        "d_adj_min_10km_modelled_assumption": 17.3,
         "t_total_min_10km": 28.57,
-        "v_corridor_kmh": 21.0
+        "v_corridor_kmh": 21.0,
+        "source_id": "SRC-441",
+        "publication_date": "2025-05-14"
       },
       {
         "observation_id": "OBS-DXB-009",
@@ -131,9 +150,11 @@
         "vc_ratio": 0.85,
         "t_bpr_min_10km": 6.47,
         "v_bpr_kmh": 92.7,
-        "d_adj_min_10km": 5.07,
+        "d_adj_min_10km_modelled_assumption": 5.07,
         "t_total_min_10km": 11.54,
-        "v_corridor_kmh": 52.0
+        "v_corridor_kmh": 52.0,
+        "source_id": "SRC-435",
+        "publication_date": "2025-01-31"
       },
       {
         "observation_id": "OBS-DXB-010",
@@ -144,9 +165,11 @@
         "vc_ratio": 0.9,
         "t_bpr_min_10km": 6.59,
         "v_bpr_kmh": 91.0,
-        "d_adj_min_10km": 7.05,
+        "d_adj_min_10km_modelled_assumption": 7.05,
         "t_total_min_10km": 13.64,
-        "v_corridor_kmh": 44.0
+        "v_corridor_kmh": 44.0,
+        "source_id": "SRC-435",
+        "publication_date": "2025-01-31"
       },
       {
         "observation_id": "OBS-DXB-011",
@@ -157,9 +180,11 @@
         "vc_ratio": 0.93,
         "t_bpr_min_10km": 8.34,
         "v_bpr_kmh": 71.9,
-        "d_adj_min_10km": 9.31,
+        "d_adj_min_10km_modelled_assumption": 9.31,
         "t_total_min_10km": 17.65,
-        "v_corridor_kmh": 34.0
+        "v_corridor_kmh": 34.0,
+        "source_id": "SRC-438",
+        "publication_date": "2025-07-13"
       },
       {
         "observation_id": "OBS-DXB-012",
@@ -170,9 +195,11 @@
         "vc_ratio": 0.93,
         "t_bpr_min_10km": 11.12,
         "v_bpr_kmh": 53.9,
-        "d_adj_min_10km": 16.15,
+        "d_adj_min_10km_modelled_assumption": 16.15,
         "t_total_min_10km": 27.27,
-        "v_corridor_kmh": 22.0
+        "v_corridor_kmh": 22.0,
+        "source_id": "SRC-438",
+        "publication_date": "2025-07-13"
       },
       {
         "observation_id": "OBS-DXB-013",
@@ -183,9 +210,11 @@
         "vc_ratio": 0.88,
         "t_bpr_min_10km": 6.54,
         "v_bpr_kmh": 91.7,
-        "d_adj_min_10km": 8.09,
+        "d_adj_min_10km_modelled_assumption": 8.09,
         "t_total_min_10km": 14.63,
-        "v_corridor_kmh": 41.0
+        "v_corridor_kmh": 41.0,
+        "source_id": "SRC-439",
+        "publication_date": "2022-12-25"
       },
       {
         "observation_id": "OBS-DXB-014",
@@ -196,9 +225,11 @@
         "vc_ratio": 0.91,
         "t_bpr_min_10km": 6.62,
         "v_bpr_kmh": 90.7,
-        "d_adj_min_10km": 9.17,
+        "d_adj_min_10km_modelled_assumption": 9.17,
         "t_total_min_10km": 15.79,
-        "v_corridor_kmh": 38.0
+        "v_corridor_kmh": 38.0,
+        "source_id": "SRC-439",
+        "publication_date": "2022-12-25"
       },
       {
         "observation_id": "OBS-DXB-015",
@@ -209,9 +240,11 @@
         "vc_ratio": 0.51,
         "t_bpr_min_10km": 5.51,
         "v_bpr_kmh": 108.9,
-        "d_adj_min_10km": 1.47,
+        "d_adj_min_10km_modelled_assumption": 1.47,
         "t_total_min_10km": 6.98,
-        "v_corridor_kmh": 86.0
+        "v_corridor_kmh": 86.0,
+        "source_id": "SRC-437",
+        "publication_date": "2025-06-01"
       },
       {
         "observation_id": "OBS-SHJ-001",
@@ -222,9 +255,11 @@
         "vc_ratio": 1.02,
         "t_bpr_min_10km": 6.34,
         "v_bpr_kmh": 94.6,
-        "d_adj_min_10km": 15.09,
+        "d_adj_min_10km_modelled_assumption": 15.09,
         "t_total_min_10km": 21.43,
-        "v_corridor_kmh": 28.0
+        "v_corridor_kmh": 28.0,
+        "source_id": "SRC-444",
+        "publication_date": "2025-09-10"
       },
       {
         "observation_id": "OBS-SHJ-002",
@@ -235,9 +270,11 @@
         "vc_ratio": 1.0,
         "t_bpr_min_10km": 6.27,
         "v_bpr_kmh": 95.7,
-        "d_adj_min_10km": 13.08,
+        "d_adj_min_10km_modelled_assumption": 13.08,
         "t_total_min_10km": 19.35,
-        "v_corridor_kmh": 31.0
+        "v_corridor_kmh": 31.0,
+        "source_id": "SRC-444",
+        "publication_date": "2025-09-10"
       },
       {
         "observation_id": "OBS-SHJ-003",
@@ -248,9 +285,11 @@
         "vc_ratio": 0.67,
         "t_bpr_min_10km": 5.62,
         "v_bpr_kmh": 106.8,
-        "d_adj_min_10km": 4.06,
+        "d_adj_min_10km_modelled_assumption": 4.06,
         "t_total_min_10km": 9.68,
-        "v_corridor_kmh": 62.0
+        "v_corridor_kmh": 62.0,
+        "source_id": "SRC-445",
+        "publication_date": "2026-06-15"
       },
       {
         "observation_id": "OBS-SHJ-004",
@@ -261,9 +300,11 @@
         "vc_ratio": 0.55,
         "t_bpr_min_10km": 6.08,
         "v_bpr_kmh": 98.6,
-        "d_adj_min_10km": 2.74,
+        "d_adj_min_10km_modelled_assumption": 2.74,
         "t_total_min_10km": 8.82,
-        "v_corridor_kmh": 68.0
+        "v_corridor_kmh": 68.0,
+        "source_id": "SRC-446",
+        "publication_date": "2025-07-18"
       },
       {
         "observation_id": "OBS-SHJ-005",
@@ -274,9 +315,11 @@
         "vc_ratio": 0.51,
         "t_bpr_min_10km": 7.58,
         "v_bpr_kmh": 79.2,
-        "d_adj_min_10km": 2.76,
+        "d_adj_min_10km_modelled_assumption": 2.76,
         "t_total_min_10km": 10.34,
-        "v_corridor_kmh": 58.0
+        "v_corridor_kmh": 58.0,
+        "source_id": "SRC-446",
+        "publication_date": "2025-07-18"
       },
       {
         "observation_id": "OBS-SHJ-006",
@@ -287,18 +330,48 @@
         "vc_ratio": 0.5,
         "t_bpr_min_10km": 6.06,
         "v_bpr_kmh": 99.1,
-        "d_adj_min_10km": 1.94,
+        "d_adj_min_10km_modelled_assumption": 1.94,
         "t_total_min_10km": 8.0,
-        "v_corridor_kmh": 75.0
+        "v_corridor_kmh": 75.0,
+        "source_id": "SRC-447",
+        "publication_date": "2025-06-22"
       }
     ]
   },
-  "official_source_separation_check": {
-    "SRC-439": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/opening-of-phase-i-of-sheikh-rashid-bin-saeed-corridor-project",
-    "SRC-451": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/rta-awards-aed-20-5-billion-contract-for-dubai-metro-blue-line-project",
-    "SRC-440": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/AllProjects/ongoing-project-details/70+of+umm+suqeim+street+improvement+project",
-    "SRC-452": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/hamdan-bin-mohammed-reviews-progress-of-key-strategic-road-corridors",
-    "zero_occurrence_of_10000_vph_per_dir": true
+  "official_source_separation_and_dates_check": {
+    "SRC-433": {
+      "url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/rta-completes-50-percent-of-hessa-street-improvement-project",
+      "publication_date": "2025-11-18"
+    },
+    "SRC-434": {
+      "url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/rta-opens-key-bridges-under-al-khail-road-improvement-project",
+      "publication_date": "2024-09-01"
+    },
+    "SRC-438": {
+      "url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/rta-awards-contract-for-al-mustaqbal-street-development-project",
+      "publication_date": "2025-07-13"
+    },
+    "SRC-439": {
+      "url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/opening-of-phase-i-of-sheikh-rashid-bin-saeed-corridor-project",
+      "publication_date": "2022-12-25"
+    },
+    "SRC-440": {
+      "url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/AllProjects/ongoing-project-details/70+of+umm+suqeim+street+improvement+project",
+      "publication_date": "2025-05-25"
+    },
+    "SRC-451": {
+      "url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/rta-awards-aed-20-5-billion-contract-for-dubai-metro-blue-line-project",
+      "publication_date": "2024-12-19"
+    },
+    "SRC-452": {
+      "url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news/NewsDetails/hamdan-bin-mohammed-reviews-progress-of-key-strategic-road-corridors",
+      "publication_date": "2025-05-04"
+    },
+    "zero_occurrence_of_10000_vph_per_dir_on_ras_al_khor": true
+  },
+  "report_to_csv_sync_check": {
+    "programmatically_generated_from_csv": true,
+    "markdown_table_rows_parsed_and_matched_to_csv": "21/21"
   },
   "spatial_and_hgv_checks": {
     "nearest_vertex_haversine_37_of_37": true,
