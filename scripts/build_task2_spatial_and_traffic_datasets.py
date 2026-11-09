@@ -13,10 +13,11 @@ import os
 import sqlite3
 from pathlib import Path
 
-BASE_DIR = Path("/Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research")
+SCRIPT_DIR = Path(__file__).resolve().parent
+BASE_DIR = SCRIPT_DIR.parent
 DATASETS_DIR = BASE_DIR / "datasets"
 CSV_DIR = BASE_DIR / "csv"
-WEB_DIR = BASE_DIR / "web"
+WEB_DIR = BASE_DIR / "web" if (BASE_DIR / "web").is_dir() else BASE_DIR
 WEB_DATASETS_DIR = WEB_DIR / "datasets"
 WEB_CSV_DIR = WEB_DIR / "csv"
 WEB_CSV_RAW_DIR = WEB_DIR / "csv_raw"

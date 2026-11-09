@@ -7,12 +7,14 @@ top banner linking Task 1 and Task 2 seamlessly.
 import html
 import json
 import re
+import os
 from pathlib import Path
 
-BASE_DIR = Path("/Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research")
+SCRIPT_DIR = Path(__file__).resolve().parent
+BASE_DIR = SCRIPT_DIR.parent
 DATASETS_DIR = BASE_DIR / "datasets"
-WEB_DIR = BASE_DIR / "web"
-ARTIFACT_DIR = Path("/Users/siddiqahmed26/.gemini/antigravity/brain/5b606913-602f-408a-8507-6d1c1ae92e60")
+WEB_DIR = BASE_DIR / "web" if (BASE_DIR / "web").is_dir() else BASE_DIR
+ARTIFACT_DIR = Path(os.environ["AGY_ARTIFACT_DIR"]) if "AGY_ARTIFACT_DIR" in os.environ else None
 
 
 def render_table_html(rows: list, cols: list) -> str:
@@ -252,16 +254,18 @@ def main():
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>TASK 2 — UAE Construction &amp; Traffic Impact Geospatial Intelligence Platform (Dubai &amp; Sharjah)</title>
+  <title>UAE Construction &amp; Traffic Intelligence — Executive GIS Platform</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗺️</text></svg>"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" crossorigin=""/>
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin=""></script>
   <style>
     :root {{
       --bg-dark: #070b14;
-      --panel-dark: #0f172a;
-      --panel-card: #1e293b;
-      --border: #334155;
+      --panel-dark: #0d1424;
+      --panel-card: #152036;
+      --border: #263552;
       --text: #f8fafc;
       --muted: #94a3b8;
       --cyan: #38bdf8;
@@ -278,118 +282,393 @@ def main():
       background: var(--bg-dark);
       color: var(--text);
       line-height: 1.45;
+      overflow-x: hidden;
     }}
     a {{ color: var(--cyan); text-decoration: none; }}
     a:hover {{ text-decoration: underline; }}
 
-    /* Top Global Switcher Bar */
-    .top-bar {{
-      background: linear-gradient(90deg, #090d16 0%, #0f172a 55%, #1e1b4b 100%);
+    /* 1. Clean Single-Row Executive Header */
+    .exec-header {{
+      background: rgba(9, 13, 22, 0.96);
+      backdrop-filter: blur(12px);
       border-bottom: 1px solid var(--border);
-      padding: 10px 18px;
+      padding: 8px 16px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 10px;
+      gap: 12px;
       position: sticky;
       top: 0;
-      z-index: 2000;
+      z-index: 2500;
+      min-height: 54px;
     }}
-    .brand-title {{
+    .brand-cluster {{
       display: flex;
       align-items: center;
       gap: 10px;
+      flex-wrap: wrap;
+    }}
+    .brand-title {{
       font-weight: 800;
-      font-size: 1.02rem;
+      font-size: 0.96rem;
       letter-spacing: -0.01em;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }}
     .brand-badge {{
       background: linear-gradient(135deg, #0284c7, #2563eb);
       color: #fff;
-      font-size: 0.72rem;
-      padding: 3px 9px;
+      font-size: 0.68rem;
+      padding: 2px 8px;
       border-radius: 999px;
       font-weight: 700;
       text-transform: uppercase;
+      letter-spacing: 0.03em;
     }}
-    .nav-pills {{
+    .kpi-strip {{
       display: flex;
+      align-items: center;
+      gap: 6px;
+    }}
+    .kpi-chip {{
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 3px 8px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }}
+    .kpi-chip strong {{
+      color: #fff;
+      font-weight: 700;
+      margin-left: 3px;
+    }}
+
+    /* 5 Main Executive Product Areas (Mode Switcher) */
+    .mode-switcher {{
+      display: flex;
+      background: #090e1a;
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 3px;
+      gap: 3px;
+      flex-wrap: wrap;
+    }}
+    .mode-btn {{
+      background: transparent;
+      border: 1px solid transparent;
+      color: #cbd5e1;
+      padding: 6px 11px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      white-space: nowrap;
+    }}
+    .mode-btn:hover {{
+      color: #fff;
+      background: rgba(56, 189, 248, 0.08);
+    }}
+    .mode-btn.active {{
+      background: linear-gradient(135deg, #0284c7, #1d4ed8);
+      color: #fff;
+      border-color: rgba(56, 189, 248, 0.45);
+      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+    }}
+
+    /* Compact Right Header Actions & Dropdown */
+    .header-actions {{
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: relative;
+    }}
+    .emirate-pill-select {{
+      background: #152036;
+      border: 1px solid #3b82f6;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 7px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      cursor: pointer;
+    }}
+    .export-dropdown {{
+      position: relative;
+    }}
+    .export-dropdown summary {{
+      list-style: none;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border);
+      color: #e2e8f0;
+      padding: 5px 10px;
+      border-radius: 7px;
+      font-size: 0.74rem;
+      font-weight: 600;
+      cursor: pointer;
+      user-select: none;
+    }}
+    .export-dropdown summary::-webkit-details-marker {{ display: none; }}
+    .export-menu {{
+      position: absolute;
+      right: 0;
+      top: calc(100% + 6px);
+      width: 250px;
+      background: #0f172a;
+      border: 1px solid #334155;
+      border-radius: 10px;
+      padding: 8px;
+      box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      z-index: 3000;
+    }}
+    .export-menu a {{
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+    }}
+    .export-menu a:hover {{
+      background: rgba(56, 189, 248, 0.14);
+      color: var(--cyan);
+      text-decoration: none;
+    }}
+
+    /* 2. Map-Centric Two-Column Executive Workbench with Multi-Stage Breakpoints */
+    .workbench {{
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      height: calc(100vh - 55px);
+      min-height: 620px;
+      position: relative;
+      border-bottom: 1px solid var(--border);
+      transition: grid-template-columns 0.22s ease;
+    }}
+    .workbench.panel-collapsed {{
+      grid-template-columns: 1fr 0px;
+    }}
+    @media (max-width: 1440px) {{
+      .workbench {{ grid-template-columns: 1fr 375px; }}
+      .kpi-strip {{ display: none; }}
+    }}
+    @media (max-width: 1024px) {{
+      .workbench {{
+        grid-template-columns: 1fr;
+        grid-template-rows: 62vh 1fr;
+        height: auto;
+      }}
+      .sidebar-right {{
+        border-left: none !important;
+        border-top: 1px solid var(--border);
+      }}
+    }}
+    @media (max-width: 768px) {{
+      .exec-header {{ padding: 8px 10px; }}
+      .mode-switcher {{ width: 100%; overflow-x: auto; flex-wrap: nowrap; }}
+      .workbench {{ grid-template-rows: 54vh 1fr; }}
+    }}
+
+    /* 3. Center Map Stage & Floating HUD Controls */
+    .map-stage {{
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      background: #060a12;
+      overflow: hidden;
+    }}
+    #mapCanvas {{
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: #080d18;
+      transition: transform 0.35s ease;
+    }}
+    #mapCanvas.tilt-3d {{
+      transform: perspective(1400px) rotateX(22deg) scale(1.06);
+      transform-origin: center 60%;
+    }}
+    .leaflet-tile.gis-dark-tiles {{
+      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    }}
+
+    /* Top Floating Bar: Guided 5-Step Storytelling Sequence + Basemap/Engine Switcher */
+    .map-hud-top {{
+      position: absolute;
+      top: 10px;
+      left: 50px;
+      right: 12px;
+      z-index: 900;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      pointer-events: none;
       gap: 8px;
       flex-wrap: wrap;
-      align-items: center;
     }}
-    .nav-pill {{
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.16);
-      color: #e2e8f0;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 0.78rem;
+    .story-bar {{
+      pointer-events: auto;
+      background: rgba(13, 20, 36, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 4px 6px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.45);
+    }}
+    .story-lbl {{
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--cyan);
+      padding: 0 6px;
+      letter-spacing: 0.04em;
+    }}
+    .story-step {{
+      background: rgba(30, 41, 59, 0.75);
+      border: 1px solid transparent;
+      color: #cbd5e1;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 0.72rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.15s;
     }}
-    .nav-pill:hover, .nav-pill.active {{
+    .story-step:hover {{ color: #fff; border-color: #475569; }}
+    .story-step.active {{
       background: #0284c7;
-      border-color: #38bdf8;
       color: #fff;
-      text-decoration: none;
+      border-color: #38bdf8;
+    }}
+    .story-arrow {{ color: #475569; font-size: 0.70rem; }}
+
+    .hud-right-stack {{
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      pointer-events: auto;
+      flex-wrap: wrap;
+    }}
+    .basemap-switcher {{
+      background: rgba(13, 20, 36, 0.92);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      padding: 3px;
+      border-radius: 8px;
+      display: flex;
+      gap: 3px;
+    }}
+    .bm-btn {{
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      padding: 4px 8px;
+      border-radius: 5px;
+      font-size: 0.71rem;
+      font-weight: 700;
+      cursor: pointer;
+    }}
+    .bm-btn.active {{
+      background: #0284c7;
+      color: #fff;
     }}
 
-    /* Use Cases & Time Selector Ribbon */
-    .command-ribbon {{
-      background: #0b1120;
-      border-bottom: 1px solid var(--border);
-      padding: 10px 18px;
+    /* Prominent Epistemic Traffic Banner on Map */
+    .epistemic-banner {{
+      position: absolute;
+      top: 52px;
+      left: 50px;
+      z-index: 890;
+      pointer-events: auto;
+      background: rgba(13, 20, 36, 0.90);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      border-radius: 8px;
+      padding: 4px 10px;
+      font-size: 0.70rem;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      flex-wrap: wrap;
-      gap: 12px;
-    }}
-    .uc-group {{
-      display: flex;
       gap: 8px;
       flex-wrap: wrap;
-      align-items: center;
     }}
-    .uc-btn {{
-      background: #1e293b;
-      border: 1px solid #475569;
-      color: #f8fafc;
-      padding: 7px 12px;
-      border-radius: 8px;
-      font-size: 0.78rem;
+
+    /* Bottom Floating Dock: Compact Layer Pills, Time Window Switcher & Collapsible Filter/Layer Popover */
+    .map-hud-bottom {{
+      position: absolute;
+      bottom: 14px;
+      left: 14px;
+      right: 14px;
+      z-index: 900;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      pointer-events: none;
+      gap: 10px;
+      flex-wrap: wrap;
+    }}
+    .layer-pill-bar {{
+      pointer-events: auto;
+      background: rgba(13, 20, 36, 0.94);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 5px 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+    }}
+    .quick-layer-pill {{
+      background: rgba(30, 41, 59, 0.8);
+      border: 1px solid #334155;
+      color: #94a3b8;
+      padding: 4px 9px;
+      border-radius: 6px;
+      font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 6px;
-      transition: all 0.15s;
+      gap: 5px;
     }}
-    .uc-btn:hover, .uc-btn.active {{
-      background: linear-gradient(135deg, #0369a1, #1d4ed8);
+    .quick-layer-pill.on {{
+      background: rgba(2, 132, 199, 0.22);
       border-color: #38bdf8;
-      box-shadow: 0 0 12px rgba(56,189,248,0.35);
+      color: #f8fafc;
     }}
     .time-group {{
+      pointer-events: auto;
       display: flex;
-      gap: 6px;
+      gap: 4px;
       flex-wrap: wrap;
       align-items: center;
-      background: #111827;
-      padding: 4px 8px;
-      border-radius: 8px;
+      background: rgba(13, 20, 36, 0.94);
+      backdrop-filter: blur(10px);
+      padding: 4px 6px;
+      border-radius: 9px;
       border: 1px solid var(--border);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
     }}
     .time-btn {{
       background: transparent;
       border: 1px solid transparent;
       color: var(--muted);
-      padding: 5px 10px;
+      padding: 4px 9px;
       border-radius: 6px;
-      font-size: 0.75rem;
+      font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
     }}
@@ -399,208 +678,113 @@ def main():
       border-color: #14b8a6;
     }}
 
-    /* Main 3-Column Geospatial Workbench */
-    .workbench {{
-      display: grid;
-      grid-template-columns: 320px 1fr 410px;
-      height: calc(100vh - 108px);
-      min-height: 640px;
-      border-bottom: 2px solid var(--border);
+    /* Compact Popover for All 11 Layers & Advanced Filters */
+    .layers-drawer-popover {{
+      position: absolute;
+      bottom: 56px;
+      left: 14px;
+      width: 340px;
+      max-height: 72vh;
+      overflow-y: auto;
+      background: rgba(13, 20, 36, 0.97);
+      backdrop-filter: blur(14px);
+      border: 1px solid #3b82f6;
+      border-radius: 12px;
+      padding: 12px;
+      z-index: 1200;
+      box-shadow: 0 14px 34px rgba(0,0,0,0.65);
+      display: none;
     }}
-    @media (max-width: 1280px) {{
-      .workbench {{
-        grid-template-columns: 1fr;
-        height: auto;
-      }}
-      #mapCanvas {{ height: 540px !important; }}
+    .layers-drawer-popover.open {{ display: block; }}
+
+    /* Compact Map Legend Pill */
+    .map-legend {{
+      pointer-events: auto;
+      background: rgba(13, 20, 36, 0.94);
+      backdrop-filter: blur(10px);
+      border: 1px solid var(--border);
+      border-radius: 9px;
+      padding: 6px 10px;
+      font-size: 0.70rem;
+      max-width: 440px;
+    }}
+    .legend-inline {{
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }}
+    .leg-row {{
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
+    }}
+    .leg-line {{
+      width: 14px;
+      height: 3px;
+      border-radius: 2px;
+      display: inline-block;
+    }}
+    .layer-dot {{
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
     }}
 
-    /* Left Sidebar: Filters, Community Jump & 11 Layers */
-    .sidebar-left {{
-      background: var(--panel-dark);
-      border-right: 1px solid var(--border);
-      padding: 14px;
-      overflow-y: auto;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-    }}
-    .panel-box {{
-      background: rgba(30,41,59,0.65);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
-    }}
-    .panel-box h3 {{
-      margin: 0 0 8px 0;
-      font-size: 0.82rem;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-      color: var(--cyan);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }}
+    /* Form Controls inside Filter Popover & Q&A */
     .ctrl-label {{
       display: block;
-      font-size: 0.73rem;
+      font-size: 0.70rem;
       color: var(--muted);
-      font-weight: 600;
-      margin: 7px 0 3px;
+      font-weight: 700;
+      margin: 6px 0 2px;
+      text-transform: uppercase;
     }}
     .ctrl-select, .ctrl-input {{
       width: 100%;
-      background: #090d16;
-      border: 1px solid #475569;
+      background: #070b14;
+      border: 1px solid #334155;
       color: #fff;
-      padding: 7px 9px;
+      padding: 6px 8px;
       border-radius: 6px;
-      font-size: 0.79rem;
+      font-size: 0.76rem;
     }}
     .layer-list {{
       display: flex;
       flex-direction: column;
-      gap: 6px;
+      gap: 4px;
+      margin-top: 6px;
     }}
     .layer-item {{
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.77rem;
+      font-size: 0.73rem;
       padding: 4px 6px;
       border-radius: 6px;
-      background: rgba(15,23,42,0.75);
-      border: 1px solid rgba(51,65,85,0.6);
+      background: rgba(21, 32, 54, 0.75);
+      border: 1px solid rgba(51, 65, 85, 0.5);
     }}
     .layer-item label {{
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 6px;
       cursor: pointer;
       flex: 1;
     }}
-    .layer-dot {{
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-      flex-shrink: 0;
-    }}
     .prov-tag {{
-      font-size: 0.65rem;
-      padding: 1px 6px;
+      font-size: 0.62rem;
+      padding: 1px 5px;
       border-radius: 4px;
       font-weight: 700;
     }}
-    .prov-ver {{ background: rgba(16,185,129,0.2); color: #34d399; border: 1px solid rgba(16,185,129,0.4); }}
-    .prov-mod {{ background: rgba(245,158,11,0.2); color: #fbbf24; border: 1px solid rgba(245,158,11,0.4); }}
+    .prov-ver {{ background: rgba(16,185,129,0.18); color: #34d399; border: 1px solid rgba(16,185,129,0.35); }}
+    .prov-mod {{ background: rgba(245,158,11,0.18); color: #fbbf24; border: 1px solid rgba(245,158,11,0.35); }}
 
-    /* Center Map Container */
-    .map-stage {{
-      position: relative;
-      display: flex;
-      flex-direction: column;
-      background: #050811;
-    }}
-    #mapCanvas {{
-      flex: 1;
-      width: 100%;
-      height: 100%;
-      z-index: 1;
-      background: #0b1120;
-    }}
-    .leaflet-tile.gis-dark-tiles {{
-      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
-    }}
-    .map-hud-top {{
-      position: absolute;
-      top: 12px;
-      left: 52px;
-      right: 12px;
-      z-index: 900;
-      display: flex;
-      justify-content: space-between;
-      pointer-events: none;
-      gap: 8px;
-      flex-wrap: wrap;
-    }}
-    .hud-kpi-bar {{
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-      pointer-events: auto;
-    }}
-    .hud-kpi {{
-      background: rgba(15,23,42,0.92);
-      backdrop-filter: blur(8px);
-      border: 1px solid #334155;
-      padding: 6px 11px;
-      border-radius: 8px;
-      font-size: 0.74rem;
-    }}
-    .hud-kpi strong {{
-      display: block;
-      font-size: 0.94rem;
-      color: var(--cyan);
-    }}
-    .basemap-switcher {{
-      pointer-events: auto;
-      background: rgba(15,23,42,0.92);
-      border: 1px solid #334155;
-      padding: 4px;
-      border-radius: 8px;
-      display: flex;
-      gap: 4px;
-      height: fit-content;
-    }}
-    .bm-btn {{
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      padding: 5px 9px;
-      border-radius: 5px;
-      font-size: 0.72rem;
-      font-weight: 700;
-      cursor: pointer;
-    }}
-    .bm-btn.active {{
-      background: #0284c7;
-      color: #fff;
-    }}
-
-    /* Map Legend Overlay */
-    .map-legend {{
-      position: absolute;
-      bottom: 16px;
-      left: 14px;
-      z-index: 900;
-      background: rgba(15,23,42,0.94);
-      backdrop-filter: blur(8px);
-      border: 1px solid #334155;
-      border-radius: 10px;
-      padding: 10px 12px;
-      font-size: 0.72rem;
-      max-width: 390px;
-    }}
-    .legend-grid {{
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 4px 12px;
-      margin-top: 5px;
-    }}
-    .leg-row {{
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }}
-    .leg-line {{
-      width: 18px;
-      height: 4px;
-      border-radius: 2px;
-      display: inline-block;
-    }}
-
-    /* Right Intelligence Drawer (Use Cases, Project/Road Details & Deterministic Q&A) */
+    /* 4. Right Contextual Executive Panel + Progressive Disclosure Accordions */
     .sidebar-right {{
       background: var(--panel-dark);
       border-left: 1px solid var(--border);
@@ -611,7 +795,7 @@ def main():
     .drawer-tabs {{
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      background: #090d16;
+      background: #080d18;
       border-bottom: 1px solid var(--border);
     }}
     .dtab-btn {{
@@ -619,8 +803,8 @@ def main():
       border: none;
       border-bottom: 2px solid transparent;
       color: var(--muted);
-      padding: 10px 6px;
-      font-size: 0.76rem;
+      padding: 9px 6px;
+      font-size: 0.74rem;
       font-weight: 700;
       cursor: pointer;
     }}
@@ -630,7 +814,7 @@ def main():
       background: rgba(56,189,248,0.08);
     }}
     .drawer-body {{
-      padding: 14px;
+      padding: 12px;
       overflow-y: auto;
       flex: 1;
     }}
@@ -639,28 +823,85 @@ def main():
       border: 1px solid var(--border);
       border-radius: 10px;
       padding: 12px;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
     }}
     .detail-card h4 {{
       margin: 0 0 6px 0;
-      font-size: 0.92rem;
+      font-size: 0.94rem;
       color: #fff;
     }}
+
+    /* Executive KPI Grid inside Cards */
+    .exec-metric-grid {{
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 7px;
+      margin: 8px 0;
+    }}
+    .exec-metric-tile {{
+      background: rgba(9, 14, 26, 0.75);
+      border: 1px solid rgba(51, 65, 85, 0.7);
+      border-radius: 8px;
+      padding: 7px 9px;
+    }}
+    .exec-metric-tile .m-lbl {{
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      color: var(--muted);
+      font-weight: 700;
+    }}
+    .exec-metric-tile .m-val {{
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: #fff;
+      margin-top: 2px;
+    }}
+
+    /* Progressive Disclosure Technical Accordion (<details>) */
+    details.tech-accordion {{
+      background: rgba(9, 14, 26, 0.65);
+      border: 1px solid rgba(51, 65, 85, 0.75);
+      border-radius: 8px;
+      margin-top: 8px;
+      overflow: hidden;
+    }}
+    details.tech-accordion summary {{
+      padding: 8px 10px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--cyan);
+      cursor: pointer;
+      user-select: none;
+      background: rgba(15, 23, 42, 0.85);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }}
+    details.tech-accordion summary:hover {{
+      background: rgba(30, 41, 59, 0.9);
+    }}
+    details.tech-accordion .acc-body {{
+      padding: 9px 10px;
+      font-size: 0.74rem;
+      border-top: 1px solid rgba(51, 65, 85, 0.6);
+      color: #cbd5e1;
+    }}
+
     .kv-grid {{
       display: grid;
       grid-template-columns: 1fr;
       gap: 6px;
-      font-size: 0.77rem;
-      margin-top: 8px;
+      font-size: 0.75rem;
+      margin-top: 6px;
     }}
     .kv-row {{
-      background: rgba(15,23,42,0.65);
-      border: 1px solid rgba(51,65,85,0.65);
+      background: rgba(9, 14, 26, 0.65);
+      border: 1px solid rgba(51, 65, 85, 0.65);
       padding: 6px 8px;
       border-radius: 6px;
     }}
     .kv-lbl {{
-      font-size: 0.68rem;
+      font-size: 0.66rem;
       text-transform: uppercase;
       color: var(--muted);
       font-weight: 700;
@@ -676,7 +917,7 @@ def main():
       display: inline-block;
       padding: 3px 8px;
       border-radius: 6px;
-      font-size: 0.71rem;
+      font-size: 0.69rem;
       font-weight: 700;
     }}
     .ep-t1 {{ background: rgba(56,189,248,0.18); color: #7dd3fc; border: 1px solid #0284c7; }}
@@ -688,7 +929,7 @@ def main():
       display: inline-block;
       padding: 2px 7px;
       border-radius: 999px;
-      font-size: 0.69rem;
+      font-size: 0.68rem;
       font-weight: 700;
     }}
     .b-ver {{ background: rgba(16,185,129,0.2); color: #34d399; }}
@@ -699,22 +940,22 @@ def main():
     .qa-box {{
       display: flex;
       gap: 6px;
-      margin-bottom: 10px;
+      margin-bottom: 8px;
     }}
     .qa-preset-list {{
       display: flex;
       flex-direction: column;
-      gap: 5px;
-      margin-bottom: 12px;
+      gap: 4px;
+      margin-bottom: 10px;
     }}
     .qa-preset-btn {{
       text-align: left;
       background: rgba(15,23,42,0.85);
       border: 1px solid #334155;
       color: #cbd5e1;
-      padding: 7px 9px;
-      border-radius: 7px;
-      font-size: 0.75rem;
+      padding: 6px 8px;
+      border-radius: 6px;
+      font-size: 0.73rem;
       cursor: pointer;
       transition: all 0.15s;
     }}
@@ -724,27 +965,27 @@ def main():
       background: rgba(2,132,199,0.2);
     }}
 
-    /* Bottom Milestone Evidence Section */
+    /* Bottom Expandable Evidence & Datasets Section */
     .evidence-section {{
-      padding: 24px 22px 60px;
+      padding: 18px 20px 48px;
       max-width: 1600px;
       margin: 0 auto;
     }}
     .ev-tabs {{
       display: flex;
-      gap: 8px;
+      gap: 6px;
       flex-wrap: wrap;
-      margin-bottom: 16px;
+      margin-bottom: 12px;
       border-bottom: 1px solid var(--border);
-      padding-bottom: 10px;
+      padding-bottom: 8px;
     }}
     .ev-tab-btn {{
-      background: #1e293b;
+      background: #152036;
       border: 1px solid #334155;
       color: #cbd5e1;
-      padding: 8px 14px;
-      border-radius: 8px;
-      font-size: 0.79rem;
+      padding: 6px 11px;
+      border-radius: 7px;
+      font-size: 0.75rem;
       font-weight: 700;
       cursor: pointer;
     }}
@@ -761,21 +1002,22 @@ def main():
       border: 1px solid var(--border);
       border-radius: 10px;
       background: var(--panel-dark);
-      margin-top: 10px;
+      margin-top: 8px;
+      max-height: 520px;
     }}
     .t2-table {{
       width: 100%;
       border-collapse: collapse;
-      font-size: 0.77rem;
+      font-size: 0.75rem;
     }}
     .t2-table th, .t2-table td {{
-      padding: 8px 10px;
+      padding: 7px 9px;
       border-bottom: 1px solid #1e293b;
       text-align: left;
       vertical-align: top;
     }}
     .t2-table th {{
-      background: #090d16;
+      background: #080d18;
       color: var(--cyan);
       font-weight: 700;
       position: sticky;
@@ -788,82 +1030,128 @@ def main():
       display: flex;
       gap: 8px;
       flex-wrap: wrap;
-      margin: 10px 0;
+      margin: 8px 0;
       align-items: center;
-      font-size: 0.78rem;
+      font-size: 0.76rem;
     }}
     .dl-chip {{
-      background: #1e293b;
+      background: #152036;
       border: 1px solid #475569;
       color: #38bdf8;
-      padding: 4px 10px;
+      padding: 3px 9px;
       border-radius: 6px;
       font-weight: 600;
-      font-size: 0.74rem;
+      font-size: 0.72rem;
     }}
   </style>
 </head>
 <body>
 
-  <!-- TOP GLOBAL NAVIGATION BAR -->
-  <header class="top-bar">
-    <div class="brand-title">
-      <span class="brand-badge">Task 2 Live Prototype</span>
-      <span>UAE Construction Activity, Road Network &amp; Traffic Impact Intelligence Platform</span>
+  <!-- 1. EXECUTIVE SINGLE-ROW HEADER WITH 5 MAIN PRODUCT MODES -->
+  <header class="exec-header">
+    <div class="brand-cluster">
+      <div class="brand-title">
+        <span class="brand-badge">UAE Intelligence</span>
+        <span>Construction &amp; Traffic Platform</span>
+      </div>
+      <div class="kpi-strip">
+        <span class="kpi-chip">Scope <strong id="hudScope">Dubai</strong></span>
+        <span class="kpi-chip">Active Sites <strong id="hudProjects">25</strong></span>
+        <span class="kpi-chip">Corridors <strong id="hudRoads">23</strong></span>
+        <span class="kpi-chip">Communities <strong id="hudComms">10</strong></span>
+      </div>
     </div>
-    <div class="nav-pills">
-      <a class="nav-pill active" href="task2_gis_intelligence.html">🗺️ Task 2: Dubai &amp; Sharjah GIS + Traffic Intelligence</a>
-      <a class="nav-pill" href="index.html">🏛️ Task 1: 85-Project UAE Repository (All 7 Emirates)</a>
-      <a class="nav-pill" href="validation_report.html">✅ Task 1 QA Audit Sign-Off</a>
-      <a class="nav-pill" href="datasets/dubai_sharjah_gis_bundle.geojson">📦 GeoJSON Bundle</a>
-      <a class="nav-pill" href="datasets/21_task2_spatial_database.sqlite">🗄️ Spatial SQLite DB</a>
-      <a class="nav-pill" href="#evidence-tables">📊 Inspect All 11 Task 2 Datasets ↓</a>
+
+    <!-- 5 MAIN AREAS (SECTION 4 REDESIGN) -->
+    <nav class="mode-switcher" aria-label="Primary Platform Modes">
+      <button class="mode-btn active" id="mode-overview" onclick="setPlatformMode('overview', this)">1. Overview</button>
+      <button class="mode-btn" id="mode-construction" onclick="setPlatformMode('construction', this)">2. Construction Map</button>
+      <button class="mode-btn" id="mode-traffic" onclick="setPlatformMode('traffic', this)">3. Traffic Intelligence</button>
+      <button class="mode-btn" id="mode-project" onclick="setPlatformMode('project', this)">4. Project Explorer</button>
+      <button class="mode-btn" id="mode-evidence" onclick="setPlatformMode('evidence', this)">5. Evidence &amp; Methodology</button>
+    </nav>
+
+    <div class="header-actions">
+      <select id="emirateSelect" class="emirate-pill-select" onchange="onEmirateChange()" aria-label="Select Emirate">
+        <option value="Dubai" selected>Dubai (25 Sites)</option>
+        <option value="Sharjah">Sharjah (12 Sites)</option>
+        <option value="ALL">Dubai + Sharjah (37 Sites)</option>
+      </select>
+
+      <details class="export-dropdown">
+        <summary>Data &amp; Exports ▾</summary>
+        <div class="export-menu">
+          <a href="#evidence-tables" onclick="document.getElementById('evidenceAccordion').open=true"><span>📊 All 11 Task 2 Datasets</span><span>↓</span></a>
+          <a href="datasets/task2_verification_receipt.json" target="_blank"><span>✅ Verification Receipt</span><span>JSON</span></a>
+          <a href="datasets/dubai_sharjah_gis_bundle.geojson" target="_blank"><span>📦 Spatial Bundle (123)</span><span>GeoJSON</span></a>
+          <a href="datasets/21_task2_spatial_database.sqlite"><span>🗄️ Task 2 Spatial DB</span><span>SQLite</span></a>
+          <a href="task2_gis_and_traffic_intelligence_report.md" target="_blank"><span>📄 Full Task 2 Report</span><span>MD</span></a>
+          <a href="index.html"><span>🏛️ Switch to Task 1 (85 Projects)</span><span>→</span></a>
+        </div>
+      </details>
     </div>
   </header>
 
-  <!-- COMMAND RIBBON: 3 MANDATORY USE CASES + SHARJAH EXPANSION + CONFIGURABLE TIME SELECTOR -->
-  <section class="command-ribbon">
-    <div class="uc-group">
-      <span style="font-size:0.75rem; font-weight:800; color:var(--cyan); text-transform:uppercase;">Guided Use Cases:</span>
-      <button class="uc-btn active" id="btn-uc1" onclick="runUseCase(1)">🔥 Use Case 1: Where Is Construction Concentrated in Dubai?</button>
-      <button class="uc-btn" id="btn-uc2" onclick="runUseCase(2)">🚧 Use Case 2: How Might Construction Affect Traffic in JVC?</button>
-      <button class="uc-btn" id="btn-uc3" onclick="runUseCase(3)">⏱️ Use Case 3: Morning vs. Evening Peak &amp; 2024–2026 Comparison</button>
-      <button class="uc-btn" id="btn-uc4" onclick="runUseCase(4)">🏙️ Priority 2: Sharjah Expansion (Aljada / Muwaileh / E611)</button>
-    </div>
+  <!-- 2. TWO-COLUMN MAP-CENTRIC WORKBENCH -->
+  <main class="workbench" id="mainWorkbench">
 
-    <div class="time-group">
-      <span style="font-size:0.73rem; font-weight:700; color:#cbd5e1; margin-right:4px;">Time Window:</span>
-      <button class="time-btn" data-tp="Morning Peak (07:30–09:30)" onclick="setTimeWindow('Morning Peak (07:30–09:30)', this)">🌅 Morning Peak (07:30–09:30)</button>
-      <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday / HGV Haul (12:00–14:00)</button>
-      <button class="time-btn active" data-tp="Evening Peak (17:00–20:00)" onclick="setTimeWindow('Evening Peak (17:00–20:00)', this)">🌇 Evening Peak (17:00–20:00)</button>
-      <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night Concrete Window (22:00–05:00)</button>
-    </div>
-  </section>
+    <!-- FULL-BLEED INTERACTIVE MAP STAGE -->
+    <section class="map-stage">
+      <!-- Top Floating Guided Storytelling Bar & Basemap Switcher -->
+      <div class="map-hud-top">
+        <div class="story-bar" role="region" aria-label="Guided Visual Storytelling Sequence">
+          <span class="story-lbl">Story Tour:</span>
+          <button class="story-step" id="story-1" onclick="runStoryStep(1)">1. UAE Overview</button>
+          <span class="story-arrow">→</span>
+          <button class="story-step active" id="story-2" onclick="runStoryStep(2)">2. Dubai</button>
+          <span class="story-arrow">→</span>
+          <button class="story-step" id="story-3" onclick="runStoryStep(3)">3. Community (JVC)</button>
+          <span class="story-arrow">→</span>
+          <button class="story-step" id="story-4" onclick="runStoryStep(4)">4. Project</button>
+          <span class="story-arrow">→</span>
+          <button class="story-step" id="story-5" onclick="runStoryStep(5)">5. Road Impact</button>
+        </div>
 
-  <!-- 3-COLUMN GEOSPATIAL WORKBENCH -->
-  <main class="workbench">
+        <div class="hud-right-stack">
+          <div class="basemap-switcher">
+            <button class="bm-btn active" onclick="setBasemap('dark', this)">Dark GIS</button>
+            <button class="bm-btn" onclick="setBasemap('light', this)">Street</button>
+            <button class="bm-btn" onclick="setBasemap('sat', this)">Satellite</button>
+            <button class="bm-btn" id="btn3dTilt" onclick="toggle3DPerspective(this)" title="Toggle WebGL / 3D Perspective Pitch">3D Pitch</button>
+          </div>
+          <button class="bm-btn" style="background:rgba(13,20,36,0.92);border:1px solid var(--border);color:#e2e8f0;padding:5px 9px;border-radius:7px;" onclick="toggleRightPanel()" title="Expand / Collapse Side Panel">⇤ Panel</button>
+        </div>
+      </div>
 
-    <!-- LEFT SIDEBAR: SEARCH, COMMUNITY JUMP, FILTERS & 11 LAYER TOGGLES -->
-    <aside class="sidebar-left">
-      <div class="panel-box">
-        <h3><span>1. Geographic Navigation &amp; Filters</span> <button onclick="resetAllFilters()" style="background:#334155;border:none;color:#fff;font-size:0.68rem;padding:2px 7px;border-radius:4px;cursor:pointer;">Reset</button></h3>
+      <!-- Prominent Epistemic Differentiation Banner (Fixes 3.E & 5.5) -->
+      <div class="epistemic-banner">
+        <span class="conf-pill b-ver">PUBLISHED: RTA/SRTA Capacities &amp; TomTom City Index (31.3 km/h)</span>
+        <span class="conf-pill b-est">MODELLED ESTIMATES: Segment Speeds (BPR + Delay) &amp; Daily HGV Loads (Not Live Telemetry)</span>
+        <span style="color:#cbd5e1;">Window: <strong id="hudTime" style="color:#fff;">Evening Peak (17:00–20:00)</strong></span>
+      </div>
 
-        <label class="ctrl-label">Search Project, Road, Developer or Community</label>
-        <input type="text" id="searchInput" class="ctrl-input" placeholder="e.g. JVC, Hessa, Binghatti, Creek, Aljada..." oninput="applyMapFilters()"/>
+      <!-- Primary Map Canvas -->
+      <div id="mapCanvas"></div>
 
-        <label class="ctrl-label">Emirate Scope</label>
-        <select id="emirateSelect" class="ctrl-select" onchange="onEmirateChange()">
-          <option value="ALL">All (Dubai Priority 1 + Sharjah Priority 2)</option>
-          <option value="Dubai" selected>Dubai (Priority 1 — 20 Flagships + 5 JVC Clusters)</option>
-          <option value="Sharjah">Sharjah (Priority 2 — 12 Flagships &amp; Corridors)</option>
-        </select>
+      <!-- Hidden/Collapsible Advanced Layers & Filters Popover (All 11 Layers Preserved without Clutter) -->
+      <div class="layers-drawer-popover" id="layersPopover">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <strong style="font-size:0.80rem; color:var(--cyan);">Map Layers (11) &amp; Filters</strong>
+          <div style="display:flex; gap:6px;">
+            <button onclick="resetAllFilters()" style="background:#334155;border:none;color:#fff;font-size:0.68rem;padding:2px 7px;border-radius:4px;cursor:pointer;">Reset</button>
+            <button onclick="toggleLayersPopover()" style="background:transparent;border:none;color:#94a3b8;font-size:0.85rem;cursor:pointer;">✕</button>
+          </div>
+        </div>
 
-        <label class="ctrl-label">Zoom to Community / Hotspot</label>
-        <select id="communitySelect" class="ctrl-select" onchange="zoomToSelectedCommunity()">
-          <option value="ALL">-- City-Wide View --</option>
-        </select>
+        <input type="text" id="searchInput" class="ctrl-input" placeholder="Search project, road, community (e.g. JVC, Hessa)..." oninput="applyMapFilters()"/>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px;">
+          <div>
+            <label class="ctrl-label">Community Jump</label>
+            <select id="communitySelect" class="ctrl-select" onchange="zoomToSelectedCommunity()">
+              <option value="ALL">-- All Communities --</option>
+            </select>
+          </div>
           <div>
             <label class="ctrl-label">Congestion Filter</label>
             <select id="congestionFilter" class="ctrl-select" onchange="applyMapFilters()">
@@ -872,151 +1160,148 @@ def main():
               <option value="High">High &amp; Severe</option>
               <option value="Moderate">Moderate</option>
               <option value="Low">Low / Free-Flow</option>
-              <option value="Unavailable">Data Unavailable for Window (≠ Zero Congestion)</option>
+              <option value="Unavailable">Data Unavailable</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px;">
+          <div>
+            <label class="ctrl-label">Impact Buffer</label>
+            <select id="radiusSelect" class="ctrl-select" onchange="updateImpactBuffers()">
+              <option value="500">500m Access</option>
+              <option value="1500" selected>1.5 km Collector</option>
+              <option value="3000">3.0 km Arterial</option>
             </select>
           </div>
           <div>
-            <label class="ctrl-label">Impact Radius Buffer</label>
-            <select id="radiusSelect" class="ctrl-select" onchange="updateImpactBuffers()">
-              <option value="500">500m Immediate Access</option>
-              <option value="1500" selected>1.5 km Collector Zone</option>
-              <option value="3000">3.0 km Arterial Corridor</option>
+            <label class="ctrl-label">Epistemic Tier</label>
+            <select id="epistemicFilter" class="ctrl-select" onchange="applyMapFilters()">
+              <option value="ALL">All 4 Tiers</option>
+              <option value="Tier 4">Tier 4: Confirmed ROW</option>
+              <option value="Tier 2">Tier 2: Spatial Assoc.</option>
+              <option value="Tier 3">Tier 3: Modelled HGV</option>
             </select>
           </div>
         </div>
 
-        <label class="ctrl-label">Epistemic Impact Classification Filter (Section D4)</label>
-        <select id="epistemicFilter" class="ctrl-select" onchange="applyMapFilters()">
-          <option value="ALL">All 4 Epistemic Impact Tiers</option>
-          <option value="Tier 4">Tier 4: Confirmed Causal Impact (Official RTA/SRTA Work Zone)</option>
-          <option value="Tier 2">Tier 2: Spatial Association (Co-located Active Project &amp; Congestion)</option>
-          <option value="Tier 3">Tier 3: Modelled Construction Impact (HGV / Trip Scenario)</option>
-        </select>
-      </div>
-
-      <!-- 11 INDEPENDENT MAP LAYERS (SECTION C5) -->
-      <div class="panel-box">
-        <h3><span>2. Independent Map Layers (11)</span></h3>
         <div class="layer-list">
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L1" checked onchange="toggleLayerGroup('projects', this.checked)"/><span class="layer-dot" style="background:#38bdf8;"></span> 1. Construction Projects (32 + 5 JVC)</label>
-            <span class="prov-tag prov-ver">Verified</span>
+            <label><input type="checkbox" id="chk-L1" checked onchange="toggleLayerGroup('projects', this.checked)"/><span class="layer-dot" style="background:#38bdf8;"></span> 1. Construction Projects (Scaled)</label>
+            <span class="prov-tag prov-ver">Default ON</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L2" checked onchange="toggleLayerGroup('devbounds', this.checked)"/><span class="layer-dot" style="background:#818cf8;"></span> 2. Development Footprints &amp; JVC Clusters</label>
-            <span class="prov-tag prov-ver">Verified</span>
+            <label><input type="checkbox" id="chk-L3" checked onchange="toggleLayerGroup('communities', this.checked)"/><span class="layer-dot" style="background:#c084fc;"></span> 2. Community Hotspots (10)</label>
+            <span class="prov-tag prov-ver">Default ON</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L3" checked onchange="toggleLayerGroup('communities', this.checked)"/><span class="layer-dot" style="background:#c084fc;"></span> 3. Community Boundaries &amp; Hotspots</label>
-            <span class="prov-tag prov-ver">Verified</span>
+            <label><input type="checkbox" id="chk-L6" checked onchange="toggleLayerGroup('traffic', this.checked)"/><span class="layer-dot" style="background:#ef4444;"></span> 3. Modelled Corridor Speeds</label>
+            <span class="prov-tag prov-mod">Modelled</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L4" checked onchange="toggleLayerGroup('roads', this.checked)"/><span class="layer-dot" style="background:#94a3b8;"></span> 4. Road Network (E-Freeways &amp; D-Arterials)</label>
+            <label><input type="checkbox" id="chk-L4" checked onchange="toggleLayerGroup('roads', this.checked)"/><span class="layer-dot" style="background:#94a3b8;"></span> 4. Base Road Network (23)</label>
             <span class="prov-tag prov-ver">RTA Cap</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L5" checked onchange="toggleLayerGroup('intersections', this.checked)"/><span class="layer-dot" style="background:#f43f5e;"></span> 5. Intersections &amp; Access Bottlenecks</label>
+            <label><input type="checkbox" id="chk-L2" onchange="toggleLayerGroup('devbounds', this.checked)"/><span class="layer-dot" style="background:#818cf8;"></span> 5. JVC Sub-Clusters &amp; Radii</label>
+            <span class="prov-tag prov-ver">Zoom/Toggle</span>
+          </div>
+          <div class="layer-item">
+            <label><input type="checkbox" id="chk-L5" onchange="toggleLayerGroup('intersections', this.checked)"/><span class="layer-dot" style="background:#f43f5e;"></span> 6. Bottleneck Intersections (16)</label>
             <span class="prov-tag prov-ver">Corrob.</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L6" checked onchange="toggleLayerGroup('traffic', this.checked)"/><span class="layer-dot" style="background:#ef4444;"></span> 6. Traffic &amp; Congestion Speed Overlay</label>
-            <span class="prov-tag prov-mod">Modelled</span>
-          </div>
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L7" checked onchange="toggleLayerGroup('incidents', this.checked)"/><span class="layer-dot" style="background:#f97316;"></span> 7. Active RTA/SRTA Roadworks &amp; Incidents</label>
+            <label><input type="checkbox" id="chk-L7" onchange="toggleLayerGroup('incidents', this.checked)"/><span class="layer-dot" style="background:#f97316;"></span> 7. Active RTA/SRTA Roadworks (5)</label>
             <span class="prov-tag prov-ver">Verified</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L8" checked onchange="toggleLayerGroup('transit', this.checked)"/><span class="layer-dot" style="background:#3b82f6;"></span> 8. Public Transport (Metro Red/Blue &amp; Rail)</label>
+            <label><input type="checkbox" id="chk-L8" onchange="toggleLayerGroup('transit', this.checked)"/><span class="layer-dot" style="background:#3b82f6;"></span> 8. Metro Red/Blue &amp; Etihad Rail</label>
             <span class="prov-tag prov-ver">Verified</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L9" onchange="toggleLayerGroup('facilities', this.checked)"/><span class="layer-dot" style="background:#10b981;"></span> 9. Nearby Schools, Hospitals &amp; Malls</label>
+            <label><input type="checkbox" id="chk-L9" onchange="toggleLayerGroup('facilities', this.checked)"/><span class="layer-dot" style="background:#10b981;"></span> 9. Logistics &amp; Batching Plants</label>
             <span class="prov-tag prov-ver">Verified</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L10" onchange="toggleLayerGroup('parking', this.checked)"/><span class="layer-dot" style="background:#14b8a6;"></span> 10. Parking, EV Chargers &amp; Delivery Hubs</label>
+            <label><input type="checkbox" id="chk-L10" onchange="toggleLayerGroup('parking', this.checked)"/><span class="layer-dot" style="background:#14b8a6;"></span> 10. Parking &amp; Mobility Hubs</label>
             <span class="prov-tag prov-ver">Verified</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L11" checked onchange="toggleLayerGroup('impacts', this.checked)"/><span class="layer-dot" style="background:#f59e0b;"></span> 11. Potential Impact Radius &amp; Road Links</label>
+            <label><input type="checkbox" id="chk-L11" onchange="toggleLayerGroup('impacts', this.checked)"/><span class="layer-dot" style="background:#f59e0b;"></span> 11. Project-to-Road Impact Vectors</label>
             <span class="prov-tag prov-mod">Modelled</span>
           </div>
         </div>
       </div>
-    </aside>
 
-    <!-- CENTER INTERACTIVE MAP -->
-    <section class="map-stage">
-      <div class="map-hud-top">
-        <div class="hud-kpi-bar">
-          <div class="hud-kpi"><span style="color:var(--muted);">Active Map Scope</span><strong id="hudScope">Dubai (Priority 1)</strong></div>
-          <div class="hud-kpi"><span style="color:var(--muted);">Mapped Projects &amp; Clusters</span><strong id="hudProjects">25 Active Sites</strong></div>
-          <div class="hud-kpi"><span style="color:var(--muted);">Connected Road Corridors</span><strong id="hudRoads">23 Corridors (123 GeoJSON Features)</strong></div>
-          <div class="hud-kpi"><span style="color:var(--muted);">Active Time Window</span><strong id="hudTime">Evening Peak (17:00–20:00)</strong></div>
+      <!-- Bottom Floating Bar: Compact Quick Layer Pills, Time Window Selector & Compact Legend -->
+      <div class="map-hud-bottom">
+        <div class="layer-pill-bar">
+          <button class="quick-layer-pill on" id="qpill-projects" onclick="quickToggle('projects', 'chk-L1', this)"><span class="layer-dot" style="background:#38bdf8;"></span> Projects</button>
+          <button class="quick-layer-pill on" id="qpill-communities" onclick="quickToggle('communities', 'chk-L3', this)"><span class="layer-dot" style="background:#c084fc;"></span> Communities</button>
+          <button class="quick-layer-pill on" id="qpill-traffic" onclick="quickToggle('traffic', 'chk-L6', this)"><span class="layer-dot" style="background:#ef4444;"></span> Modelled Traffic</button>
+          <button class="quick-layer-pill" id="qpill-impacts" onclick="quickToggle('impacts', 'chk-L11', this)"><span class="layer-dot" style="background:#f59e0b;"></span> Impact Links</button>
+          <button class="quick-layer-pill" style="color:var(--cyan); border-color:#0284c7;" onclick="toggleLayersPopover()">⚙ Filters &amp; All 11 Layers</button>
         </div>
-        <div class="basemap-switcher">
-          <button class="bm-btn active" onclick="setBasemap('dark', this)">Dark GIS</button>
-          <button class="bm-btn" onclick="setBasemap('sat', this)">Satellite</button>
-          <button class="bm-btn" onclick="setBasemap('light', this)">Street Map</button>
-        </div>
-      </div>
 
-      <div id="mapCanvas"></div>
-
-      <!-- MAP LEGEND & EPISTEMIC GUARDRAIL -->
-      <div class="map-legend">
-        <div style="font-weight:800; color:#fff; margin-bottom:4px;">Legend — Published RTA Capacities vs. Modelled Corridor Traffic &amp; HGV Scenarios</div>
-        <div class="legend-grid">
-          <div class="leg-row"><span class="leg-line" style="background:#ef4444;"></span> Modelled Severe Congestion (v/v_free &lt; 0.40)</div>
-          <div class="leg-row"><span class="leg-line" style="background:#f97316;"></span> Modelled High Congestion (0.40–0.58)</div>
-          <div class="leg-row"><span class="leg-line" style="background:#eab308;"></span> Modelled Moderate Flow (0.58–0.72)</div>
-          <div class="leg-row"><span class="leg-line" style="background:#10b981;"></span> Modelled Free-Flow / Low (v/v_free &gt; 0.72)</div>
-          <div class="leg-row"><span class="leg-line" style="background:#64748b; border-bottom:2px dashed #cbd5e1;"></span> Data Unavailable for Window (≠ Zero Congestion)</div>
-          <div class="leg-row"><span class="layer-dot" style="background:#38bdf8;"></span> Flagship Project (`PRJ-*`)</div>
-          <div class="leg-row"><span class="layer-dot" style="background:#a855f7;"></span> JVC Sub-Cluster (`SUB-JVC-*`)</div>
-          <div class="leg-row"><span class="layer-dot" style="background:#f43f5e;"></span> Bottleneck Interchange (`INT-*`)</div>
-          <div class="leg-row"><span class="leg-line" style="background:#f59e0b; border-bottom:2px dashed #f59e0b;"></span> Nearest-Vertex Road Link (`IMP-*`)</div>
+        <div class="time-group" aria-label="Traffic Time Window Selector">
+          <button class="time-btn" data-tp="Morning Peak (07:30–09:30)" onclick="setTimeWindow('Morning Peak (07:30–09:30)', this)">🌅 AM Peak</button>
+          <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday HGV</button>
+          <button class="time-btn active" data-tp="Evening Peak (17:00–20:00)" onclick="setTimeWindow('Evening Peak (17:00–20:00)', this)">🌇 PM Peak</button>
+          <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night</button>
         </div>
-        <div style="margin-top:6px; font-size:0.68rem; color:#94a3b8; border-top:1px solid #1e293b; padding-top:4px;">
-          <strong>Epistemic Rule:</strong> Official RTA/SRTA releases substantiate corridor capacities &amp; upgrade travel-time reductions; TomTom Dubai Traffic Index (<code>SRC-436</code>) is used strictly at city level (<code>OBS-DXB-CITY-00</code>). Segment speeds/volumes (<code>OBS-DXB-001..015</code>, <code>OBS-SHJ-001..006</code>) and daily HGV movements are explicitly classified as <strong>Modelled Estimates</strong>.
+
+        <div class="map-legend">
+          <div class="legend-inline">
+            <span class="leg-row"><span class="layer-dot" style="width:12px;height:12px;background:#0ea5e9;border:2px solid #fff;"></span> Mega ≥AED 25B</span>
+            <span class="leg-row"><span class="layer-dot" style="width:9px;height:9px;background:#38bdf8;"></span> Major 5–25B</span>
+            <span class="leg-row"><span class="layer-dot" style="width:6px;height:6px;background:#93c5fd;"></span> Tower &lt;5B</span>
+            <span class="leg-row"><span class="leg-line" style="background:#ef4444;"></span> Severe</span>
+            <span class="leg-row"><span class="leg-line" style="background:#f97316;"></span> High</span>
+            <span class="leg-row"><span class="leg-line" style="background:#eab308;"></span> Mod</span>
+            <span class="leg-row"><span class="leg-line" style="background:#10b981;"></span> Low</span>
+          </div>
         </div>
       </div>
     </section>
 
-    <!-- RIGHT SIDEBAR: USE CASE BRIEFING, PROJECT/ROAD DETAIL DRAWER & DETERMINISTIC Q&A -->
+    <!-- RIGHT CONTEXTUAL EXECUTIVE PANEL (ADAPTS TO 5 MODES + PROGRESSIVE DISCLOSURE) -->
     <aside class="sidebar-right">
       <div class="drawer-tabs">
-        <button class="dtab-btn active" id="dtab-uc" onclick="switchDrawerTab('uc')">📌 Use Case &amp; Impact</button>
-        <button class="dtab-btn" id="dtab-insp" onclick="switchDrawerTab('insp')">🔍 Project / Road Inspector</button>
-        <button class="dtab-btn" id="dtab-qa" onclick="switchDrawerTab('qa')">💬 Database Q&amp;A Engine</button>
+        <button class="dtab-btn active" id="dtab-uc" onclick="switchDrawerTab('uc')">📌 Overview &amp; Scenarios</button>
+        <button class="dtab-btn" id="dtab-insp" onclick="switchDrawerTab('insp')">🔍 Project / Road Explorer</button>
+        <button class="dtab-btn" id="dtab-qa" onclick="switchDrawerTab('qa')">💬 Evidence &amp; Q&amp;A</button>
       </div>
 
-      <!-- TAB 1: ACTIVE USE CASE BRIEFING & HOTSPOT RANKING -->
+      <!-- TAB 1: OVERVIEW, HOTSPOTS & GUIDED SCENARIOS -->
       <div class="drawer-body" id="dpanel-uc">
+        <div style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px;">
+          <button class="story-step active" id="btn-uc1" onclick="runUseCase(1)">1. Dubai Hotspots</button>
+          <button class="story-step" id="btn-uc2" onclick="runUseCase(2)">2. JVC Traffic</button>
+          <button class="story-step" id="btn-uc3" onclick="runUseCase(3)">3. AM vs PM &amp; 2024–26</button>
+          <button class="story-step" id="btn-uc4" onclick="runUseCase(4)">4. Sharjah</button>
+        </div>
         <div id="useCaseContainer"></div>
       </div>
 
-      <!-- TAB 2: SELECTED PROJECT OR ROAD DETAIL PANEL (SECTIONS C3 & C4) -->
+      <!-- TAB 2: EXECUTIVE PROJECT / ROAD EXPLORER (WITH PROGRESSIVE DISCLOSURE <details>) -->
       <div class="drawer-body" id="dpanel-insp" style="display:none;">
         <div id="inspectorContainer">
           <div class="detail-card">
-            <h4>Click Any Project Marker, Road Segment, or Intersection on the Map</h4>
-            <p style="font-size:0.78rem; color:var(--muted);">Selecting a project opens the <strong>Section C3 Project Detail Panel</strong> (status, timeline, GFA, connected roads, geodesic distance, modelled HGV trips, and supporting Task 1 documents). Selecting a road opens the <strong>Section C4 Road Detail Panel</strong> (published speed limit, lanes, RTA vs. HCM capacity, HGV ban windows, and Morning/Midday/Evening/Night traffic observations).</p>
+            <h4>Select Any Project Marker or Road Corridor</h4>
+            <p style="font-size:0.77rem; color:var(--muted);">Click a scaled project marker or road corridor on the map to view its executive summary card. Detailed engineering derivations (BPR formulas, 4-component HGV math, WGS84 vertex distances, and source registers) open cleanly inside expandable sections.</p>
           </div>
         </div>
       </div>
 
-      <!-- TAB 3: DETERMINISTIC QUESTION-AND-ANSWER INTERFACE (WORK PACKAGE F) -->
+      <!-- TAB 3: EVIDENCE, METHODOLOGY & DETERMINISTIC Q&A -->
       <div class="drawer-body" id="dpanel-qa" style="display:none;">
         <div class="detail-card">
-          <h4>Deterministic Database Q&amp;A Interface (Work Package F)</h4>
-          <p style="font-size:0.74rem; color:var(--muted); margin:0 0 8px;">Queries execute deterministically against the normalized Task 1 + Task 2 relational tables and automatically pan/zoom the map to the matched projects and road corridors.</p>
+          <h4>Deterministic Database Q&amp;A &amp; Methodology</h4>
+          <p style="font-size:0.73rem; color:var(--muted); margin:0 0 8px;">Ask a question or select a preset to query the normalized Task 1 + Task 2 tables and fly the map to the matched sites.</p>
           <div class="qa-box">
             <input type="text" id="qaInput" class="ctrl-input" placeholder="Ask about JVC, Hessa St, Dubai South, TIS, Morning vs Evening..." onkeydown="if(event.key==='Enter') runDeterministicQA()"/>
             <button onclick="runDeterministicQA()" style="background:#0284c7;border:none;color:#fff;padding:0 12px;border-radius:6px;font-weight:700;cursor:pointer;">Ask</button>
           </div>
-          <div style="font-size:0.71rem; color:var(--cyan); font-weight:700; margin-bottom:5px;">One-Click Verified Client Questions (Section 10):</div>
           <div class="qa-preset-list">
             <button class="qa-preset-btn" onclick="askPreset(0)">1. Which areas in Dubai currently have the highest construction activity?</button>
             <button class="qa-preset-btn" onclick="askPreset(1)">2. Show construction activity in JVC and the surrounding traffic conditions.</button>
@@ -1033,10 +1318,15 @@ def main():
     </aside>
   </main>
 
-  <!-- BOTTOM SECTION: COMPLETE MILESTONE 1–6 NORMALIZED TABLES & DIRECT RAW CSV/JSON/SQLITE LINKS -->
+  <!-- BOTTOM SECTION: EXPANDABLE EVIDENCE REPOSITORY & ALL 11 TASK 2 DATASETS -->
   <section class="evidence-section" id="evidence-tables">
-    <h2 style="margin:0 0 6px; font-size:1.35rem; color:#fff;">Task 2 Complete Research, Spatial Database &amp; Validation Repository (Milestones 1–6)</h2>
-    <p style="margin:0 0 14px; font-size:0.84rem; color:var(--muted);">Every table below is directly inspectable in-browser and available as <strong>GitHub Raw CSV (<code>text/plain</code>)</strong>, <strong>Same-Origin Plain Text (<code>.csv.txt</code>)</strong>, <strong>Browser Table View (<code>.html</code>)</strong>, <strong>JSON (<code>.json</code>)</strong>, <strong>GeoJSON (<code>.geojson</code>)</strong>, and <strong>17-Entity Spatial SQLite Database (<code>21_task2_spatial_database.sqlite</code>)</strong>.</p>
+    <details id="evidenceAccordion" class="tech-accordion" style="border-color:#3b82f6;">
+      <summary style="font-size:0.95rem; padding:12px 16px;">
+        <span>📊 Evidence &amp; Methodology Repository — Inspect All 11 Task 2 Datasets (157 Rows), BPR Math &amp; Spatial SQLite</span>
+        <span style="font-size:0.75rem; color:#94a3b8;">Click to Expand / Collapse ▾</span>
+      </summary>
+      <div class="acc-body" style="padding:16px;">
+        <p style="margin:0 0 12px; font-size:0.80rem; color:var(--muted);">Every table below is directly inspectable in-browser and downloadable as <strong>GitHub Raw CSV</strong>, <strong>Plain Text (<code>.csv.txt</code>)</strong>, <strong>Browser Table (<code>.html</code>)</strong>, <strong>JSON</strong>, <strong>GeoJSON</strong>, and <strong>Spatial SQLite Database (<code>21_task2_spatial_database.sqlite</code>)</strong>.</p>
 
     <div class="ev-tabs">
       <button class="ev-tab-btn active" onclick="openEvTab('ev-impacts', this)">1. #22 Project-to-Road Links (37)</button>
@@ -1185,6 +1475,7 @@ def main():
         <p><strong>Strict Epistemic Guardrails (Zero Fabricated Telemetry &amp; Two-Term BPR + Modelled Bottleneck-Delay Assumption Reproducibility):</strong> Every road capacity separates <code>PUBLISHED_OFFICIAL</code> (RTA/SRTA statutory corridor capacities and upgrade travel-time reduction targets) from <code>HCM_7TH_EDITION_ESTIMATE</code>. TomTom Dubai Traffic Index (<code>SRC-436</code>, <code>https://www.tomtom.com/traffic-index/city/dubai/</code>) is used strictly at the city-wide level (<code>OBS-DXB-CITY-00</code>: 31.3 km/h average speed, 19 min 10 sec per 10 km, 42.7% annual congestion, 26.3 km/h rush-hour average, 32.1 km/h AM rush [18 min 41 sec, 42.3% congestion], 22.6 km/h PM rush [26 min 33 sec, 94.4% congestion]). All 21 corridor-level speed, volume, and congestion records (<code>OBS-DXB-001..015</code>, <code>OBS-SHJ-001..006</code>) are classified as <strong>Modelled Corridor Estimates</strong> derived via a formula-based <strong>Uninterrupted BPR Link Term (<code>t_BPR, v_BPR</code>) + Modelled, HCM-Informed Bottleneck-Delay Assumption (<code>+d_adj</code>)</strong>, and all daily HGV figures are classified as <strong>Scenario-Based Estimated Daily HGV Movements</strong> with 5 explicit modelling assumptions.</p>
       </div>
     </div>
+    </details>
   </section>
 """
     # Append client-side JavaScript engine
@@ -1196,6 +1487,7 @@ def main():
     let baseTileLayer;
     let currentTimeWindow = "Evening Peak (17:00–20:00)";
     let currentRadiusMeters = 1500;
+    let is3DPerspective = false;
 
     const layerGroups = {
       communities: L.layerGroup(),
@@ -1225,6 +1517,17 @@ def main():
       return "#10b981";
     }
 
+    function projectScaleStyle(p) {
+      const v = String(p.published_investment_value || "");
+      if (v.includes("55B") || v.includes("50B") || v.includes("35B") || v.includes("30B") || v.includes("25B") || v.includes("128B")) {
+        return { radius: 11, fillColor: "#fbbf24", color: "#fff", weight: 2.5, tier: "Mega-Project (≥ AED 25B)" };
+      }
+      if (v.includes("18B") || v.includes("15B") || v.includes("13B") || v.includes("12B") || v.includes("10B") || v.includes("8B") || v.includes("7B") || v.includes("6B") || v.includes("5B")) {
+        return { radius: 8, fillColor: "#38bdf8", color: "#0f172a", weight: 2, tier: "Major Masterplan (AED 5B–25B)" };
+      }
+      return { radius: 5.5, fillColor: "#22d3ee", color: "#0f172a", weight: 1.5, tier: "Active Development (< AED 5B)" };
+    }
+
     function initMap() {
       map = L.map("mapCanvas", {
         center: [25.115, 55.245],
@@ -1234,14 +1537,138 @@ def main():
 
       setBasemap("dark", document.querySelector(".bm-btn.active"));
 
-      // Add all 11 default active layer groups
-      ["communities", "devbounds", "roads", "traffic", "impacts", "intersections", "incidents", "transit", "facilities", "parking", "projects"].forEach(k => {
+      // Enable only the 4 core executive layers by default (Clean Initial View)
+      ["communities", "roads", "traffic", "projects"].forEach(k => {
         layerGroups[k].addTo(map);
       });
 
       populateCommunityDropdown();
       renderAllMapLayers();
       runUseCase(1);
+    }
+
+    function setPlatformMode(mode, btnEl) {
+      if (btnEl) {
+        document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+        btnEl.classList.add("active");
+      }
+      const wb = document.getElementById("mainWorkbench");
+      if (wb.classList.contains("panel-collapsed")) toggleRightPanel();
+
+      if (mode === "overview") {
+        switchDrawerTab("uc");
+        runUseCase(1);
+      } else if (mode === "construction") {
+        switchDrawerTab("uc");
+        setLayerSet(["communities", "devbounds", "projects", "roads"]);
+        runUseCase(1);
+      } else if (mode === "traffic") {
+        switchDrawerTab("uc");
+        setLayerSet(["roads", "traffic", "intersections", "impacts", "projects"]);
+        runUseCase(3);
+      } else if (mode === "project") {
+        switchDrawerTab("insp");
+        setLayerSet(["communities", "roads", "traffic", "impacts", "projects", "devbounds"]);
+        showProjectInspector("PRJ-D6");
+      } else if (mode === "evidence") {
+        const det = document.getElementById("evidenceAccordion");
+        if (det) det.open = true;
+        document.getElementById("evidenceSection").scrollIntoView({ behavior: "smooth" });
+      }
+    }
+
+    function setLayerSet(activeKeys) {
+      const keyToChk = {
+        projects: "lyr_projects", devbounds: "lyr_devbounds", communities: "lyr_communities",
+        roads: "lyr_roads", intersections: "lyr_intersections", traffic: "lyr_traffic",
+        incidents: "lyr_incidents", transit: "lyr_transit", facilities: "lyr_facilities",
+        parking: "lyr_parking", impacts: "lyr_impacts"
+      };
+      const keyToQ = {
+        projects: "qpill-projects", communities: "qpill-communities",
+        traffic: "qpill-traffic", impacts: "qpill-impacts",
+        intersections: "qpill-intersections", transit: "qpill-transit"
+      };
+      Object.keys(layerGroups).forEach(k => {
+        const on = activeKeys.includes(k);
+        toggleLayerGroup(k, on);
+        const chk = document.getElementById(keyToChk[k]);
+        if (chk) chk.checked = on;
+        const qp = document.getElementById(keyToQ[k]);
+        if (qp) qp.classList.toggle("active", on);
+      });
+    }
+
+    function quickToggle(key, chkId, btnEl) {
+      const chk = document.getElementById(chkId);
+      const nextState = chk ? !chk.checked : !map.hasLayer(layerGroups[key]);
+      if (chk) chk.checked = nextState;
+      if (btnEl) btnEl.classList.toggle("active", nextState);
+      toggleLayerGroup(key, nextState);
+    }
+
+    function toggleLayersPopover() {
+      const pop = document.getElementById("layersPopover");
+      if (pop) pop.classList.toggle("open");
+    }
+
+    function toggleRightPanel() {
+      const wb = document.getElementById("mainWorkbench");
+      const btn = document.getElementById("collapseRightBtn");
+      wb.classList.toggle("panel-collapsed");
+      if (btn) btn.textContent = wb.classList.contains("panel-collapsed") ? "◂ Open Panel" : "▸ Collapse";
+      setTimeout(() => { if (map) map.invalidateSize(); }, 260);
+    }
+
+    function toggle3DPerspective(btnEl) {
+      is3DPerspective = !is3DPerspective;
+      const mc = document.getElementById("mapCanvas");
+      if (btnEl) btnEl.classList.toggle("active", is3DPerspective);
+      if (is3DPerspective) {
+        mc.style.transform = "perspective(1400px) rotateX(24deg) scale(1.06)";
+        mc.style.transformOrigin = "center 65%";
+        mc.style.transition = "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)";
+      } else {
+        mc.style.transform = "none";
+      }
+    }
+
+    function runStoryStep(step) {
+      document.querySelectorAll(".story-step").forEach((el, idx) => {
+        el.classList.toggle("active", (idx + 1) === step);
+      });
+      if (step === 1) {
+        document.getElementById("emirateSelect").value = "ALL";
+        populateCommunityDropdown();
+        setLayerSet(["communities", "roads", "traffic", "projects"]);
+        map.flyTo([25.195, 55.355], 10, { duration: 0.9 });
+        document.getElementById("hudScope").textContent = "Step 1: UAE Overview (Dubai + Sharjah)";
+        runUseCase(1);
+      } else if (step === 2) {
+        document.getElementById("emirateSelect").value = "Dubai";
+        populateCommunityDropdown();
+        setLayerSet(["communities", "roads", "traffic", "projects"]);
+        map.flyTo([25.115, 55.245], 11, { duration: 0.9 });
+        document.getElementById("hudScope").textContent = "Step 2: Dubai Core Corridors";
+        runUseCase(1);
+      } else if (step === 3) {
+        document.getElementById("emirateSelect").value = "Dubai";
+        populateCommunityDropdown();
+        setLayerSet(["communities", "devbounds", "roads", "traffic", "impacts", "projects"]);
+        map.flyTo([25.0585, 55.2090], 13, { duration: 0.9 });
+        document.getElementById("hudScope").textContent = "Step 3: JVC High-Density Hotspot";
+        runUseCase(2);
+      } else if (step === 4) {
+        setLayerSet(["communities", "devbounds", "roads", "traffic", "impacts", "projects"]);
+        map.flyTo([25.0552, 55.2078], 14, { duration: 0.9 });
+        document.getElementById("hudScope").textContent = "Step 4: Project Inspection (PRJ-D6)";
+        showProjectInspector("PRJ-D6");
+      } else if (step === 5) {
+        setLayerSet(["roads", "traffic", "intersections", "impacts", "projects"]);
+        map.flyTo([25.0695, 55.1950], 13, { duration: 0.9 });
+        document.getElementById("hudScope").textContent = "Step 5: Hessa St (D61) Impact Analysis";
+        showRoadInspector("RD-DXB-04");
+      }
     }
 
     function setBasemap(mode, btnEl) {
@@ -1344,6 +1771,7 @@ def main():
       document.getElementById("radiusSelect").value = "1500";
       currentRadiusMeters = 1500;
       populateCommunityDropdown();
+      setLayerSet(["communities", "roads", "traffic", "projects"]);
       map.flyTo([25.115, 55.245], 11, { duration: 0.8 });
       renderAllMapLayers();
     }
@@ -1373,17 +1801,17 @@ def main():
                     (c.observed_congestion_severity.includes("High") ? "#f97316" : "#a855f7");
         const poly = L.polygon(latlngs, {
           color: col,
-          weight: 2,
-          dashArray: "6,4",
+          weight: 1.5,
+          dashArray: "5,4",
           fillColor: col,
-          fillOpacity: 0.10
+          fillOpacity: 0.08
         });
         poly.bindTooltip(`<strong>${c.community_name}</strong><br/>Active Devs: ${c.active_developments_count} | Active Towers: ${c.active_towers_and_buildings}<br/>Hotspot Score: ${c.construction_activity_index_score}`, { sticky: true });
         poly.on("click", () => showCommunityInspector(c));
         poly.addTo(layerGroups.communities);
       });
 
-      // 2. Layer 4 & Layer 6: Road Network & Dynamic Traffic Speed/Congestion Overlay
+      // 2. Layer 4 & Layer 6: Road Network & Dynamic Traffic Speed/Congestion Overlay (Crisp Cartographic Weights)
       DATA.roads.forEach(r => {
         if (emFilter !== "ALL" && r.emirate !== emFilter) return;
         const { obs, exactMatch } = getRoadObsForWindow(r.road_id, currentTimeWindow);
@@ -1397,32 +1825,32 @@ def main():
 
         const latlngs = r.geometry_wgs84.map(pt => [pt[1], pt[0]]);
 
-        // Base casing line (Layer 4)
+        // Base casing line (Layer 4 — Reduced weight for visual clarity)
         const baseLine = L.polyline(latlngs, {
-          color: "#334155",
-          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 8 : 6,
-          opacity: 0.85
+          color: "#1e293b",
+          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 3.5 : 2.5,
+          opacity: 0.75
         });
         baseLine.on("click", () => showRoadInspector(r.road_id));
         baseLine.addTo(layerGroups.roads);
 
-        // Traffic color overlay line (Layer 6)
+        // Traffic color overlay line (Layer 6 — Clean 2.5px / 2.0px stroke)
         const tCol = congestionColor(congLvl);
         const speedTxt = exactMatch && obs ? `${obs.average_speed_kmh} km/h (${obs.travel_time_min_per_10km} min/10km)` : `Data Unavailable for ${currentTimeWindow}`;
         const matchNote = exactMatch && obs
-          ? `Source: ${obs.source_id} | Timestamp: ${obs.timestamp}<br/>Coverage: ${obs.community} (${obs.location})<br/>[${obs.observation_type}]`
-          : `[Telemetry Unavailable for ${currentTimeWindow} — Explicitly distinguished from Free-Flow/Zero Congestion. Click to inspect recorded peak periods]`;
+          ? `[MODELLED CORRIDOR ESTIMATE — BPR + Bottleneck Delay] Source: ${obs.source_id}`
+          : `[Window Not Modelled — Click to inspect recorded peak periods]`;
         const trafLine = L.polyline(latlngs, {
           color: tCol,
-          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 5 : 4,
-          dashArray: exactMatch ? null : "6,6",
-          opacity: 0.95
+          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 2.5 : 2.0,
+          dashArray: exactMatch ? null : "5,5",
+          opacity: 0.92
         });
         trafLine.bindTooltip(
           `<strong>${r.road_name}</strong><br/>` +
           `Window: <strong>${currentTimeWindow}</strong> → <strong>${speedTxt}</strong><br/>` +
           `Status: <strong>${congLvl}</strong><br/>` +
-          `Capacity: ${r.capacity_vph_per_dir}<br/>` +
+          `Published Capacity: ${r.capacity_vph_per_dir}<br/>` +
           `<em>${matchNote}</em>`,
           { sticky: true }
         );
@@ -1435,9 +1863,9 @@ def main():
         if (emFilter !== "ALL" && i.emirate !== emFilter) return;
         if (q && !JSON.stringify(i).toLowerCase().includes(q)) return;
         const marker = L.circleMarker([i.latitude, i.longitude], {
-          radius: 7,
+          radius: 5.5,
           color: "#fff",
-          weight: 2,
+          weight: 1.5,
           fillColor: "#f43f5e",
           fillOpacity: 0.95
         });
@@ -1450,9 +1878,9 @@ def main():
       DATA.incidents.forEach(inc => {
         if (emFilter !== "ALL" && inc.emirate !== emFilter) return;
         const m = L.circleMarker([inc.latitude, inc.longitude], {
-          radius: 9,
+          radius: 7,
           color: "#fb923c",
-          weight: 2,
+          weight: 1.5,
           dashArray: "3,3",
           fillColor: "#ea580c",
           fillOpacity: 0.85
@@ -1467,8 +1895,8 @@ def main():
         const latlngs = t.coords.map(pt => [pt[1], pt[0]]);
         const line = L.polyline(latlngs, {
           color: t.color,
-          weight: 3,
-          dashArray: t.transit_id === "TRN-BLUE" ? "8,6" : null,
+          weight: 2.5,
+          dashArray: t.transit_id === "TRN-BLUE" ? "7,5" : null,
           opacity: 0.85
         });
         line.bindTooltip(`<strong>🚇 ${t.line_name}</strong><br/>${t.status}<br/>Ridership: ${t.daily_ridership}`, { sticky: true });
@@ -1476,9 +1904,9 @@ def main():
 
         t.stations.forEach(st => {
           const sm = L.circleMarker([st.lat, st.lon], {
-            radius: 5,
+            radius: 4.5,
             color: "#fff",
-            weight: 1.5,
+            weight: 1.2,
             fillColor: t.color,
             fillOpacity: 1.0
           });
@@ -1492,9 +1920,9 @@ def main():
         if (emFilter !== "ALL" && f.emirate !== emFilter) return;
         const [lat, lon] = parseCoord(f.coordinates);
         const fm = L.circleMarker([lat, lon], {
-          radius: 5,
+          radius: 4.5,
           color: "#065f46",
-          weight: 1.5,
+          weight: 1.2,
           fillColor: "#10b981",
           fillOpacity: 0.9
         });
@@ -1506,9 +1934,9 @@ def main():
       DATA.parking.forEach(pk => {
         if (emFilter !== "ALL" && pk.emirate !== emFilter) return;
         const pm = L.circleMarker([pk.latitude, pk.longitude], {
-          radius: 6,
+          radius: 5,
           color: "#fff",
-          weight: 1.5,
+          weight: 1.2,
           fillColor: "#14b8a6",
           fillOpacity: 0.95
         });
@@ -1519,12 +1947,10 @@ def main():
       // Build lookup for impact links
       const linkByProj = {};
       DATA.impact_links.forEach(l => { linkByProj[l.project_id] = l; });
-      const roadById = {};
-      DATA.roads.forEach(r => { roadById[r.road_id] = r; });
 
       let visibleProjectsCount = 0;
 
-      // 8. Layer 1, Layer 2 & Layer 11: Flagship Projects + Impact Buffers + Road Connection Vectors
+      // 8. Layer 1, Layer 2 & Layer 11: Flagship Projects (Proportional Scale Hierarchy) + Impact Buffers + Road Vectors
       DATA.projects.forEach(p => {
         if (emFilter !== "ALL" && p.emirate !== emFilter) return;
         const link = linkByProj[p.project_id];
@@ -1541,7 +1967,7 @@ def main():
           weight: 1,
           dashArray: "4,4",
           fillColor: "#f59e0b",
-          fillOpacity: 0.06
+          fillOpacity: 0.04
         });
         bufCircle.addTo(layerGroups.impacts);
 
@@ -1549,32 +1975,43 @@ def main():
         if (link && link.nearest_road_vertex_lat !== undefined && link.nearest_road_vertex_lon !== undefined) {
           const vecLine = L.polyline([[lat, lon], [link.nearest_road_vertex_lat, link.nearest_road_vertex_lon]], {
             color: "#fbbf24",
-            weight: 2,
-            dashArray: "5,5",
+            weight: 1.5,
+            dashArray: "4,4",
             opacity: 0.85
           });
           vecLine.bindTooltip(
             `<strong>${p.project_id} → ${link.primary_road_id}</strong> (${link.distance_to_primary_road_km} km Haversine)<br/>` +
-            `Project: [${lat.toFixed(4)}, ${lon.toFixed(4)}] → Nearest Road Vertex: [${link.nearest_road_vertex_lat.toFixed(4)}, ${link.nearest_road_vertex_lon.toFixed(4)}]<br/>` +
+            `Project: [${lat.toFixed(4)}, ${lon.toFixed(4)}] → Nearest Vertex: [${link.nearest_road_vertex_lat.toFixed(4)}, ${link.nearest_road_vertex_lon.toFixed(4)}]<br/>` +
             `${link.epistemic_impact_classification}`
           );
           vecLine.addTo(layerGroups.impacts);
         }
 
-        // Project Marker (Layer 1)
+        // Project Marker (Layer 1 — Scaled by Investment Tier)
+        const st = projectScaleStyle(p);
+        if (st.radius >= 10) {
+          L.circleMarker([lat, lon], {
+            radius: st.radius + 4,
+            color: st.fillColor,
+            weight: 1,
+            fillColor: st.fillColor,
+            fillOpacity: 0.18,
+            interactive: false
+          }).addTo(layerGroups.projects);
+        }
         const marker = L.circleMarker([lat, lon], {
-          radius: 8,
-          color: "#0f172a",
-          weight: 2,
-          fillColor: "#38bdf8",
-          fillOpacity: 0.98
+          radius: st.radius,
+          color: st.color,
+          weight: st.weight,
+          fillColor: st.fillColor,
+          fillOpacity: 0.96
         });
         marker.bindTooltip(
           `<strong>${p.project_id}: ${p.project_name}</strong><br/>` +
+          `Scale Tier: <strong>${st.tier}</strong> (${p.published_investment_value})<br/>` +
           `Developer: ${p.developer} | ${p.city_district_community}<br/>` +
           `Status: ${p.lifecycle_status}<br/>` +
-          `Value: ${p.published_investment_value}<br/>` +
-          (link ? `Connected Road: <strong>${link.primary_road_name} (${link.distance_to_primary_road_km} km to nearest vertex)</strong><br/>Impact Tier: <strong>${link.epistemic_impact_classification.split('(')[0]}</strong>` : ""),
+          (link ? `Primary Corridor: <strong>${link.primary_road_name} (${link.distance_to_primary_road_km} km)</strong>` : ""),
           { direction: "top" }
         );
         marker.on("click", () => showProjectInspector(p.project_id));
@@ -1592,7 +2029,7 @@ def main():
         if (link && link.nearest_road_vertex_lat !== undefined && link.nearest_road_vertex_lon !== undefined) {
           const sdVec = L.polyline([[sd.latitude, sd.longitude], [link.nearest_road_vertex_lat, link.nearest_road_vertex_lon]], {
             color: "#c084fc",
-            weight: 2,
+            weight: 1.5,
             dashArray: "4,4",
             opacity: 0.8
           });
@@ -1600,9 +2037,9 @@ def main():
           sdVec.addTo(layerGroups.impacts);
         }
         const sm = L.circleMarker([sd.latitude, sd.longitude], {
-          radius: 7,
+          radius: 6,
           color: "#fff",
-          weight: 1.5,
+          weight: 1.2,
           fillColor: "#a855f7",
           fillOpacity: 0.95
         });
@@ -1630,7 +2067,7 @@ def main():
     }
 
     // =========================================================================
-    // SECTION C3: PROJECT-LEVEL DETAIL PANEL
+    // SECTION C3: PROJECT-LEVEL DETAIL PANEL (Executive Summary + Progressive Disclosure)
     // =========================================================================
     function showProjectInspector(pid) {
       switchDrawerTab("insp");
@@ -1652,21 +2089,49 @@ def main():
             <span class="conf-pill b-ver">${p.confidence_classification}</span>
           </div>
           <h4>${p.project_name}</h4>
-          <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:8px;">Developer: ${p.developer} | ${p.city_district_community}</div>
+          <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:10px;">${p.developer} • ${p.city_district_community}</div>
+
+          <!-- Executive KPI Summary Grid -->
+          <div class="exec-metric-grid">
+            <div class="exec-metric-box">
+              <div class="em-lbl">Lifecycle Status</div>
+              <div class="em-val">${p.lifecycle_status}</div>
+              <div class="em-sub">${p.project_category}</div>
+            </div>
+            <div class="exec-metric-box">
+              <div class="em-lbl">Published Value</div>
+              <div class="em-val" style="color:#38bdf8;">${p.published_investment_value}</div>
+              <div class="em-sub">Plot: ${p.land_plot_area}</div>
+            </div>
+            <div class="exec-metric-box">
+              <div class="em-lbl">Primary Corridor</div>
+              <div class="em-val" style="font-size:0.78rem;">${link ? `<a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a>` : "Arterial Grid"}</div>
+              <div class="em-sub">${link ? `${link.distance_to_primary_road_km} km to nearest vertex` : ""}</div>
+            </div>
+            <div class="exec-metric-box">
+              <div class="em-lbl">Scenario HGV Load</div>
+              <div class="em-val" style="color:#fbbf24;">${link ? `${link.total_hgv_round_trips_day} trips/day` : "N/A"}</div>
+              <div class="em-sub">${link ? `${link.total_hgv_one_way_movements_day} one-way/day (Est.)` : ""}</div>
+            </div>
+          </div>
 
           ${link ? `<div style="margin-bottom:8px;"><span class="ep-badge ${link.epistemic_impact_classification.includes('Tier 4') ? 'ep-t4' : (link.epistemic_impact_classification.includes('Tier 2') ? 'ep-t2' : 'ep-t3')}">${link.epistemic_impact_classification}</span></div>` : ""}
 
           <div class="kv-grid">
-            <div class="kv-row"><div class="kv-lbl">1. Verified Plot Coordinates &amp; Cadastral Authority</div><div class="kv-val">${p.coordinates} — ${p.plot_reference_and_authority}</div></div>
-            <div class="kv-row"><div class="kv-lbl">2. Project Category &amp; Current Lifecycle Status</div><div class="kv-val"><strong>${p.lifecycle_status}</strong> (${p.project_category})<br/><span style="color:var(--muted);">${p.status_evidence_and_history}</span></div></div>
-            <div class="kv-row"><div class="kv-lbl">3. Construction Timeline &amp; Milestones</div><div class="kv-val">${p.timeline_milestones}</div></div>
-            <div class="kv-row"><div class="kv-lbl">4. Site Plot Area, GFA &amp; Building Scale</div><div class="kv-val"><strong>Plot:</strong> ${p.land_plot_area}<br/><strong>GFA:</strong> ${p.gross_floor_area}<br/><strong>Towers/Buildings:</strong> ${p.towers_and_buildings_count} (${p.floors_and_height})<br/><strong>Units:</strong> ${p.apartments_and_villas_count}</div></div>
-            <div class="kv-row"><div class="kv-lbl">5. Project-to-Road Geometry Validation (Nearest Polyline Vertex &amp; WGS84 Haversine &lt; 3.0 km)</div><div class="kv-val">${link ? `<strong>Primary Corridor:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a> (<strong>${link.distance_to_primary_road_km} km</strong>)<br/><strong>Project Centroid (WGS84):</strong> <code>${link.project_coordinates}</code> → <strong>Nearest Road Polyline Vertex (WGS84):</strong> <code>${link.nearest_road_vertex_wgs84}</code><br/><strong>Geometry Validation Method:</strong> ${link.geometry_validation_method}<br/><strong>Nearest Junction:</strong> ${link.nearest_intersection_name} (${link.distance_to_intersection_km} km)` : "Connected to arterial grid"}</div></div>
-            <div class="kv-row"><div class="kv-lbl">6. Officially Published Road Capacity vs. Modelled Corridor Traffic &amp; Scenario HGV Breakdown</div><div class="kv-val">${link ? `<strong>Officially Published Corridor Capacity Benchmark:</strong> <span style="color:#34d399;">${link.published_road_capacity_and_upgrade_fact}</span><br/><strong>Modelled Corridor Traffic Estimate:</strong> ${link.observed_road_traffic_condition}<br/><strong>Scenario-Based Estimated Daily HGV Movements (Not Observed Traffic):</strong> <strong>${link.total_hgv_round_trips_day} HGV round-trips/day (${link.total_hgv_one_way_movements_day} one-way/day)</strong> = ${link.concrete_mixer_loads_day} concrete mixers + ${link.rebar_trailer_loads_day} rebar trailers + ${link.earthworks_tipper_loads_day} earthworks tippers + ${link.mep_fitout_truck_loads_day} MEP/fit-out trucks<br/><span style="color:var(--cyan);">${link.modelled_daily_hgv_concrete_rebar_trips}</span><br/><span style="color:#fcd34d; font-size:0.70rem;"><strong>Modelling Assumptions &amp; Sensitivity:</strong> ${link.hgv_modelling_assumptions_and_sensitivity}</span><br/><strong>HGV Ban Window:</strong> ${link.hgv_routing_and_ban_compliance}` : ""}</div></div>
-            <div class="kv-row"><div class="kv-lbl">7. Main Contractors &amp; Consultants</div><div class="kv-val">${p.main_contractor_and_consultants}</div></div>
-            <div class="kv-row"><div class="kv-lbl">8. Supporting Project Documents (${docs.length} Verified)</div><div class="kv-val">${docsHtml}</div></div>
-            <div class="kv-row"><div class="kv-lbl">9. Dual Provenance Trail (Project Source + Corridor Capacity Source)</div><div class="kv-val"><strong>Project Record (${link ? link.project_source_id : p.project_id}):</strong> <a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> (Verified: ${p.last_verified_date})<br/>${link ? `<strong>Corridor Capacity Benchmark (${link.corridor_traffic_source_id}):</strong> <a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_source_title} ↗</a>` : ""}</div></div>
+            <div class="kv-row"><div class="kv-lbl">Scale &amp; Timeline</div><div class="kv-val"><strong>GFA:</strong> ${p.gross_floor_area} | <strong>Buildings:</strong> ${p.towers_and_buildings_count} (${p.floors_and_height}) | <strong>Units:</strong> ${p.apartments_and_villas_count}<br/><span style="color:var(--muted);">${p.timeline_milestones}</span></div></div>
+            <div class="kv-row"><div class="kv-lbl">Corridor Capacity vs. Modelled Traffic</div><div class="kv-val">${link ? `<span class="ep-pill-pub">PUBLISHED BENCHMARK</span> <span style="color:#34d399;">${link.published_road_capacity_and_upgrade_fact}</span><br/><span class="ep-pill-mod" style="margin-top:4px; display:inline-block;">MODELLED CORRIDOR ESTIMATE</span> ${link.observed_road_traffic_condition}` : ""}</div></div>
           </div>
+
+          <details class="tech-accordion">
+            <summary>Technical Details: Geometry Math, 4-Component HGV Model &amp; Provenance (${docs.length} Docs)</summary>
+            <div class="tech-body">
+              <div style="margin-bottom:6px;"><strong>1. Nearest-Vertex Geometry Validation:</strong> ${link ? `Project Centroid <code>${link.project_coordinates}</code> → Nearest Road Vertex <code>${link.nearest_road_vertex_wgs84}</code> (<strong>${link.distance_to_primary_road_km} km</strong> via ${link.geometry_validation_method}). Nearest Junction: ${link.nearest_intersection_name} (${link.distance_to_intersection_km} km).` : p.coordinates}</div>
+              ${link ? `<div style="margin-bottom:6px;"><strong>2. Scenario-Based 4-Component HGV Breakdown:</strong> <strong>${link.total_hgv_round_trips_day} round-trips/day (${link.total_hgv_one_way_movements_day} one-way/day)</strong> = ${link.concrete_mixer_loads_day} concrete mixers + ${link.rebar_trailer_loads_day} rebar trailers + ${link.earthworks_tipper_loads_day} earthworks tippers + ${link.mep_fitout_truck_loads_day} MEP/fit-out trucks.<br/><span style="color:#fcd34d;">Assumptions: ${link.hgv_modelling_assumptions_and_sensitivity}</span><br/><strong>HGV Ban Compliance:</strong> ${link.hgv_routing_and_ban_compliance}</div>` : ""}
+              <div style="margin-bottom:6px;"><strong>3. Contractors &amp; Consultants:</strong> ${p.main_contractor_and_consultants}</div>
+              <div style="margin-bottom:6px;"><strong>4. Supporting Documents (${docs.length}):</strong> ${docsHtml}</div>
+              <div><strong>5. Dual Provenance Trail:</strong> Project (${link ? link.project_source_id : p.project_id}): <a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> | Corridor (${link ? link.corridor_traffic_source_id : ""}): ${link ? `<a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_source_title} ↗</a>` : ""}</div>
+            </div>
+          </details>
         </div>
       `;
     }
@@ -1681,21 +2146,29 @@ def main():
             <span class="conf-pill b-est">${sd.confidence}</span>
           </div>
           <h4>${sd.development_name}</h4>
-          <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:8px;">Developer: ${sd.developer} | ${sd.community_district}</div>
+          <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:10px;">${sd.developer} • ${sd.community_district}</div>
+          <div class="exec-metric-grid">
+            <div class="exec-metric-box"><div class="em-lbl">Active Towers</div><div class="em-val">${sd.building_count} Towers</div><div class="em-sub">${sd.floors_range}</div></div>
+            <div class="exec-metric-box"><div class="em-lbl">Total Units</div><div class="em-val" style="color:#38bdf8;">${sd.total_units.toLocaleString()}</div><div class="em-sub">${sd.active_gfa_sqm.toLocaleString()} m² GFA</div></div>
+          </div>
           <div style="margin-bottom:8px;"><span class="ep-badge ep-t3">${sd.epistemic_impact_tier}</span></div>
           <div class="kv-grid">
-            <div class="kv-row"><div class="kv-lbl">Task 1 Cross-Reference (Zero Inventory Duplication)</div><div class="kv-val">${sd.linked_task1_ref}</div></div>
-            <div class="kv-row"><div class="kv-lbl">Active Building Scale &amp; Units</div><div class="kv-val">${sd.building_count} Towers (${sd.floors_range}) | <strong>${sd.total_units.toLocaleString()} Units</strong> | <strong>${sd.active_gfa_sqm.toLocaleString()} m² Active GFA</strong></div></div>
-            <div class="kv-row"><div class="kv-lbl">Construction Status</div><div class="kv-val">${sd.construction_status}</div></div>
-            <div class="kv-row"><div class="kv-lbl">Nearest-Vertex Road Geometry Validation</div><div class="kv-val"><a href="javascript:void(0)" onclick="showRoadInspector('${sd.primary_access_road_id}')">${sd.primary_access_road_id}</a> (<strong>${sd.distance_to_road_km} km</strong> Haversine from [${sd.latitude.toFixed(4)}, ${sd.longitude.toFixed(4)}] to nearest road vertex [${sd.nearest_road_vertex_wgs84}])</div></div>
-            <div class="kv-row"><div class="kv-lbl">Scenario-Based Estimated Daily HGV Movements &amp; Assumptions</div><div class="kv-val">${sd.estimated_midday_hgv_trips_per_day}<br/><span style="color:#fcd34d; font-size:0.70rem;">${sd.hgv_modelling_assumptions_and_sensitivity}</span></div></div>
+            <div class="kv-row"><div class="kv-lbl">Construction Status &amp; Primary Corridor</div><div class="kv-val">${sd.construction_status}<br/>Corridor: <a href="javascript:void(0)" onclick="showRoadInspector('${sd.primary_access_road_id}')">${sd.primary_access_road_id}</a> (<strong>${sd.distance_to_road_km} km</strong> to vertex)</div></div>
           </div>
+          <details class="tech-accordion">
+            <summary>Technical Details: Vertex Coordinates &amp; HGV Modelling Assumptions</summary>
+            <div class="tech-body">
+              <div style="margin-bottom:5px;"><strong>Task 1 Cross-Reference:</strong> ${sd.linked_task1_ref}</div>
+              <div style="margin-bottom:5px;"><strong>Nearest-Vertex Geometry:</strong> Centroid [${sd.latitude.toFixed(4)}, ${sd.longitude.toFixed(4)}] → Vertex [${sd.nearest_road_vertex_wgs84}] (${sd.distance_to_road_km} km Haversine).</div>
+              <div><strong>Scenario HGV Movements:</strong> ${sd.estimated_midday_hgv_trips_per_day}<br/><span style="color:#fcd34d;">${sd.hgv_modelling_assumptions_and_sensitivity}</span></div>
+            </div>
+          </details>
         </div>
       `;
     }
 
     // =========================================================================
-    // SECTION C4: ROAD-LEVEL DETAIL PANEL
+    // SECTION C4: ROAD-LEVEL DETAIL PANEL (Executive Summary + Progressive Disclosure)
     // =========================================================================
     function showRoadInspector(roadId) {
       switchDrawerTab("insp");
@@ -1712,24 +2185,27 @@ def main():
           ? `<a href="${o.source_url}" target="_blank" rel="noopener">${o.source_id}: ${o.source_report_title || 'Official Source'} (${o.publication_date || ''}) ↗</a>`
           : o.source_id;
         return `
-        <div style="background:#090d16; border:1px solid #334155; padding:7px; border-radius:6px; margin-bottom:6px;">
-          <div style="display:flex; justify-content:space-between; font-weight:700; color:#fff;">
+        <div style="background:#090d16; border:1px solid #334155; padding:8px; border-radius:7px; margin-bottom:7px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#fff;">
             <span>${o.time_period}</span>
             <span style="color:${congestionColor(o.congestion_level)};">Modelled ~${o.average_speed_kmh} km/h (${o.travel_time_min_per_10km} min/10km)</span>
           </div>
-          <div style="font-size:0.71rem; color:#fcd34d; margin-top:3px;"><strong>Classification:</strong> ${o.evidence_level} (${o.confidence}) | <strong>Scenario:</strong> ${o.measurement_period}</div>
-          <div style="font-size:0.71rem; color:#34d399; margin-top:2px;"><strong>Officially Published Corridor Fact:</strong> ${o.officially_published_corridor_benchmark}</div>
-          <div style="font-size:0.71rem; color:#38bdf8; margin-top:2px;"><strong>Two-Term BPR + Modelled Bottleneck Assumption:</strong> v₀=${o.free_flow_speed_kmh} km/h (t₀=${o.free_flow_time_min_per_10km} min/10km) | V/C=${o.vc_ratio} (${o.modelled_demand_vph_dir}/${o.reference_capacity_vph_dir} vph/dir) → <strong>Formula BPR Link: ${o.bpr_uninterrupted_speed_kmh} km/h (${o.bpr_uninterrupted_time_min_per_10km} min/10km)</strong> + <strong>Modelled Bottleneck-Delay Assumption (+d_adj): +${o.bottleneck_and_control_delay_min_per_10km} min/10km</strong> = <strong>${o.travel_time_min_per_10km} min/10km → ${o.average_speed_kmh} km/h</strong></div>
-          <div style="font-size:0.70rem; color:#7dd3fc; margin-top:2px;"><strong>Full Derivation:</strong> ${o.modelled_assumptions_and_derivation}</div>
-          <div style="font-size:0.71rem; color:#e2e8f0; margin-top:2px;"><strong>Source Reference:</strong> ${srcHtml}</div>
-          <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;"><strong>Modelled Congestion:</strong> ${o.congestion_level} | <strong>Modelled Vol:</strong> ${o.traffic_volume_vph}</div>
-          <div style="font-size:0.70rem; color:var(--muted); margin-top:2px;"><strong>2024 vs 2026 Comparison:</strong> ${o.comparison_period}</div>
-          <div style="font-size:0.69rem; color:#94a3b8; margin-top:2px;"><em>Limitation: ${o.data_limitations}</em></div>
+          <div style="font-size:0.72rem; color:#34d399; margin-top:4px;"><span class="ep-pill-pub">PUBLISHED</span> ${o.officially_published_corridor_benchmark}</div>
+          <div style="font-size:0.72rem; color:#cbd5e1; margin-top:4px;"><span class="ep-pill-mod">MODELLED</span> <strong>${o.congestion_level}</strong> | Volume: ${o.traffic_volume_vph}</div>
+          <details class="tech-accordion" style="margin-top:6px;">
+            <summary>BPR Equation Breakdown &amp; Source (${o.observation_id})</summary>
+            <div class="tech-body">
+              <div><strong>Two-Term BPR + Bottleneck Formula:</strong> v₀=${o.free_flow_speed_kmh} km/h (t₀=${o.free_flow_time_min_per_10km} min/10km) | V/C=${o.vc_ratio} (${o.modelled_demand_vph_dir}/${o.reference_capacity_vph_dir} vph/dir) → <strong>Uninterrupted BPR Link: ${o.bpr_uninterrupted_speed_kmh} km/h (${o.bpr_uninterrupted_time_min_per_10km} min/10km)</strong> + <strong>Bottleneck Assumption (+d_adj): +${o.bottleneck_and_control_delay_min_per_10km} min/10km</strong> = <strong>${o.travel_time_min_per_10km} min/10km → ${o.average_speed_kmh} km/h</strong></div>
+              <div style="margin-top:4px;"><strong>Derivation:</strong> ${o.modelled_assumptions_and_derivation}</div>
+              <div style="margin-top:4px;"><strong>2024 vs 2026 Comparison:</strong> ${o.comparison_period}</div>
+              <div style="margin-top:4px;"><strong>Source:</strong> ${srcHtml}</div>
+            </div>
+          </details>
         </div>`;
       }).join("") || "<div style='color:#94a3b8; background:#090d16; border:1px dashed #64748b; padding:8px; border-radius:6px;'><strong>Data Unavailable (Distinguished from Zero Congestion):</strong> Segment-specific loop-detector speed breakdown is not published separately in open government CSVs for this corridor. Published statutory speed limit is " + r.speed_limit_kmh + ".</div>";
 
       const projHtml = connectedLinks.map(l =>
-        `<div>• <a href="javascript:void(0)" onclick="showProjectInspector('${l.project_id}')"><strong>${l.project_id}</strong>: ${l.project_name}</a> (${l.distance_to_primary_road_km} km Haversine to vertex [${l.nearest_road_vertex_wgs84}] — ${l.epistemic_impact_classification.split('(')[0]})</div>`
+        `<div>• <a href="javascript:void(0)" onclick="showProjectInspector('${l.project_id}')"><strong>${l.project_id}</strong>: ${l.project_name}</a> (${l.distance_to_primary_road_km} km — ${l.epistemic_impact_classification.split('(')[0]})</div>`
       ).join("") || "Serves general corridor traffic";
 
       document.getElementById("inspectorContainer").innerHTML = `
@@ -1739,17 +2215,36 @@ def main():
             <span class="conf-pill ${r.confidence === 'Verified' ? 'b-ver' : 'b-est'}">${r.confidence}</span>
           </div>
           <h4>${r.road_name}</h4>
-          <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:8px;">Authority: ${r.authority} | ${r.road_type}</div>
+          <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:10px;">${r.authority} • ${r.road_type}</div>
+
+          <div class="exec-metric-grid">
+            <div class="exec-metric-box">
+              <div class="em-lbl">Speed Limit &amp; Lanes</div>
+              <div class="em-val">${r.speed_limit_kmh}</div>
+              <div class="em-sub">${r.lanes_per_direction} lanes/dir (${r.direction})</div>
+            </div>
+            <div class="exec-metric-box">
+              <div class="em-lbl">Published Capacity</div>
+              <div class="em-val" style="color:#34d399; font-size:0.78rem;">${r.capacity_vph_per_dir}</div>
+              <div class="em-sub">Connected Sites: ${connectedLinks.length}</div>
+            </div>
+          </div>
 
           <div class="kv-grid">
-            <div class="kv-row"><div class="kv-lbl">1. Published Speed Limit &amp; Polyline Geometry Validation</div><div class="kv-val"><strong>Speed Limit:</strong> ${r.speed_limit_kmh}<br/><strong>Lanes:</strong> ${r.lanes_per_direction} lanes per direction (${r.direction})<br/><strong>Geometry Validation:</strong> ${r.geometry_source_and_validation}</div></div>
-            <div class="kv-row"><div class="kv-lbl">2. Officially Published Directional Capacity vs. HCM Basis (Section A2 Guardrail)</div><div class="kv-val"><strong>${r.capacity_vph_per_dir}</strong><br/><span style="color:var(--cyan);">${r.capacity_basis}</span></div></div>
-            <div class="kv-row"><div class="kv-lbl">3. Heavy Goods Vehicle (HGV) Truck Ban Schedule &amp; Salik Status</div><div class="kv-val"><strong>HGV Rule:</strong> ${r.hgv_truck_ban_window}<br/><strong>Salik Toll:</strong> ${r.salik_toll_status}</div></div>
-            ${cityObs && r.emirate === 'Dubai' ? `<div class="kv-row"><div class="kv-lbl">4. Published City-Wide Reference Only (TomTom Dubai Traffic Index — SRC-436)</div><div class="kv-val"><strong>${cityObs.observation_id} (City-Level Only):</strong> ${cityObs.officially_published_corridor_benchmark} (<a href="${cityObs.source_url}" target="_blank" rel="noopener">tomtom.com/traffic-index/city/dubai/ ↗</a>)</div></div>` : ""}
-            <div class="kv-row"><div class="kv-lbl">5. Modelled Corridor Estimates Calibrated to Published RTA/SRTA Capacity Benchmarks (${roadObs.length} Windows)</div><div class="kv-val">${obsHtml}</div></div>
-            <div class="kv-row"><div class="kv-lbl">6. Connected Construction Projects (${connectedLinks.length})</div><div class="kv-val">${projHtml}</div></div>
-            <div class="kv-row"><div class="kv-lbl">7. Served Communities &amp; Provenance</div><div class="kv-val">${r.served_communities} (Source: ${r.source_id} | Verified: 2026-11-09)</div></div>
+            <div class="kv-row"><div class="kv-lbl">HGV Truck Ban &amp; Salik Toll Policy</div><div class="kv-val"><strong>HGV Rule:</strong> ${r.hgv_truck_ban_window}<br/><strong>Salik:</strong> ${r.salik_toll_status}</div></div>
+            <div class="kv-row"><div class="kv-lbl">Corridor Traffic Profiles (${roadObs.length} Time Windows)</div><div class="kv-val">${obsHtml}</div></div>
+            <div class="kv-row"><div class="kv-lbl">Connected Construction Projects (${connectedLinks.length})</div><div class="kv-val">${projHtml}</div></div>
           </div>
+
+          <details class="tech-accordion">
+            <summary>Technical Details: Capacity Basis, Polyline Geometry &amp; City Baseline</summary>
+            <div class="tech-body">
+              <div style="margin-bottom:5px;"><strong>Capacity Basis:</strong> ${r.capacity_basis}</div>
+              <div style="margin-bottom:5px;"><strong>Geometry Validation:</strong> ${r.geometry_source_and_validation}</div>
+              ${cityObs && r.emirate === 'Dubai' ? `<div style="margin-bottom:5px;"><strong>Published City-Wide Reference (${cityObs.observation_id}):</strong> ${cityObs.officially_published_corridor_benchmark} (<a href="${cityObs.source_url}" target="_blank" rel="noopener">TomTom Dubai Index ↗</a>)</div>` : ""}
+              <div><strong>Served Communities:</strong> ${r.served_communities} (Source: ${r.source_id})</div>
+            </div>
+          </details>
         </div>
       `;
     }
@@ -2159,7 +2654,8 @@ def main():
     full_html = html_doc + js_code
     out_path = WEB_DIR / "task2_gis_intelligence.html"
     out_path.write_text(full_html, encoding="utf-8")
-    (ARTIFACT_DIR / "uae_construction_portal.html").write_text(full_html, encoding="utf-8")
+    if ARTIFACT_DIR and ARTIFACT_DIR.exists():
+        (ARTIFACT_DIR / "uae_construction_portal.html").write_text(full_html, encoding="utf-8")
     print(f"Built Task 2 Interactive GIS & Traffic Platform: {out_path} ({out_path.stat().st_size // 1024} KB)")
 
     # Inject a prominent Task 2 banner at the very top of web/index.html & web/validation_report.html

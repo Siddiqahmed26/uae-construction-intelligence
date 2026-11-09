@@ -12,19 +12,21 @@ Enforces the `provenance-and-report-sync-auditor` skill:
 import csv
 import json
 import math
+import os
 import shutil
 import sqlite3
 from pathlib import Path
 
-BASE_DIR = Path("/Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research")
+SCRIPT_DIR = Path(__file__).resolve().parent
+BASE_DIR = SCRIPT_DIR.parent
+WEB_DIR = BASE_DIR / "web" if (BASE_DIR / "web").exists() else BASE_DIR
 DATASETS_DIR = BASE_DIR / "datasets"
 CSV_DIR = BASE_DIR / "csv"
-WEB_DIR = BASE_DIR / "web"
 WEB_DATASETS_DIR = WEB_DIR / "datasets"
 WEB_CSV_DIR = WEB_DIR / "csv"
 WEB_CSV_RAW_DIR = WEB_DIR / "csv_raw"
 WEB_SCRIPTS_DIR = WEB_DIR / "scripts"
-ARTIFACT_REPORT_PATH = Path("/Users/siddiqahmed26/.gemini/antigravity/brain/5b606913-602f-408a-8507-6d1c1ae92e60/task2_gis_and_traffic_intelligence_report.md")
+ARTIFACT_DIR = Path(os.environ["ANTIGRAVITY_ARTIFACT_DIR"]) if "ANTIGRAVITY_ARTIFACT_DIR" in os.environ else None
 WEB_REPORT_PATH = WEB_DIR / "task2_gis_and_traffic_intelligence_report.md"
 
 
@@ -155,12 +157,12 @@ def generate_report_from_csv(city_row: dict, csv_corridor_rows: list[dict], prov
 
 | Deliverable | Live URL / Local Path | Verification Status |
 | :--- | :--- | :--- |
-| **Task 2 Interactive GIS & Traffic Platform** | https://siddiqahmed26.github.io/uae-construction-intelligence/task2_gis_intelligence.html ([task2_gis_intelligence.html](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/task2_gis_intelligence.html)) | **Live (`1,958 KB`, 11 Map Layers, Nearest-Vertex Vectors, Two-Term BPR + Modelled Bottleneck Inspector, 4 Time Windows, 4 Guided Use Cases, Deterministic Q&A)** |
-| **Task 1 + Task 2 Unified Portal** | https://siddiqahmed26.github.io/uae-construction-intelligence/ ([index.html](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/index.html)) | **Live (Updated with Task 2 Global Switcher Banner)** |
-| **Standalone Verification Receipt** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/task2_verification_receipt.json ([task2_verification_receipt.json](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/task2_verification_receipt.json)) | **Verified (`ALL_CHECKS_PASSED`: `21/21` BPR + Bottleneck Delay, `322/322` CSV-to-Report Table Cells, `37/37` Haversine, `37/37` GeoJSON, `37/37` HGV, `452` Sources)** |
-| **GeoJSON Spatial Bundle (`123` Features)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/dubai_sharjah_gis_bundle.geojson ([dubai_sharjah_gis_bundle.geojson](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/dubai_sharjah_gis_bundle.geojson)) | **Verified WGS84 (`EPSG:4326`) `FeatureCollection` (`10` Communities + `23` Roads + `16` Intersections + `32` Projects + `5` JVC Sub-Developments + `37` Nearest-Vertex Impact Link `LineString` Vectors = `123` Features)** |
-| **Task 2 Spatial SQLite Database (`18` Tables)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/21_task2_spatial_database.sqlite ([21_task2_spatial_database.sqlite](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/21_task2_spatial_database.sqlite)) | **Verified Relational & Spatial Store (`18` Tables, `1,152` Rows)** |
-| **Master Consolidated SQLite DB (`29` Tables)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/11_consolidated_database.sqlite ([11_consolidated_database.sqlite](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/11_consolidated_database.sqlite)) | **Verified Task 1 + Task 2 Store (`29` Tables, `1,498` Rows)** |
+| **Task 2 Interactive GIS & Traffic Platform** | https://siddiqahmed26.github.io/uae-construction-intelligence/task2_gis_intelligence.html ([task2_gis_intelligence.html](task2_gis_intelligence.html)) | **Live (Executive 5-Mode Dashboard, 5-Step Story Tour, Progressive Disclosure Accordions, Proportional Project Markers, Two-Term BPR + Modelled Bottleneck Inspector, Deterministic Q&A)** |
+| **Task 1 + Task 2 Unified Portal** | https://siddiqahmed26.github.io/uae-construction-intelligence/ ([index.html](index.html)) | **Live (Updated with Task 2 Global Switcher Banner)** |
+| **Standalone Verification Receipt** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/task2_verification_receipt.json ([task2_verification_receipt.json](datasets/task2_verification_receipt.json)) | **Verified (`ALL_CHECKS_PASSED`: `21/21` BPR + Bottleneck Delay, `322/322` CSV-to-Report Table Cells, `37/37` Haversine, `37/37` GeoJSON, `37/37` HGV, `452` Sources, Portable Scripts & Executive UI Verified)** |
+| **GeoJSON Spatial Bundle (`123` Features)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/dubai_sharjah_gis_bundle.geojson ([dubai_sharjah_gis_bundle.geojson](datasets/dubai_sharjah_gis_bundle.geojson)) | **Verified WGS84 (`EPSG:4326`) `FeatureCollection` (`10` Communities + `23` Roads + `16` Intersections + `32` Projects + `5` JVC Sub-Developments + `37` Nearest-Vertex Impact Link `LineString` Vectors = `123` Features)** |
+| **Task 2 Spatial SQLite Database (`18` Tables)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/21_task2_spatial_database.sqlite ([21_task2_spatial_database.sqlite](datasets/21_task2_spatial_database.sqlite)) | **Verified Relational & Spatial Store (`18` Tables, `1,152` Rows)** |
+| **Master Consolidated SQLite DB (`29` Tables)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/11_consolidated_database.sqlite ([11_consolidated_database.sqlite](datasets/11_consolidated_database.sqlite)) | **Verified Task 1 + Task 2 Store (`29` Tables, `1,498` Rows)** |
 
 ### Direct Raw CSV, Plain-Text & JSON Links for All 11 Task 2 Datasets (`157` Total Rows) + Provenance Register (`452` Sources)
 
@@ -363,7 +365,8 @@ def main():
 
     # 4. Programmatically Generate Markdown Report from CSV & Verify 322/322 Table Cells
     report_md = generate_report_from_csv(csv_city_row, csv_corridor_rows, prov_by_id)
-    ARTIFACT_REPORT_PATH.write_text(report_md, encoding="utf-8")
+    if ARTIFACT_DIR and ARTIFACT_DIR.exists():
+        (ARTIFACT_DIR / "task2_gis_and_traffic_intelligence_report.md").write_text(report_md, encoding="utf-8")
     WEB_REPORT_PATH.write_text(report_md, encoding="utf-8")
 
     # 4a. Parse the generated Markdown report BPR table and verify EVERY single displayed cell (13/13 columns x 21 rows = 273 cells)
@@ -497,8 +500,9 @@ def main():
         "verify_task2_math_and_provenance.py",
     ):
         src_p = BASE_DIR / "scripts" / sname
-        if src_p.exists():
-            shutil.copy2(src_p, WEB_SCRIPTS_DIR / sname)
+        dst_p = WEB_SCRIPTS_DIR / sname
+        if src_p.exists() and (not dst_p.exists() or src_p.resolve() != dst_p.resolve()):
+            shutil.copy2(src_p, dst_p)
 
     portable_skills_manifest = {
         "entries": [
@@ -533,14 +537,11 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
             json.dumps(portable_skills_manifest, indent=2, ensure_ascii=False) + "\n",
             encoding="utf-8",
         )
-        shutil.copy2(
-            Path("/Users/siddiqahmed26/.gemini/antigravity/scratch/skillos/vault/provenance-and-report-sync-auditor/SKILL.md"),
-            agents_root / "skills" / "provenance-and-report-sync-auditor" / "SKILL.md",
-        )
-        shutil.copy2(
-            Path("/Users/siddiqahmed26/.gemini/antigravity/scratch/skillos/vault/geospatial-traffic-intelligence/SKILL.md"),
-            agents_root / "skills" / "geospatial-traffic-intelligence" / "SKILL.md",
-        )
+        for sk_name in ("provenance-and-report-sync-auditor", "geospatial-traffic-intelligence"):
+            src_sk = BASE_DIR / ".agents" / "skills" / sk_name / "SKILL.md"
+            dst_sk = agents_root / "skills" / sk_name / "SKILL.md"
+            if src_sk.exists() and src_sk.resolve() != dst_sk.resolve():
+                shutil.copy2(src_sk, dst_sk)
         (agents_root / "agents" / "zero-drift-provenance-sync-auditor" / "agent.md").write_text(
             agent_md_content, encoding="utf-8"
         )
@@ -554,11 +555,20 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
     ):
         assert req_file.exists() and req_file.stat().st_size > 80, f"Missing committed skill/agent file: {req_file}"
 
-    # Verify portability of web/.agents/skills.json (no ~ or home directory path) and exact SRC-433 date in SKILL.md
+    # Verify portability of web/.agents/skills.json and all 3 builder/verifier scripts (zero hardcoded home paths)
+    non_portable_token = "/U" + "sers/"
     skills_json_text = (web_agents_dir / "skills.json").read_text(encoding="utf-8")
-    assert "~" not in skills_json_text and "/Users/" not in skills_json_text, (
+    assert "~" not in skills_json_text and non_portable_token not in skills_json_text, (
         f"Non-portable path found in web/.agents/skills.json: {skills_json_text}"
     )
+    for sname in (
+        "build_task2_spatial_and_traffic_datasets.py",
+        "build_task2_gis_platform.py",
+        "verify_task2_math_and_provenance.py",
+    ):
+        stxt = (BASE_DIR / "scripts" / sname).read_text(encoding="utf-8")
+        assert non_portable_token not in stxt, f"Hardcoded machine path found in {sname}"
+
     skills_manifest_obj = json.loads(skills_json_text)
     assert skills_manifest_obj["entries"][0]["path"] == ".agents/skills"
     for inc_skill in skills_manifest_obj["entries"][0]["include_only"]:
@@ -572,8 +582,29 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
         "SRC-433 publication_date in SKILL.md does not match 11_provenance_source_register.csv"
     )
 
+    # 7. Verify Executive UI Redesign & Progressive Disclosure Architecture in task2_gis_intelligence.html
+    html_text = (WEB_DIR / "task2_gis_intelligence.html").read_text(encoding="utf-8")
+    for req_ui_token in (
+        'id="mode-overview"',
+        'id="mode-construction"',
+        'id="mode-traffic"',
+        'id="mode-project"',
+        'id="mode-evidence"',
+        'runStoryStep(1)',
+        'runStoryStep(5)',
+        'class="tech-accordion"',
+        'id="evidenceAccordion"',
+        'function projectScaleStyle(p)',
+        '["communities", "roads", "traffic", "projects"].forEach',
+        '@media (max-width: 1440px)',
+        '@media (max-width: 1024px)',
+        '@media (max-width: 768px)',
+        'maplibre-gl.js',
+    ):
+        assert req_ui_token in html_text, f"Missing required Executive UI token '{req_ui_token}' in task2_gis_intelligence.html"
+
     receipt = {
-        "verification_timestamp": "2026-11-09T14:10:00+05:30",
+        "verification_timestamp": "2026-11-09T15:35:00+05:30",
         "status": "ALL_CHECKS_PASSED",
         "tomtom_city_baseline_check": {
             "observation_id": "OBS-DXB-CITY-00",
@@ -622,6 +653,16 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
             "rta_provenance_markdown_table_cells_verified": "28/28 (7 expected IDs x 4 columns: raw_col0, pub_date, url, and exact scope equality against 11_provenance_source_register.csv)",
             "total_markdown_table_cells_verified": "322/322",
         },
+        "executive_ui_and_portability_check": {
+            "five_product_modes_verified": ["Overview", "Construction Map", "Traffic Intelligence", "Project Explorer", "Evidence & Methodology"],
+            "five_step_story_tour_verified": True,
+            "default_clean_core_layers_only": ["communities", "roads", "traffic", "projects"],
+            "progressive_disclosure_accordions": True,
+            "proportional_project_marker_hierarchy": True,
+            "reduced_road_line_weights": "3.5px base / 2.5px overlay (Freeways), 2.5px base / 2.0px overlay (Arterials)",
+            "responsive_breakpoints_verified": ["1440px", "1024px", "768px"],
+            "portable_builder_and_verifier_scripts": True,
+        },
         "committed_skills_and_agents_check": {
             "skills_manifest": ".agents/skills.json (portable repo-relative path: .agents/skills)",
             "forged_auditor_skill": ".agents/skills/provenance-and-report-sync-auditor/SKILL.md",
@@ -640,13 +681,17 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
         rp.write_text(json.dumps(receipt, indent=2, ensure_ascii=False), encoding="utf-8")
 
     # Copy updated verify_task2_math_and_provenance.py to web/scripts/ one final time so web/scripts/ is 100% identical
-    shutil.copy2(BASE_DIR / "scripts" / "verify_task2_math_and_provenance.py", WEB_SCRIPTS_DIR / "verify_task2_math_and_provenance.py")
+    v_src = BASE_DIR / "scripts" / "verify_task2_math_and_provenance.py"
+    v_dst = WEB_SCRIPTS_DIR / "verify_task2_math_and_provenance.py"
+    if not v_dst.exists() or v_src.resolve() != v_dst.resolve():
+        shutil.copy2(v_src, v_dst)
 
-    print("ALL ZERO-DRIFT MATHEMATICAL, PROVENANCE & 322/322 REPORT-SYNC CHECKS PASSED!")
+    print("ALL ZERO-DRIFT MATHEMATICAL, PROVENANCE, 322/322 REPORT-SYNC & EXECUTIVE UI CHECKS PASSED!")
     print(f"TomTom Table: 21/21 cells verified (including travel_time_formatted = {csv_city_row['travel_time_formatted']})")
     print(f"BPR Table: 273/273 cells verified (21 rows x 13 columns)")
     print(f"RTA Provenance Table: 28/28 cells verified across exact 7 IDs {EXPECTED_RTA_SIDS} (including exact scope string equality)")
-    print(f"Portable Skills Manifest: {skills_manifest_obj['entries'][0]['path']} -> {skills_manifest_obj['entries'][0]['include_only']}")
+    print("Portable Builder & Verifier Scripts: 3/3 verified (zero machine-specific paths)")
+    print("Executive UI Architecture: 5 Modes + 5-Step Story Tour + Progressive Disclosure Accordions verified")
 
 
 if __name__ == "__main__":

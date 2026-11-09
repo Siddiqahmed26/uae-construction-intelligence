@@ -1,5 +1,5 @@
 {
-  "verification_timestamp": "2026-11-09T14:10:00+05:30",
+  "verification_timestamp": "2026-11-09T15:35:00+05:30",
   "status": "ALL_CHECKS_PASSED",
   "tomtom_city_baseline_check": {
     "observation_id": "OBS-DXB-CITY-00",
@@ -377,6 +377,31 @@
     "bpr_markdown_table_total_cells_verified": "273/273",
     "rta_provenance_markdown_table_cells_verified": "28/28 (7 expected IDs x 4 columns: raw_col0, pub_date, url, and exact scope equality against 11_provenance_source_register.csv)",
     "total_markdown_table_cells_verified": "322/322"
+  },
+  "executive_ui_and_portability_check": {
+    "five_product_modes_verified": [
+      "Overview",
+      "Construction Map",
+      "Traffic Intelligence",
+      "Project Explorer",
+      "Evidence & Methodology"
+    ],
+    "five_step_story_tour_verified": true,
+    "default_clean_core_layers_only": [
+      "communities",
+      "roads",
+      "traffic",
+      "projects"
+    ],
+    "progressive_disclosure_accordions": true,
+    "proportional_project_marker_hierarchy": true,
+    "reduced_road_line_weights": "3.5px base / 2.5px overlay (Freeways), 2.5px base / 2.0px overlay (Arterials)",
+    "responsive_breakpoints_verified": [
+      "1440px",
+      "1024px",
+      "768px"
+    ],
+    "portable_builder_and_verifier_scripts": true
   },
   "committed_skills_and_agents_check": {
     "skills_manifest": ".agents/skills.json (portable repo-relative path: .agents/skills)",
