@@ -11,66 +11,82 @@
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin=""></script>
   <style>
     :root {
-      --bg-dark: #070b14;
-      --panel-dark: #0d1424;
-      --panel-card: #152036;
-      --border: #263552;
-      --text: #f8fafc;
-      --muted: #94a3b8;
-      --cyan: #38bdf8;
+      --bg-dark: #f8fafc;
+      --panel-dark: #ffffff;
+      --panel-card: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --muted: #64748b;
+      --cyan: #2563eb;
       --emerald: #10b981;
       --amber: #f59e0b;
       --orange: #f97316;
       --rose: #ef4444;
-      --purple: #a855f7;
+      --purple: #7c3aed;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, sans-serif;
-      background: var(--bg-dark);
-      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Inter", "Plus Jakarta Sans", "Segoe UI", Roboto, sans-serif;
+      background: #f1f5f9;
+      color: #0f172a;
       line-height: 1.45;
       overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
     }
-    a { color: var(--cyan); text-decoration: none; }
+    a { color: #2563eb; text-decoration: none; font-weight: 600; }
     a:hover { text-decoration: underline; }
 
-    /* 1. Clean Single-Row Executive Header (Never Overlaps Map or Toolbars) */
+    /* 1. HAIO-STYLE ULTRA-CLEAN WHITE TOP NAVBAR (60px) */
     .exec-header {
-      background: #090d16;
-      border-bottom: 1px solid var(--border);
-      padding: 6px 14px;
+      background: #ffffff;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 0 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 10px;
+      gap: 12px;
       position: relative;
       z-index: 2500;
-      min-height: 48px;
+      min-height: 58px;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
     }
     .brand-cluster {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 12px;
       flex-wrap: nowrap;
       min-width: 0;
     }
     .brand-title {
       font-weight: 800;
-      font-size: 0.90rem;
-      letter-spacing: -0.01em;
-      color: #fff;
+      font-size: 1.12rem;
+      letter-spacing: -0.025em;
+      color: #0f172a;
       display: flex;
       align-items: center;
-      gap: 7px;
+      gap: 8px;
       white-space: nowrap;
+      cursor: pointer;
+    }
+    .haio-logo-pin {
+      width: 28px;
+      height: 28px;
+      border-radius: 9px;
+      background: #2563eb;
+      color: #ffffff;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.90rem;
+      box-shadow: 0 4px 10px rgba(37, 99, 235, 0.30);
     }
     .brand-badge {
-      background: linear-gradient(135deg, #0284c7, #2563eb);
-      color: #fff;
-      font-size: 0.65rem;
-      padding: 2px 7px;
+      background: #eff6ff;
+      color: #2563eb;
+      border: 1px solid #bfdbfe;
+      font-size: 0.66rem;
+      padding: 2px 8px;
       border-radius: 999px;
       font-weight: 700;
       text-transform: uppercase;
@@ -79,386 +95,565 @@
     .kpi-strip {
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 6px;
     }
     .kpi-chip {
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid var(--border);
-      border-radius: 6px;
-      padding: 2px 7px;
-      font-size: 0.70rem;
-      color: var(--muted);
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 3px 10px;
+      font-size: 0.72rem;
+      color: #64748b;
       white-space: nowrap;
     }
     .kpi-chip strong {
-      color: #fff;
+      color: #0f172a;
       font-weight: 700;
       margin-left: 3px;
     }
 
-    /* 5 Main Executive Product Areas (Mode Switcher) */
+    /* 5 Main Executive Product Areas (haio.sg Soft Pill Mode Switcher) */
     .mode-switcher {
       display: flex;
-      background: #060a12;
-      border: 1px solid var(--border);
-      border-radius: 8px;
+      background: transparent;
       padding: 2px;
-      gap: 2px;
+      gap: 4px;
       flex-wrap: nowrap;
       overflow-x: auto;
       scrollbar-width: none;
+      align-items: center;
     }
     .mode-switcher::-webkit-scrollbar { display: none; }
     .mode-btn {
       background: transparent;
       border: 1px solid transparent;
-      color: #cbd5e1;
-      padding: 5px 9px;
-      border-radius: 6px;
-      font-size: 0.72rem;
-      font-weight: 700;
+      color: #475569;
+      padding: 7px 14px;
+      border-radius: 999px;
+      font-size: 0.80rem;
+      font-weight: 600;
       cursor: pointer;
-      transition: all 0.15s ease;
+      transition: all 0.18s ease;
       white-space: nowrap;
       flex-shrink: 0;
     }
     .mode-btn:hover {
-      color: #fff;
-      background: rgba(56, 189, 248, 0.08);
+      color: #0f172a;
+      background: #f1f5f9;
     }
     .mode-btn.active {
-      background: linear-gradient(135deg, #0284c7, #1d4ed8);
-      color: #fff;
-      border-color: rgba(56, 189, 248, 0.45);
-      box-shadow: 0 2px 8px rgba(2, 132, 199, 0.35);
+      background: #eff6ff;
+      color: #2563eb;
+      font-weight: 700;
+      border-color: #dbeafe;
     }
 
-    /* Compact Right Header Actions & Dropdown */
+    /* Right Header Actions & Pill Toggle */
     .header-actions {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 8px;
       position: relative;
       flex-shrink: 0;
     }
     .emirate-pill-select {
-      background: #152036;
-      border: 1px solid #3b82f6;
-      color: #fff;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.72rem;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.76rem;
       font-weight: 700;
       cursor: pointer;
+      outline: none;
     }
     .export-dropdown {
       position: relative;
     }
     .export-dropdown summary {
       list-style: none;
-      background: rgba(255, 255, 255, 0.06);
-      border: 1px solid var(--border);
-      color: #e2e8f0;
-      padding: 4px 9px;
-      border-radius: 6px;
-      font-size: 0.72rem;
-      font-weight: 600;
+      background: #2563eb;
+      border: 1px solid #1d4ed8;
+      color: #ffffff;
+      padding: 6px 13px;
+      border-radius: 999px;
+      font-size: 0.76rem;
+      font-weight: 700;
       cursor: pointer;
       user-select: none;
       white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.25);
     }
     .export-dropdown summary::-webkit-details-marker { display: none; }
     .export-menu {
       position: absolute;
       right: 0;
-      top: calc(100% + 6px);
-      width: 250px;
-      background: #0f172a;
-      border: 1px solid #334155;
-      border-radius: 10px;
+      top: calc(100% + 8px);
+      width: 260px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
       padding: 8px;
-      box-shadow: 0 12px 28px rgba(0,0,0,0.6);
+      box-shadow: 0 16px 36px rgba(15, 23, 42, 0.16);
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 3px;
       z-index: 3000;
     }
     .export-menu a {
-      padding: 6px 8px;
-      border-radius: 6px;
-      font-size: 0.75rem;
-      color: #e2e8f0;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 0.78rem;
+      color: #1e293b;
       display: flex;
       justify-content: space-between;
+      font-weight: 600;
     }
     .export-menu a:hover {
-      background: rgba(56, 189, 248, 0.14);
-      color: var(--cyan);
+      background: #eff6ff;
+      color: #2563eb;
       text-decoration: none;
     }
 
-    /* 2. Map-Centric Two-Column Executive Workbench with Multi-Stage Breakpoints */
+    /* 2. FULL-BLEED 3D STAGE WITH FLOATING ROUNDED CARD INSPECTOR (HAIO.SG LAYOUT) */
     .workbench {
-      display: grid;
-      grid-template-columns: 1fr 410px;
-      height: calc(100vh - 50px);
-      min-height: 580px;
       position: relative;
-      border-bottom: 1px solid var(--border);
-      transition: grid-template-columns 0.22s ease;
-    }
-    .workbench.panel-collapsed {
-      grid-template-columns: 1fr 0px;
+      width: 100%;
+      height: calc(100vh - 58px);
+      min-height: 620px;
+      overflow: hidden;
+      background: #0b1320;
     }
     .workbench.panel-collapsed .sidebar-right {
-      display: none;
+      transform: translateX(calc(100% + 24px));
+      opacity: 0;
+      pointer-events: none;
     }
     @media (max-width: 1440px) {
-      .workbench { grid-template-columns: 1fr 370px; }
       .kpi-strip { display: none; }
     }
     @media (max-width: 1024px) {
       .workbench {
-        grid-template-columns: 1fr;
-        height: auto;
-      }
-      .sidebar-right {
-        border-left: none !important;
-        border-top: 1px solid var(--border);
+        display: flex !important;
+        flex-direction: column;
+        height: auto !important;
+        min-height: 0 !important;
       }
     }
     @media (max-width: 768px) {
-      .exec-header { padding: 6px 8px; }
+      .exec-header { padding: 6px 12px; }
       .mode-switcher { width: 100%; overflow-x: auto; flex-wrap: nowrap; }
     }
 
-    /* 3. Center Map Stage & Non-Overlapping Top/Bottom Toolbars */
+    /* 3. Full-Bleed 3D + 2D Map Stage */
     .map-stage {
       position: relative;
-      display: flex;
-      flex-direction: column;
-      background: #060a12;
-      overflow: hidden;
-      height: 100%;
-    }
-    #mapCanvas {
-      flex: 1 1 auto;
       width: 100%;
-      min-height: 400px;
+      height: 100%;
+      background: #0b1320;
+      overflow: hidden;
+    }
+    /* Primary WebGL 3D MapLibre Canvas (Full-Bleed) */
+    #map3dCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+    }
+    /* Backing Synchronized 2D Leaflet Canvas */
+    #mapCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
       z-index: 1;
-      background: #080d18;
+      opacity: 0;
+      pointer-events: none;
     }
-    .leaflet-tile.gis-dark-tiles,
-    #mapCanvas.basemap-dark .leaflet-tile-pane {
-      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
+    .map-stage.mode-2d-leaflet #mapCanvas {
+      opacity: 1;
+      pointer-events: auto;
+      z-index: 3;
     }
-
-    /* Top Map Toolbar: Static Flex Row Above Map (Zero Overlap Guaranteed) */
-    .map-hud-top {
-      position: relative;
-      flex: 0 0 auto;
-      z-index: 20;
-      background: #0b111e;
-      border-bottom: 1px solid var(--border);
-      padding: 6px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .story-bar {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      flex-wrap: wrap;
-    }
-    .story-lbl {
-      font-size: 0.67rem;
-      font-weight: 800;
-      text-transform: uppercase;
-      color: var(--cyan);
-      padding-right: 4px;
-      letter-spacing: 0.04em;
-    }
-    .story-step {
-      background: rgba(30, 41, 59, 0.75);
-      border: 1px solid #334155;
-      color: #cbd5e1;
-      padding: 3px 8px;
-      border-radius: 5px;
-      font-size: 0.69rem;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.15s;
-    }
-    .story-step:hover { color: #fff; border-color: #38bdf8; }
-    .story-step.active {
-      background: #0284c7;
-      color: #fff;
-      border-color: #38bdf8;
-    }
-    .story-arrow { color: #475569; font-size: 0.68rem; }
-
-    .hud-right-stack {
-      display: flex;
-      gap: 6px;
-      align-items: center;
-      flex-wrap: wrap;
-    }
-    .basemap-switcher {
-      background: #060a12;
-      border: 1px solid var(--border);
-      padding: 2px;
-      border-radius: 7px;
-      display: flex;
-      gap: 2px;
-    }
-    .bm-btn {
-      background: transparent;
-      border: none;
-      color: var(--muted);
-      padding: 4px 8px;
-      border-radius: 5px;
-      font-size: 0.70rem;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
-    }
-    .bm-btn.active {
-      background: #0284c7;
-      color: #fff;
+    .map-stage.mode-2d-leaflet #map3dCanvas {
+      opacity: 0;
+      pointer-events: none;
     }
 
-    /* Bottom Map Footer Bar: Static Flex Row Below Map (Zero Overlap Guaranteed) */
-    .map-hud-bottom {
-      position: relative;
-      flex: 0 0 auto;
-      z-index: 20;
-      background: #0b111e;
-      border-top: 1px solid var(--border);
-      padding: 6px 10px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-    .layer-pill-bar {
+    /* HAIO.SG FLOATING PILL CONTROLS ON THE MAP CANVAS */
+    .haio-floating-top-left {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 800;
       display: flex;
       align-items: center;
-      gap: 5px;
+      gap: 10px;
       flex-wrap: wrap;
+      pointer-events: none;
     }
-    .quick-layer-pill {
-      background: rgba(30, 41, 59, 0.8);
-      border: 1px solid #334155;
-      color: #94a3b8;
-      padding: 4px 8px;
-      border-radius: 6px;
-      font-size: 0.70rem;
+    .haio-floating-top-left > * {
+      pointer-events: auto;
+    }
+    .haio-pill-btn {
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      color: #0f172a;
+      padding: 8px 16px;
+      border-radius: 999px;
+      font-size: 0.84rem;
       font-weight: 700;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.14);
+      transition: all 0.18s ease;
+      white-space: nowrap;
+      user-select: none;
+    }
+    .haio-pill-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(15, 23, 42, 0.20);
+    }
+    .haio-switch-track {
+      width: 38px;
+      height: 22px;
+      border-radius: 999px;
+      background: #cbd5e1;
+      position: relative;
+      display: inline-block;
+      transition: background 0.2s ease;
+    }
+    .haio-switch-track.on {
+      background: #2563eb;
+    }
+    .haio-switch-thumb {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: #ffffff;
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      transition: transform 0.2s cubic-bezier(0.22, 1, 0.36, 1);
+      box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+    }
+    .haio-switch-track.on .haio-switch-thumb {
+      transform: translateX(16px);
+    }
+
+    /* 2D / 3D Segmented Pill */
+    .haio-2d3d-pill {
+      background: #ffffff;
+      border-radius: 999px;
+      padding: 3px;
+      display: inline-flex;
+      align-items: center;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.14);
+      border: 1px solid #e2e8f0;
+    }
+    .haio-dim-btn {
+      border: none;
+      background: transparent;
+      color: #475569;
+      font-size: 0.78rem;
+      font-weight: 800;
+      padding: 5px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .haio-dim-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(37, 99, 235, 0.30);
+    }
+
+    /* Center-Top Lens Dock (Discover, 3D Towers, Commute, Peak, Supply, Master Plan) */
+    .haio-lens-dock {
+      position: absolute;
+      top: 16px;
+      left: 50%;
+      transform: translateX(-62%);
+      z-index: 790;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(226, 232, 240, 0.9);
+      border-radius: 18px;
+      padding: 5px;
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      box-shadow: 0 8px 26px rgba(15, 23, 42, 0.14);
+    }
+    .haio-lens-btn {
+      border: none;
+      background: transparent;
+      color: #475569;
+      padding: 6px 12px;
+      border-radius: 13px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 2px;
+      cursor: pointer;
+      font-size: 0.69rem;
+      font-weight: 700;
+      transition: all 0.16s ease;
       white-space: nowrap;
     }
-    .quick-layer-pill.on, .quick-layer-pill.active {
-      background: rgba(2, 132, 199, 0.28);
-      border-color: #38bdf8;
-      color: #f8fafc;
+    .haio-lens-btn .lens-ico {
+      font-size: 0.95rem;
+      line-height: 1;
     }
-    .time-group {
+    .haio-lens-btn:hover {
+      background: #f1f5f9;
+      color: #0f172a;
+    }
+    .haio-lens-btn.active {
+      background: #2563eb;
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.28);
+    }
+
+    /* Bottom-Left Compass Pill (🧭 NE 45°) & Sun/Time Window Pill */
+    .haio-floating-bottom-left {
+      position: absolute;
+      bottom: 18px;
+      left: 16px;
+      z-index: 800;
       display: flex;
-      gap: 4px;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      max-width: calc(100% - 440px);
+      pointer-events: none;
+    }
+    .haio-floating-bottom-left > * {
+      pointer-events: auto;
+    }
+    .haio-compass-pill {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      padding: 8px 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.84rem;
+      font-weight: 800;
+      color: #0f172a;
+      cursor: pointer;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.16);
+      transition: transform 0.15s ease;
+      user-select: none;
+    }
+    .haio-compass-pill:hover {
+      transform: scale(1.03);
+    }
+    .compass-needle-svg {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1);
+    }
+
+    /* Sun & Diurnal Time Window Pill Bar */
+    .time-group {
+      display: inline-flex;
+      gap: 3px;
       flex-wrap: nowrap;
       align-items: center;
-      background: #060a12;
-      padding: 3px;
-      border-radius: 7px;
-      border: 1px solid #0284c7;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      padding: 4px;
+      border-radius: 999px;
+      border: 1px solid #e2e8f0;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.14);
     }
     .time-btn {
-      background: rgba(30, 41, 59, 0.75);
-      border: 1px solid transparent;
-      color: #cbd5e1;
-      padding: 4px 9px;
-      border-radius: 5px;
-      font-size: 0.71rem;
+      background: transparent;
+      border: none;
+      color: #475569;
+      padding: 6px 11px;
+      border-radius: 999px;
+      font-size: 0.74rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s ease;
       white-space: nowrap;
     }
     .time-btn:hover {
-      color: #fff;
-      border-color: #38bdf8;
+      color: #0f172a;
+      background: #f1f5f9;
     }
     .time-btn.active {
-      background: linear-gradient(135deg, #0d9488, #0284c7);
-      color: #fff;
-      border-color: #2dd4bf;
+      background: #0f172a;
+      color: #ffffff;
+      box-shadow: 0 2px 6px rgba(15, 23, 42, 0.25);
     }
+
+    .basemap-switcher {
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid #e2e8f0;
+      padding: 3px;
+      border-radius: 999px;
+      display: inline-flex;
+      gap: 2px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.14);
+    }
+    .bm-btn {
+      background: transparent;
+      border: none;
+      color: #475569;
+      padding: 5px 10px;
+      border-radius: 999px;
+      font-size: 0.73rem;
+      font-weight: 700;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .bm-btn.active {
+      background: #eff6ff;
+      color: #2563eb;
+    }
+
+    /* Dark Floating 3D Tower Callout Pill (Exact haio.sg "Block 1 · 2 stacks" style) */
+    .haio-3d-block-callout {
+      background: #0f172a;
+      color: #ffffff;
+      padding: 6px 14px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      white-space: nowrap;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.40);
+      border: 1.5px solid rgba(255, 255, 255, 0.22);
+      cursor: pointer;
+      pointer-events: auto;
+      transition: transform 0.15s ease, background 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .haio-3d-block-callout:hover {
+      transform: translateY(-2px) scale(1.04);
+      background: #2563eb;
+    }
+    .haio-3d-block-callout.hero {
+      background: #0f172a;
+      border-color: #fbbf24;
+      font-size: 0.82rem;
+      padding: 7px 16px;
+    }
+
     .road-speed-pill {
-      background: rgba(9, 14, 26, 0.92);
+      background: rgba(15, 23, 42, 0.92);
       border: 1.5px solid #38bdf8;
       color: #fff;
-      padding: 2px 6px;
-      border-radius: 6px;
-      font-size: 0.67rem;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 0.69rem;
       font-weight: 800;
       white-space: nowrap;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.65);
+      box-shadow: 0 3px 10px rgba(0,0,0,0.45);
       pointer-events: auto;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
     }
-    .uc-btn {
-      background: rgba(30, 41, 59, 0.75);
-      border: 1px solid #334155;
-      color: #cbd5e1;
-      padding: 5px 8px;
-      border-radius: 6px;
-      font-size: 0.71rem;
+
+    .story-bar {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+    .story-step {
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      padding: 4px 9px;
+      border-radius: 999px;
+      font-size: 0.70rem;
       font-weight: 700;
       cursor: pointer;
       transition: all 0.15s;
     }
-    .uc-btn:hover { color: #fff; border-color: #38bdf8; }
-    .uc-btn.active {
-      background: #0284c7;
+    .story-step:hover { color: #2563eb; border-color: #2563eb; }
+    .story-step.active {
+      background: #2563eb;
       color: #fff;
-      border-color: #38bdf8;
+      border-color: #2563eb;
+    }
+    .story-arrow { color: #94a3b8; font-size: 0.68rem; }
+
+    .quick-layer-pill {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      color: #475569;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(15,23,42,0.08);
+    }
+    .quick-layer-pill.on, .quick-layer-pill.active {
+      background: #eff6ff;
+      border-color: #93c5fd;
+      color: #2563eb;
+    }
+    .uc-btn {
+      background: #f1f5f9;
+      border: 1px solid transparent;
+      color: #475569;
+      padding: 7px 8px;
+      border-radius: 999px;
+      font-size: 0.73rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .uc-btn:hover { color: #0f172a; background: #e2e8f0; }
+    .uc-btn.active {
+      background: #0f172a;
+      color: #ffffff;
     }
     .live-window-banner {
-      background: linear-gradient(90deg, rgba(13,148,136,0.22), rgba(2,132,199,0.20));
-      border: 1px solid #14b8a6;
-      border-radius: 8px;
-      padding: 7px 10px;
-      margin-bottom: 8px;
-      font-size: 0.72rem;
-      color: #f8fafc;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid #2563eb;
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 12px;
+      font-size: 0.75rem;
+      color: #1e293b;
     }
 
     /* Compact Popover for All 11 Layers & Advanced Filters */
     .layers-drawer-popover {
       position: absolute;
-      top: 44px;
-      right: 12px;
-      width: 340px;
-      max-height: 75vh;
+      top: 66px;
+      left: 16px;
+      width: 348px;
+      max-height: 76vh;
       overflow-y: auto;
-      background: rgba(13, 20, 36, 0.98);
-      backdrop-filter: blur(14px);
-      border: 1px solid #3b82f6;
-      border-radius: 12px;
-      padding: 12px;
+      background: rgba(255, 255, 255, 0.98);
+      backdrop-filter: blur(16px);
+      border: 1px solid #cbd5e1;
+      border-radius: 18px;
+      padding: 14px;
       z-index: 1200;
-      box-shadow: 0 14px 34px rgba(0,0,0,0.75);
+      box-shadow: 0 18px 42px rgba(15, 23, 42, 0.22);
       display: none;
+      color: #0f172a;
     }
     .layers-drawer-popover.open { display: block; }
 
@@ -467,8 +662,15 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      font-size: 0.69rem;
+      font-size: 0.70rem;
       flex-wrap: wrap;
+      background: rgba(255, 255, 255, 0.95);
+      border: 1px solid #e2e8f0;
+      padding: 6px 12px;
+      border-radius: 999px;
+      color: #1e293b;
+      font-weight: 600;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.12);
     }
     .legend-inline {
       display: flex;
@@ -499,135 +701,329 @@
     /* Form Controls inside Filter Popover & Q&A */
     .ctrl-label {
       display: block;
-      font-size: 0.70rem;
-      color: var(--muted);
+      font-size: 0.68rem;
+      color: #64748b;
       font-weight: 700;
-      margin: 6px 0 2px;
+      margin: 8px 0 3px;
       text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
     .ctrl-select, .ctrl-input {
       width: 100%;
-      background: #070b14;
-      border: 1px solid #334155;
-      color: #fff;
-      padding: 6px 8px;
-      border-radius: 6px;
-      font-size: 0.76rem;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      padding: 8px 11px;
+      border-radius: 10px;
+      font-size: 0.80rem;
+      font-weight: 500;
+      outline: none;
+    }
+    .ctrl-select:focus, .ctrl-input:focus {
+      border-color: #2563eb;
+      background: #ffffff;
     }
     .layer-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
-      margin-top: 6px;
+      gap: 5px;
+      margin-top: 8px;
     }
     .layer-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-size: 0.73rem;
-      padding: 4px 6px;
-      border-radius: 6px;
-      background: rgba(21, 32, 54, 0.75);
-      border: 1px solid rgba(51, 65, 85, 0.5);
+      font-size: 0.75rem;
+      padding: 6px 8px;
+      border-radius: 10px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #1e293b;
+      font-weight: 600;
     }
     .layer-item label {
       display: flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       cursor: pointer;
       flex: 1;
     }
     .prov-tag {
       font-size: 0.62rem;
-      padding: 1px 5px;
-      border-radius: 4px;
+      padding: 2px 6px;
+      border-radius: 999px;
       font-weight: 700;
     }
-    .prov-ver { background: rgba(16,185,129,0.18); color: #34d399; border: 1px solid rgba(16,185,129,0.35); }
-    .prov-mod { background: rgba(245,158,11,0.18); color: #fbbf24; border: 1px solid rgba(245,158,11,0.35); }
+    .prov-ver { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .prov-mod { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
 
-    /* 4. Right Contextual Executive Panel + Progressive Disclosure Accordions */
+    /* 4. HAIO.SG FLOATING RIGHT ROUNDED CARD INSPECTOR */
     .sidebar-right {
-      background: var(--panel-dark);
-      border-left: 1px solid var(--border);
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      bottom: 16px;
+      width: 400px;
+      background: #ffffff;
+      border: 1px solid rgba(226, 232, 240, 0.95);
+      border-radius: 22px;
+      box-shadow: 0 16px 48px rgba(15, 23, 42, 0.22);
       display: flex;
       flex-direction: column;
       overflow: hidden;
+      z-index: 900;
+      transition: transform 0.28s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.22s ease;
     }
     .drawer-tabs {
       display: grid;
       grid-template-columns: repeat(3, 1fr);
-      background: #080d18;
-      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      padding: 6px 8px;
+      gap: 4px;
     }
     .dtab-btn {
       background: transparent;
       border: none;
-      border-bottom: 2px solid transparent;
-      color: var(--muted);
-      padding: 9px 6px;
+      border-radius: 999px;
+      color: #64748b;
+      padding: 7px 6px;
       font-size: 0.74rem;
       font-weight: 700;
       cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .dtab-btn:hover {
+      color: #0f172a;
+      background: #e2e8f0;
     }
     .dtab-btn.active {
-      color: var(--cyan);
-      border-bottom-color: var(--cyan);
-      background: rgba(56,189,248,0.08);
+      color: #2563eb;
+      background: #eff6ff;
+      box-shadow: 0 1px 3px rgba(37, 99, 235, 0.12);
     }
     .drawer-body {
-      padding: 12px;
+      padding: 18px;
       overflow-y: auto;
       flex: 1;
+      scrollbar-width: thin;
     }
-    .detail-card {
-      background: var(--panel-card);
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      padding: 12px;
+
+    /* HAIO.SG 3D BLOCK / FLOOR / STACK CARD COMPONENTS */
+    .haio-card-title {
+      font-size: 1.24rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 0 0 4px 0;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+    }
+    .haio-card-sub {
+      font-size: 0.84rem;
+      color: #64748b;
+      font-weight: 500;
+      margin-bottom: 14px;
+    }
+    .haio-divider {
+      height: 1px;
+      background: #f1f5f9;
+      margin: 14px 0;
+    }
+    .haio-field-lbl {
+      display: block;
+      font-size: 0.69rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #64748b;
+      margin-bottom: 6px;
+    }
+    .haio-select {
+      width: 100%;
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 10px 12px;
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: #0f172a;
+      cursor: pointer;
+      outline: none;
+      transition: border-color 0.15s ease;
+    }
+    .haio-select:hover, .haio-select:focus {
+      border-color: #2563eb;
+    }
+    .haio-showme-row {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .haio-showme-pill {
+      background: #f1f5f9;
+      border: 1px solid transparent;
+      color: #334155;
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.80rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }
+    .haio-showme-pill:hover {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+    .haio-showme-pill.active {
+      background: #0f172a;
+      color: #ffffff;
+      box-shadow: 0 3px 10px rgba(15, 23, 42, 0.22);
+    }
+    .haio-unit-bar {
+      background: #f8fafc;
+      border: 1px solid #f1f5f9;
+      border-radius: 12px;
+      padding: 10px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+      font-size: 0.80rem;
+      font-weight: 700;
+      color: #1e293b;
       margin-bottom: 10px;
+    }
+    .haio-block-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+      gap: 8px;
+      margin-top: 6px;
+      margin-bottom: 10px;
+    }
+    .haio-block-card {
+      background: #ffffff;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 14px;
+      padding: 11px 13px;
+      cursor: pointer;
+      transition: all 0.16s ease;
+    }
+    .haio-block-card:hover {
+      border-color: #2563eb;
+      background: #f8fafc;
+      transform: translateY(-1px);
+    }
+    .haio-block-card.active {
+      border-color: #2563eb;
+      background: #eff6ff;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.14);
+    }
+    .haio-block-card strong {
+      display: block;
+      font-size: 0.86rem;
+      color: #0f172a;
+      margin-bottom: 2px;
+    }
+    .haio-block-card span {
+      display: block;
+      font-size: 0.74rem;
+      color: #64748b;
+      line-height: 1.35;
+    }
+    /* HAIO Discovery List Row ("5 new launches in 3D" style) */
+    .haio-launch-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 12px;
+      border-bottom: 1px solid #f1f5f9;
+      cursor: pointer;
+      border-radius: 10px;
+      transition: background 0.15s ease;
+    }
+    .haio-launch-row:hover {
+      background: #f8fafc;
+    }
+    .haio-launch-left {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+    .haio-launch-bar {
+      width: 4px;
+      height: 34px;
+      border-radius: 4px;
+      background: #f59e0b;
+      flex-shrink: 0;
+    }
+    .haio-launch-3d-tag {
+      text-align: right;
+      flex-shrink: 0;
+      font-size: 0.72rem;
+      color: #64748b;
+      line-height: 1.25;
+    }
+    .haio-launch-3d-tag strong {
+      display: block;
+      color: #2563eb;
+      font-size: 0.78rem;
+      font-weight: 800;
+    }
+
+    .detail-card {
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 14px;
+      margin-bottom: 10px;
+      color: #0f172a;
     }
     .detail-card h4 {
       margin: 0 0 6px 0;
-      font-size: 0.94rem;
-      color: #fff;
+      font-size: 1.02rem;
+      color: #0f172a;
+      font-weight: 800;
     }
 
     /* Executive KPI Grid inside Cards */
     .exec-metric-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 7px;
-      margin: 8px 0;
+      gap: 8px;
+      margin: 10px 0;
     }
     .exec-metric-tile, .exec-metric-box {
-      background: rgba(9, 14, 26, 0.82);
-      border: 1px solid rgba(51, 65, 85, 0.78);
-      border-radius: 8px;
-      padding: 7px 9px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      padding: 9px 11px;
     }
     .exec-metric-tile .m-lbl, .exec-metric-box .em-lbl {
       font-size: 0.65rem;
       text-transform: uppercase;
-      color: var(--muted);
+      color: #64748b;
       font-weight: 700;
+      letter-spacing: 0.04em;
     }
     .exec-metric-tile .m-val, .exec-metric-box .em-val {
-      font-size: 0.84rem;
+      font-size: 0.88rem;
       font-weight: 800;
-      color: #fff;
+      color: #0f172a;
       margin-top: 2px;
     }
     .exec-metric-box .em-sub {
-      font-size: 0.67rem;
-      color: #94a3b8;
+      font-size: 0.69rem;
+      color: #64748b;
       margin-top: 2px;
     }
     .ep-pill-pub {
       display: inline-block;
-      background: rgba(16, 185, 129, 0.22);
-      border: 1px solid rgba(16, 185, 129, 0.45);
-      color: #34d399;
+      background: #ecfdf5;
+      border: 1px solid #a7f3d0;
+      color: #059669;
       font-size: 0.65rem;
       font-weight: 800;
       padding: 1px 6px;
@@ -636,9 +1032,9 @@
     }
     .ep-pill-mod {
       display: inline-block;
-      background: rgba(245, 158, 11, 0.22);
-      border: 1px solid rgba(245, 158, 11, 0.45);
-      color: #fbbf24;
+      background: #fffbeb;
+      border: 1px solid #fde68a;
+      color: #d97706;
       font-size: 0.65rem;
       font-weight: 800;
       padding: 1px 6px;
@@ -648,116 +1044,118 @@
 
     /* Progressive Disclosure Technical Accordion (<details>) */
     details.tech-accordion {
-      background: rgba(9, 14, 26, 0.65);
-      border: 1px solid rgba(51, 65, 85, 0.75);
-      border-radius: 8px;
-      margin-top: 8px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      margin-top: 10px;
       overflow: hidden;
     }
     details.tech-accordion summary {
-      padding: 8px 10px;
-      font-size: 0.75rem;
+      padding: 10px 12px;
+      font-size: 0.76rem;
       font-weight: 700;
-      color: var(--cyan);
+      color: #2563eb;
       cursor: pointer;
       user-select: none;
-      background: rgba(15, 23, 42, 0.85);
+      background: #f8fafc;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     details.tech-accordion summary:hover {
-      background: rgba(30, 41, 59, 0.9);
+      background: #eff6ff;
     }
     details.tech-accordion .acc-body, details.tech-accordion .tech-body {
-      padding: 9px 10px;
-      font-size: 0.74rem;
-      border-top: 1px solid rgba(51, 65, 85, 0.6);
-      color: #cbd5e1;
-      line-height: 1.5;
+      padding: 10px 12px;
+      font-size: 0.75rem;
+      border-top: 1px solid #e2e8f0;
+      color: #334155;
+      background: #ffffff;
+      line-height: 1.55;
     }
 
     .kv-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 6px;
-      font-size: 0.75rem;
-      margin-top: 6px;
+      gap: 7px;
+      font-size: 0.76rem;
+      margin-top: 8px;
     }
     .kv-row {
-      background: rgba(9, 14, 26, 0.65);
-      border: 1px solid rgba(51, 65, 85, 0.65);
-      padding: 6px 8px;
-      border-radius: 6px;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      padding: 8px 10px;
+      border-radius: 10px;
     }
     .kv-lbl {
       font-size: 0.66rem;
       text-transform: uppercase;
-      color: var(--muted);
+      color: #64748b;
       font-weight: 700;
     }
     .kv-val {
-      color: #f1f5f9;
-      margin-top: 2px;
+      color: #1e293b;
+      margin-top: 3px;
       word-break: break-word;
     }
 
     /* Epistemic Tier Badges */
     .ep-badge {
       display: inline-block;
-      padding: 3px 8px;
-      border-radius: 6px;
+      padding: 3px 9px;
+      border-radius: 999px;
       font-size: 0.69rem;
       font-weight: 700;
     }
-    .ep-t1 { background: rgba(56,189,248,0.18); color: #7dd3fc; border: 1px solid #0284c7; }
-    .ep-t2 { background: rgba(168,85,247,0.18); color: #d8b4fe; border: 1px solid #9333ea; }
-    .ep-t3 { background: rgba(245,158,11,0.18); color: #fcd34d; border: 1px solid #d97706; }
-    .ep-t4 { background: rgba(239,68,68,0.20); color: #fca5a5; border: 1px solid #dc2626; }
+    .ep-t1 { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .ep-t2 { background: #f5f3ff; color: #7c3aed; border: 1px solid #ddd6fe; }
+    .ep-t3 { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
+    .ep-t4 { background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; }
 
     .conf-pill {
       display: inline-block;
-      padding: 2px 7px;
+      padding: 2px 8px;
       border-radius: 999px;
       font-size: 0.68rem;
       font-weight: 700;
     }
-    .b-ver { background: rgba(16,185,129,0.2); color: #34d399; }
-    .b-cor { background: rgba(56,189,248,0.2); color: #38bdf8; }
-    .b-est { background: rgba(245,158,11,0.2); color: #fbbf24; }
+    .b-ver { background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; }
+    .b-cor { background: #eff6ff; color: #2563eb; border: 1px solid #bfdbfe; }
+    .b-est { background: #fffbeb; color: #d97706; border: 1px solid #fde68a; }
 
     /* Q&A Interface */
     .qa-box {
       display: flex;
       gap: 6px;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
     }
     .qa-preset-list {
       display: flex;
       flex-direction: column;
-      gap: 4px;
+      gap: 5px;
       margin-bottom: 10px;
     }
     .qa-preset-btn {
       text-align: left;
-      background: rgba(15,23,42,0.85);
-      border: 1px solid #334155;
-      color: #cbd5e1;
-      padding: 6px 8px;
-      border-radius: 6px;
-      font-size: 0.73rem;
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      color: #1e293b;
+      padding: 8px 10px;
+      border-radius: 10px;
+      font-size: 0.75rem;
+      font-weight: 600;
       cursor: pointer;
       transition: all 0.15s;
     }
     .qa-preset-btn:hover {
-      border-color: var(--cyan);
-      color: #fff;
-      background: rgba(2,132,199,0.2);
+      border-color: #2563eb;
+      color: #2563eb;
+      background: #eff6ff;
     }
 
     /* Bottom Expandable Evidence & Datasets Section */
     .evidence-section {
-      padding: 18px 20px 48px;
+      padding: 20px 20px 48px;
       max-width: 1600px;
       margin: 0 auto;
     }
@@ -766,32 +1164,32 @@
       gap: 6px;
       flex-wrap: wrap;
       margin-bottom: 12px;
-      border-bottom: 1px solid var(--border);
+      border-bottom: 1px solid #e2e8f0;
       padding-bottom: 8px;
     }
     .ev-tab-btn {
-      background: #152036;
-      border: 1px solid #334155;
-      color: #cbd5e1;
-      padding: 6px 11px;
-      border-radius: 7px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      padding: 6px 12px;
+      border-radius: 999px;
       font-size: 0.75rem;
       font-weight: 700;
       cursor: pointer;
     }
     .ev-tab-btn.active {
-      background: #0284c7;
+      background: #2563eb;
       color: #fff;
-      border-color: #38bdf8;
+      border-color: #2563eb;
     }
     .ev-panel { display: none; }
     .ev-panel.active { display: block; }
 
     .t2-table-wrap {
       overflow-x: auto;
-      border: 1px solid var(--border);
-      border-radius: 10px;
-      background: var(--panel-dark);
+      border: 1px solid #e2e8f0;
+      border-radius: 12px;
+      background: #ffffff;
       margin-top: 8px;
       max-height: 520px;
     }
@@ -799,22 +1197,24 @@
       width: 100%;
       border-collapse: collapse;
       font-size: 0.75rem;
+      color: #1e293b;
     }
     .t2-table th, .t2-table td {
-      padding: 7px 9px;
-      border-bottom: 1px solid #1e293b;
+      padding: 8px 10px;
+      border-bottom: 1px solid #f1f5f9;
       text-align: left;
       vertical-align: top;
     }
     .t2-table th {
-      background: #080d18;
-      color: var(--cyan);
+      background: #f8fafc;
+      color: #0f172a;
       font-weight: 700;
       position: sticky;
       top: 0;
+      border-bottom: 2px solid #e2e8f0;
     }
     .t2-table tr:hover td {
-      background: rgba(56,189,248,0.05);
+      background: #f8fafc;
     }
     .dl-bar {
       display: flex;
@@ -825,12 +1225,12 @@
       font-size: 0.76rem;
     }
     .dl-chip {
-      background: #152036;
-      border: 1px solid #475569;
-      color: #38bdf8;
-      padding: 3px 9px;
-      border-radius: 6px;
-      font-weight: 600;
+      background: #eff6ff;
+      border: 1px solid #bfdbfe;
+      color: #2563eb;
+      padding: 3px 10px;
+      border-radius: 999px;
+      font-weight: 700;
       font-size: 0.72rem;
     }
     .mobile-back-map-btn {
@@ -838,8 +1238,13 @@
     }
 
     /* =========================================================================
-       MOBILE & TABLET RESPONSIVE ARCHITECTURE (ZERO OVERLAP, ZERO OVERFLOW)
+       MOBILE & TABLET RESPONSIVE ARCHITECTURE (HAIO.SG BOTTOM SHEET LAYOUT)
        ========================================================================= */
+    @media (max-width: 1280px) {
+      .haio-lens-dock {
+        display: none;
+      }
+    }
     @media (max-width: 1024px) {
       html, body {
         max-width: 100vw;
@@ -847,7 +1252,7 @@
       }
       .exec-header {
         flex-wrap: wrap;
-        padding: 6px 10px;
+        padding: 8px 12px;
         gap: 6px;
         min-height: auto;
       }
@@ -866,134 +1271,100 @@
         flex-wrap: nowrap;
         -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
-        padding: 3px;
+        padding: 2px 0;
         gap: 4px;
       }
       .mode-switcher::-webkit-scrollbar { display: none; }
       .mode-btn {
         flex-shrink: 0;
-        padding: 5px 10px;
-        font-size: 0.72rem;
+        padding: 5px 11px;
+        font-size: 0.74rem;
       }
       .workbench {
         display: flex !important;
         flex-direction: column;
         height: auto !important;
         min-height: 0 !important;
+        background: #f1f5f9;
       }
       .map-stage {
-        display: flex;
-        flex-direction: column;
-        height: auto;
-        overflow: visible;
-      }
-      .map-hud-top {
+        position: relative;
         width: 100%;
-        padding: 6px 8px;
-        flex-direction: column;
-        align-items: stretch;
-        gap: 5px;
-      }
-      .time-group {
-        display: grid;
-        grid-template-columns: repeat(4, 1fr);
-        width: 100%;
-        gap: 4px;
-        padding: 3px;
-      }
-      .time-btn {
-        padding: 6px 4px;
-        font-size: 0.69rem;
-        text-align: center;
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
-      .hud-right-stack {
-        width: 100%;
-        justify-content: space-between;
-        gap: 4px;
-      }
-      #collapseRightBtn {
-        display: none !important;
-      }
-      #mapCanvas {
-        width: 100%;
-        height: 46vh !important;
-        min-height: 320px;
-        max-height: 430px;
+        height: 54vh !important;
+        min-height: 360px;
+        max-height: 480px;
         flex: none;
       }
-      .map-hud-bottom {
-        width: 100%;
-        padding: 6px 8px;
-        flex-direction: column;
+      .haio-floating-top-left {
+        top: 10px;
+        left: 10px;
+        right: 10px;
         gap: 6px;
-        align-items: stretch;
       }
-      .layer-pill-bar {
-        width: 100%;
+      .haio-pill-btn {
+        padding: 6px 12px;
+        font-size: 0.76rem;
+      }
+      .haio-floating-bottom-left {
+        bottom: 10px;
+        left: 10px;
+        right: 10px;
+        max-width: none;
+        gap: 6px;
         overflow-x: auto;
         flex-wrap: nowrap;
-        -webkit-overflow-scrolling: touch;
         scrollbar-width: none;
-        padding: 2px 0;
-        gap: 5px;
       }
-      .layer-pill-bar::-webkit-scrollbar { display: none; }
-      .quick-layer-pill {
+      .haio-floating-bottom-left::-webkit-scrollbar { display: none; }
+      .haio-compass-pill {
+        padding: 6px 12px;
+        font-size: 0.76rem;
         flex-shrink: 0;
+      }
+      .time-group {
+        flex-shrink: 0;
+      }
+      .time-btn {
         padding: 5px 9px;
-        font-size: 0.69rem;
+        font-size: 0.70rem;
       }
-      .map-legend {
-        width: 100%;
-        overflow-x: auto;
-        padding: 2px 0;
-      }
-      .legend-inline {
-        flex-wrap: nowrap;
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        scrollbar-width: none;
-        gap: 8px;
-      }
-      .legend-inline::-webkit-scrollbar { display: none; }
       .layers-drawer-popover {
         position: fixed !important;
-        left: 8px !important;
-        right: 8px !important;
-        bottom: 8px !important;
+        left: 10px !important;
+        right: 10px !important;
+        bottom: 10px !important;
         top: auto !important;
         width: auto !important;
         max-height: 78vh !important;
         z-index: 4500 !important;
-        box-shadow: 0 -10px 40px rgba(0,0,0,0.88) !important;
+        box-shadow: 0 -10px 40px rgba(15,23,42,0.35) !important;
       }
       .sidebar-right {
-        width: 100%;
-        border-left: none !important;
-        border-top: 1px solid var(--border);
+        position: relative !important;
+        top: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        width: 100% !important;
+        border-radius: 22px 22px 0 0 !important;
+        margin-top: -14px;
+        box-shadow: 0 -8px 28px rgba(15, 23, 42, 0.14) !important;
         overflow: visible;
-      }
-      .drawer-tabs {
-        position: relative;
-        z-index: 1500;
       }
       .drawer-body {
         max-height: none;
         overflow-y: visible;
-        padding: 10px;
+        padding: 14px;
       }
       .mobile-back-map-btn {
         display: inline-flex;
         align-items: center;
         gap: 4px;
-        background: rgba(2, 132, 199, 0.22);
-        border: 1px solid #38bdf8;
-        color: #38bdf8;
-        padding: 3px 8px;
-        border-radius: 6px;
-        font-size: 0.68rem;
+        background: #eff6ff;
+        border: 1px solid #bfdbfe;
+        color: #2563eb;
+        padding: 4px 10px;
+        border-radius: 999px;
+        font-size: 0.70rem;
         font-weight: 700;
         cursor: pointer;
       }
@@ -1001,40 +1372,31 @@
 
     @media (max-width: 768px) {
       .brand-title {
-        font-size: 0.80rem;
-        gap: 5px;
-      }
-      .brand-badge {
-        font-size: 0.58rem;
-        padding: 2px 6px;
+        font-size: 0.92rem;
+        gap: 6px;
       }
       .emirate-pill-select {
-        font-size: 0.69rem;
-        padding: 4px 6px;
+        font-size: 0.70rem;
+        padding: 5px 8px;
         max-width: 132px;
       }
       .export-dropdown summary {
-        font-size: 0.68rem;
-        padding: 4px 7px;
+        font-size: 0.70rem;
+        padding: 5px 9px;
       }
       .export-menu {
         position: fixed;
-        top: 46px;
-        right: 8px;
-        left: 8px;
+        top: 52px;
+        right: 10px;
+        left: 10px;
         width: auto;
         max-width: 340px;
         margin-left: auto;
         z-index: 4500;
       }
       .dtab-btn {
-        padding: 8px 4px;
-        font-size: 0.68rem;
-      }
-      .road-speed-pill {
-        font-size: 0.60rem;
-        padding: 1px 4px;
-        border-radius: 4px;
+        padding: 7px 4px;
+        font-size: 0.70rem;
       }
       .evidence-section {
         padding: 12px 10px 36px;
@@ -1058,26 +1420,26 @@
 </head>
 <body>
 
-  <!-- 1. EXECUTIVE SINGLE-ROW HEADER WITH 5 MAIN PRODUCT MODES -->
+  <!-- 1. HAIO-STYLE ULTRA-CLEAN WHITE TOP NAVBAR -->
   <header class="exec-header">
     <div class="brand-cluster">
-      <div class="brand-title">
-        <span class="brand-badge">UAE GIS</span>
-        <span>Construction &amp; Traffic Intelligence</span>
+      <div class="brand-title" onclick="backToCityMapOverview()">
+        <span class="haio-logo-pin">◈</span>
+        <span>uae intelligence</span>
       </div>
       <div class="kpi-strip">
-        <span class="kpi-chip">Scope <strong id="hudScope">Dubai</strong></span>
+        <span class="kpi-chip">Scope <strong id="hudScope">Dubai 3D</strong></span>
         <span class="kpi-chip">Sites <strong id="hudProjects">25</strong></span>
-        <span class="kpi-chip" style="border-color:#14b8a6;">Avg Speed <strong id="hudAvgSpeed" style="color:#34d399;">43.9 km/h</strong></span>
+        <span class="kpi-chip">Avg Speed <strong id="hudAvgSpeed" style="color:#059669;">43.9 km/h</strong></span>
       </div>
     </div>
 
-    <!-- 5 MAIN AREAS (SECTION 4 REDESIGN) -->
+    <!-- 5 MAIN AREAS (HAIO PILL NAVIGATION) -->
     <nav class="mode-switcher" aria-label="Primary Platform Modes">
-      <button class="mode-btn active" id="mode-overview" onclick="setPlatformMode('overview', this)">1. Overview</button>
-      <button class="mode-btn" id="mode-construction" onclick="setPlatformMode('construction', this)">2. Construction</button>
-      <button class="mode-btn" id="mode-traffic" onclick="setPlatformMode('traffic', this)">3. Traffic</button>
-      <button class="mode-btn" id="mode-project" onclick="setPlatformMode('project', this)">4. Explorer</button>
+      <button class="mode-btn" id="mode-overview" onclick="setPlatformMode('overview', this)">1. Discover</button>
+      <button class="mode-btn active" id="mode-construction" onclick="setPlatformMode('construction', this)">2. 3D Towers &amp; Blocks</button>
+      <button class="mode-btn" id="mode-traffic" onclick="setPlatformMode('traffic', this)">3. Commute &amp; Traffic</button>
+      <button class="mode-btn" id="mode-project" onclick="setPlatformMode('project', this)">4. Block Explorer</button>
       <button class="mode-btn" id="mode-evidence" onclick="setPlatformMode('evidence', this)">5. Full Data ↓</button>
     </nav>
 
@@ -1085,7 +1447,7 @@
       <select id="emirateSelect" class="emirate-pill-select" onchange="onEmirateChange()" aria-label="Select Emirate">
         <option value="Dubai" selected>Dubai (25 Sites)</option>
         <option value="Sharjah">Sharjah (12 Sites)</option>
-        <option value="ALL">Dubai + Sharjah (37)</option>
+        <option value="ALL">All UAE (37 Sites)</option>
       </select>
 
       <details class="export-dropdown">
@@ -1102,52 +1464,79 @@
     </div>
   </header>
 
-  <!-- 2. TWO-COLUMN MAP-CENTRIC WORKBENCH -->
+  <!-- 2. FULL-BLEED 3D STAGE + FLOATING ROUNDED CARD INSPECTOR (HAIO.SG ARCHITECTURE) -->
   <main class="workbench" id="mainWorkbench">
 
-    <!-- FULL-BLEED INTERACTIVE MAP STAGE (STATIC TOP/BOTTOM TOOLBARS = ZERO OVERLAP) -->
-    <section class="map-stage">
-      <!-- Single Unified Top Map Toolbar: Time Window Selector + Live HGV Status + Basemap & Filters -->
-      <div class="map-hud-top">
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-          <div class="time-group" aria-label="Traffic Time Window Selector">
-            <button class="time-btn" data-tp="Morning Peak (07:30–09:30)" onclick="setTimeWindow('Morning Peak (07:30–09:30)', this)">🌅 AM Peak</button>
-            <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday HGV</button>
-            <button class="time-btn active" data-tp="Evening Peak (17:00–20:00)" onclick="setTimeWindow('Evening Peak (17:00–20:00)', this)">🌇 PM Peak</button>
-            <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night</button>
-          </div>
-          <span id="hudTime" style="display:none;">Evening Peak (17:00–20:00)</span>
-          <span id="hudHgvStatus" class="conf-pill" style="background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444; font-size:0.68rem;">🚫 HGV Ban 17:00–20:00 (E11/E44/D61)</span>
+    <section class="map-stage" id="mapStage">
+      <!-- Top-Left Floating Pill Controls (Exact haio.sg < Map + Blocks Toggle + 2D/3D + Layers) -->
+      <div class="haio-floating-top-left">
+        <button class="haio-pill-btn" onclick="backToCityMapOverview()" title="Zoom out to city-wide 3D overview">
+          <span>‹ Map</span>
+        </button>
+
+        <button class="haio-pill-btn" id="blocksTogglePill" onclick="toggle3DBlocksMassing()" title="Toggle 3D Floor &amp; Stack Extrusions">
+          <span>Blocks</span>
+          <span class="haio-switch-track on" id="blocksSwitchTrack">
+            <span class="haio-switch-thumb"></span>
+          </span>
+        </button>
+
+        <div class="haio-2d3d-pill" role="group" aria-label="2D or 3D Camera Pitch">
+          <button class="haio-dim-btn" id="btnDim2D" onclick="setCameraDimension('2D')">2D</button>
+          <button class="haio-dim-btn active" id="btnDim3D" onclick="setCameraDimension('3D')">3D</button>
         </div>
 
-        <div class="hud-right-stack">
-          <div class="basemap-switcher">
-            <button class="bm-btn active" onclick="setBasemap('dark', this)">Dark</button>
-            <button class="bm-btn" onclick="setBasemap('light', this)">Street</button>
-            <button class="bm-btn" onclick="setBasemap('sat', this)">Sat</button>
-          </div>
-          <button class="quick-layer-pill" style="color:var(--cyan); border-color:#0284c7;" onclick="toggleLayersPopover()">⚙ Filters &amp; Layers (11)</button>
-          <button class="quick-layer-pill" onclick="resetAllFilters()" title="Reset Map View to Dubai">🎯 Reset</button>
-          <button class="bm-btn" id="collapseRightBtn" style="background:#060a12;border:1px solid var(--border);color:#e2e8f0;padding:4px 8px;border-radius:6px;" onclick="toggleRightPanel()" title="Expand / Collapse Side Panel">▸ Panel</button>
-        </div>
+        <button class="haio-pill-btn" onclick="toggleLayersPopover()" style="padding:8px 13px; font-size:0.78rem;">
+          <span>⚙ Layers (11)</span>
+        </button>
       </div>
 
-      <!-- Primary Map Canvas (100% Unobstructed, Locked to UAE Bounds) -->
+      <!-- Center-Top Floating Lens Dock (haio.sg Discovery Lenses) -->
+      <div class="haio-lens-dock" id="haioLensDock">
+        <button class="haio-lens-btn" id="lens-1" onclick="selectLensDock(1)">
+          <span class="lens-ico">🧭</span>
+          <span>Discover</span>
+        </button>
+        <button class="haio-lens-btn active" id="lens-2" onclick="selectLensDock(2)">
+          <span class="lens-ico">🏢</span>
+          <span>3D Towers</span>
+        </button>
+        <button class="haio-lens-btn" id="lens-3" onclick="selectLensDock(3)">
+          <span class="lens-ico">🚗</span>
+          <span>JVC Traffic</span>
+        </button>
+        <button class="haio-lens-btn" id="lens-4" onclick="selectLensDock(4)">
+          <span class="lens-ico">⏱️</span>
+          <span>AM vs PM</span>
+        </button>
+        <button class="haio-lens-btn" id="lens-5" onclick="selectLensDock(5)">
+          <span class="lens-ico">📦</span>
+          <span>Supply</span>
+        </button>
+        <button class="haio-lens-btn" id="lens-6" onclick="selectLensDock(6)">
+          <span class="lens-ico">🗺️</span>
+          <span>Sharjah</span>
+        </button>
+      </div>
+
+      <!-- Primary WebGL 3D MapLibre GL JS Canvas (60° Pitch, 45° Bearing, 3D Floor/Stack Extrusions) -->
+      <div id="map3dCanvas"></div>
+      <!-- Synchronized Backing 2D Leaflet Canvas -->
       <div id="mapCanvas" class="basemap-dark"></div>
 
-      <!-- Collapsible Advanced Layers & Filters Popover (All 11 Layers Preserved without Clutter) -->
+      <!-- Collapsible Advanced Layers & Filters Popover (All 11 Layers Preserved) -->
       <div class="layers-drawer-popover" id="layersPopover">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-          <strong style="font-size:0.80rem; color:var(--cyan);">Map Layers (11) &amp; Filters</strong>
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+          <strong style="font-size:0.84rem; color:#0f172a;">Map Layers (11) &amp; Spatial Filters</strong>
           <div style="display:flex; gap:6px;">
-            <button onclick="resetAllFilters()" style="background:#334155;border:none;color:#fff;font-size:0.68rem;padding:2px 7px;border-radius:4px;cursor:pointer;">Reset</button>
-            <button onclick="toggleLayersPopover()" style="background:transparent;border:none;color:#94a3b8;font-size:0.85rem;cursor:pointer;">✕</button>
+            <button onclick="resetAllFilters()" style="background:#eff6ff;border:1px solid #bfdbfe;color:#2563eb;font-size:0.70rem;font-weight:700;padding:3px 9px;border-radius:999px;cursor:pointer;">Reset</button>
+            <button onclick="toggleLayersPopover()" style="background:transparent;border:none;color:#64748b;font-size:0.95rem;cursor:pointer;">✕</button>
           </div>
         </div>
 
         <input type="text" id="searchInput" class="ctrl-input" placeholder="Search project, road, community (e.g. JVC, Hessa)..." oninput="applyMapFilters()"/>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;">
           <div>
             <label class="ctrl-label">Community Jump</label>
             <select id="communitySelect" class="ctrl-select" onchange="zoomToSelectedCommunity()">
@@ -1167,7 +1556,7 @@
           </div>
         </div>
 
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:4px;">
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-top:4px;">
           <div>
             <label class="ctrl-label">Impact Buffer</label>
             <select id="radiusSelect" class="ctrl-select" onchange="updateImpactBuffers()">
@@ -1189,11 +1578,11 @@
 
         <div class="layer-list">
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L1" checked onchange="toggleLayerGroup('projects', this.checked)"/><span class="layer-dot" style="background:#38bdf8;"></span> 1. Construction Projects (Scaled)</label>
+            <label><input type="checkbox" id="chk-L1" checked onchange="toggleLayerGroup('projects', this.checked)"/><span class="layer-dot" style="background:#2563eb;"></span> 1. Construction Projects &amp; 3D Towers</label>
             <span class="prov-tag prov-ver">Default ON</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L3" checked onchange="toggleLayerGroup('communities', this.checked)"/><span class="layer-dot" style="background:#c084fc;"></span> 2. Community Hotspots (10)</label>
+            <label><input type="checkbox" id="chk-L3" checked onchange="toggleLayerGroup('communities', this.checked)"/><span class="layer-dot" style="background:#7c3aed;"></span> 2. Community Hotspots (10)</label>
             <span class="prov-tag prov-ver">Default ON</span>
           </div>
           <div class="layer-item">
@@ -1201,11 +1590,11 @@
             <span class="prov-tag prov-mod">Modelled</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L4" checked onchange="toggleLayerGroup('roads', this.checked)"/><span class="layer-dot" style="background:#94a3b8;"></span> 4. Base Road Network (23)</label>
+            <label><input type="checkbox" id="chk-L4" checked onchange="toggleLayerGroup('roads', this.checked)"/><span class="layer-dot" style="background:#64748b;"></span> 4. Base Road Network (23)</label>
             <span class="prov-tag prov-ver">RTA Cap</span>
           </div>
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L2" onchange="toggleLayerGroup('devbounds', this.checked)"/><span class="layer-dot" style="background:#818cf8;"></span> 5. JVC Sub-Clusters &amp; Radii</label>
+            <label><input type="checkbox" id="chk-L2" onchange="toggleLayerGroup('devbounds', this.checked)"/><span class="layer-dot" style="background:#8b5cf6;"></span> 5. JVC Sub-Clusters &amp; Radii</label>
             <span class="prov-tag prov-ver">Zoom/Toggle</span>
           </div>
           <div class="layer-item">
@@ -1235,49 +1624,60 @@
         </div>
       </div>
 
-      <!-- Single Unified Bottom Map Footer: 4 Quick Layer Toggles + Compact Legend & Epistemic Notice -->
-      <div class="map-hud-bottom">
-        <div class="layer-pill-bar">
-          <button class="quick-layer-pill on" id="qpill-projects" onclick="quickToggle('projects', 'chk-L1', this)"><span class="layer-dot" style="background:#38bdf8;"></span> Projects</button>
-          <button class="quick-layer-pill on" id="qpill-communities" onclick="quickToggle('communities', 'chk-L3', this)"><span class="layer-dot" style="background:#c084fc;"></span> Communities</button>
-          <button class="quick-layer-pill on" id="qpill-traffic" onclick="quickToggle('traffic', 'chk-L6', this)"><span class="layer-dot" style="background:#ef4444;"></span> Traffic</button>
-          <button class="quick-layer-pill" id="qpill-impacts" onclick="quickToggle('impacts', 'chk-L11', this)"><span class="layer-dot" style="background:#f59e0b;"></span> Impact Links</button>
+      <!-- Bottom-Left Floating Pills: Compass Orbit Pill (🧭 NE 45°) + Sun/Time Window + Basemap -->
+      <div class="haio-floating-bottom-left">
+        <button class="haio-compass-pill" onclick="orbitCameraStep()" title="Click to orbit 3D camera by 45°">
+          <svg class="compass-needle-svg" id="compassSvg" viewBox="0 0 24 24" style="transform: rotate(-45deg);">
+            <polygon points="12,2 16,12 12,10 8,12" fill="#ef4444"/>
+            <polygon points="12,22 16,12 12,14 8,12" fill="#94a3b8"/>
+          </svg>
+          <span id="compassLabel">NE 45°</span>
+        </button>
+
+        <div class="time-group" aria-label="Sun Lighting &amp; Traffic Time Window">
+          <button class="time-btn" data-tp="Morning Peak (07:30–09:30)" onclick="setTimeWindow('Morning Peak (07:30–09:30)', this)">☀ AM Peak</button>
+          <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday</button>
+          <button class="time-btn active" data-tp="Evening Peak (17:00–20:00)" onclick="setTimeWindow('Evening Peak (17:00–20:00)', this)">🌇 PM Peak</button>
+          <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night</button>
         </div>
 
-        <div class="map-legend">
-          <div class="legend-inline">
-            <span class="leg-row"><span class="layer-dot" style="width:10px;height:10px;background:#fbbf24;border:1.5px solid #fff;"></span> Mega ≥25B</span>
-            <span class="leg-row"><span class="layer-dot" style="width:8px;height:8px;background:#38bdf8;"></span> Major 5–25B</span>
-            <span class="leg-row"><span class="leg-line" style="background:#ef4444;"></span> Severe</span>
-            <span class="leg-row"><span class="leg-line" style="background:#f97316;"></span> High</span>
-            <span class="leg-row"><span class="leg-line" style="background:#eab308;"></span> Mod</span>
-            <span class="leg-row"><span class="leg-line" style="background:#10b981;"></span> Low</span>
-            <span class="conf-pill b-ver" style="font-size:0.62rem;">Published RTA/TomTom (31.3 km/h) vs Modelled BPR</span>
-          </div>
+        <div class="basemap-switcher">
+          <button class="bm-btn active" onclick="setBasemap('sat', this)">Satellite 3D</button>
+          <button class="bm-btn" onclick="setBasemap('light', this)">Light Map</button>
+          <button class="bm-btn" onclick="setBasemap('dark', this)">Dark GIS</button>
+        </div>
+
+        <span id="hudTime" style="display:none;">Evening Peak (17:00–20:00)</span>
+        <span id="hudHgvStatus" style="display:none;">🚫 HGV Ban 17:00–20:00 (E11/E44/D61)</span>
+        <div style="display:none;">
+          <button id="qpill-projects" onclick="quickToggle('projects', 'chk-L1', this)"></button>
+          <button id="qpill-communities" onclick="quickToggle('communities', 'chk-L3', this)"></button>
+          <button id="qpill-traffic" onclick="quickToggle('traffic', 'chk-L6', this)"></button>
+          <button id="qpill-impacts" onclick="quickToggle('impacts', 'chk-L11', this)"></button>
         </div>
       </div>
     </section>
 
-    <!-- RIGHT CONTEXTUAL EXECUTIVE PANEL (CLEAN 3-TAB DRAWER + PROGRESSIVE DISCLOSURE) -->
+    <!-- HAIO.SG FLOATING RIGHT ROUNDED CARD INSPECTOR -->
     <aside class="sidebar-right">
       <div class="drawer-tabs">
-        <button class="dtab-btn active" id="dtab-uc" onclick="switchDrawerTab('uc')">📌 Scenarios</button>
-        <button class="dtab-btn" id="dtab-insp" onclick="switchDrawerTab('insp')">🔍 Inspector</button>
-        <button class="dtab-btn" id="dtab-qa" onclick="switchDrawerTab('qa')">💬 Q&amp;A</button>
+        <button class="dtab-btn" id="dtab-uc" onclick="switchDrawerTab('uc')">🧭 Discover</button>
+        <button class="dtab-btn active" id="dtab-insp" onclick="switchDrawerTab('insp')">🧊 3D Block &amp; Road</button>
+        <button class="dtab-btn" id="dtab-qa" onclick="switchDrawerTab('qa')">💬 Ask Data</button>
       </div>
 
-      <!-- TAB 1: OVERVIEW, HOTSPOTS & GUIDED SCENARIOS -->
-      <div class="drawer-body" id="dpanel-uc">
-        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-bottom:8px;">
+      <!-- TAB 1: DISCOVER, 3D LAUNCHES & GUIDED SCENARIOS -->
+      <div class="drawer-body" id="dpanel-uc" style="display:none;">
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-bottom:10px;">
           <button class="uc-btn active" id="btn-uc1" onclick="runUseCase(1)">1. Hotspots</button>
           <button class="uc-btn" id="btn-uc2" onclick="runUseCase(2)">2. JVC</button>
           <button class="uc-btn" id="btn-uc3" onclick="runUseCase(3)">3. AM/PM</button>
           <button class="uc-btn" id="btn-uc4" onclick="runUseCase(4)">4. Sharjah</button>
         </div>
 
-        <details class="tech-accordion" style="margin-bottom:8px;">
-          <summary style="font-size:0.71rem; padding:6px 10px;">🧭 Guided 5-Step Story Tour (UAE → Dubai → JVC → Project → Road)</summary>
-          <div class="tech-body" style="padding:6px 8px;">
+        <details class="tech-accordion" style="margin-bottom:10px;">
+          <summary style="font-size:0.73rem; padding:8px 12px;">🧭 Guided 5-Step Story Tour (UAE → Dubai → JVC → 3D Tower → Road)</summary>
+          <div class="tech-body" style="padding:8px 10px;">
             <div class="story-bar" role="region" aria-label="Guided Visual Storytelling Sequence">
               <button class="story-step" id="story-1" onclick="runStoryStep(1)">1. UAE Overview</button>
               <span class="story-arrow">→</span>
@@ -1295,24 +1695,19 @@
         <div id="useCaseContainer"></div>
       </div>
 
-      <!-- TAB 2: EXECUTIVE PROJECT / ROAD EXPLORER (WITH PROGRESSIVE DISCLOSURE <details>) -->
-      <div class="drawer-body" id="dpanel-insp" style="display:none;">
-        <div id="inspectorContainer">
-          <div class="detail-card">
-            <h4>Select Any Project Marker or Road Corridor</h4>
-            <p style="font-size:0.77rem; color:var(--muted);">Click a scaled project marker or road corridor on the map to view its executive summary card. Detailed engineering derivations (BPR formulas, 4-component HGV math, WGS84 vertex distances, and source registers) open cleanly inside expandable sections.</p>
-          </div>
-        </div>
+      <!-- TAB 2: HAIO.SG 3D BLOCK / FLOOR / STACK EXPLORER & ROAD INSPECTOR -->
+      <div class="drawer-body" id="dpanel-insp">
+        <div id="inspectorContainer"></div>
       </div>
 
       <!-- TAB 3: EVIDENCE, METHODOLOGY & DETERMINISTIC Q&A -->
       <div class="drawer-body" id="dpanel-qa" style="display:none;">
         <div class="detail-card">
           <h4>Deterministic Database Q&amp;A &amp; Methodology</h4>
-          <p style="font-size:0.73rem; color:var(--muted); margin:0 0 8px;">Ask a question or select a preset to query the normalized Task 1 + Task 2 tables and fly the map to the matched sites.</p>
+          <p style="font-size:0.75rem; color:#64748b; margin:0 0 8px;">Ask a question or select a preset to query the normalized Task 1 + Task 2 tables and fly the 3D camera to the matched sites.</p>
           <div class="qa-box">
             <input type="text" id="qaInput" class="ctrl-input" placeholder="Ask about JVC, Hessa St, Dubai South, TIS, Morning vs Evening..." onkeydown="if(event.key==='Enter') runDeterministicQA()"/>
-            <button onclick="runDeterministicQA()" style="background:#0284c7;border:none;color:#fff;padding:0 12px;border-radius:6px;font-weight:700;cursor:pointer;">Ask</button>
+            <button onclick="runDeterministicQA()" style="background:#2563eb;border:none;color:#fff;padding:0 14px;border-radius:10px;font-weight:700;cursor:pointer;">Ask</button>
           </div>
           <div class="qa-preset-list">
             <button class="qa-preset-btn" onclick="askPreset(0)">1. Which areas in Dubai currently have the highest construction activity?</button>
@@ -1665,6 +2060,21 @@
       };
     }
 
+    // =========================================================================
+    // HAIO.SG-GRADE 3D ARCHITECTURAL MASSING, STACK & FLOOR ENGINE (MAPLIBRE GL)
+    // =========================================================================
+    let map3d = null;
+    let map3dLoaded = false;
+    let map3dMarkers = [];
+    let is3DBlocksEnabled = true;
+    let currentCameraDim = "3D";
+    let currentBasemapMode = "sat";
+    let selected3DProjectId = "PRJ-D11";
+    let active3DBlock = "ALL";
+    let active3DFloor = "ALL";
+    let active3DStack = "ALL";
+    let active3DShowMe = "all";
+
     function projectScaleStyle(p) {
       const v = String(p.published_investment_value || "");
       if (v.includes("55B") || v.includes("50B") || v.includes("35B") || v.includes("30B") || v.includes("25B") || v.includes("128B")) {
@@ -1676,36 +2086,746 @@
       return { radius: 5.5, fillColor: "#22d3ee", color: "#0f172a", weight: 1.5, tier: "Active Development (< AED 5B)" };
     }
 
+    function getProject3DSpec(p) {
+      const fh = String(p.floors_and_height || "");
+      const tb = String(p.towers_and_buildings_count || "");
+      const uv = String(p.apartments_and_villas_count || "");
+      let storeys = 52;
+      const fm = fh.match(/(\d{2,3})\s*(?:floors|storeys|levels|F|G\+)/i) || fh.match(/G\+\d+P\+(\d{2,3})/i) || fh.match(/(\d{2,3})/);
+      if (fm) {
+        const parsed = parseInt(fm[1], 10);
+        if (parsed >= 12 && parsed <= 160) storeys = parsed;
+      }
+      if (p.project_id === "PRJ-D10") storeys = 131;
+      else if (p.project_id === "PRJ-D11") storeys = 104;
+      else if (p.project_id === "PRJ-D12") storeys = 122;
+      else if (p.project_id === "PRJ-D13") storeys = 106;
+      else if (p.project_id === "PRJ-D3") storeys = 131;
+      else if (p.project_id === "PRJ-D14") storeys = 71;
+      else if (p.project_id === "PRJ-D20") storeys = 65;
+
+      let homes = 420;
+      const um = uv.replace(/,/g, "").match(/(\d{2,6})/);
+      if (um) homes = parseInt(um[1], 10);
+
+      let blocksCount = 2;
+      if (tb.includes("Single Supertall") && p.project_id !== "PRJ-D11" && p.project_id !== "PRJ-D12") blocksCount = 1;
+
+      const heightM = Math.min(340, Math.max(115, Math.round(storeys * 2.85)));
+      const stacksPerBlock = 4;
+      const blocks = [];
+      for (let b = 1; b <= blocksCount; b++) {
+        const bStoreys = b === 1 ? storeys : Math.max(24, Math.round(storeys * 0.68));
+        const bHeight = b === 1 ? heightM : Math.round(heightM * 0.68);
+        blocks.push({
+          blockNum: b,
+          id: `B${b}`,
+          label: `Block ${b}`,
+          stacksLabel: b === 1 ? "Stacks 01 to 04" : "Stacks 05 to 08",
+          storeys: bStoreys,
+          heightM: bHeight,
+          dLon: b === 1 ? -0.00038 : 0.00058,
+          dLat: b === 1 ? 0.00028 : -0.00036
+        });
+      }
+      return { storeys, homes, blocksCount, stacksPerBlock, heightM, blocks };
+    }
+
+    function rotRectRing(cLon, cLat, rx, ry, angleDeg) {
+      const rad = (angleDeg * Math.PI) / 180.0;
+      const cosA = Math.cos(rad);
+      const sinA = Math.sin(rad);
+      const corners = [[-rx, -ry], [rx, -ry], [rx, ry], [-rx, ry], [-rx, -ry]];
+      return corners.map(([dx, dy]) => [
+        +(cLon + (dx * cosA - dy * sinA)).toFixed(6),
+        +(cLat + (dx * sinA + dy * cosA) * 0.90).toFixed(6)
+      ]);
+    }
+
+    // Build realistic 3D surrounding context skyline around all UAE project clusters (haio.sg style)
+    function buildContext3DGeoJSON() {
+      const features = [];
+      const offsets = [
+        [-0.0014, 0.0011, 145, 0.00022, 0.00018, 24],
+        [-0.0021, 0.0004, 185, 0.00024, 0.00019, 24],
+        [-0.0016, -0.0010, 118, 0.00025, 0.00018, 24],
+        [-0.0009, 0.0017, 162, 0.00021, 0.00017, 24],
+        [0.0012, 0.0014, 154, 0.00026, 0.00020, 24],
+        [0.0019, 0.0005, 112, 0.00023, 0.00018, 24],
+        [-0.0025, -0.0005, 96, 0.00022, 0.00018, 24],
+        [0.0008, -0.0015, 84, 0.00025, 0.00019, 24],
+        [-0.0004, -0.0018, 128, 0.00021, 0.00017, 24],
+        [-0.0028, 0.0015, 134, 0.00024, 0.00018, 24]
+      ];
+      const shades = ["#64748b", "#475569", "#526077", "#718096", "#3b495e"];
+      DATA.projects.slice(0, 25).forEach((p, pIdx) => {
+        const [lat, lon] = parseCoord(p.coordinates);
+        offsets.forEach(([dlon, dlat, hBase, rx, ry, ang], idx) => {
+          const bLon = lon + dlon;
+          const bLat = lat + dlat;
+          const h = Math.round(hBase * (0.75 + ((pIdx * 7 + idx * 3) % 5) * 0.12));
+          // Podium
+          features.push({
+            type: "Feature",
+            properties: { base: 0, height: 18, color: "#475569" },
+            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 1.25, ry * 1.25, ang)] }
+          });
+          // Main context shaft
+          features.push({
+            type: "Feature",
+            properties: { base: 18, height: h, color: shades[(pIdx + idx) % shades.length] },
+            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx, ry, ang)] }
+          });
+          // Crown step
+          features.push({
+            type: "Feature",
+            properties: { base: h, height: h + 12, color: "#94a3b8" },
+            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 0.72, ry * 0.72, ang)] }
+          });
+        });
+      });
+      return { type: "FeatureCollection", features };
+    }
+
+    // Build floor-by-floor & stack-by-stack 3D architectural massing for all 37 projects + 5 JVC sub-clusters
+    function buildProject3DMassingGeoJSON() {
+      const features = [];
+      if (!is3DBlocksEnabled) return { type: "FeatureCollection", features };
+
+      const emFilter = document.getElementById("emirateSelect") ? document.getElementById("emirateSelect").value : "ALL";
+      const linkByProj = {};
+      DATA.impact_links.forEach(l => { linkByProj[l.project_id] = l; });
+
+      DATA.projects.forEach(p => {
+        if (emFilter !== "ALL" && p.emirate !== emFilter) return;
+        const [lat, lon] = parseCoord(p.coordinates);
+        const spec = getProject3DSpec(p);
+        const isSelectedProj = (p.project_id === selected3DProjectId);
+        const link = linkByProj[p.project_id];
+        const primObs = link ? getRoadObsForWindow(link.primary_road_id, currentTimeWindow) : null;
+        const tColor = primObs ? congestionColor(primObs.congestion_level) : "#3b82f6";
+
+        spec.blocks.forEach(blk => {
+          const bLon = lon + blk.dLon;
+          const bLat = lat + blk.dLat;
+          const rx = 0.00024;
+          const ry = 0.00019;
+          const rot = 24;
+          const podiumH = 25;
+
+          // 1. Louvered Podium Base (5 alternating architectural slab layers)
+          for (let s = 0; s < 5; s++) {
+            const sb0 = s * 5;
+            const sb1 = sb0 + 5;
+            features.push({
+              type: "Feature",
+              properties: {
+                project_id: p.project_id,
+                block_id: blk.id,
+                base: sb0,
+                height: sb1,
+                color: (s % 2 === 0) ? "#cbd5e1" : "#64748b"
+              },
+              geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 1.16, ry * 1.16, rot)] }
+            });
+          }
+
+          // 2. Lower Sky-Terrace / Amenity Deck (Emerald Garden + Warm Amber Level — exact haio.sg signature)
+          features.push({
+            type: "Feature",
+            properties: { project_id: p.project_id, block_id: blk.id, base: podiumH, height: podiumH + 3.5, color: "#10b981" },
+            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 1.08, ry * 1.08, rot)] }
+          });
+          features.push({
+            type: "Feature",
+            properties: { project_id: p.project_id, block_id: blk.id, base: podiumH + 3.5, height: podiumH + 9.5, color: "#f59e0b" },
+            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 1.02, ry * 1.02, rot)] }
+          });
+
+          // 3. Central Structural Core (provides vertical mullion contrast between the 4 corner stacks)
+          const shaftBase = podiumH + 9.5;
+          const shaftTop = blk.heightM;
+          features.push({
+            type: "Feature",
+            properties: { project_id: p.project_id, block_id: blk.id, base: shaftBase, height: shaftTop - 4, color: "#cbd5e1" },
+            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 0.56, ry * 0.56, rot)] }
+          });
+
+          // 4. 4 Quadrant Vertical Stacks (Stack 01..04) x 12 Vertical Floor-Band Tiers
+          const stackQuads = [
+            { id: "S1", dx: -rx * 0.52, dy: ry * 0.52, unit: "4br" },
+            { id: "S2", dx: rx * 0.52, dy: ry * 0.52, unit: "4br" },
+            { id: "S3", dx: rx * 0.52, dy: -ry * 0.52, unit: "5br" },
+            { id: "S4", dx: -rx * 0.52, dy: -ry * 0.52, unit: "5br" }
+          ];
+          const qRx = rx * 0.44;
+          const qRy = ry * 0.44;
+          const rad = (rot * Math.PI) / 180.0;
+          const cosA = Math.cos(rad);
+          const sinA = Math.sin(rad);
+
+          const numTiers = 12;
+          const tierSpan = (shaftTop - shaftBase) / numTiers;
+
+          for (let t = 0; t < numTiers; t++) {
+            const z0 = +(shaftBase + t * tierSpan).toFixed(1);
+            const z1 = +(z0 + tierSpan * 0.84).toFixed(1);
+            const zTop = +(z0 + tierSpan).toFixed(1);
+
+            const isSkyTerrace = (t === 4 || t === 8);
+            let floorZone = "low";
+            if (t >= 3 && t <= 6) floorZone = "mid";
+            else if (t >= 7 && t <= 9) floorZone = "high";
+            else if (t >= 10) floorZone = "penthouse";
+
+            if (isSkyTerrace) {
+              // Recessed Sky-Garden & Warm Golden Amenity Band across the tower
+              features.push({
+                type: "Feature",
+                properties: { project_id: p.project_id, block_id: blk.id, base: z0, height: +(z0 + tierSpan * 0.35).toFixed(1), color: "#10b981" },
+                geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 0.96, ry * 0.96, rot)] }
+              });
+              features.push({
+                type: "Feature",
+                properties: { project_id: p.project_id, block_id: blk.id, base: +(z0 + tierSpan * 0.35).toFixed(1), height: zTop, color: "#f59e0b" },
+                geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 0.92, ry * 0.92, rot)] }
+              });
+              continue;
+            }
+
+            stackQuads.forEach(sq => {
+              const sLon = bLon + (sq.dx * cosA - sq.dy * sinA);
+              const sLat = bLat + (sq.dx * sinA + sq.dy * cosA) * 0.90;
+              const unitCat = (t >= 10) ? "penthouse" : sq.unit;
+
+              let slabColor = "#ffffff";
+              if (isSelectedProj) {
+                const isNeutral = (active3DBlock === "ALL" && active3DFloor === "ALL" && active3DStack === "ALL" && active3DShowMe === "all");
+                if (isNeutral) {
+                  slabColor = (t % 2 === 0) ? "#ffffff" : "#f8fafc";
+                } else {
+                  const matchBlk = (active3DBlock === "ALL" || active3DBlock === blk.id);
+                  const matchFlr = (active3DFloor === "ALL" || active3DFloor === floorZone);
+                  const matchStk = (active3DStack === "ALL" || active3DStack === sq.id);
+                  const matchShow = (active3DShowMe === "all" || active3DShowMe === "4br_5br_mix" || active3DShowMe === "traffic" || active3DShowMe === unitCat);
+
+                  if (matchBlk && matchFlr && matchStk && matchShow) {
+                    if (active3DShowMe === "traffic") slabColor = tColor;
+                    else if (unitCat === "4br") slabColor = "#f59e0b"; // Warm Gold (4BR / 1-3BR)
+                    else if (unitCat === "5br") slabColor = "#10b981"; // Emerald (5BR / 4BR)
+                    else slabColor = "#2563eb"; // Royal Blue (Penthouses)
+                  } else {
+                    slabColor = "#cbd5e1";
+                  }
+                }
+              } else {
+                slabColor = "#f1f5f9";
+              }
+
+              // Main residential floor-stack volume
+              features.push({
+                type: "Feature",
+                properties: {
+                  project_id: p.project_id,
+                  block_id: blk.id,
+                  stack_id: sq.id,
+                  floor_zone: floorZone,
+                  unit_type: unitCat,
+                  base: z0,
+                  height: z1,
+                  color: slabColor
+                },
+                geometry: { type: "Polygon", coordinates: [rotRectRing(sLon, sLat, qRx, qRy, rot)] }
+              });
+
+              // Crisp horizontal slab-edge shadow band
+              features.push({
+                type: "Feature",
+                properties: {
+                  project_id: p.project_id,
+                  block_id: blk.id,
+                  base: z1,
+                  height: zTop,
+                  color: "#94a3b8"
+                },
+                geometry: { type: "Polygon", coordinates: [rotRectRing(sLon, sLat, qRx * 1.02, qRy * 1.02, rot)] }
+              });
+            });
+          }
+
+          // 5. Crown Architectural Parapet
+          features.push({
+            type: "Feature",
+            properties: { project_id: p.project_id, block_id: blk.id, base: shaftTop, height: shaftTop + 5, color: "#f8fafc" },
+            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 0.78, ry * 0.78, rot)] }
+          });
+        });
+      });
+
+      // Also extrude JVC Sub-Development Clusters in 3D
+      DATA.subdevs.forEach(sd => {
+        if (emFilter !== "ALL" && sd.emirate !== emFilter) return;
+        features.push({
+          type: "Feature",
+          properties: { project_id: sd.subdev_id, block_id: "B1", base: 0, height: 110, color: "#a855f7" },
+          geometry: { type: "Polygon", coordinates: [rotRectRing(sd.longitude, sd.latitude, 0.00028, 0.00022, 18)] }
+        });
+      });
+
+      return { type: "FeatureCollection", features };
+    }
+
+    function formatBearingCompass(b) {
+      const deg = ((Math.round(b) % 360) + 360) % 360;
+      const dirs = ["N", "NE", "E", "SE", "S", "SW", "W", "NW"];
+      const dir = dirs[Math.round(deg / 45) % 8];
+      return { deg, label: `${dir} ${deg}°` };
+    }
+
+    function updateCompassUI() {
+      if (!map3d) return;
+      const { deg, label } = formatBearingCompass(map3d.getBearing());
+      const lblEl = document.getElementById("compassLabel");
+      if (lblEl) lblEl.textContent = label;
+      const svgEl = document.getElementById("compassSvg");
+      if (svgEl) svgEl.style.transform = `rotate(${-deg}deg)`;
+    }
+
+    function orbitCameraStep() {
+      if (!map3d) return;
+      const nextBearing = (Math.round(map3d.getBearing() / 45) * 45 + 45) % 360;
+      map3d.easeTo({ bearing: nextBearing, pitch: currentCameraDim === "3D" ? 60 : 0, duration: 650 });
+    }
+
+    function setCameraDimension(dim) {
+      currentCameraDim = dim;
+      document.getElementById("btnDim2D").classList.toggle("active", dim === "2D");
+      document.getElementById("btnDim3D").classList.toggle("active", dim === "3D");
+      if (map3d) {
+        map3d.easeTo({
+          pitch: dim === "3D" ? 60 : 0,
+          bearing: dim === "3D" ? 45 : 0,
+          duration: 800
+        });
+      }
+    }
+
+    function toggle3DBlocksMassing() {
+      is3DBlocksEnabled = !is3DBlocksEnabled;
+      const trk = document.getElementById("blocksSwitchTrack");
+      if (trk) trk.classList.toggle("on", is3DBlocksEnabled);
+      sync3DMapLayers();
+    }
+
+    function backToCityMapOverview() {
+      active3DBlock = "ALL";
+      active3DFloor = "ALL";
+      active3DStack = "ALL";
+      active3DShowMe = "all";
+      switchDrawerTab("uc");
+      flyBothMaps(25.165, 55.265, 11.6, 52, 30);
+      document.getElementById("hudScope").textContent = "Dubai 3D City Overview";
+      runUseCase(1, false);
+    }
+
+    function selectLensDock(idx) {
+      document.querySelectorAll(".haio-lens-btn").forEach((b, i) => b.classList.toggle("active", (i + 1) === idx));
+      if (idx === 1) {
+        backToCityMapOverview();
+      } else if (idx === 2) {
+        showProjectInspector(selected3DProjectId || "PRJ-D11", true);
+      } else if (idx === 3) {
+        runUseCase(2, true);
+      } else if (idx === 4) {
+        runUseCase(3, true);
+      } else if (idx === 5) {
+        switchDrawerTab("uc");
+        flyBothMaps(25.1844, 55.2798, 13.8, 60, 45);
+        runUseCase(1, false);
+      } else if (idx === 6) {
+        runUseCase(4, true);
+      }
+    }
+
+    function flyBothMaps(lat, lon, zoom, pitch = 60, bearing = 45) {
+      if (map) {
+        map.flyTo([lat, lon], Math.min(18, Math.max(9, Math.round(zoom))), { duration: 0.8 });
+      }
+      if (map3d) {
+        map3d.flyTo({
+          center: [lon, lat],
+          zoom: Math.max(9, zoom),
+          pitch: currentCameraDim === "3D" ? pitch : 0,
+          bearing: currentCameraDim === "3D" ? bearing : 0,
+          duration: 1100,
+          essential: true
+        });
+      }
+    }
+
+    function init3DMap() {
+      if (typeof maplibregl === "undefined") return;
+      const pHero = DATA.projects.find(x => x.project_id === "PRJ-D11") || DATA.projects[0];
+      const [hLat, hLon] = parseCoord(pHero.coordinates);
+
+      map3d = new maplibregl.Map({
+        container: "map3dCanvas",
+        center: [hLon, hLat],
+        zoom: window.innerWidth <= 768 ? 15.1 : 15.8,
+        pitch: 60,
+        bearing: 45,
+        minZoom: 8.5,
+        maxZoom: 18.5,
+        maxBounds: [[51.0, 22.4], [56.8, 26.5]],
+        antialias: true,
+        attributionControl: false,
+        style: {
+          version: 8,
+          light: {
+            anchor: "viewport",
+            color: "#ffffff",
+            intensity: 0.48,
+            position: [1.35, 210, 42]
+          },
+          sources: {
+            "sat-tiles": {
+              type: "raster",
+              tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
+              tileSize: 256
+            },
+            "light-tiles": {
+              type: "raster",
+              tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+              tileSize: 256
+            },
+            "context-3d": {
+              type: "geojson",
+              data: buildContext3DGeoJSON()
+            },
+            "communities-3d": {
+              type: "geojson",
+              data: { type: "FeatureCollection", features: [] }
+            },
+            "roads-3d": {
+              type: "geojson",
+              data: { type: "FeatureCollection", features: [] }
+            },
+            "impacts-3d": {
+              type: "geojson",
+              data: { type: "FeatureCollection", features: [] }
+            },
+            "projects-3d": {
+              type: "geojson",
+              data: buildProject3DMassingGeoJSON()
+            }
+          },
+          layers: [
+            {
+              id: "bg-dark-layer",
+              type: "background",
+              paint: { "background-color": "#0b1320" }
+            },
+            {
+              id: "sat-raster-layer",
+              type: "raster",
+              source: "sat-tiles",
+              layout: { visibility: "visible" },
+              paint: { "raster-opacity": 1.0, "raster-contrast": 0.08, "raster-saturation": 0.05 }
+            },
+            {
+              id: "light-raster-layer",
+              type: "raster",
+              source: "light-tiles",
+              layout: { visibility: "none" },
+              paint: { "raster-opacity": 0.96 }
+            },
+            {
+              id: "communities-fill-3d",
+              type: "fill",
+              source: "communities-3d",
+              paint: {
+                "fill-color": ["get", "color"],
+                "fill-opacity": 0.10
+              }
+            },
+            {
+              id: "communities-line-3d",
+              type: "line",
+              source: "communities-3d",
+              paint: {
+                "line-color": ["get", "color"],
+                "line-width": 2,
+                "line-dasharray": [3, 2]
+              }
+            },
+            {
+              id: "roads-casing-3d",
+              type: "line",
+              source: "roads-3d",
+              paint: {
+                "line-color": "#0f172a",
+                "line-width": ["get", "casingWidth"],
+                "line-opacity": 0.85
+              }
+            },
+            {
+              id: "roads-traffic-3d",
+              type: "line",
+              source: "roads-3d",
+              paint: {
+                "line-color": ["get", "color"],
+                "line-width": ["get", "trafficWidth"],
+                "line-opacity": 0.95
+              }
+            },
+            {
+              id: "impacts-line-3d",
+              type: "line",
+              source: "impacts-3d",
+              paint: {
+                "line-color": "#fbbf24",
+                "line-width": 2,
+                "line-dasharray": [2, 2],
+                "line-opacity": 0.85
+              }
+            },
+            {
+              id: "context-3d-layer",
+              type: "fill-extrusion",
+              source: "context-3d",
+              minzoom: 11,
+              paint: {
+                "fill-extrusion-color": ["get", "color"],
+                "fill-extrusion-height": ["get", "height"],
+                "fill-extrusion-base": ["get", "base"],
+                "fill-extrusion-opacity": 0.72
+              }
+            },
+            {
+              id: "project-3d-slabs-layer",
+              type: "fill-extrusion",
+              source: "projects-3d",
+              paint: {
+                "fill-extrusion-color": ["get", "color"],
+                "fill-extrusion-height": ["get", "height"],
+                "fill-extrusion-base": ["get", "base"],
+                "fill-extrusion-opacity": 0.96
+              }
+            }
+          ]
+        }
+      });
+
+      map3d.on("rotate", updateCompassUI);
+      map3d.on("move", updateCompassUI);
+
+      map3d.on("load", () => {
+        map3dLoaded = true;
+        sync3DMapLayers();
+        updateCompassUI();
+      });
+
+      map3d.on("click", "project-3d-slabs-layer", (e) => {
+        if (e.features && e.features.length > 0) {
+          const props = e.features[0].properties;
+          if (props.project_id && String(props.project_id).startsWith("PRJ-")) {
+            if (props.block_id && props.project_id === selected3DProjectId) {
+              select3DBlockCard(props.block_id);
+            } else {
+              showProjectInspector(props.project_id, true);
+            }
+          }
+        }
+      });
+
+      map3d.on("click", "roads-traffic-3d", (e) => {
+        if (e.features && e.features.length > 0) {
+          const rId = e.features[0].properties.road_id;
+          if (rId) showRoadInspector(rId, true);
+        }
+      });
+    }
+
+    function sync3DMapLayers() {
+      if (!map3d || !map3dLoaded) return;
+
+      const emFilter = document.getElementById("emirateSelect") ? document.getElementById("emirateSelect").value : "ALL";
+      const q = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
+      const showComm = document.getElementById("chk-L3")?.checked ?? true;
+      const showRoads = document.getElementById("chk-L4")?.checked ?? true;
+      const showTraffic = document.getElementById("chk-L6")?.checked ?? true;
+      const showImpacts = document.getElementById("chk-L11")?.checked ?? false;
+      const showProjs = document.getElementById("chk-L1")?.checked ?? true;
+
+      // 1. Communities GeoJSON
+      const commFeats = [];
+      if (showComm) {
+        DATA.communities.forEach(c => {
+          if (emFilter !== "ALL" && c.emirate !== emFilter) return;
+          const col = c.observed_congestion_severity.includes("Severe") ? "#ef4444" :
+                      (c.observed_congestion_severity.includes("High") ? "#f97316" : "#8b5cf6");
+          commFeats.push({
+            type: "Feature",
+            properties: { community_id: c.community_id, color: col },
+            geometry: { type: "Polygon", coordinates: [c.polygon_wgs84] }
+          });
+        });
+      }
+      map3d.getSource("communities-3d")?.setData({ type: "FeatureCollection", features: commFeats });
+
+      // 2. Roads & Traffic GeoJSON
+      const roadFeats = [];
+      if (showRoads || showTraffic) {
+        DATA.roads.forEach(r => {
+          if (emFilter !== "ALL" && r.emirate !== emFilter) return;
+          const { obs } = getCorridorProfileForWindow(r, currentTimeWindow);
+          const congLvl = obs ? obs.congestion_level : "Unavailable";
+          const tCol = showTraffic ? congestionColor(congLvl) : "#64748b";
+          const isFwy = r.road_type.includes("Freeway") || r.road_type.includes("Express");
+          roadFeats.push({
+            type: "Feature",
+            properties: {
+              road_id: r.road_id,
+              color: tCol,
+              casingWidth: isFwy ? 6 : 4,
+              trafficWidth: isFwy ? 3.8 : 2.6
+            },
+            geometry: { type: "LineString", coordinates: r.geometry_wgs84 }
+          });
+        });
+      }
+      map3d.getSource("roads-3d")?.setData({ type: "FeatureCollection", features: roadFeats });
+
+      // 3. Impact Vectors GeoJSON
+      const impFeats = [];
+      if (showImpacts) {
+        DATA.impact_links.forEach(l => {
+          if (l.nearest_road_vertex_lat !== undefined && l.nearest_road_vertex_lon !== undefined) {
+            const p = DATA.projects.find(x => x.project_id === l.project_id);
+            if (p) {
+              const [lat, lon] = parseCoord(p.coordinates);
+              impFeats.push({
+                type: "Feature",
+                properties: { project_id: l.project_id },
+                geometry: { type: "LineString", coordinates: [[lon, lat], [l.nearest_road_vertex_lon, l.nearest_road_vertex_lat]] }
+              });
+            }
+          }
+        });
+      }
+      map3d.getSource("impacts-3d")?.setData({ type: "FeatureCollection", features: impFeats });
+
+      // 4. 3D Project Floor & Stack Extrusions
+      map3d.getSource("projects-3d")?.setData(showProjs ? buildProject3DMassingGeoJSON() : { type: "FeatureCollection", features: [] });
+
+      // 5. Update 3D Sun Lighting based on active diurnal window
+      if (currentTimeWindow.includes("Morning")) {
+        map3d.setLight({ anchor: "viewport", color: "#fef3c7", intensity: 0.55, position: [1.4, 95, 38] });
+      } else if (currentTimeWindow.includes("Midday")) {
+        map3d.setLight({ anchor: "viewport", color: "#ffffff", intensity: 0.50, position: [1.15, 180, 22] });
+      } else if (currentTimeWindow.includes("Night")) {
+        map3d.setLight({ anchor: "viewport", color: "#93c5fd", intensity: 0.60, position: [1.3, 240, 50] });
+      } else {
+        map3d.setLight({ anchor: "viewport", color: "#fde68a", intensity: 0.54, position: [1.45, 265, 45] });
+      }
+
+      // 6. Floating Dark Callout Pills ("Block 1 · 4 stacks") & Key Road Speed Pills on 3D Canvas
+      map3dMarkers.forEach(m => m.remove());
+      map3dMarkers = [];
+
+      if (showProjs && is3DBlocksEnabled) {
+        const heroP = DATA.projects.find(x => x.project_id === selected3DProjectId);
+        if (heroP) {
+          const [hLat, hLon] = parseCoord(heroP.coordinates);
+          const spec = getProject3DSpec(heroP);
+          spec.blocks.forEach(blk => {
+            const el = document.createElement("div");
+            el.className = "haio-3d-block-callout hero";
+            el.innerHTML = `<span>${blk.label} · ${spec.stacksPerBlock} stacks · ${blk.storeys}F</span>`;
+            el.onclick = (ev) => {
+              ev.stopPropagation();
+              select3DBlockCard(blk.id);
+            };
+            const mk = new maplibregl.Marker({ element: el, anchor: "bottom", offset: blk.blockNum === 1 ? [-38, -24] : [42, 14] })
+              .setLngLat([hLon + blk.dLon, hLat + blk.dLat])
+              .addTo(map3d);
+            map3dMarkers.push(mk);
+          });
+        }
+
+        // Compact callouts for other flagship towers
+        DATA.projects.forEach(p => {
+          if (p.project_id === selected3DProjectId) return;
+          if (emFilter !== "ALL" && p.emirate !== emFilter) return;
+          if (q && !JSON.stringify(p).toLowerCase().includes(q)) return;
+          const [lat, lon] = parseCoord(p.coordinates);
+          const spec = getProject3DSpec(p);
+          const el = document.createElement("div");
+          el.className = "haio-3d-block-callout";
+          el.style.padding = "4px 10px";
+          el.style.fontSize = "0.71rem";
+          el.innerHTML = `<span>🏢 ${p.project_name.split('(')[0].trim().slice(0, 18)} · ${spec.storeys}F</span>`;
+          el.onclick = (ev) => {
+            ev.stopPropagation();
+            showProjectInspector(p.project_id, true);
+          };
+          const mk = new maplibregl.Marker({ element: el, anchor: "bottom", offset: [0, -10] })
+            .setLngLat([lon, lat])
+            .addTo(map3d);
+          map3dMarkers.push(mk);
+        });
+      }
+
+      if (showTraffic) {
+        const coreRoadAnchors = [
+          { id: "RD-DXB-01", code: "E11 SZR", lon: 55.262, lat: 25.188 },
+          { id: "RD-DXB-03", code: "E44 Khail", lon: 55.284, lat: 25.179 },
+          { id: "RD-DXB-05", code: "D61 Hessa", lon: 55.202, lat: 25.068 },
+          { id: "RD-DXB-12", code: "D71 FinCtr", lon: 55.278, lat: 25.196 }
+        ];
+        coreRoadAnchors.forEach(ra => {
+          const obs = getRoadObsForWindow(ra.id, currentTimeWindow);
+          if (!obs) return;
+          const tCol = congestionColor(obs.congestion_level);
+          const el = document.createElement("div");
+          el.className = "road-speed-pill";
+          el.style.borderColor = tCol;
+          el.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${tCol};display:inline-block;"></span><span>${ra.code}: <strong>${obs.average_speed_kmh} km/h</strong></span>`;
+          el.onclick = (ev) => {
+            ev.stopPropagation();
+            showRoadInspector(ra.id, true);
+          };
+          const mk = new maplibregl.Marker({ element: el, anchor: "center" })
+            .setLngLat([ra.lon, ra.lat])
+            .addTo(map3d);
+          map3dMarkers.push(mk);
+        });
+      }
+    }
+
     function initMap() {
       map = L.map("mapCanvas", {
-        center: [25.115, 55.245],
+        center: [25.1844, 55.2798],
         zoom: window.innerWidth <= 768 ? 10 : 11,
         minZoom: 9,
         maxZoom: 18,
         maxBounds: [[22.4, 51.0], [26.5, 56.8]],
         maxBoundsViscosity: 0.9,
-        zoomControl: true
+        zoomControl: false
       });
-
-      setBasemap("dark", document.querySelector(".bm-btn.active"));
 
       // Enable only the 4 core executive layers by default (Clean Initial View)
       ["communities", "roads", "traffic", "projects"].forEach(k => {
         layerGroups[k].addTo(map);
       });
 
-      let lastZoomTier = map.getZoom() >= 12;
-      map.on("zoomend", () => {
-        const curTier = map.getZoom() >= 12;
-        if (curTier !== lastZoomTier) {
-          lastZoomTier = curTier;
-          renderAllMapLayers();
-        }
-      });
+      init3DMap();
+      setBasemap("sat", document.querySelector(".bm-btn.active"));
 
       populateCommunityDropdown();
       renderAllMapLayers();
       runUseCase(1, false);
+      showProjectInspector("PRJ-D11", false);
     }
 
     function setPlatformMode(mode, btnEl) {
@@ -1719,19 +2839,19 @@
       if (mode === "overview") {
         switchDrawerTab("uc");
         setLayerSet(["communities", "roads", "traffic", "projects"]);
-        runUseCase(1);
+        backToCityMapOverview();
       } else if (mode === "construction") {
-        switchDrawerTab("uc");
-        setLayerSet(["communities", "devbounds", "projects", "roads"]);
-        runUseCase(1);
+        switchDrawerTab("insp");
+        setLayerSet(["communities", "devbounds", "projects", "roads", "traffic"]);
+        showProjectInspector(selected3DProjectId || "PRJ-D11", true);
       } else if (mode === "traffic") {
         switchDrawerTab("uc");
         setLayerSet(["roads", "traffic", "intersections", "impacts", "projects"]);
-        runUseCase(3);
+        runUseCase(3, true);
       } else if (mode === "project") {
         switchDrawerTab("insp");
         setLayerSet(["communities", "roads", "traffic", "impacts", "projects", "devbounds"]);
-        showProjectInspector("PRJ-D6");
+        showProjectInspector("PRJ-D11", true);
       } else if (mode === "evidence") {
         const det = document.getElementById("evidenceAccordion");
         if (det) det.open = true;
@@ -1762,6 +2882,7 @@
           qp.classList.toggle("active", on);
         }
       });
+      sync3DMapLayers();
     }
 
     function quickToggle(key, chkId, btnEl) {
@@ -1785,20 +2906,14 @@
       const btn = document.getElementById("collapseRightBtn");
       wb.classList.toggle("panel-collapsed");
       if (btn) btn.textContent = wb.classList.contains("panel-collapsed") ? "◂ Open Panel" : "▸ Collapse";
-      setTimeout(() => { if (map) map.invalidateSize(); }, 260);
+      setTimeout(() => {
+        if (map) map.invalidateSize();
+        if (map3d) map3d.resize();
+      }, 260);
     }
 
     function toggle3DPerspective(btnEl) {
-      is3DPerspective = !is3DPerspective;
-      const mc = document.getElementById("mapCanvas");
-      if (btnEl) btnEl.classList.toggle("active", is3DPerspective);
-      if (is3DPerspective) {
-        mc.style.transform = "perspective(1400px) rotateX(24deg) scale(1.06)";
-        mc.style.transformOrigin = "center 65%";
-        mc.style.transition = "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)";
-      } else {
-        mc.style.transform = "none";
-      }
+      setCameraDimension(currentCameraDim === "3D" ? "2D" : "3D");
     }
 
     function runStoryStep(step) {
@@ -1809,71 +2924,63 @@
         document.getElementById("emirateSelect").value = "ALL";
         populateCommunityDropdown();
         setLayerSet(["communities", "roads", "traffic", "projects"]);
-        map.flyTo([25.195, 55.355], 10, { duration: 0.9 });
-        document.getElementById("hudScope").textContent = "Step 1: UAE Overview (Dubai + Sharjah)";
+        flyBothMaps(25.195, 55.355, 10.4, 48, 20);
+        document.getElementById("hudScope").textContent = "Step 1: UAE Overview";
         runUseCase(1, false);
       } else if (step === 2) {
         document.getElementById("emirateSelect").value = "Dubai";
         populateCommunityDropdown();
         setLayerSet(["communities", "roads", "traffic", "projects"]);
-        map.flyTo([25.115, 55.245], 11, { duration: 0.9 });
+        flyBothMaps(25.155, 55.265, 11.8, 54, 35);
         document.getElementById("hudScope").textContent = "Step 2: Dubai Core Corridors";
         runUseCase(1, false);
       } else if (step === 3) {
         document.getElementById("emirateSelect").value = "Dubai";
         populateCommunityDropdown();
         setLayerSet(["communities", "devbounds", "roads", "traffic", "impacts", "projects"]);
-        map.flyTo([25.0585, 55.2090], 13, { duration: 0.9 });
+        flyBothMaps(25.0585, 55.2090, 14.2, 58, 40);
         document.getElementById("hudScope").textContent = "Step 3: JVC High-Density Hotspot";
         runUseCase(2, false);
       } else if (step === 4) {
         setLayerSet(["communities", "devbounds", "roads", "traffic", "impacts", "projects"]);
-        map.flyTo([25.0552, 55.2078], 14, { duration: 0.9 });
-        document.getElementById("hudScope").textContent = "Step 4: Project Inspection (PRJ-D6)";
-        showProjectInspector("PRJ-D6", false);
+        document.getElementById("hudScope").textContent = "Step 4: 3D Tower (PRJ-D6)";
+        showProjectInspector("PRJ-D6", true);
       } else if (step === 5) {
         setLayerSet(["roads", "traffic", "intersections", "impacts", "projects"]);
-        map.flyTo([25.0695, 55.1950], 13, { duration: 0.9 });
-        document.getElementById("hudScope").textContent = "Step 5: Hessa St (D61) Impact Analysis";
+        flyBothMaps(25.0695, 55.1950, 13.8, 55, 25);
+        document.getElementById("hudScope").textContent = "Step 5: Hessa St (D61) Impact";
         showRoadInspector("RD-DXB-05", false);
       }
     }
 
     function setBasemap(mode, btnEl) {
+      currentBasemapMode = mode || "sat";
       if (btnEl) {
         document.querySelectorAll(".bm-btn").forEach(b => {
           if (b.id !== "btn3dTilt" && b.id !== "collapseRightBtn") b.classList.remove("active");
         });
         btnEl.classList.add("active");
       }
+      if (map3d && map3dLoaded) {
+        map3d.setLayoutProperty("sat-raster-layer", "visibility", mode === "sat" ? "visible" : "none");
+        map3d.setLayoutProperty("light-raster-layer", "visibility", mode === "light" ? "visible" : "none");
+      }
       const mc = document.getElementById("mapCanvas");
       if (mc) mc.classList.toggle("basemap-dark", mode === "dark" || !mode);
-      if (baseTileLayer) map.removeLayer(baseTileLayer);
-      if (mode === "sat") {
-        baseTileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
-          minZoom: 9,
-          maxZoom: 18,
-          noWrap: true,
-          attribution: "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics"
-        });
-      } else if (mode === "light") {
-        baseTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          minZoom: 9,
-          maxZoom: 18,
-          noWrap: true,
-          attribution: "&copy; OpenStreetMap contributors (ODbL — No API Key Required)"
-        });
-      } else {
-        baseTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          minZoom: 9,
-          maxZoom: 18,
-          noWrap: true,
-          className: "gis-dark-tiles",
-          attribution: "&copy; OpenStreetMap contributors (ODbL Dark GIS — No API Key Required)"
-        });
+      if (baseTileLayer && map) map.removeLayer(baseTileLayer);
+      if (map) {
+        if (mode === "sat") {
+          baseTileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+            minZoom: 9, maxZoom: 18, noWrap: true
+          });
+        } else {
+          baseTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            minZoom: 9, maxZoom: 18, noWrap: true, className: mode === "dark" ? "gis-dark-tiles" : ""
+          });
+        }
+        baseTileLayer.addTo(map);
+        baseTileLayer.bringToBack();
       }
-      baseTileLayer.addTo(map);
-      baseTileLayer.bringToBack();
     }
 
     function populateCommunityDropdown() {
@@ -1888,14 +2995,14 @@
       const em = document.getElementById("emirateSelect").value;
       populateCommunityDropdown();
       if (em === "Dubai") {
-        map.flyTo([25.115, 55.245], 11, { duration: 0.8 });
-        document.getElementById("hudScope").textContent = "Dubai (Priority 1)";
+        flyBothMaps(25.175, 55.272, 12.2, 56, 40);
+        document.getElementById("hudScope").textContent = "Dubai 3D";
       } else if (em === "Sharjah") {
-        map.flyTo([25.315, 55.505], 12, { duration: 0.8 });
-        document.getElementById("hudScope").textContent = "Sharjah (Priority 2)";
+        flyBothMaps(25.318, 55.475, 13.0, 56, 35);
+        document.getElementById("hudScope").textContent = "Sharjah 3D";
       } else {
-        map.flyTo([25.185, 55.345], 10, { duration: 0.8 });
-        document.getElementById("hudScope").textContent = "Dubai + Sharjah";
+        flyBothMaps(25.195, 55.345, 10.6, 50, 25);
+        document.getElementById("hudScope").textContent = "All UAE 3D";
       }
       applyMapFilters();
     }
@@ -1908,7 +3015,7 @@
       }
       const c = DATA.communities.find(x => x.community_id === cid);
       if (c) {
-        map.flyTo([c.center_lat, c.center_lon], c.recommended_zoom || 13, { duration: 0.9 });
+        flyBothMaps(c.center_lat, c.center_lon, (c.recommended_zoom || 13) + 0.8, 58, 40);
         document.getElementById("hudScope").textContent = c.community_name;
         showCommunityInspector(c);
       }
@@ -1931,13 +3038,13 @@
           qp.classList.toggle("active", show);
         }
       }
+      sync3DMapLayers();
     }
 
     function setTimeWindow(tp, btnEl) {
       currentTimeWindow = tp;
       document.getElementById("hudTime").textContent = tp;
 
-      // Sync all time buttons across bottom map dock and right drawer bar
       document.querySelectorAll(".time-btn").forEach(b => {
         const bTp = b.getAttribute("data-tp");
         b.classList.toggle("active", bTp === tp);
@@ -1952,7 +3059,6 @@
 
       renderAllMapLayers();
 
-      // Automatically refresh active right-hand panel so user sees live speed/HGV numbers change immediately
       if (currentDrawerTab === "uc") {
         runUseCase(currentUseCase, false);
       } else if (currentDrawerTab === "insp") {
@@ -1984,9 +3090,10 @@
       currentRadiusMeters = 1500;
       populateCommunityDropdown();
       setLayerSet(["communities", "roads", "traffic", "projects"]);
-      map.flyTo([25.115, 55.245], 11, { duration: 0.8 });
+      flyBothMaps(25.1844, 55.2798, 15.6, 60, 45);
       renderAllMapLayers();
     }
+
 
     function renderAllMapLayers() {
       Object.values(layerGroups).forEach(lg => lg.clearLayers());
@@ -2323,6 +3430,7 @@
       });
 
       document.getElementById("hudProjects").textContent = `${visibleProjectsCount} Active Sites`;
+      sync3DMapLayers();
     }
 
     function switchDrawerTab(tab) {
@@ -2333,84 +3441,209 @@
       });
     }
 
+    // Interactive 3D Block, Floor Zone, Stack & Unit-Type Handlers (100% Unlocked — No Login Wall)
+    function update3DBlockControls(blkVal, flrVal, stkVal, showVal) {
+      if (blkVal !== undefined) active3DBlock = blkVal;
+      if (flrVal !== undefined) active3DFloor = flrVal;
+      if (stkVal !== undefined) active3DStack = stkVal;
+      if (showVal !== undefined) active3DShowMe = showVal;
+
+      sync3DMapLayers();
+      showProjectInspector(selected3DProjectId, false);
+    }
+
+    function select3DBlockCard(blockId) {
+      active3DBlock = (active3DBlock === blockId) ? "ALL" : blockId;
+      if (active3DBlock !== "ALL" && active3DShowMe === "all") {
+        // Automatically colour stacks by unit type when a block is picked (just like haio.sg promises!)
+        active3DShowMe = "4br_5br_mix";
+      } else if (active3DBlock === "ALL" && active3DShowMe === "4br_5br_mix") {
+        active3DShowMe = "all";
+      }
+      const p = DATA.projects.find(x => x.project_id === selected3DProjectId);
+      if (p && map3d) {
+        const [lat, lon] = parseCoord(p.coordinates);
+        const spec = getProject3DSpec(p);
+        const blk = spec.blocks.find(b => b.id === blockId) || spec.blocks[0];
+        map3d.flyTo({
+          center: [lon + blk.dLon, lat + blk.dLat],
+          zoom: active3DBlock === "ALL" ? 15.8 : 16.5,
+          pitch: 63,
+          bearing: active3DBlock === "ALL" ? 45 : 68,
+          duration: 950
+        });
+      }
+      sync3DMapLayers();
+      showProjectInspector(selected3DProjectId, false);
+    }
+
     // =========================================================================
-    // SECTION C3: PROJECT-LEVEL DETAIL PANEL (Executive Summary + Progressive Disclosure)
+    // SECTION C3: HAIO.SG 3D BLOCK / FLOOR / STACK EXPLORER + PROJECT INSPECTOR
     // =========================================================================
     function showProjectInspector(pid, fly = true) {
+      if (selected3DProjectId !== pid) {
+        active3DBlock = "ALL";
+        active3DFloor = "ALL";
+        active3DStack = "ALL";
+        active3DShowMe = "all";
+      }
+      selected3DProjectId = pid;
       currentInspState = { type: "project", id: pid };
       switchDrawerTab("insp");
       const p = DATA.projects.find(x => x.project_id === pid);
       if (!p) return;
+      const spec = getProject3DSpec(p);
       const link = DATA.impact_links.find(x => x.project_id === pid);
       const docs = DATA.documents.filter(d => d.project_id === pid);
       const [lat, lon] = parseCoord(p.coordinates);
-      if (fly) map.flyTo([lat, lon], 14, { duration: 0.7 });
+
+      sync3DMapLayers();
+      if (fly) {
+        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 15.2 : 15.9, 60, 45);
+        document.getElementById("hudScope").textContent = `${p.project_name.split('(')[0].trim()} · 3D`;
+      }
 
       const primRoadObs = link ? getRoadObsForWindow(link.primary_road_id, currentTimeWindow) : null;
       const hgvInfo = getWindowHgvBannerInfo(currentTimeWindow);
 
+      const homes4br = Math.round(spec.homes * 0.48);
+      const homes5br = Math.round(spec.homes * 0.40);
+      const homesPent = Math.max(4, spec.homes - homes4br - homes5br);
+
       const docsHtml = docs.map(d =>
-        `<div style="margin-bottom:4px;">• <a href="${d.document_url}" target="_blank" rel="noopener">${d.document_title} ↗</a> <span style="color:var(--muted);">(${d.document_type} | ${d.availability_status})</span></div>`
+        `<div style="margin-bottom:4px;">• <a href="${d.document_url}" target="_blank" rel="noopener">${d.document_title} ↗</a> <span style="color:#64748b;">(${d.document_type} | ${d.availability_status})</span></div>`
       ).join("") || "Linked in Task 1 Document Archive";
 
+      const projOptionsHtml = DATA.projects.map(pr => {
+        const sp = getProject3DSpec(pr);
+        return `<option value="${pr.project_id}" ${pr.project_id === pid ? 'selected' : ''}>${pr.project_id}: ${pr.project_name.split('(')[0].trim()} (${sp.storeys}F · ${pr.emirate})</option>`;
+      }).join("");
+
       document.getElementById("inspectorContainer").innerHTML = `
-        <div class="detail-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
-            <span class="brand-badge">${p.project_id} • ${p.emirate}</span>
-            <div style="display:flex; gap:6px; align-items:center;">
-              <button class="mobile-back-map-btn" onclick="document.getElementById('mapCanvas').scrollIntoView({behavior:'smooth',block:'center'})">🗺️ ↑ Map</button>
-              <span class="conf-pill b-ver">${p.confidence_classification}</span>
+        <div>
+          <!-- Quick 3D Project Switcher -->
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
+            <select class="haio-select" style="padding:6px 10px; font-size:0.76rem; background:#f8fafc;" onchange="showProjectInspector(this.value, true)" aria-label="Switch 3D Launch Project">
+              ${projOptionsHtml}
+            </select>
+            <button class="mobile-back-map-btn" onclick="document.getElementById('mapStage').scrollIntoView({behavior:'smooth',block:'center'})">🗺️ ↑ 3D Map</button>
+          </div>
+
+          <!-- HAIO.SG EXACT HEADER -->
+          <h3 class="haio-card-title">${p.project_name.split('(')[0].trim()}</h3>
+          <div class="haio-card-sub">${spec.homes.toLocaleString()} homes · ${spec.stacksPerBlock * spec.blocksCount} stacks · ${spec.blocksCount} ${spec.blocksCount === 1 ? 'block' : 'blocks'} · ${spec.storeys} storeys</div>
+
+          <div class="haio-divider"></div>
+
+          <!-- BLOCK DROPDOWN -->
+          <div style="margin-bottom:12px;">
+            <label class="haio-field-lbl" for="haioBlockSel">BLOCK</label>
+            <select id="haioBlockSel" class="haio-select" onchange="update3DBlockControls(this.value, undefined, undefined, this.value !== 'ALL' && active3DShowMe === 'all' ? '4br_5br_mix' : undefined)">
+              <option value="ALL" ${active3DBlock === 'ALL' ? 'selected' : ''}>All blocks</option>
+              ${spec.blocks.map(b => `<option value="${b.id}" ${active3DBlock === b.id ? 'selected' : ''}>${b.label} (${b.stacksLabel} · ${b.storeys} storeys)</option>`).join("")}
+            </select>
+          </div>
+
+          <!-- FLOOR & STACK TWO-COLUMN DROPDOWNS -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+            <div>
+              <label class="haio-field-lbl" for="haioFloorSel">FLOOR</label>
+              <select id="haioFloorSel" class="haio-select" onchange="update3DBlockControls(undefined, this.value, undefined, this.value !== 'ALL' && active3DShowMe === 'all' ? '4br_5br_mix' : undefined)">
+                <option value="ALL" ${active3DFloor === 'ALL' ? 'selected' : ''}>All floors (1–${spec.storeys})</option>
+                <option value="low" ${active3DFloor === 'low' ? 'selected' : ''}>Low Zone (F07–F35)</option>
+                <option value="mid" ${active3DFloor === 'mid' ? 'selected' : ''}>Mid Zone (F36–F75)</option>
+                <option value="high" ${active3DFloor === 'high' ? 'selected' : ''}>High Zone (F76+)</option>
+                <option value="penthouse" ${active3DFloor === 'penthouse' ? 'selected' : ''}>Sky Penthouses</option>
+              </select>
+            </div>
+            <div>
+              <label class="haio-field-lbl" for="haioStackSel">STACK</label>
+              <select id="haioStackSel" class="haio-select" onchange="update3DBlockControls(undefined, undefined, this.value, this.value !== 'ALL' && active3DShowMe === 'all' ? '4br_5br_mix' : undefined)">
+                <option value="ALL" ${active3DStack === 'ALL' ? 'selected' : ''}>All stacks (01–04)</option>
+                <option value="S1" ${active3DStack === 'S1' ? 'selected' : ''}>Stack 01 (NW View)</option>
+                <option value="S2" ${active3DStack === 'S2' ? 'selected' : ''}>Stack 02 (NE View)</option>
+                <option value="S3" ${active3DStack === 'S3' ? 'selected' : ''}>Stack 03 (SE View)</option>
+                <option value="S4" ${active3DStack === 'S4' ? 'selected' : ''}>Stack 04 (SW View)</option>
+              </select>
             </div>
           </div>
-          <h4>${p.project_name}</h4>
-          <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:10px;">${p.developer} • ${p.city_district_community}</div>
 
+          <!-- SHOW ME PILLS -->
+          <label class="haio-field-lbl">SHOW ME</label>
+          <div class="haio-showme-row">
+            <button class="haio-showme-pill ${active3DShowMe === 'all' || active3DShowMe === '4br_5br_mix' ? 'active' : ''}" onclick="update3DBlockControls('ALL', 'ALL', 'ALL', 'all')">All homes</button>
+            <button class="haio-showme-pill ${active3DShowMe === '4br' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, '4br')">4 bedrooms</button>
+            <button class="haio-showme-pill ${active3DShowMe === '5br' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, '5br')">5 bedrooms</button>
+            <button class="haio-showme-pill ${active3DShowMe === 'penthouse' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, 'penthouse')">Penthouses</button>
+            <button class="haio-showme-pill ${active3DShowMe === 'traffic' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, 'traffic')">🚗 Traffic Impact</button>
+          </div>
+
+          <!-- UNIT TYPES · HOMES BAR -->
+          <label class="haio-field-lbl">UNIT TYPES · HOMES</label>
+          <div class="haio-unit-bar">
+            <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:9px;height:9px;border-radius:50%;background:#f59e0b;display:inline-block;"></span> 4BR <strong style="color:#64748b;margin-left:4px;">${homes4br}</strong></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:9px;height:9px;border-radius:50%;background:#10b981;display:inline-block;"></span> 5BR <strong style="color:#64748b;margin-left:4px;">${homes5br}</strong></span>
+            <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:9px;height:9px;border-radius:50%;background:#2563eb;display:inline-block;"></span> Sky PH <strong style="color:#64748b;margin-left:4px;">${homesPent}</strong></span>
+          </div>
+          <p style="font-size:0.74rem; color:#64748b; margin:0 0 14px; line-height:1.45;">
+            Exterior shown with architectural slab edges &amp; sky-terraces. Pick a block, floor zone, or unit type to colour homes in 3D.
+          </p>
+
+          <!-- OR PICK A BLOCK -->
+          <label class="haio-field-lbl">OR PICK A BLOCK</label>
+          <div class="haio-block-grid">
+            ${spec.blocks.map(b => `
+              <div class="haio-block-card ${active3DBlock === b.id ? 'active' : ''}" onclick="select3DBlockCard('${b.id}')">
+                <strong>${b.label}</strong>
+                <span>${b.stacksLabel}</span>
+                <span>${b.storeys} storeys</span>
+              </div>
+            `).join("")}
+          </div>
+          <div style="font-size:0.74rem; color:#64748b; margin-bottom:14px;">
+            Tap a block to look closer · Ctrl or ⌘ + drag to turn
+          </div>
+
+          <div class="haio-divider"></div>
+
+          <!-- CONNECTED CORRIDOR TRAFFIC & HGV INTELLIGENCE -->
           ${primRoadObs ? `
           <div class="live-window-banner">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="color:#38bdf8;">⏱️ Active Window: ${currentTimeWindow}</strong>
+              <strong style="color:#2563eb;">⏱️ ${currentTimeWindow.split('(')[0].trim()}</strong>
               <span style="color:${congestionColor(primRoadObs.congestion_level)}; font-weight:800;">~${primRoadObs.average_speed_kmh} km/h (${primRoadObs.travel_time_min_per_10km} min/10km)</span>
             </div>
-            <div style="margin-top:3px; color:#cbd5e1;">Primary Corridor (<strong>${link.primary_road_name}</strong>): <strong>${primRoadObs.congestion_level.split('(')[0].trim()} Congestion</strong> | V/C = ${primRoadObs.vc_ratio} (${primRoadObs.modelled_demand_vph_dir}/${primRoadObs.reference_capacity_vph_dir} vph/dir)</div>
-            <div style="margin-top:2px; font-size:0.68rem; color:${hgvInfo.color};">${hgvInfo.text}</div>
+            <div style="margin-top:3px; color:#334155; font-size:0.73rem;">Corridor (<a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')"><strong>${link.primary_road_name}</strong></a>): <strong>${primRoadObs.congestion_level.split('(')[0].trim()} Congestion</strong> · V/C = ${primRoadObs.vc_ratio} (${primRoadObs.modelled_demand_vph_dir}/${primRoadObs.reference_capacity_vph_dir} vph/dir)</div>
           </div>` : ""}
 
-          <!-- Executive KPI Summary Grid -->
           <div class="exec-metric-grid">
             <div class="exec-metric-box">
-              <div class="em-lbl">Lifecycle Status</div>
-              <div class="em-val">${p.lifecycle_status}</div>
-              <div class="em-sub">${p.project_category}</div>
+              <div class="em-lbl">Developer &amp; Area</div>
+              <div class="em-val" style="font-size:0.80rem;">${p.developer}</div>
+              <div class="em-sub">${p.city_district_community}</div>
             </div>
             <div class="exec-metric-box">
               <div class="em-lbl">Published Value</div>
-              <div class="em-val" style="color:#38bdf8;">${p.published_investment_value}</div>
-              <div class="em-sub">Plot: ${p.land_plot_area}</div>
+              <div class="em-val" style="color:#2563eb;">${p.published_investment_value}</div>
+              <div class="em-sub">GFA: ${p.gross_floor_area}</div>
             </div>
             <div class="exec-metric-box">
-              <div class="em-lbl">Primary Corridor (${currentTimeWindow.split(' ')[0]})</div>
+              <div class="em-lbl">Nearest Corridor</div>
               <div class="em-val" style="font-size:0.78rem;">${link ? `<a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a>` : "Arterial Grid"}</div>
-              <div class="em-sub">${primRoadObs ? `~${primRoadObs.average_speed_kmh} km/h • ${link.distance_to_primary_road_km} km` : (link ? `${link.distance_to_primary_road_km} km to vertex` : "")}</div>
+              <div class="em-sub">${link ? `${link.distance_to_primary_road_km} km Haversine` : ""}</div>
             </div>
             <div class="exec-metric-box">
               <div class="em-lbl">Scenario HGV Load</div>
-              <div class="em-val" style="color:#fbbf24;">${link ? `${link.total_hgv_round_trips_day} trips/day` : "N/A"}</div>
-              <div class="em-sub">${link ? `${link.total_hgv_one_way_movements_day} one-way/day (Est.)` : ""}</div>
+              <div class="em-val" style="color:#d97706;">${link ? `${link.total_hgv_round_trips_day} trips/day` : "N/A"}</div>
+              <div class="em-sub">${link ? `${link.total_hgv_one_way_movements_day} one-way/day` : ""}</div>
             </div>
           </div>
 
-          ${link ? `<div style="margin-bottom:8px;"><span class="ep-badge ${link.epistemic_impact_classification.includes('Tier 4') ? 'ep-t4' : (link.epistemic_impact_classification.includes('Tier 2') ? 'ep-t2' : 'ep-t3')}">${link.epistemic_impact_classification}</span></div>` : ""}
-
-          <div class="kv-grid">
-            <div class="kv-row"><div class="kv-lbl">Scale &amp; Timeline</div><div class="kv-val"><strong>GFA:</strong> ${p.gross_floor_area} | <strong>Buildings:</strong> ${p.towers_and_buildings_count} (${p.floors_and_height}) | <strong>Units:</strong> ${p.apartments_and_villas_count}<br/><span style="color:var(--muted);">${p.timeline_milestones}</span></div></div>
-            <div class="kv-row"><div class="kv-lbl">Corridor Capacity vs. Modelled Traffic</div><div class="kv-val">${link ? `<span class="ep-pill-pub">PUBLISHED BENCHMARK</span> <span style="color:#34d399;">${link.published_road_capacity_and_upgrade_fact}</span><br/><span class="ep-pill-mod" style="margin-top:4px; display:inline-block;">MODELLED CORRIDOR ESTIMATE</span> ${link.observed_road_traffic_condition}` : ""}</div></div>
-          </div>
-
           <details class="tech-accordion">
-            <summary>Technical Details: Geometry Math, 4-Component HGV Model &amp; Provenance (${docs.length} Docs)</summary>
+            <summary>Engineering &amp; Provenance: BPR Traffic, 4-Component HGV &amp; Sources (${docs.length})</summary>
             <div class="tech-body">
               <div style="margin-bottom:6px;"><strong>1. Nearest-Vertex Geometry Validation:</strong> ${link ? `Project Centroid <code>${link.project_coordinates}</code> → Nearest Road Vertex <code>${link.nearest_road_vertex_wgs84}</code> (<strong>${link.distance_to_primary_road_km} km</strong> via ${link.geometry_validation_method}). Nearest Junction: ${link.nearest_intersection_name} (${link.distance_to_intersection_km} km).` : p.coordinates}</div>
-              ${link ? `<div style="margin-bottom:6px;"><strong>2. Scenario-Based 4-Component HGV Breakdown:</strong> <strong>${link.total_hgv_round_trips_day} round-trips/day (${link.total_hgv_one_way_movements_day} one-way/day)</strong> = ${link.concrete_mixer_loads_day} concrete mixers + ${link.rebar_trailer_loads_day} rebar trailers + ${link.earthworks_tipper_loads_day} earthworks tippers + ${link.mep_fitout_truck_loads_day} MEP/fit-out trucks.<br/><span style="color:#fcd34d;">Assumptions: ${link.hgv_modelling_assumptions_and_sensitivity}</span><br/><strong>HGV Ban Compliance:</strong> ${link.hgv_routing_and_ban_compliance}</div>` : ""}
+              ${link ? `<div style="margin-bottom:6px;"><strong>2. Scenario-Based 4-Component HGV Breakdown:</strong> <strong>${link.total_hgv_round_trips_day} round-trips/day (${link.total_hgv_one_way_movements_day} one-way/day)</strong> = ${link.concrete_mixer_loads_day} concrete mixers + ${link.rebar_trailer_loads_day} rebar trailers + ${link.earthworks_tipper_loads_day} earthworks tippers + ${link.mep_fitout_truck_loads_day} MEP/fit-out trucks.<br/><span style="color:#b45309;">Assumptions: ${link.hgv_modelling_assumptions_and_sensitivity}</span><br/><strong>HGV Ban Compliance:</strong> ${link.hgv_routing_and_ban_compliance}</div>` : ""}
               <div style="margin-bottom:6px;"><strong>3. Contractors &amp; Consultants:</strong> ${p.main_contractor_and_consultants}</div>
               <div style="margin-bottom:6px;"><strong>4. Supporting Documents (${docs.length}):</strong> ${docsHtml}</div>
               <div><strong>5. Dual Provenance Trail:</strong> Project (${link ? link.project_source_id : p.project_id}): <a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> | Corridor (${link ? link.corridor_traffic_source_id : ""}): ${link ? `<a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_source_title} ↗</a>` : ""}</div>
@@ -2423,27 +3656,27 @@
     function showSubdevInspector(sd, fly = true) {
       currentInspState = { type: "subdev", obj: sd };
       switchDrawerTab("insp");
-      if (fly) map.flyTo([sd.latitude, sd.longitude], 15, { duration: 0.7 });
+      if (fly) flyBothMaps(sd.latitude, sd.longitude, 15.4, 60, 45);
       const primObs = getRoadObsForWindow(sd.primary_access_road_id, currentTimeWindow);
       document.getElementById("inspectorContainer").innerHTML = `
         <div class="detail-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <span class="brand-badge" style="background:#7e22ce;">${sd.subdev_id} • JVC Sub-Cluster</span>
+            <span class="brand-badge">${sd.subdev_id} • JVC 3D Sub-Cluster</span>
             <span class="conf-pill b-est">${sd.confidence}</span>
           </div>
           <h4>${sd.development_name}</h4>
-          <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:10px;">${sd.developer} • ${sd.community_district}</div>
+          <div style="font-size:0.78rem; color:#2563eb; font-weight:700; margin-bottom:10px;">${sd.developer} • ${sd.community_district}</div>
           ${primObs ? `
           <div class="live-window-banner">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="color:#38bdf8;">⏱️ ${currentTimeWindow}</strong>
+              <strong style="color:#2563eb;">⏱️ ${currentTimeWindow}</strong>
               <span style="color:${congestionColor(primObs.congestion_level)}; font-weight:800;">~${primObs.average_speed_kmh} km/h on ${sd.primary_access_road_id}</span>
             </div>
-            <div style="margin-top:2px; color:#cbd5e1;">${primObs.congestion_level} (${primObs.travel_time_min_per_10km} min/10km)</div>
+            <div style="margin-top:2px; color:#334155;">${primObs.congestion_level} (${primObs.travel_time_min_per_10km} min/10km)</div>
           </div>` : ""}
           <div class="exec-metric-grid">
             <div class="exec-metric-box"><div class="em-lbl">Active Towers</div><div class="em-val">${sd.building_count} Towers</div><div class="em-sub">${sd.floors_range}</div></div>
-            <div class="exec-metric-box"><div class="em-lbl">Total Units</div><div class="em-val" style="color:#38bdf8;">${sd.total_units.toLocaleString()}</div><div class="em-sub">${sd.active_gfa_sqm.toLocaleString()} m² GFA</div></div>
+            <div class="exec-metric-box"><div class="em-lbl">Total Units</div><div class="em-val" style="color:#2563eb;">${sd.total_units.toLocaleString()}</div><div class="em-sub">${sd.active_gfa_sqm.toLocaleString()} m² GFA</div></div>
           </div>
           <div style="margin-bottom:8px;"><span class="ep-badge ep-t3">${sd.epistemic_impact_tier}</span></div>
           <div class="kv-grid">
@@ -2454,7 +3687,7 @@
             <div class="tech-body">
               <div style="margin-bottom:5px;"><strong>Task 1 Cross-Reference:</strong> ${sd.linked_task1_ref}</div>
               <div style="margin-bottom:5px;"><strong>Nearest-Vertex Geometry:</strong> Centroid [${sd.latitude.toFixed(4)}, ${sd.longitude.toFixed(4)}] → Vertex [${sd.nearest_road_vertex_wgs84}] (${sd.distance_to_road_km} km Haversine).</div>
-              <div><strong>Scenario HGV Movements:</strong> ${sd.estimated_midday_hgv_trips_per_day}<br/><span style="color:#fcd34d;">${sd.hgv_modelling_assumptions_and_sensitivity}</span></div>
+              <div><strong>Scenario HGV Movements:</strong> ${sd.estimated_midday_hgv_trips_per_day}<br/><span style="color:#b45309;">${sd.hgv_modelling_assumptions_and_sensitivity}</span></div>
             </div>
           </details>
         </div>
@@ -2474,7 +3707,7 @@
       const cityObs = DATA.observations.find(o => o.observation_id === "OBS-DXB-CITY-00");
       const connectedLinks = DATA.impact_links.filter(l => l.primary_road_id === roadId || l.secondary_road_id === roadId);
       const midPt = r.geometry_wgs84[Math.floor(r.geometry_wgs84.length / 2)];
-      if (fly) map.flyTo([midPt[1], midPt[0]], 13, { duration: 0.7 });
+      if (fly) flyBothMaps(midPt[1], midPt[0], 13.6, 55, 35);
 
       const obsHtml = allWindowObs.map(o => {
         const isCurrent = o.time_period === currentTimeWindow;
@@ -2482,13 +3715,13 @@
           ? `<a href="${o.source_url}" target="_blank" rel="noopener">${o.source_id}: ${o.source_report_title || 'Official Source'} (${o.publication_date || ''}) ↗</a>`
           : o.source_id;
         return `
-        <div onclick="setTimeWindow('${o.time_period}')" style="cursor:pointer; background:${isCurrent ? 'rgba(2, 132, 199, 0.16)' : '#090d16'}; border:${isCurrent ? '1.5px solid #38bdf8' : '1px solid #334155'}; padding:8px; border-radius:7px; margin-bottom:7px; transition:all 0.15s;">
-          <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#fff; gap:4px; flex-wrap:wrap;">
-            <span>${isCurrent ? '🟢 ' : ''}${o.time_period} ${isCurrent ? '<span style="font-size:0.62rem; background:#0284c7; padding:1px 5px; border-radius:4px; margin-left:4px;">ACTIVE ON MAP</span>' : ''}</span>
-            <span style="color:${congestionColor(o.congestion_level)};">Modelled ~${o.average_speed_kmh} km/h (${o.travel_time_min_per_10km} min/10km)</span>
+        <div onclick="setTimeWindow('${o.time_period}')" style="cursor:pointer; background:${isCurrent ? '#eff6ff' : '#ffffff'}; border:${isCurrent ? '1.5px solid #2563eb' : '1px solid #e2e8f0'}; padding:9px; border-radius:10px; margin-bottom:7px; transition:all 0.15s;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#0f172a; gap:4px; flex-wrap:wrap;">
+            <span>${isCurrent ? '🔵 ' : ''}${o.time_period} ${isCurrent ? '<span style="font-size:0.62rem; background:#2563eb; color:#fff; padding:1px 6px; border-radius:999px; margin-left:4px;">ACTIVE</span>' : ''}</span>
+            <span style="color:${congestionColor(o.congestion_level)};">~${o.average_speed_kmh} km/h (${o.travel_time_min_per_10km} min/10km)</span>
           </div>
-          <div style="font-size:0.72rem; color:#34d399; margin-top:4px;"><span class="ep-pill-pub">PUBLISHED</span> ${o.officially_published_corridor_benchmark}</div>
-          <div style="font-size:0.72rem; color:#cbd5e1; margin-top:4px;"><span class="ep-pill-mod">MODELLED</span> <strong>${o.congestion_level.split('(')[0].trim()} Congestion (V/C=${o.vc_ratio})</strong> | Volume: ${o.traffic_volume_vph}</div>
+          <div style="font-size:0.72rem; color:#059669; margin-top:4px;"><span class="ep-pill-pub">PUBLISHED</span> ${o.officially_published_corridor_benchmark}</div>
+          <div style="font-size:0.72rem; color:#334155; margin-top:4px;"><span class="ep-pill-mod">MODELLED</span> <strong>${o.congestion_level.split('(')[0].trim()} Congestion (V/C=${o.vc_ratio})</strong> | Volume: ${o.traffic_volume_vph}</div>
           <details class="tech-accordion" style="margin-top:6px;" onclick="event.stopPropagation()">
             <summary>BPR Equation Breakdown &amp; Source (${o.observation_id})</summary>
             <div class="tech-body">
@@ -2502,7 +3735,7 @@
       }).join("");
 
       const projHtml = connectedLinks.map(l =>
-        `<div>• <a href="javascript:void(0)" onclick="showProjectInspector('${l.project_id}')"><strong>${l.project_id}</strong>: ${l.project_name}</a> (${l.distance_to_primary_road_km} km — ${l.epistemic_impact_classification.split('(')[0]})</div>`
+        `<div style="margin-bottom:3px;">• <a href="javascript:void(0)" onclick="showProjectInspector('${l.project_id}')"><strong>${l.project_id}</strong>: ${l.project_name}</a> (${l.distance_to_primary_road_km} km — ${l.epistemic_impact_classification.split('(')[0]})</div>`
       ).join("") || "Serves general corridor traffic";
 
       document.getElementById("inspectorContainer").innerHTML = `
@@ -2510,20 +3743,20 @@
           <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
             <span class="brand-badge">${r.road_id} • ${r.road_code}</span>
             <div style="display:flex; gap:6px; align-items:center;">
-              <button class="mobile-back-map-btn" onclick="document.getElementById('mapCanvas').scrollIntoView({behavior:'smooth',block:'center'})">🗺️ ↑ Map</button>
+              <button class="mobile-back-map-btn" onclick="document.getElementById('mapStage').scrollIntoView({behavior:'smooth',block:'center'})">🗺️ ↑ Map</button>
               <span class="conf-pill ${r.confidence === 'Verified' ? 'b-ver' : 'b-est'}">${r.confidence}</span>
             </div>
           </div>
           <h4>${r.road_name}</h4>
-          <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:10px;">${r.authority} • ${r.road_type}</div>
+          <div style="font-size:0.78rem; color:#2563eb; font-weight:700; margin-bottom:10px;">${r.authority} • ${r.road_type}</div>
 
           ${activeObs ? `
           <div class="live-window-banner">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="color:#38bdf8;">⏱️ ${currentTimeWindow}</strong>
+              <strong style="color:#2563eb;">⏱️ ${currentTimeWindow}</strong>
               <span style="color:${congestionColor(activeObs.congestion_level)}; font-weight:800;">~${activeObs.average_speed_kmh} km/h (${activeObs.travel_time_min_per_10km} min/10km)</span>
             </div>
-            <div style="margin-top:3px; color:#cbd5e1;"><strong>${activeObs.congestion_level.split('(')[0].trim()} Congestion</strong> | V/C = ${activeObs.vc_ratio} (${activeObs.modelled_demand_vph_dir}/${activeObs.reference_capacity_vph_dir} vph/dir)</div>
+            <div style="margin-top:3px; color:#334155;"><strong>${activeObs.congestion_level.split('(')[0].trim()} Congestion</strong> | V/C = ${activeObs.vc_ratio} (${activeObs.modelled_demand_vph_dir}/${activeObs.reference_capacity_vph_dir} vph/dir)</div>
           </div>` : ""}
 
           <div class="exec-metric-grid">
@@ -2534,7 +3767,7 @@
             </div>
             <div class="exec-metric-box">
               <div class="em-lbl">Published Capacity</div>
-              <div class="em-val" style="color:#34d399; font-size:0.78rem;">${r.capacity_vph_per_dir}</div>
+              <div class="em-val" style="color:#059669; font-size:0.78rem;">${r.capacity_vph_per_dir}</div>
               <div class="em-sub">Connected Sites: ${connectedLinks.length}</div>
             </div>
           </div>
@@ -2561,10 +3794,10 @@
     function showIntersectionInspector(i, fly = true) {
       currentInspState = { type: "intersection", obj: i };
       switchDrawerTab("insp");
-      if (fly) map.flyTo([i.latitude, i.longitude], 15, { duration: 0.7 });
+      if (fly) flyBothMaps(i.latitude, i.longitude, 15.2, 58, 40);
       document.getElementById("inspectorContainer").innerHTML = `
         <div class="detail-card">
-          <span class="brand-badge" style="background:#e11d48;">${i.intersection_id} • Critical Junction</span>
+          <span class="brand-badge">${i.intersection_id} • Critical Junction</span>
           <h4 style="margin-top:6px;">${i.intersection_name}</h4>
           <div class="kv-grid">
             <div class="kv-row"><div class="kv-lbl">Community &amp; Type</div><div class="kv-val">${i.community} — ${i.intersection_type}</div></div>
@@ -2581,10 +3814,10 @@
       switchDrawerTab("insp");
       document.getElementById("inspectorContainer").innerHTML = `
         <div class="detail-card">
-          <span class="brand-badge" style="background:#7c3aed;">${c.community_id} • Community Hotspot</span>
+          <span class="brand-badge">${c.community_id} • Community Hotspot</span>
           <h4 style="margin-top:6px;">${c.community_name}</h4>
           <div class="kv-grid">
-            <div class="kv-row"><div class="kv-lbl">Construction Activity Index &amp; Rank</div><div class="kv-val"><strong style="color:var(--cyan);">${c.construction_activity_index_score}</strong></div></div>
+            <div class="kv-row"><div class="kv-lbl">Construction Activity Index &amp; Rank</div><div class="kv-val"><strong style="color:#2563eb;">${c.construction_activity_index_score}</strong></div></div>
             <div class="kv-row"><div class="kv-lbl">Published Formula &amp; Analytical Limitations (Section D1)</div><div class="kv-val">${c.activity_index_formula_and_limitations}</div></div>
             <div class="kv-row"><div class="kv-lbl">Active Scale (2025–2029)</div><div class="kv-val"><strong>${c.active_developments_count} Active Developments</strong> | <strong>${c.active_towers_and_buildings} Towers/Clusters</strong> | <strong>${c.scheduled_units_2025_2029.toLocaleString()} Scheduled Units</strong> | <strong>${c.active_structural_gfa_sqm.toLocaleString()} m² Active GFA</strong></div></div>
             <div class="kv-row"><div class="kv-lbl">Flagship Projects &amp; Clusters</div><div class="kv-val">${c.flagship_project_ids}</div></div>
@@ -2623,42 +3856,65 @@
         if (fly) {
           document.getElementById("emirateSelect").value = "Dubai";
           populateCommunityDropdown();
-          map.flyTo([25.105, 55.245], 11, { duration: 0.9 });
+          flyBothMaps(25.105, 55.245, 11.2, 48, 30);
           document.getElementById("hudScope").textContent = "Use Case 1: Dubai Construction Hotspots";
           renderAllMapLayers();
         }
 
         const dxbComms = DATA.communities.filter(c => c.emirate === "Dubai");
+        const launches3D = [
+          { id: "PRJ-D11", name: "Burj Binghatti Jacob & Co (104F)", area: "Business Bay · 8 Stacks · 2 Blocks", status: "Active 3D Massing" },
+          { id: "PRJ-D10", name: "Burj Azizi (131F)", area: "Sheikh Zayed Rd · 8 Stacks · 2 Blocks", status: "Active 3D Massing" },
+          { id: "PRJ-D12", name: "Six Senses Residences (122F)", area: "Dubai Marina · 8 Stacks · 2 Blocks", status: "Active 3D Massing" },
+          { id: "PRJ-D13", name: "Franck Muller Aeternitas (106F)", area: "Dubai Marina · 8 Stacks · 2 Blocks", status: "Active 3D Massing" },
+          { id: "PRJ-D3", name: "Dubai Creek Harbour Towers (131F)", area: "Creek Harbour · 8 Stacks · 2 Blocks", status: "Active 3D Massing" },
+          { id: "PRJ-D20", name: "DIFC Zabeel District Towers (65F)", area: "DIFC Zabeel · 8 Stacks · 2 Blocks", status: "Active 3D Massing" }
+        ];
         document.getElementById("useCaseContainer").innerHTML = `
+          <div class="detail-card" style="margin-bottom:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:0.72rem; font-weight:800; color:#0f172a; text-transform:uppercase; letter-spacing:0.05em;">🧊 6 Flagship Launches in 3D</span>
+              <span style="font-size:0.68rem; color:#2563eb; font-weight:700;">Click to fly into 3D Tower View →</span>
+            </div>
+            ${launches3D.map(l => `
+              <div class="haio-launch-row" onclick="showProjectInspector('${l.id}')">
+                <div>
+                  <div class="haio-launch-name">${l.name}</div>
+                  <div class="haio-launch-meta">${l.area}</div>
+                </div>
+                <span class="haio-launch-3d-tag">🧊 3D floors &amp; stacks</span>
+              </div>
+            `).join("")}
+          </div>
           <div class="detail-card">
             <span class="brand-badge">Use Case 1 — City-Wide Hotspot Intelligence</span>
             <h4 style="margin-top:6px;">"Which areas in Dubai currently have the highest construction activity?"</h4>
             <div class="live-window-banner">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <strong style="color:#38bdf8;">⏱️ Active Window: ${currentTimeWindow}</strong>
-                <span style="color:#fff; font-weight:800;">D61: ${d61Obs ? d61Obs.average_speed_kmh : 29} km/h • E44: ${e44Obs ? e44Obs.average_speed_kmh : 64} km/h • E11: ${e11Obs ? e11Obs.average_speed_kmh : 52} km/h</span>
+                <strong style="color:#1d4ed8;">⏱️ Active Window: ${currentTimeWindow}</strong>
+                <span style="color:#0f172a; font-weight:800;">D61: ${d61Obs ? d61Obs.average_speed_kmh : 29} km/h • E44: ${e44Obs ? e44Obs.average_speed_kmh : 64} km/h • E11: ${e11Obs ? e11Obs.average_speed_kmh : 52} km/h</span>
               </div>
-              <div style="margin-top:2px; font-size:0.68rem; color:${hgvInfo.color};">${hgvInfo.text}</div>
+              <div style="margin-top:2px; font-size:0.68rem; color:#475569;">${hgvInfo.text}</div>
             </div>
-            <p style="font-size:0.76rem; color:#cbd5e1;">Grounded in Task 1's 20 Dubai Flagship Projects (<code>PRJ-D1..D20</code>), DLD <code>dld_projects-open</code> active escrow registries, and DM GIS community boundaries, construction activity in Dubai is concentrated across <strong>6 primary clusters</strong>:</p>
+            <p style="font-size:0.76rem; color:#334155;">Grounded in Task 1's 20 Dubai Flagship Projects (<code>PRJ-D1..D20</code>), DLD <code>dld_projects-open</code> active escrow registries, and DM GIS community boundaries, construction activity in Dubai is concentrated across <strong>6 primary clusters</strong>:</p>
             ${dxbComms.map(c => {
               const rId = commRoadMap[c.community_id] || "RD-DXB-05";
               const rObs = getRoadObsForWindow(rId, currentTimeWindow);
               const shortTier = rObs ? rObs.congestion_level.split('(')[0].trim() : c.observed_congestion_severity.split('(')[0].trim();
               return `
-              <div style="background:#090d16; border:1px solid #334155; padding:8px; border-radius:7px; margin-bottom:7px; cursor:pointer;" onclick="map.flyTo([${c.center_lat}, ${c.center_lon}], ${c.recommended_zoom}); showCommunityInspector(DATA.communities.find(x=>x.community_id==='${c.community_id}'))">
-                <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:700; color:#fff;">
+              <div style="background:#f8fafc; border:1px solid #e2e8f0; padding:9px 11px; border-radius:11px; margin-bottom:7px; cursor:pointer; transition:all 0.15s;" onclick="flyBothMaps(${c.center_lat}, ${c.center_lon}, ${c.recommended_zoom}, 55, 35); showCommunityInspector(DATA.communities.find(x=>x.community_id==='${c.community_id}'))">
+                <div style="display:flex; justify-content:space-between; font-size:0.79rem; font-weight:800; color:#0f172a;">
                   <span>${c.community_name}</span>
-                  <span style="color:var(--cyan);">${c.construction_activity_index_score.split(' ')[0]}</span>
+                  <span style="color:#2563eb;">${c.construction_activity_index_score.split(' ')[0]}</span>
                 </div>
-                <div style="font-size:0.72rem; color:#94a3b8; margin-top:3px;">
+                <div style="font-size:0.72rem; color:#475569; margin-top:3px;">
                   <strong>${c.active_developments_count} Devs</strong> • <strong>${c.active_towers_and_buildings} Towers/Clusters</strong> • <strong>${c.scheduled_units_2025_2029.toLocaleString()} Units</strong> • <strong>${(c.active_structural_gfa_sqm/1e6).toFixed(2)}M m² GFA</strong>
                 </div>
                 ${rObs ? `<div style="font-size:0.71rem; color:${congestionColor(rObs.congestion_level)}; margin-top:3px; font-weight:700;">⏱️ ${currentTimeWindow.split(' ')[0]} (${rId}): ~${rObs.average_speed_kmh} km/h (${rObs.travel_time_min_per_10km} min/10km) • ${shortTier} Congestion (V/C=${rObs.vc_ratio})</div>` : `<div style="font-size:0.71rem; color:${congestionColor(c.observed_congestion_severity)}; margin-top:2px;">Traffic: ${shortTier}</div>`}
               </div>
             `;
             }).join("")}
-            <div style="font-size:0.71rem; color:var(--muted); border-top:1px solid #334155; padding-top:6px;">
+            <div style="font-size:0.71rem; color:#64748b; border-top:1px solid #e2e8f0; padding-top:6px;">
               <strong>Key Analytical Insight:</strong> High construction GFA does <em>not</em> automatically produce severe congestion. <strong>Dubai South / DWC (7.85M m² GFA)</strong> experiences <em>Low–Moderate</em> congestion because it is served by 12-lane 24/7 HGV-exempt freeways (<code>E611</code> &amp; <code>E77</code>), whereas <strong>JVC (3.42M m² GFA)</strong> and <strong>Business Bay (3.85M m² GFA)</strong> experience <em>Severe</em> peak congestion due to arterial/collector access funnels.
             </div>
           </div>
@@ -2668,28 +3924,28 @@
           document.getElementById("emirateSelect").value = "Dubai";
           populateCommunityDropdown();
           document.getElementById("communitySelect").value = "COM-DXB-01";
-          map.flyTo([25.0565, 55.2090], 14, { duration: 0.9 });
+          flyBothMaps(25.0565, 55.2090, 14, 58, 35);
           document.getElementById("hudScope").textContent = "Use Case 2: JVC Construction & Traffic Impact";
           renderAllMapLayers();
         }
 
         document.getElementById("useCaseContainer").innerHTML = `
           <div class="detail-card">
-            <span class="brand-badge" style="background:#e11d48;">Use Case 2 — JVC Community Deep-Dive</span>
+            <span class="brand-badge" style="background:#ffe4e6; color:#be123c;">Use Case 2 — JVC Community Deep-Dive</span>
             <h4 style="margin-top:6px;">"Show construction activity in JVC and the surrounding traffic conditions."</h4>
             <div class="live-window-banner">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <strong style="color:#38bdf8;">⏱️ JVC Live Window: ${currentTimeWindow}</strong>
+                <strong style="color:#1d4ed8;">⏱️ JVC Live Window: ${currentTimeWindow}</strong>
                 <span style="color:${d61Obs ? congestionColor(d61Obs.congestion_level) : '#ef4444'}; font-weight:800;">D61: ~${d61Obs ? d61Obs.average_speed_kmh : 29} km/h</span>
               </div>
-              <div style="margin-top:3px; color:#cbd5e1;">
+              <div style="margin-top:3px; color:#334155;">
                 • <strong>Hessa St (D61):</strong> ~${d61Obs ? d61Obs.average_speed_kmh : 29} km/h (${d61Obs ? d61Obs.travel_time_min_per_10km : 20.68} min/10km | V/C=${d61Obs ? d61Obs.vc_ratio : 1.04})<br/>
                 • <strong>Al Khail Rd (E44):</strong> ~${e44Obs ? e44Obs.average_speed_kmh : 64} km/h (${e44Obs ? e44Obs.travel_time_min_per_10km : 9.38} min/10km | V/C=${e44Obs ? e44Obs.vc_ratio : 0.82})<br/>
                 • <strong>JVC Circle Blvd:</strong> ~${jvcObs ? jvcObs.average_speed_kmh : 28} km/h (${jvcObs ? jvcObs.travel_time_min_per_10km : 21.43} min/10km | V/C=${jvcObs ? jvcObs.vc_ratio : 0.89})
               </div>
-              <div style="margin-top:2px; font-size:0.68rem; color:${hgvInfo.color};">${hgvInfo.text}</div>
+              <div style="margin-top:2px; font-size:0.68rem; color:#475569;">${hgvInfo.text}</div>
             </div>
-            <p style="font-size:0.76rem; color:#cbd5e1;"><strong>Jumeirah Village Circle (JVC)</strong> has <strong>38 active developments (64 towers, ~28,500 scheduled units, 3.42M m² active GFA)</strong> plus major Hessa St East masterplans (<a href="javascript:void(0)" onclick="showProjectInspector('PRJ-D16')">PRJ-D16 DAMAC Lagoons</a> &amp; <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-D19')">PRJ-D19 Tilal Al Ghaf</a>), all funneling into 3 primary corridors:</p>
+            <p style="font-size:0.76rem; color:#334155;"><strong>Jumeirah Village Circle (JVC)</strong> has <strong>38 active developments (64 towers, ~28,500 scheduled units, 3.42M m² active GFA)</strong> plus major Hessa St East masterplans (<a href="javascript:void(0)" onclick="showProjectInspector('PRJ-D16')">PRJ-D16 DAMAC Lagoons</a> &amp; <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-D19')">PRJ-D19 Tilal Al Ghaf</a>), all funneling into 3 primary corridors:</p>
 
             <div class="kv-grid">
               <div class="kv-row">
@@ -2724,23 +3980,23 @@
         if (fly) {
           document.getElementById("emirateSelect").value = "Dubai";
           populateCommunityDropdown();
-          map.flyTo([25.125, 55.255], 12, { duration: 0.9 });
+          flyBothMaps(25.125, 55.255, 12, 52, 30);
           document.getElementById("hudScope").textContent = "Use Case 3: Temporal & Historical Comparison";
           renderAllMapLayers();
         }
 
         document.getElementById("useCaseContainer").innerHTML = `
           <div class="detail-card">
-            <span class="brand-badge" style="background:#0d9488;">Use Case 3 — Temporal &amp; Historical Analysis</span>
+            <span class="brand-badge" style="background:#ccfbf1; color:#0f766e;">Use Case 3 — Temporal &amp; Historical Analysis</span>
             <h4 style="margin-top:6px;">"Compare traffic conditions around construction hotspots across Morning, Midday, Evening &amp; 2024–2026."</h4>
             <div class="live-window-banner">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <strong style="color:#38bdf8;">⏱️ Selected Window: ${currentTimeWindow}</strong>
-                <span style="color:#fff; font-weight:800;">D61: ${d61Obs ? d61Obs.average_speed_kmh : 29} km/h • E44: ${e44Obs ? e44Obs.average_speed_kmh : 64} km/h • E11: ${e11Obs ? e11Obs.average_speed_kmh : 52} km/h</span>
+                <strong style="color:#1d4ed8;">⏱️ Selected Window: ${currentTimeWindow}</strong>
+                <span style="color:#0f172a; font-weight:800;">D61: ${d61Obs ? d61Obs.average_speed_kmh : 29} km/h • E44: ${e44Obs ? e44Obs.average_speed_kmh : 64} km/h • E11: ${e11Obs ? e11Obs.average_speed_kmh : 52} km/h</span>
               </div>
-              <div style="margin-top:2px; font-size:0.68rem; color:${hgvInfo.color};">${hgvInfo.text}</div>
+              <div style="margin-top:2px; font-size:0.68rem; color:#475569;">${hgvInfo.text}</div>
             </div>
-            <p style="font-size:0.75rem; color:#cbd5e1;">Use the <strong>Time Window buttons</strong> above or on the map dock to watch corridor speeds, colors, and BPR metrics update dynamically:</p>
+            <p style="font-size:0.75rem; color:#334155;">Use the <strong>Sun &amp; Time Window buttons</strong> on the bottom-left or inside the inspector to watch corridor speeds, colors, and BPR metrics update dynamically:</p>
 
             <div class="kv-grid">
               <div class="kv-row">
@@ -2752,10 +4008,10 @@
               <div class="kv-row">
                 <div class="kv-lbl">1. Hessa Street (D61 — JVC North Gate • Published RTA Capacity: 4,000 → 8,000 vph/dir)</div>
                 <div class="kv-val">
-                  • <strong style="${currentTimeWindow.includes('Morning') ? 'color:#38bdf8;' : ''}">Morning Peak (07:30–09:30):</strong> Formula BPR <code>v_BPR = 68.1 km/h</code> (8.81 min/10km at V/C=1.04) + modelled bottleneck-delay assumption <code>d_adj = +11.87 min/10km</code> = <strong>20.68 min/10km → 29.0 km/h</strong> (HGVs banned).<br/>
-                  • <strong style="${currentTimeWindow.includes('Midday') ? 'color:#38bdf8;' : ''}">Midday (12:00–14:00):</strong> Formula BPR <code>v_BPR = 75.8 km/h</code> (7.92 min/10km at V/C=0.78) + modelled bottleneck-delay assumption <code>d_adj = +4.58 min/10km</code> = <strong>12.50 min/10km → 48.0 km/h</strong>.<br/>
-                  • <strong style="${currentTimeWindow.includes('Evening') ? 'color:#38bdf8;' : ''}">Evening Peak (17:00–20:00):</strong> Formula BPR <code>v_BPR = 65.6 km/h</code> (9.15 min/10km at V/C=1.10) + modelled bottleneck-delay assumption <code>d_adj = +14.85 min/10km</code> = <strong>24.00 min/10km → 25.0 km/h</strong>.<br/>
-                  • <strong style="${currentTimeWindow.includes('Night') ? 'color:#38bdf8;' : ''}">Night (22:00–05:00):</strong> Formula BPR <code>v_BPR = 79.9 km/h</code> (7.51 min/10km at V/C=0.29) + modelled bottleneck-delay assumption <code>d_adj = +1.31 min/10km</code> = <strong>8.82 min/10km → 68.0 km/h</strong>.<br/>
+                  • <strong style="${currentTimeWindow.includes('Morning') ? 'color:#2563eb;' : ''}">Morning Peak (07:30–09:30):</strong> Formula BPR <code>v_BPR = 68.1 km/h</code> (8.81 min/10km at V/C=1.04) + modelled bottleneck-delay assumption <code>d_adj = +11.87 min/10km</code> = <strong>20.68 min/10km → 29.0 km/h</strong> (HGVs banned).<br/>
+                  • <strong style="${currentTimeWindow.includes('Midday') ? 'color:#2563eb;' : ''}">Midday (12:00–14:00):</strong> Formula BPR <code>v_BPR = 75.8 km/h</code> (7.92 min/10km at V/C=0.78) + modelled bottleneck-delay assumption <code>d_adj = +4.58 min/10km</code> = <strong>12.50 min/10km → 48.0 km/h</strong>.<br/>
+                  • <strong style="${currentTimeWindow.includes('Evening') ? 'color:#2563eb;' : ''}">Evening Peak (17:00–20:00):</strong> Formula BPR <code>v_BPR = 65.6 km/h</code> (9.15 min/10km at V/C=1.10) + modelled bottleneck-delay assumption <code>d_adj = +14.85 min/10km</code> = <strong>24.00 min/10km → 25.0 km/h</strong>.<br/>
+                  • <strong style="${currentTimeWindow.includes('Night') ? 'color:#2563eb;' : ''}">Night (22:00–05:00):</strong> Formula BPR <code>v_BPR = 79.9 km/h</code> (7.51 min/10km at V/C=0.29) + modelled bottleneck-delay assumption <code>d_adj = +1.31 min/10km</code> = <strong>8.82 min/10km → 68.0 km/h</strong>.<br/>
                   • <strong>Modelled 2024 vs 2026 Delta:</strong> Modelled improvement from ~19–22 km/h (2024) to ~25–29 km/h as phased AED 689M flyovers open.
                 </div>
               </div>
@@ -2775,7 +4031,7 @@
               </div>
               <div class="kv-row">
                 <div class="kv-lbl">Explicit Epistemic Guardrail (Section D5 &amp; E3)</div>
-                <div class="kv-val" style="color:#fcd34d;">
+                <div class="kv-val" style="color:#b45309;">
                   Official RTA, SRTA, and Salik releases substantiate corridor capacities, bridge upgrades, travel-time reduction percentages, and HGV ban windows. TomTom's public Dubai Traffic Index is cited strictly at the city-wide level (<code>OBS-DXB-CITY-00</code>). All 21 corridor-level speed, volume, and congestion values (<code>OBS-DXB-001..015</code>, <code>OBS-SHJ-001..006</code>) are explicitly classified as <strong>Modelled Corridor Estimates</strong> (<code>confidence = "Estimated"</code>).
                 </div>
               </div>
@@ -2786,23 +4042,23 @@
         if (fly) {
           document.getElementById("emirateSelect").value = "Sharjah";
           populateCommunityDropdown();
-          map.flyTo([25.312, 55.505], 12, { duration: 0.9 });
+          flyBothMaps(25.312, 55.505, 12, 52, 30);
           document.getElementById("hudScope").textContent = "Priority 2: Sharjah Expansion (12 Projects)";
           renderAllMapLayers();
         }
 
         document.getElementById("useCaseContainer").innerHTML = `
           <div class="detail-card">
-            <span class="brand-badge" style="background:#d97706;">Priority 2 — Sharjah Expansion</span>
+            <span class="brand-badge" style="background:#fef3c7; color:#b45309;">Priority 2 — Sharjah Expansion</span>
             <h4 style="margin-top:6px;">Sharjah Construction &amp; Corridor Intelligence (12 Flagships on Unified Architecture)</h4>
             <div class="live-window-banner">
               <div style="display:flex; justify-content:space-between; align-items:center;">
-                <strong style="color:#38bdf8;">⏱️ Sharjah Active Window: ${currentTimeWindow}</strong>
+                <strong style="color:#1d4ed8;">⏱️ Sharjah Active Window: ${currentTimeWindow}</strong>
                 <span style="color:${shjObs ? congestionColor(shjObs.congestion_level) : '#ef4444'}; font-weight:800;">E311: ~${shjObs ? shjObs.average_speed_kmh : 28} km/h • E611: ~${e611ShjObs ? e611ShjObs.average_speed_kmh : 62} km/h</span>
               </div>
-              <div style="margin-top:2px; font-size:0.68rem; color:${hgvInfo.color};">${hgvInfo.text}</div>
+              <div style="margin-top:2px; font-size:0.68rem; color:#475569;">${hgvInfo.text}</div>
             </div>
-            <p style="font-size:0.76rem; color:#cbd5e1;">Reusing the exact Dubai spatial schema, all 12 Sharjah Flagship Projects (<code>PRJ-SH1..SH12</code>) are mapped across Sharjah's 3 primary commuter &amp; megaproject corridors:</p>
+            <p style="font-size:0.76rem; color:#334155;">Reusing the exact Dubai spatial schema, all 12 Sharjah Flagship Projects (<code>PRJ-SH1..SH12</code>) are mapped across Sharjah's 3 primary commuter &amp; megaproject corridors:</p>
             <div class="kv-grid">
               <div class="kv-row">
                 <div class="kv-lbl">1. Muwaileh, Aljada &amp; Al Zahia Nexus (E311 × E88)</div>
@@ -2869,20 +4125,20 @@
           <div class="detail-card">
             <span class="brand-badge">Deterministic SQL/JSON Query Result • Auto-Zoomed to JVC [25.0565, 55.2090]</span>
             <h4 style="margin-top:6px;">JVC &amp; Hessa Street Construction-to-Traffic Query (${jvcLinks.length} Linked Records)</h4>
-            <p style="font-size:0.76rem; color:#cbd5e1;"><strong>Database Findings:</strong> JVC (<code>COM-DXB-01</code>) records <strong>38 active developments, 64 active towers, 28,500 scheduled units, and 3,420,000 m² active structural GFA</strong>. Officially published RTA capacity on <code>RD-DXB-05</code> (Hessa St D61) doubles from <strong>4,000 to 8,000 vph/dir</strong> under the AED 689M upgrade, while modelled corridor speeds are <strong>~29 km/h (AM Peak)</strong> and <strong>~25 km/h (PM Peak — Severe)</strong>, and <code>RD-DXB-03</code> (Al Khail Rd E44) is modelled at <strong>~58–64 km/h</strong> calibrated to RTA's published 30% travel-time reduction.</p>
+            <p style="font-size:0.76rem; color:#334155;"><strong>Database Findings:</strong> JVC (<code>COM-DXB-01</code>) records <strong>38 active developments, 64 active towers, 28,500 scheduled units, and 3,420,000 m² active structural GFA</strong>. Officially published RTA capacity on <code>RD-DXB-05</code> (Hessa St D61) doubles from <strong>4,000 to 8,000 vph/dir</strong> under the AED 689M upgrade, while modelled corridor speeds are <strong>~29 km/h (AM Peak)</strong> and <strong>~25 km/h (PM Peak — Severe)</strong>, and <code>RD-DXB-03</code> (Al Khail Rd E44) is modelled at <strong>~58–64 km/h</strong> calibrated to RTA's published 30% travel-time reduction.</p>
             <div class="kv-grid">
               ${jvcLinks.map(l => `
                 <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${l.project_id}')">
                   <div class="kv-lbl">${l.project_id} → ${l.primary_road_id} (${l.distance_to_primary_road_km} km Haversine to [${l.nearest_road_vertex_wgs84}])</div>
-                  <div class="kv-val"><strong>${l.project_name}</strong><br/><span style="color:#34d399;">${l.published_road_capacity_and_upgrade_fact}</span><br/>${l.observed_road_traffic_condition}<br/><em>${l.modelled_daily_hgv_concrete_rebar_trips}</em><br/><span style="color:var(--cyan);">${l.epistemic_impact_classification}</span></div>
+                  <div class="kv-val"><strong>${l.project_name}</strong><br/><span style="color:#059669; font-weight:700;">${l.published_road_capacity_and_upgrade_fact}</span><br/>${l.observed_road_traffic_condition}<br/><em>${l.modelled_daily_hgv_concrete_rebar_trips}</em><br/><span style="color:#2563eb; font-weight:700;">${l.epistemic_impact_classification}</span></div>
                 </div>
               `).join("")}
             </div>
-            <div style="margin-top:8px; font-size:0.70rem; color:var(--muted);"><strong>Sources:</strong> DLD <code>dld_projects-open</code> (<code>SRC-020</code> JVC Master Community), RTA AED 689M Hessa St D61 Capacity Release (<code>SRC-433</code>), and RTA AED 700M Al Khail Rd E44 Capacity Release (<code>SRC-434</code>).</div>
+            <div style="margin-top:8px; font-size:0.70rem; color:#64748b;"><strong>Sources:</strong> DLD <code>dld_projects-open</code> (<code>SRC-020</code> JVC Master Community), RTA AED 689M Hessa St D61 Capacity Release (<code>SRC-433</code>), and RTA AED 700M Al Khail Rd E44 Capacity Release (<code>SRC-434</code>).</div>
           </div>
         `;
       } else if (q.includes("morning") || q.includes("evening") || q.includes("compare") || q.includes("vary") || q.includes("time")) {
-        map.flyTo([25.0645, 55.2095], 13, { duration: 0.8 });
+        flyBothMaps(25.0645, 55.2095, 13, 55, 35);
         const d61Obs = DATA.observations.filter(o => o.road_id === "RD-DXB-05" || o.road_id === "RD-DXB-03");
         out.innerHTML = `
           <div class="detail-card">
@@ -2892,21 +4148,21 @@
               ${d61Obs.map(o => `
                 <div class="kv-row" style="cursor:pointer;" onclick="showRoadInspector('${o.road_id}')">
                   <div class="kv-lbl">${o.road_id} • ${o.time_period} (${o.evidence_level})</div>
-                  <div class="kv-val"><strong>Corridor Speed: ~${o.average_speed_kmh} km/h</strong> (${o.travel_time_min_per_10km} min/10km) | <strong>Uninterrupted BPR: ${o.bpr_uninterrupted_speed_kmh} km/h</strong> (${o.bpr_uninterrupted_time_min_per_10km} min/10km at V/C=${o.vc_ratio}) + <strong>Bottleneck Delay (+d_adj): +${o.bottleneck_and_control_delay_min_per_10km} min/10km</strong><br/><strong>Published Benchmark:</strong> <span style="color:#34d399;">${o.officially_published_corridor_benchmark}</span><br/><strong>Modelled Derivation:</strong> ${o.modelled_assumptions_and_derivation}<br/><strong>Modelled Volume:</strong> ${o.traffic_volume_vph}</div>
+                  <div class="kv-val"><strong>Corridor Speed: ~${o.average_speed_kmh} km/h</strong> (${o.travel_time_min_per_10km} min/10km) | <strong>Uninterrupted BPR: ${o.bpr_uninterrupted_speed_kmh} km/h</strong> (${o.bpr_uninterrupted_time_min_per_10km} min/10km at V/C=${o.vc_ratio}) + <strong>Bottleneck Delay (+d_adj): +${o.bottleneck_and_control_delay_min_per_10km} min/10km</strong><br/><strong>Published Benchmark:</strong> <span style="color:#059669; font-weight:700;">${o.officially_published_corridor_benchmark}</span><br/><strong>Modelled Derivation:</strong> ${o.modelled_assumptions_and_derivation}<br/><strong>Modelled Volume:</strong> ${o.traffic_volume_vph}</div>
                 </div>
               `).join("")}
             </div>
-            <div style="margin-top:8px; font-size:0.71rem; color:#fcd34d;"><strong>Epistemic Notice:</strong> Corridor capacities and upgrade travel-time reduction targets are officially published by RTA (<code>SRC-433</code>, <code>SRC-434</code>). Segment-specific hourly speeds and volumes are Modelled Corridor Estimates derived via the BPR volume-delay function.</div>
+            <div style="margin-top:8px; font-size:0.71rem; color:#b45309;"><strong>Epistemic Notice:</strong> Corridor capacities and upgrade travel-time reduction targets are officially published by RTA (<code>SRC-433</code>, <code>SRC-434</code>). Segment-specific hourly speeds and volumes are Modelled Corridor Estimates derived via the BPR volume-delay function.</div>
           </div>
         `;
       } else if (q.includes("dubai south") || q.includes("dwc") || q.includes("maktoum") || q.includes("expo") || q.includes("e611")) {
-        map.flyTo([24.9120, 55.1580], 12, { duration: 0.8 });
+        flyBothMaps(24.9120, 55.1580, 12, 52, 35);
         const dsLinks = DATA.impact_links.filter(l => ["PRJ-D1", "PRJ-D15", "PRJ-D18", "PRJ-D6"].includes(l.project_id));
         out.innerHTML = `
           <div class="detail-card">
             <span class="brand-badge">Deterministic Spatial Query • Auto-Zoomed to Dubai South &amp; DWC [24.912, 55.158]</span>
             <h4 style="margin-top:6px;">Dubai South, Expo City &amp; DWC Airport Traffic &amp; Freight Intelligence</h4>
-            <p style="font-size:0.76rem; color:#cbd5e1;"><strong>Database Findings:</strong> Dubai South (<code>COM-DXB-04</code>) has the largest active construction GFA in the UAE (<strong>7.85M m²</strong> across <code>PRJ-D1</code> DWC AED 128B Airport, <code>PRJ-D15</code> Azizi Venice &amp; <code>PRJ-D18</code> Expo City), yet modelled congestion is <strong>Low (~86 km/h modelled speed on E611, LOS B)</strong> because <strong>Emirates Road (E611)</strong> provides a published 11,400 vph/dir 6-lane capacity and is <strong>100% exempt from Dubai's daytime HGV truck bans</strong>.</p>
+            <p style="font-size:0.76rem; color:#334155;"><strong>Database Findings:</strong> Dubai South (<code>COM-DXB-04</code>) has the largest active construction GFA in the UAE (<strong>7.85M m²</strong> across <code>PRJ-D1</code> DWC AED 128B Airport, <code>PRJ-D15</code> Azizi Venice &amp; <code>PRJ-D18</code> Expo City), yet modelled congestion is <strong>Low (~86 km/h modelled speed on E611, LOS B)</strong> because <strong>Emirates Road (E611)</strong> provides a published 11,400 vph/dir 6-lane capacity and is <strong>100% exempt from Dubai's daytime HGV truck bans</strong>.</p>
             <div class="kv-grid">
               ${dsLinks.map(l => `
                 <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${l.project_id}')">
@@ -2918,7 +4174,7 @@
           </div>
         `;
       } else if (q.includes("intersection") || q.includes("junction") || q.includes("bottleneck")) {
-        map.flyTo([25.155, 55.275], 11, { duration: 0.8 });
+        flyBothMaps(25.155, 55.275, 11, 50, 30);
         const nearInts = [...DATA.impact_links].sort((a, b) => a.distance_to_intersection_km - b.distance_to_intersection_km).slice(0, 8);
         out.innerHTML = `
           <div class="detail-card">
@@ -2939,7 +4195,7 @@
           <div class="detail-card">
             <span class="brand-badge">Deterministic TIS Registry Query • 8 Corridor &amp; Masterplan Studies</span>
             <h4 style="margin-top:6px;">Published RTA/SRTA Corridor Studies vs. Restricted Developer TIS Submissions</h4>
-            <p style="font-size:0.75rem; color:#cbd5e1;">Individual plot-level consultant TIS reports submitted via the <strong>RTA Traffic Engineering System (TES)</strong> are confidential commercial records. However, <strong>RTA and SRTA publish official corridor-level engineering studies and capacity upgrades</strong> for all major hotspots:</p>
+            <p style="font-size:0.75rem; color:#334155;">Individual plot-level consultant TIS reports submitted via the <strong>RTA Traffic Engineering System (TES)</strong> are confidential commercial records. However, <strong>RTA and SRTA publish official corridor-level engineering studies and capacity upgrades</strong> for all major hotspots:</p>
             <div class="kv-grid">
               ${DATA.tis.map(t => `
                 <div class="kv-row">
@@ -2959,7 +4215,7 @@
               ${DATA.providers.map(p => `
                 <div class="kv-row">
                   <div class="kv-lbl">${p.provider_id}: ${p.provider_name}</div>
-                  <div class="kv-val"><strong>Coverage &amp; Freq:</strong> ${p.dubai_and_uae_coverage} (${p.update_frequency})<br/><strong>Limits &amp; Pricing:</strong> ${p.api_rate_limits} | ${p.pricing_structure}<br/><strong>Retention Rule:</strong> ${p.commercial_usage_and_retention_terms}<br/><span style="color:var(--cyan);"><strong>Verdict:</strong> ${p.prototype_recommendation}</span></div>
+                  <div class="kv-val"><strong>Coverage &amp; Freq:</strong> ${p.dubai_and_uae_coverage} (${p.update_frequency})<br/><strong>Limits &amp; Pricing:</strong> ${p.api_rate_limits} | ${p.pricing_structure}<br/><strong>Retention Rule:</strong> ${p.commercial_usage_and_retention_terms}<br/><span style="color:#2563eb; font-weight:700;"><strong>Verdict:</strong> ${p.prototype_recommendation}</span></div>
                 </div>
               `).join("")}
             </div>
@@ -2967,14 +4223,14 @@
         `;
       } else if (q.includes("both") || q.includes("severe") || q.includes("hotspot") || q.includes("highest") || q.includes("concentrated")) {
         const ranked = [...DATA.communities].sort((a, b) => parseFloat(b.construction_activity_index_score) - parseFloat(a.construction_activity_index_score));
-        map.flyTo([25.155, 55.305], 11, { duration: 0.8 });
+        flyBothMaps(25.155, 55.305, 11, 50, 30);
         out.innerHTML = `
           <div class="detail-card">
             <span class="brand-badge">Deterministic Hotspot &amp; Congestion Cross-Query (${ranked.length} Communities)</span>
             <h4 style="margin-top:6px;">Communities Ranked by Construction Activity Index &amp; Observed Congestion</h4>
             <div class="kv-grid">
               ${ranked.map(c => `
-                <div class="kv-row" style="cursor:pointer;" onclick="map.flyTo([${c.center_lat}, ${c.center_lon}], ${c.recommended_zoom}); showCommunityInspector(DATA.communities.find(x=>x.community_id==='${c.community_id}'))">
+                <div class="kv-row" style="cursor:pointer;" onclick="flyBothMaps(${c.center_lat}, ${c.center_lon}, ${c.recommended_zoom}, 55, 35); showCommunityInspector(DATA.communities.find(x=>x.community_id==='${c.community_id}'))">
                   <div class="kv-lbl">${c.emirate} • Score: ${c.construction_activity_index_score}</div>
                   <div class="kv-val"><strong>${c.community_name}</strong><br/>Active Devs: ${c.active_developments_count} | Towers: ${c.active_towers_and_buildings} | Units: ${c.scheduled_units_2025_2029.toLocaleString()} | Active GFA: ${c.active_structural_gfa_sqm.toLocaleString()} m²<br/><strong style="color:${congestionColor(c.observed_congestion_severity)};">Congestion: ${c.observed_congestion_severity}</strong></div>
                 </div>
@@ -2988,7 +4244,7 @@
         const mRoads = DATA.roads.filter(r => JSON.stringify(r).toLowerCase().includes(q));
         if (mProjs.length > 0) {
           const [lat, lon] = parseCoord(mProjs[0].coordinates);
-          map.flyTo([lat, lon], 13, { duration: 0.8 });
+          flyBothMaps(lat, lon, 15.8, 60, 45);
         }
         out.innerHTML = `
           <div class="detail-card">
