@@ -254,6 +254,9 @@ def main():
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate"/>
+  <meta http-equiv="Pragma" content="no-cache"/>
+  <meta http-equiv="Expires" content="0"/>
   <title>UAE Construction &amp; Traffic Intelligence — Executive GIS Platform</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗺️</text></svg>"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
@@ -2798,7 +2801,7 @@ def main():
               source: "communities-3d",
               paint: {
                 "fill-color": ["get", "color"],
-                "fill-opacity": 0.10
+                "fill-opacity": 0.0
               }
             },
             {
@@ -2807,28 +2810,36 @@ def main():
               source: "communities-3d",
               paint: {
                 "line-color": ["get", "color"],
-                "line-width": 2,
-                "line-dasharray": [3, 2]
+                "line-width": 1.2,
+                "line-opacity": 0.0
               }
             },
             {
               id: "roads-casing-3d",
               type: "line",
               source: "roads-3d",
+              layout: {
+                "line-cap": "round",
+                "line-join": "round"
+              },
               paint: {
                 "line-color": "#0f172a",
                 "line-width": ["get", "casingWidth"],
-                "line-opacity": 0.85
+                "line-opacity": ["interpolate", ["linear"], ["zoom"], 13.2, 0.82, 14.8, 0.0]
               }
             },
             {
               id: "roads-traffic-3d",
               type: "line",
               source: "roads-3d",
+              layout: {
+                "line-cap": "round",
+                "line-join": "round"
+              },
               paint: {
                 "line-color": ["get", "color"],
                 "line-width": ["get", "trafficWidth"],
-                "line-opacity": 0.95
+                "line-opacity": ["interpolate", ["linear"], ["zoom"], 13.2, 0.94, 14.8, 0.0]
               }
             },
             {
@@ -2871,6 +2882,7 @@ def main():
 
       map3d.on("rotate", updateCompassUI);
       map3d.on("move", updateCompassUI);
+      map3d.on("zoomend", sync3DMapLayers);
 
       map3d.on("load", () => {
         map3dLoaded = true;
@@ -2987,8 +2999,9 @@ def main():
       map3dMarkers = [];
 
       if (showProjs && is3DBlocksEnabled) {
+        const isCloseTowerZoom = map3d.getZoom() >= 14.0;
         const heroP = DATA.projects.find(x => x.project_id === selected3DProjectId);
-        if (heroP) {
+        if (heroP && isCloseTowerZoom) {
           const [hLat, hLon] = parseCoord(heroP.coordinates);
           const spec = getProject3DSpec(heroP);
           spec.blocks.forEach(blk => {
@@ -3006,9 +3019,9 @@ def main():
           });
         }
 
-        // Compact callouts for other flagship towers
+        // Compact callouts for flagship towers
         DATA.projects.forEach(p => {
-          if (p.project_id === selected3DProjectId) return;
+          if (isCloseTowerZoom && p.project_id === selected3DProjectId) return;
           if (emFilter !== "ALL" && p.emirate !== emFilter) return;
           if (q && !JSON.stringify(p).toLowerCase().includes(q)) return;
           const [lat, lon] = parseCoord(p.coordinates);
@@ -3029,16 +3042,20 @@ def main():
         });
       }
 
-      if (showTraffic) {
-        const coreRoadAnchors = [
-          { id: "RD-DXB-01", code: "E11 SZR", lon: 55.262, lat: 25.188 },
-          { id: "RD-DXB-03", code: "E44 Khail", lon: 55.284, lat: 25.179 },
-          { id: "RD-DXB-05", code: "D61 Hessa", lon: 55.202, lat: 25.068 },
-          { id: "RD-DXB-12", code: "D71 FinCtr", lon: 55.278, lat: 25.196 }
+      if (showTraffic && map3d.getZoom() < 14.2) {
+        const coreRoadSpecs = [
+          { id: "RD-DXB-01", code: "E11 SZR" },
+          { id: "RD-DXB-03", code: "E44 Khail" },
+          { id: "RD-DXB-05", code: "D61 Hessa" },
+          { id: "RD-DXB-09", code: "E611 Freight" },
+          { id: "RD-SHJ-01", code: "E311 Shj" }
         ];
-        coreRoadAnchors.forEach(ra => {
+        coreRoadSpecs.forEach(ra => {
+          const rObj = DATA.roads.find(x => x.road_id === ra.id);
           const obs = getRoadObsForWindow(ra.id, currentTimeWindow);
-          if (!obs) return;
+          if (!rObj || !obs || !rObj.geometry_wgs84.length) return;
+          if (emFilter !== "ALL" && rObj.emirate !== emFilter) return;
+          const midPt = rObj.geometry_wgs84[Math.floor(rObj.geometry_wgs84.length / 2)];
           const tCol = congestionColor(obs.congestion_level);
           const el = document.createElement("div");
           el.className = "road-speed-pill";
@@ -3049,7 +3066,7 @@ def main():
             showRoadInspector(ra.id, true);
           };
           const mk = new maplibregl.Marker({ element: el, anchor: "center" })
-            .setLngLat([ra.lon, ra.lat])
+            .setLngLat([midPt[0], midPt[1]])
             .addTo(map3d);
           map3dMarkers.push(mk);
         });
@@ -3365,10 +3382,10 @@ def main():
                     (c.observed_congestion_severity.includes("High") ? "#f97316" : "#a855f7");
         const poly = L.polygon(latlngs, {
           color: col,
-          weight: 1.5,
-          dashArray: "5,4",
+          weight: 0,
+          opacity: 0,
           fillColor: col,
-          fillOpacity: 0.08
+          fillOpacity: 0
         });
         poly.bindTooltip(`<strong>${c.community_name}</strong><br/>Active Devs: ${c.active_developments_count} | Active Towers: ${c.active_towers_and_buildings}<br/>Hotspot Score: ${c.construction_activity_index_score}`, { sticky: true });
         poly.on("click", () => showCommunityInspector(c));
@@ -3441,8 +3458,9 @@ def main():
           : `[Diurnal BPR Profile for ${currentTimeWindow}] Source: ${r.source_id}`;
         const trafLine = L.polyline(latlngs, {
           color: tCol,
-          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 3.0 : 2.2,
-          dashArray: exactMatch ? null : "6,4",
+          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 3.2 : 2.4,
+          lineCap: "round",
+          lineJoin: "round",
           opacity: 0.95
         });
         trafLine.bindTooltip(
@@ -3461,7 +3479,7 @@ def main():
         const showPill = obs && (isOverviewZoom ? overviewCorePills.has(r.road_id) : badgeRoadIds.has(r.road_id));
         if (showPill) {
           const midPt = r.geometry_wgs84[Math.floor(r.geometry_wgs84.length / 2)];
-          const anchorLatLng = pillCoords[r.road_id] || [midPt[1], midPt[0]];
+          const anchorLatLng = [midPt[1], midPt[0]];
           const shortCode = shortRoadLabels[r.road_id] || r.road_code.split("/")[0].trim();
           const pillIcon = L.divIcon({
             className: "",
