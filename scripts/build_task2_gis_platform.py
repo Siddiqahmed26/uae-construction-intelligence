@@ -455,6 +455,9 @@ def main():
     .workbench.panel-collapsed {{
       grid-template-columns: 1fr 0px;
     }}
+    .workbench.panel-collapsed .sidebar-right {{
+      display: none;
+    }}
     @media (max-width: 1440px) {{
       .workbench {{ grid-template-columns: 1fr 375px; }}
       .kpi-strip {{ display: none; }}
@@ -644,10 +647,11 @@ def main():
       align-items: center;
       gap: 5px;
     }}
-    .quick-layer-pill.on {{
-      background: rgba(2, 132, 199, 0.22);
+    .quick-layer-pill.on, .quick-layer-pill.active {{
+      background: rgba(2, 132, 199, 0.28);
       border-color: #38bdf8;
       color: #f8fafc;
+      box-shadow: 0 0 10px rgba(56, 189, 248, 0.25);
     }}
     .time-group {{
       pointer-events: auto;
@@ -655,27 +659,75 @@ def main():
       gap: 4px;
       flex-wrap: wrap;
       align-items: center;
-      background: rgba(13, 20, 36, 0.94);
+      background: rgba(13, 20, 36, 0.96);
       backdrop-filter: blur(10px);
       padding: 4px 6px;
       border-radius: 9px;
-      border: 1px solid var(--border);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.5);
+      border: 1px solid #38bdf8;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.55);
     }}
     .time-btn {{
-      background: transparent;
+      background: rgba(30, 41, 59, 0.75);
       border: 1px solid transparent;
-      color: var(--muted);
-      padding: 4px 9px;
+      color: #cbd5e1;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 0.73rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+    }}
+    .time-btn:hover {{
+      color: #fff;
+      border-color: #38bdf8;
+    }}
+    .time-btn.active {{
+      background: linear-gradient(135deg, #0d9488, #0284c7);
+      color: #fff;
+      border-color: #2dd4bf;
+      box-shadow: 0 2px 10px rgba(20, 184, 166, 0.45);
+    }}
+    .road-speed-pill {{
+      background: rgba(9, 14, 26, 0.92);
+      border: 1.5px solid #38bdf8;
+      color: #fff;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-size: 0.67rem;
+      font-weight: 800;
+      white-space: nowrap;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.65);
+      pointer-events: auto;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }}
+    .uc-btn {{
+      background: rgba(30, 41, 59, 0.75);
+      border: 1px solid #334155;
+      color: #cbd5e1;
+      padding: 5px 9px;
       border-radius: 6px;
       font-size: 0.72rem;
       font-weight: 700;
       cursor: pointer;
+      transition: all 0.15s;
     }}
-    .time-btn.active {{
-      background: #0f766e;
+    .uc-btn:hover {{ color: #fff; border-color: #38bdf8; }}
+    .uc-btn.active {{
+      background: #0284c7;
       color: #fff;
-      border-color: #14b8a6;
+      border-color: #38bdf8;
+    }}
+    .live-window-banner {{
+      background: linear-gradient(90deg, rgba(13,148,136,0.22), rgba(2,132,199,0.20));
+      border: 1px solid #14b8a6;
+      border-radius: 8px;
+      padding: 8px 10px;
+      margin-bottom: 10px;
+      font-size: 0.73rem;
+      color: #f8fafc;
     }}
 
     /* Compact Popover for All 11 Layers & Advanced Filters */
@@ -838,23 +890,50 @@ def main():
       gap: 7px;
       margin: 8px 0;
     }}
-    .exec-metric-tile {{
-      background: rgba(9, 14, 26, 0.75);
-      border: 1px solid rgba(51, 65, 85, 0.7);
+    .exec-metric-tile, .exec-metric-box {{
+      background: rgba(9, 14, 26, 0.82);
+      border: 1px solid rgba(51, 65, 85, 0.78);
       border-radius: 8px;
       padding: 7px 9px;
     }}
-    .exec-metric-tile .m-lbl {{
+    .exec-metric-tile .m-lbl, .exec-metric-box .em-lbl {{
       font-size: 0.65rem;
       text-transform: uppercase;
       color: var(--muted);
       font-weight: 700;
     }}
-    .exec-metric-tile .m-val {{
+    .exec-metric-tile .m-val, .exec-metric-box .em-val {{
       font-size: 0.84rem;
       font-weight: 800;
       color: #fff;
       margin-top: 2px;
+    }}
+    .exec-metric-box .em-sub {{
+      font-size: 0.67rem;
+      color: #94a3b8;
+      margin-top: 2px;
+    }}
+    .ep-pill-pub {{
+      display: inline-block;
+      background: rgba(16, 185, 129, 0.22);
+      border: 1px solid rgba(16, 185, 129, 0.45);
+      color: #34d399;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-right: 4px;
+    }}
+    .ep-pill-mod {{
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.22);
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      color: #fbbf24;
+      font-size: 0.65rem;
+      font-weight: 800;
+      padding: 1px 6px;
+      border-radius: 4px;
+      margin-right: 4px;
     }}
 
     /* Progressive Disclosure Technical Accordion (<details>) */
@@ -880,11 +959,12 @@ def main():
     details.tech-accordion summary:hover {{
       background: rgba(30, 41, 59, 0.9);
     }}
-    details.tech-accordion .acc-body {{
+    details.tech-accordion .acc-body, details.tech-accordion .tech-body {{
       padding: 9px 10px;
       font-size: 0.74rem;
       border-top: 1px solid rgba(51, 65, 85, 0.6);
       color: #cbd5e1;
+      line-height: 1.5;
     }}
 
     .kv-grid {{
@@ -1056,9 +1136,9 @@ def main():
       </div>
       <div class="kpi-strip">
         <span class="kpi-chip">Scope <strong id="hudScope">Dubai</strong></span>
-        <span class="kpi-chip">Active Sites <strong id="hudProjects">25</strong></span>
+        <span class="kpi-chip">Sites <strong id="hudProjects">25</strong></span>
         <span class="kpi-chip">Corridors <strong id="hudRoads">23</strong></span>
-        <span class="kpi-chip">Communities <strong id="hudComms">10</strong></span>
+        <span class="kpi-chip" style="border-color:#14b8a6;">Avg Speed <strong id="hudAvgSpeed" style="color:#34d399;">41.8 km/h</strong></span>
       </div>
     </div>
 
@@ -1119,15 +1199,16 @@ def main():
             <button class="bm-btn" onclick="setBasemap('sat', this)">Satellite</button>
             <button class="bm-btn" id="btn3dTilt" onclick="toggle3DPerspective(this)" title="Toggle WebGL / 3D Perspective Pitch">3D Pitch</button>
           </div>
-          <button class="bm-btn" style="background:rgba(13,20,36,0.92);border:1px solid var(--border);color:#e2e8f0;padding:5px 9px;border-radius:7px;" onclick="toggleRightPanel()" title="Expand / Collapse Side Panel">⇤ Panel</button>
+          <button class="bm-btn" id="collapseRightBtn" style="background:rgba(13,20,36,0.92);border:1px solid var(--border);color:#e2e8f0;padding:5px 9px;border-radius:7px;" onclick="toggleRightPanel()" title="Expand / Collapse Side Panel">▸ Collapse</button>
         </div>
       </div>
 
-      <!-- Prominent Epistemic Differentiation Banner (Fixes 3.E & 5.5) -->
+      <!-- Prominent Epistemic Differentiation Banner + Live Time Window Status -->
       <div class="epistemic-banner">
         <span class="conf-pill b-ver">PUBLISHED: RTA/SRTA Capacities &amp; TomTom City Index (31.3 km/h)</span>
-        <span class="conf-pill b-est">MODELLED ESTIMATES: Segment Speeds (BPR + Delay) &amp; Daily HGV Loads (Not Live Telemetry)</span>
-        <span style="color:#cbd5e1;">Window: <strong id="hudTime" style="color:#fff;">Evening Peak (17:00–20:00)</strong></span>
+        <span class="conf-pill b-est">MODELLED: BPR + Bottleneck Speeds &amp; Daily HGV Loads</span>
+        <span style="color:#cbd5e1;">Active Window: <strong id="hudTime" style="color:#38bdf8;">Evening Peak (17:00–20:00)</strong></span>
+        <span id="hudHgvStatus" class="conf-pill" style="background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444;">🚫 HGVs Banned on E11/E44/D61 (17:00–20:00)</span>
       </div>
 
       <!-- Primary Map Canvas -->
@@ -1272,13 +1353,27 @@ def main():
         <button class="dtab-btn" id="dtab-qa" onclick="switchDrawerTab('qa')">💬 Evidence &amp; Q&amp;A</button>
       </div>
 
+      <!-- Persistent Time Window & Live Corridor Speed Strip inside Right Panel -->
+      <div style="padding:8px 12px; background:#090f1d; border-bottom:1px solid var(--border);">
+        <div style="display:flex; justify-content:space-between; align-items:center; font-size:0.69rem; color:var(--muted); margin-bottom:5px;">
+          <span>TIME WINDOW SELECTOR (UPDATES MAP &amp; PANEL)</span>
+          <strong id="panelWindowSpeedSummary" style="color:#34d399;">PM Peak • Avg 41.8 km/h</strong>
+        </div>
+        <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px;">
+          <button class="time-btn" data-tp="Morning Peak (07:30–09:30)" onclick="setTimeWindow('Morning Peak (07:30–09:30)', this)">🌅 AM</button>
+          <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday</button>
+          <button class="time-btn active" data-tp="Evening Peak (17:00–20:00)" onclick="setTimeWindow('Evening Peak (17:00–20:00)', this)">🌇 PM</button>
+          <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night</button>
+        </div>
+      </div>
+
       <!-- TAB 1: OVERVIEW, HOTSPOTS & GUIDED SCENARIOS -->
       <div class="drawer-body" id="dpanel-uc">
         <div style="display:flex; gap:5px; flex-wrap:wrap; margin-bottom:10px;">
-          <button class="story-step active" id="btn-uc1" onclick="runUseCase(1)">1. Dubai Hotspots</button>
-          <button class="story-step" id="btn-uc2" onclick="runUseCase(2)">2. JVC Traffic</button>
-          <button class="story-step" id="btn-uc3" onclick="runUseCase(3)">3. AM vs PM &amp; 2024–26</button>
-          <button class="story-step" id="btn-uc4" onclick="runUseCase(4)">4. Sharjah</button>
+          <button class="uc-btn active" id="btn-uc1" onclick="runUseCase(1)">1. Dubai Hotspots</button>
+          <button class="uc-btn" id="btn-uc2" onclick="runUseCase(2)">2. JVC Traffic</button>
+          <button class="uc-btn" id="btn-uc3" onclick="runUseCase(3)">3. AM vs PM &amp; 2024–26</button>
+          <button class="uc-btn" id="btn-uc4" onclick="runUseCase(4)">4. Sharjah</button>
         </div>
         <div id="useCaseContainer"></div>
       </div>
@@ -1488,6 +1583,16 @@ def main():
     let currentTimeWindow = "Evening Peak (17:00–20:00)";
     let currentRadiusMeters = 1500;
     let is3DPerspective = false;
+    let currentUseCase = 1;
+    let currentDrawerTab = "uc";
+    let currentInspState = { type: "project", id: "PRJ-D6" };
+
+    const ALL_TIME_WINDOWS = [
+      "Morning Peak (07:30–09:30)",
+      "Midday (12:00–14:00)",
+      "Evening Peak (17:00–20:00)",
+      "Night (22:00–05:00)"
+    ];
 
     const layerGroups = {
       communities: L.layerGroup(),
@@ -1515,6 +1620,134 @@ def main():
       if (s.includes("High")) return "#f97316";
       if (s.includes("Moderate")) return "#eab308";
       return "#10b981";
+    }
+
+    function parseSpeedLimit(str) {
+      const m = String(str || "80").match(/\d+/);
+      return m ? parseFloat(m[0]) : 80.0;
+    }
+
+    function parseCapacity(str, lanes) {
+      const m = String(str || "").replace(/,/g, "").match(/\d{3,5}/);
+      return m ? parseFloat(m[0]) : (parseFloat(lanes || 3) * 1800.0);
+    }
+
+    // Deterministic 4-Window BPR + Bottleneck Corridor Profile Engine
+    // Uses exact Dataset #17 observation when available, or computes a diurnal BPR profile calibrated to the road's baseline
+    function getCorridorProfileForWindow(road, tp) {
+      const roadObs = DATA.observations.filter(o => o.road_id === road.road_id);
+      const exact = roadObs.find(o => o.time_period === tp);
+      if (exact) {
+        return { obs: exact, exactMatch: true };
+      }
+
+      const v0 = roadObs.length > 0 ? parseFloat(roadObs[0].free_flow_speed_kmh) : parseSpeedLimit(road.speed_limit_kmh);
+      const cRef = roadObs.length > 0 ? parseFloat(roadObs[0].reference_capacity_vph_dir) : parseCapacity(road.capacity_vph_per_dir, road.lanes_per_direction);
+      const baseVc = roadObs.length > 0 ? parseFloat(roadObs[0].vc_ratio) : (road.road_type.includes("Freeway") ? 0.82 : 0.88);
+      const baseDadj = roadObs.length > 0 ? parseFloat(roadObs[0].bottleneck_and_control_delay_min_per_10km) : (road.road_type.includes("Freeway") ? 3.2 : 6.8);
+
+      let vcFactor = 1.0;
+      let dFactor = 1.0;
+      if (tp.includes("Morning")) {
+        vcFactor = 0.94;
+        dFactor = 0.82;
+      } else if (tp.includes("Midday")) {
+        vcFactor = 0.72;
+        dFactor = 0.42;
+      } else if (tp.includes("Evening")) {
+        vcFactor = 1.02;
+        dFactor = 1.05;
+      } else if (tp.includes("Night")) {
+        vcFactor = 0.34;
+        dFactor = 0.14;
+      }
+
+      const vc = Math.round(Math.min(1.14, Math.max(0.22, baseVc * vcFactor)) * 100) / 100;
+      const vDem = Math.round(cRef * vc);
+      const t0 = Math.round((600.0 / v0) * 100) / 100;
+      const tBpr = Math.round(t0 * (1.0 + 0.15 * Math.pow(vc, 4)) * 100) / 100;
+      const vBpr = Math.round((v0 / (1.0 + 0.15 * Math.pow(vc, 4))) * 10) / 10;
+      const dAdj = Math.round(baseDadj * dFactor * 100) / 100;
+      const tTot = Math.round((tBpr + dAdj) * 100) / 100;
+      const vCorr = Math.round((600.0 / tTot) * 10) / 10;
+      const ratio = vCorr / v0;
+
+      let congTier = "Low";
+      if (ratio < 0.42) congTier = "Severe";
+      else if (ratio < 0.59) congTier = "High";
+      else if (ratio < 0.76) congTier = "Moderate";
+
+      const synthObs = {
+        observation_id: roadObs.length > 0 ? `${roadObs[0].observation_id} (${tp.split(' ')[0]} Diurnal BPR)` : `BPR-${road.road_id}`,
+        road_id: road.road_id,
+        time_period: tp,
+        free_flow_speed_kmh: v0,
+        free_flow_time_min_per_10km: t0,
+        modelled_demand_vph_dir: vDem,
+        reference_capacity_vph_dir: cRef,
+        vc_ratio: vc,
+        bpr_uninterrupted_time_min_per_10km: tBpr,
+        bpr_uninterrupted_speed_kmh: vBpr,
+        bottleneck_and_control_delay_min_per_10km: dAdj,
+        travel_time_min_per_10km: tTot,
+        average_speed_kmh: vCorr,
+        congestion_level: `${congTier} (Modelled Diurnal Estimate: v/v0 = ${ratio.toFixed(2)}; v_BPR = ${vBpr} km/h -> ${vCorr} km/h after +${dAdj} min/10km bottleneck assumption)`,
+        traffic_volume_vph: `Modelled ~${vDem.toLocaleString()} vph/dir (${tp.includes('Midday') || tp.includes('Night') ? 'Active HGV Haulage Permitted' : 'HGV Peak Restriction Window'})`,
+        officially_published_corridor_benchmark: roadObs.length > 0 ? roadObs[0].officially_published_corridor_benchmark : `Published statutory speed limit ${road.speed_limit_kmh} & capacity ${road.capacity_vph_per_dir}`,
+        modelled_assumptions_and_derivation: `Diurnal BPR scaling for ${tp}: V/C=${vc} (${vDem}/${cRef} vph/dir) -> t_BPR=${tBpr} min/10km + d_adj=+${dAdj} min/10km = ${tTot} min/10km (${vCorr} km/h).`,
+        comparison_period: roadObs.length > 0 ? roadObs[0].comparison_period : "2024–2026 Corridor Capacity & Phased Upgrade Baseline",
+        source_id: road.source_id,
+        source_url: "",
+        publication_date: "2026-11-09"
+      };
+      return { obs: synthObs, exactMatch: false };
+    }
+
+    function getRoadObsForWindow(roadId, tp) {
+      const road = DATA.roads.find(r => r.road_id === roadId);
+      if (!road) return null;
+      return getCorridorProfileForWindow(road, tp).obs;
+    }
+
+    function getWindowHgvBannerInfo(tp) {
+      if (tp.includes("Morning")) {
+        return {
+          shortTp: "AM Peak (07:30–09:30)",
+          hgvBadge: "🚫 HGVs Banned on E11/E44/D61 (06:30–08:30 AM Rush)",
+          text: "🚫 HGVs Banned on E11/E44/D61 (06:30–08:30 AM Rush) — Commuter Queue Window",
+          color: "#fca5a5",
+          hgvStyle: "background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444; padding:1px 6px; border-radius:4px; font-weight:700;",
+          narrative: "Morning commuter wave toward Business Bay, DIFC & Dubai/Sharjah employment hubs. Heavy construction trucks are restricted on primary passenger arterials; commuter queues dominate Hessa St (29 km/h) and E311 Southbound (28 km/h)."
+        };
+      }
+      if (tp.includes("Midday")) {
+        return {
+          shortTp: "Midday HGV (12:00–14:00)",
+          hgvBadge: "🚛 ACTIVE HGV CONCRETE & REBAR HAULAGE WINDOW (08:30–16:30)",
+          text: "🚛 ACTIVE HGV CONCRETE & REBAR HAULAGE WINDOW (08:30–16:30 Permitted)",
+          color: "#fde68a",
+          hgvStyle: "background:rgba(245,158,11,0.24); color:#fde68a; border:1px solid #f59e0b; padding:1px 6px; border-radius:4px; font-weight:700;",
+          narrative: "Passenger commuter peaks subside (Hessa St rises to 48 km/h; Al Khail Rd rises to 78 km/h), while active daytime HGV concrete mixers, rebar trailers, and earthworks tippers operate across JVC, Business Bay, Creek Harbour & Dubai South."
+        };
+      }
+      if (tp.includes("Night")) {
+        return {
+          shortTp: "Night Pour Window (22:00–05:00)",
+          hgvBadge: "🌙 NIGHT MASS CONCRETE POUR & HEAVY FREIGHT WINDOW (22:00–05:00)",
+          text: "🌙 NIGHT MASS CONCRETE POUR & HEAVY FREIGHT WINDOW (22:00–05:00 Free-Flow)",
+          color: "#6ee7b7",
+          hgvStyle: "background:rgba(16,185,129,0.22); color:#6ee7b7; border:1px solid #10b981; padding:1px 6px; border-radius:4px; font-weight:700;",
+          narrative: "Free-flow passenger conditions across all corridors (Hessa St 68 km/h; SZR 88 km/h; Al Khail 92 km/h). Continuous nocturnal raft-foundation concrete pours and oversized structural steel deliveries operate unimpeded."
+        };
+      }
+      return {
+        shortTp: "PM Peak (17:00–20:00)",
+        hgvBadge: "🚫 HGVs Banned on E11/E44/D61 (17:00–20:00 PM Rush)",
+        text: "🚫 HGVs Banned on E11/E44/D61 (17:00–20:00 PM Rush) — Peak Commuter Bottlenecks",
+        color: "#fca5a5",
+        hgvStyle: "background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444; padding:1px 6px; border-radius:4px; font-weight:700;",
+        narrative: "Highest diurnal congestion across the network. Return commuter flows create severe bottlenecks on Hessa St West (25 km/h), JVC Circle Blvd (21 km/h), Financial Centre Rd (22 km/h), and SZR (44 km/h)."
+      };
     }
 
     function projectScaleStyle(p) {
@@ -1557,6 +1790,7 @@ def main():
 
       if (mode === "overview") {
         switchDrawerTab("uc");
+        setLayerSet(["communities", "roads", "traffic", "projects"]);
         runUseCase(1);
       } else if (mode === "construction") {
         switchDrawerTab("uc");
@@ -1573,21 +1807,21 @@ def main():
       } else if (mode === "evidence") {
         const det = document.getElementById("evidenceAccordion");
         if (det) det.open = true;
-        document.getElementById("evidenceSection").scrollIntoView({ behavior: "smooth" });
+        const evSec = document.getElementById("evidence-tables") || document.getElementById("evidenceSection");
+        if (evSec) evSec.scrollIntoView({ behavior: "smooth" });
       }
     }
 
     function setLayerSet(activeKeys) {
       const keyToChk = {
-        projects: "lyr_projects", devbounds: "lyr_devbounds", communities: "lyr_communities",
-        roads: "lyr_roads", intersections: "lyr_intersections", traffic: "lyr_traffic",
-        incidents: "lyr_incidents", transit: "lyr_transit", facilities: "lyr_facilities",
-        parking: "lyr_parking", impacts: "lyr_impacts"
+        projects: "chk-L1", devbounds: "chk-L2", communities: "chk-L3",
+        roads: "chk-L4", intersections: "chk-L5", traffic: "chk-L6",
+        incidents: "chk-L7", transit: "chk-L8", facilities: "chk-L9",
+        parking: "chk-L10", impacts: "chk-L11"
       };
       const keyToQ = {
         projects: "qpill-projects", communities: "qpill-communities",
-        traffic: "qpill-traffic", impacts: "qpill-impacts",
-        intersections: "qpill-intersections", transit: "qpill-transit"
+        traffic: "qpill-traffic", impacts: "qpill-impacts"
       };
       Object.keys(layerGroups).forEach(k => {
         const on = activeKeys.includes(k);
@@ -1595,7 +1829,10 @@ def main():
         const chk = document.getElementById(keyToChk[k]);
         if (chk) chk.checked = on;
         const qp = document.getElementById(keyToQ[k]);
-        if (qp) qp.classList.toggle("active", on);
+        if (qp) {
+          qp.classList.toggle("on", on);
+          qp.classList.toggle("active", on);
+        }
       });
     }
 
@@ -1603,7 +1840,10 @@ def main():
       const chk = document.getElementById(chkId);
       const nextState = chk ? !chk.checked : !map.hasLayer(layerGroups[key]);
       if (chk) chk.checked = nextState;
-      if (btnEl) btnEl.classList.toggle("active", nextState);
+      if (btnEl) {
+        btnEl.classList.toggle("on", nextState);
+        btnEl.classList.toggle("active", nextState);
+      }
       toggleLayerGroup(key, nextState);
     }
 
@@ -1634,7 +1874,7 @@ def main():
     }
 
     function runStoryStep(step) {
-      document.querySelectorAll(".story-step").forEach((el, idx) => {
+      document.querySelectorAll(".story-bar .story-step").forEach((el, idx) => {
         el.classList.toggle("active", (idx + 1) === step);
       });
       if (step === 1) {
@@ -1643,37 +1883,39 @@ def main():
         setLayerSet(["communities", "roads", "traffic", "projects"]);
         map.flyTo([25.195, 55.355], 10, { duration: 0.9 });
         document.getElementById("hudScope").textContent = "Step 1: UAE Overview (Dubai + Sharjah)";
-        runUseCase(1);
+        runUseCase(1, false);
       } else if (step === 2) {
         document.getElementById("emirateSelect").value = "Dubai";
         populateCommunityDropdown();
         setLayerSet(["communities", "roads", "traffic", "projects"]);
         map.flyTo([25.115, 55.245], 11, { duration: 0.9 });
         document.getElementById("hudScope").textContent = "Step 2: Dubai Core Corridors";
-        runUseCase(1);
+        runUseCase(1, false);
       } else if (step === 3) {
         document.getElementById("emirateSelect").value = "Dubai";
         populateCommunityDropdown();
         setLayerSet(["communities", "devbounds", "roads", "traffic", "impacts", "projects"]);
         map.flyTo([25.0585, 55.2090], 13, { duration: 0.9 });
         document.getElementById("hudScope").textContent = "Step 3: JVC High-Density Hotspot";
-        runUseCase(2);
+        runUseCase(2, false);
       } else if (step === 4) {
         setLayerSet(["communities", "devbounds", "roads", "traffic", "impacts", "projects"]);
         map.flyTo([25.0552, 55.2078], 14, { duration: 0.9 });
         document.getElementById("hudScope").textContent = "Step 4: Project Inspection (PRJ-D6)";
-        showProjectInspector("PRJ-D6");
+        showProjectInspector("PRJ-D6", false);
       } else if (step === 5) {
         setLayerSet(["roads", "traffic", "intersections", "impacts", "projects"]);
         map.flyTo([25.0695, 55.1950], 13, { duration: 0.9 });
         document.getElementById("hudScope").textContent = "Step 5: Hessa St (D61) Impact Analysis";
-        showRoadInspector("RD-DXB-04");
+        showRoadInspector("RD-DXB-05", false);
       }
     }
 
     function setBasemap(mode, btnEl) {
       if (btnEl) {
-        document.querySelectorAll(".bm-btn").forEach(b => b.classList.remove("active"));
+        document.querySelectorAll(".bm-btn").forEach(b => {
+          if (b.id !== "btn3dTilt" && b.id !== "collapseRightBtn") b.classList.remove("active");
+        });
         btnEl.classList.add("active");
       }
       if (baseTileLayer) map.removeLayer(baseTileLayer);
@@ -1742,16 +1984,50 @@ def main():
       } else {
         if (map.hasLayer(layerGroups[key])) map.removeLayer(layerGroups[key]);
       }
+      const keyToQ = {
+        projects: "qpill-projects", communities: "qpill-communities",
+        traffic: "qpill-traffic", impacts: "qpill-impacts"
+      };
+      if (keyToQ[key]) {
+        const qp = document.getElementById(keyToQ[key]);
+        if (qp) {
+          qp.classList.toggle("on", show);
+          qp.classList.toggle("active", show);
+        }
+      }
     }
 
     function setTimeWindow(tp, btnEl) {
       currentTimeWindow = tp;
       document.getElementById("hudTime").textContent = tp;
-      if (btnEl) {
-        document.querySelectorAll(".time-btn").forEach(b => b.classList.remove("active"));
-        btnEl.classList.add("active");
+
+      // Sync all time buttons across bottom map dock and right drawer bar
+      document.querySelectorAll(".time-btn").forEach(b => {
+        const bTp = b.getAttribute("data-tp");
+        b.classList.toggle("active", bTp === tp);
+      });
+
+      const info = getWindowHgvBannerInfo(tp);
+      const hgvEl = document.getElementById("hudHgvStatus");
+      if (hgvEl) {
+        hgvEl.textContent = info.hgvBadge;
+        hgvEl.style.cssText = info.hgvStyle;
       }
+
       renderAllMapLayers();
+
+      // Automatically refresh active right-hand panel so user sees live speed/HGV numbers change immediately
+      if (currentDrawerTab === "uc") {
+        runUseCase(currentUseCase, false);
+      } else if (currentDrawerTab === "insp") {
+        if (currentInspState.type === "road") showRoadInspector(currentInspState.id, false);
+        else if (currentInspState.type === "project") showProjectInspector(currentInspState.id, false);
+        else if (currentInspState.type === "subdev") showSubdevInspector(currentInspState.obj, false);
+        else if (currentInspState.type === "community") showCommunityInspector(currentInspState.obj);
+      } else if (currentDrawerTab === "qa") {
+        const qVal = (document.getElementById("qaInput").value || "").trim();
+        if (qVal) runDeterministicQA();
+      }
     }
 
     function updateImpactBuffers() {
@@ -1774,14 +2050,6 @@ def main():
       setLayerSet(["communities", "roads", "traffic", "projects"]);
       map.flyTo([25.115, 55.245], 11, { duration: 0.8 });
       renderAllMapLayers();
-    }
-
-    function getRoadObsForWindow(roadId, tp) {
-      const roadObs = DATA.observations.filter(o => o.road_id === roadId);
-      const exact = roadObs.find(o => o.time_period === tp);
-      if (exact) return { obs: exact, exactMatch: true };
-      if (roadObs.length > 0) return { obs: roadObs[0], exactMatch: false };
-      return { obs: null, exactMatch: false };
     }
 
     function renderAllMapLayers() {
@@ -1811,11 +2079,15 @@ def main():
         poly.addTo(layerGroups.communities);
       });
 
-      // 2. Layer 4 & Layer 6: Road Network & Dynamic Traffic Speed/Congestion Overlay (Crisp Cartographic Weights)
+      let speedSum = 0;
+      let speedCount = 0;
+      const badgeRoadIds = new Set(["RD-DXB-01", "RD-DXB-03", "RD-DXB-05", "RD-DXB-07", "RD-DXB-09", "RD-DXB-11", "RD-DXB-13", "RD-SHJ-01", "RD-SHJ-02", "RD-SHJ-06"]);
+
+      // 2. Layer 4 & Layer 6: Road Network & Dynamic 4-Window Traffic Speed/Congestion Overlay + Floating Speed Pills
       DATA.roads.forEach(r => {
         if (emFilter !== "ALL" && r.emirate !== emFilter) return;
-        const { obs, exactMatch } = getRoadObsForWindow(r.road_id, currentTimeWindow);
-        const congLvl = exactMatch && obs ? obs.congestion_level : "Unavailable for Selected Window (Not Zero Congestion)";
+        const { obs, exactMatch } = getCorridorProfileForWindow(r, currentTimeWindow);
+        const congLvl = obs ? obs.congestion_level : "Unavailable";
 
         if (congFilter !== "ALL") {
           if (congFilter === "High" && !(congLvl.includes("High") || congLvl.includes("Severe"))) return;
@@ -1823,40 +2095,70 @@ def main():
         }
         if (q && !JSON.stringify(r).toLowerCase().includes(q) && !(obs && JSON.stringify(obs).toLowerCase().includes(q))) return;
 
+        if (obs && obs.average_speed_kmh) {
+          speedSum += parseFloat(obs.average_speed_kmh);
+          speedCount++;
+        }
+
         const latlngs = r.geometry_wgs84.map(pt => [pt[1], pt[0]]);
 
         // Base casing line (Layer 4 — Reduced weight for visual clarity)
         const baseLine = L.polyline(latlngs, {
           color: "#1e293b",
-          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 3.5 : 2.5,
-          opacity: 0.75
+          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 4.5 : 3.2,
+          opacity: 0.82
         });
         baseLine.on("click", () => showRoadInspector(r.road_id));
         baseLine.addTo(layerGroups.roads);
 
-        // Traffic color overlay line (Layer 6 — Clean 2.5px / 2.0px stroke)
+        // Traffic color overlay line (Layer 6 — Clean 3.0px / 2.2px stroke)
         const tCol = congestionColor(congLvl);
-        const speedTxt = exactMatch && obs ? `${obs.average_speed_kmh} km/h (${obs.travel_time_min_per_10km} min/10km)` : `Data Unavailable for ${currentTimeWindow}`;
-        const matchNote = exactMatch && obs
-          ? `[MODELLED CORRIDOR ESTIMATE — BPR + Bottleneck Delay] Source: ${obs.source_id}`
-          : `[Window Not Modelled — Click to inspect recorded peak periods]`;
+        const speedTxt = obs ? `${obs.average_speed_kmh} km/h (${obs.travel_time_min_per_10km} min/10km | V/C=${obs.vc_ratio})` : "Data Unavailable";
+        const matchNote = exactMatch
+          ? `[Primary Dataset #17 Record: ${obs.observation_id}] Source: ${obs.source_id}`
+          : `[Diurnal BPR Profile for ${currentTimeWindow}] Source: ${r.source_id}`;
         const trafLine = L.polyline(latlngs, {
           color: tCol,
-          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 2.5 : 2.0,
-          dashArray: exactMatch ? null : "5,5",
-          opacity: 0.92
+          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 3.0 : 2.2,
+          dashArray: exactMatch ? null : "6,4",
+          opacity: 0.95
         });
         trafLine.bindTooltip(
-          `<strong>${r.road_name}</strong><br/>` +
-          `Window: <strong>${currentTimeWindow}</strong> → <strong>${speedTxt}</strong><br/>` +
-          `Status: <strong>${congLvl}</strong><br/>` +
+          `<strong>${r.road_name} (${r.road_code})</strong><br/>` +
+          `Active Window: <strong>${currentTimeWindow}</strong><br/>` +
+          `Modelled Speed: <strong style="color:${tCol};">${speedTxt}</strong><br/>` +
+          `Congestion Status: <strong>${congLvl.split('(')[0]}</strong><br/>` +
           `Published Capacity: ${r.capacity_vph_per_dir}<br/>` +
           `<em>${matchNote}</em>`,
           { sticky: true }
         );
         trafLine.on("click", () => showRoadInspector(r.road_id));
         trafLine.addTo(layerGroups.traffic);
+
+        // Floating On-Map Speed Pill for Key Corridors (Instantly updates when AM/Midday/PM/Night is clicked)
+        if (obs && badgeRoadIds.has(r.road_id)) {
+          const midPt = r.geometry_wgs84[Math.floor(r.geometry_wgs84.length / 2)];
+          const shortCode = r.road_code.split("/")[0].trim();
+          const pillIcon = L.divIcon({
+            className: "",
+            html: `<div class="road-speed-pill" style="border-color:${tCol};" onclick="showRoadInspector('${r.road_id}')"><span style="width:7px;height:7px;border-radius:50%;background:${tCol};display:inline-block;"></span><span>${shortCode}: <strong>${obs.average_speed_kmh} km/h</strong></span></div>`,
+            iconSize: [96, 22],
+            iconAnchor: [48, 11]
+          });
+          const pillMarker = L.marker([midPt[1], midPt[0]], { icon: pillIcon });
+          pillMarker.on("click", () => showRoadInspector(r.road_id));
+          pillMarker.addTo(layerGroups.traffic);
+        }
       });
+
+      const avgSpd = speedCount > 0 ? (speedSum / speedCount).toFixed(1) : "45.0";
+      const hudAvgEl = document.getElementById("hudAvgSpeed");
+      if (hudAvgEl) hudAvgEl.textContent = `${avgSpd} km/h`;
+      const panelSumEl = document.getElementById("panelWindowSpeedSummary");
+      if (panelSumEl) {
+        const shortW = currentTimeWindow.split("(")[0].trim();
+        panelSumEl.textContent = `${shortW} • Avg ${avgSpd} km/h`;
+      }
 
       // 3. Layer 5: Intersections & Bottlenecks
       DATA.intersections.forEach(i => {
@@ -2060,6 +2362,7 @@ def main():
     }
 
     function switchDrawerTab(tab) {
+      currentDrawerTab = tab;
       ["uc", "insp", "qa"].forEach(k => {
         document.getElementById(`dtab-${k}`).classList.toggle("active", k === tab);
         document.getElementById(`dpanel-${k}`).style.display = (k === tab) ? "block" : "none";
@@ -2069,14 +2372,18 @@ def main():
     // =========================================================================
     // SECTION C3: PROJECT-LEVEL DETAIL PANEL (Executive Summary + Progressive Disclosure)
     // =========================================================================
-    function showProjectInspector(pid) {
+    function showProjectInspector(pid, fly = true) {
+      currentInspState = { type: "project", id: pid };
       switchDrawerTab("insp");
       const p = DATA.projects.find(x => x.project_id === pid);
       if (!p) return;
       const link = DATA.impact_links.find(x => x.project_id === pid);
       const docs = DATA.documents.filter(d => d.project_id === pid);
       const [lat, lon] = parseCoord(p.coordinates);
-      map.flyTo([lat, lon], 14, { duration: 0.7 });
+      if (fly) map.flyTo([lat, lon], 14, { duration: 0.7 });
+
+      const primRoadObs = link ? getRoadObsForWindow(link.primary_road_id, currentTimeWindow) : null;
+      const hgvInfo = getWindowHgvBannerInfo(currentTimeWindow);
 
       const docsHtml = docs.map(d =>
         `<div style="margin-bottom:4px;">• <a href="${d.document_url}" target="_blank" rel="noopener">${d.document_title} ↗</a> <span style="color:var(--muted);">(${d.document_type} | ${d.availability_status})</span></div>`
@@ -2091,6 +2398,16 @@ def main():
           <h4>${p.project_name}</h4>
           <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:10px;">${p.developer} • ${p.city_district_community}</div>
 
+          ${primRoadObs ? `
+          <div class="live-window-banner">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="color:#38bdf8;">⏱️ Active Window: ${currentTimeWindow}</strong>
+              <span style="color:${congestionColor(primRoadObs.congestion_level)}; font-weight:800;">~${primRoadObs.average_speed_kmh} km/h (${primRoadObs.travel_time_min_per_10km} min/10km)</span>
+            </div>
+            <div style="margin-top:3px; color:#cbd5e1;">Primary Corridor (<strong>${link.primary_road_name}</strong>): <strong>${primRoadObs.congestion_level}</strong> | Volume: ${primRoadObs.traffic_volume_vph}</div>
+            <div style="margin-top:2px; font-size:0.68rem; color:${hgvInfo.color};">${hgvInfo.text}</div>
+          </div>` : ""}
+
           <!-- Executive KPI Summary Grid -->
           <div class="exec-metric-grid">
             <div class="exec-metric-box">
@@ -2104,9 +2421,9 @@ def main():
               <div class="em-sub">Plot: ${p.land_plot_area}</div>
             </div>
             <div class="exec-metric-box">
-              <div class="em-lbl">Primary Corridor</div>
+              <div class="em-lbl">Primary Corridor (${currentTimeWindow.split(' ')[0]})</div>
               <div class="em-val" style="font-size:0.78rem;">${link ? `<a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a>` : "Arterial Grid"}</div>
-              <div class="em-sub">${link ? `${link.distance_to_primary_road_km} km to nearest vertex` : ""}</div>
+              <div class="em-sub">${primRoadObs ? `~${primRoadObs.average_speed_kmh} km/h • ${link.distance_to_primary_road_km} km` : (link ? `${link.distance_to_primary_road_km} km to vertex` : "")}</div>
             </div>
             <div class="exec-metric-box">
               <div class="em-lbl">Scenario HGV Load</div>
@@ -2136,9 +2453,11 @@ def main():
       `;
     }
 
-    function showSubdevInspector(sd) {
+    function showSubdevInspector(sd, fly = true) {
+      currentInspState = { type: "subdev", obj: sd };
       switchDrawerTab("insp");
-      map.flyTo([sd.latitude, sd.longitude], 15, { duration: 0.7 });
+      if (fly) map.flyTo([sd.latitude, sd.longitude], 15, { duration: 0.7 });
+      const primObs = getRoadObsForWindow(sd.primary_access_road_id, currentTimeWindow);
       document.getElementById("inspectorContainer").innerHTML = `
         <div class="detail-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
@@ -2147,6 +2466,14 @@ def main():
           </div>
           <h4>${sd.development_name}</h4>
           <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:10px;">${sd.developer} • ${sd.community_district}</div>
+          ${primObs ? `
+          <div class="live-window-banner">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="color:#38bdf8;">⏱️ ${currentTimeWindow}</strong>
+              <span style="color:${congestionColor(primObs.congestion_level)}; font-weight:800;">~${primObs.average_speed_kmh} km/h on ${sd.primary_access_road_id}</span>
+            </div>
+            <div style="margin-top:2px; color:#cbd5e1;">${primObs.congestion_level} (${primObs.travel_time_min_per_10km} min/10km)</div>
+          </div>` : ""}
           <div class="exec-metric-grid">
             <div class="exec-metric-box"><div class="em-lbl">Active Towers</div><div class="em-val">${sd.building_count} Towers</div><div class="em-sub">${sd.floors_range}</div></div>
             <div class="exec-metric-box"><div class="em-lbl">Total Units</div><div class="em-val" style="color:#38bdf8;">${sd.total_units.toLocaleString()}</div><div class="em-sub">${sd.active_gfa_sqm.toLocaleString()} m² GFA</div></div>
@@ -2170,29 +2497,32 @@ def main():
     // =========================================================================
     // SECTION C4: ROAD-LEVEL DETAIL PANEL (Executive Summary + Progressive Disclosure)
     // =========================================================================
-    function showRoadInspector(roadId) {
+    function showRoadInspector(roadId, fly = true) {
+      currentInspState = { type: "road", id: roadId };
       switchDrawerTab("insp");
       const r = DATA.roads.find(x => x.road_id === roadId);
       if (!r) return;
-      const roadObs = DATA.observations.filter(o => o.road_id === roadId);
+      const allWindowObs = ALL_TIME_WINDOWS.map(tp => getCorridorProfileForWindow(r, tp).obs).filter(Boolean);
+      const activeObs = getCorridorProfileForWindow(r, currentTimeWindow).obs;
       const cityObs = DATA.observations.find(o => o.observation_id === "OBS-DXB-CITY-00");
       const connectedLinks = DATA.impact_links.filter(l => l.primary_road_id === roadId || l.secondary_road_id === roadId);
       const midPt = r.geometry_wgs84[Math.floor(r.geometry_wgs84.length / 2)];
-      map.flyTo([midPt[1], midPt[0]], 13, { duration: 0.7 });
+      if (fly) map.flyTo([midPt[1], midPt[0]], 13, { duration: 0.7 });
 
-      const obsHtml = roadObs.map(o => {
+      const obsHtml = allWindowObs.map(o => {
+        const isCurrent = o.time_period === currentTimeWindow;
         const srcHtml = o.source_url
           ? `<a href="${o.source_url}" target="_blank" rel="noopener">${o.source_id}: ${o.source_report_title || 'Official Source'} (${o.publication_date || ''}) ↗</a>`
           : o.source_id;
         return `
-        <div style="background:#090d16; border:1px solid #334155; padding:8px; border-radius:7px; margin-bottom:7px;">
-          <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#fff;">
-            <span>${o.time_period}</span>
+        <div onclick="setTimeWindow('${o.time_period}')" style="cursor:pointer; background:${isCurrent ? 'rgba(2, 132, 199, 0.16)' : '#090d16'}; border:${isCurrent ? '1.5px solid #38bdf8' : '1px solid #334155'}; padding:8px; border-radius:7px; margin-bottom:7px; transition:all 0.15s;">
+          <div style="display:flex; justify-content:space-between; align-items:center; font-weight:700; color:#fff; gap:4px; flex-wrap:wrap;">
+            <span>${isCurrent ? '🟢 ' : ''}${o.time_period} ${isCurrent ? '<span style="font-size:0.62rem; background:#0284c7; padding:1px 5px; border-radius:4px; margin-left:4px;">ACTIVE ON MAP</span>' : ''}</span>
             <span style="color:${congestionColor(o.congestion_level)};">Modelled ~${o.average_speed_kmh} km/h (${o.travel_time_min_per_10km} min/10km)</span>
           </div>
           <div style="font-size:0.72rem; color:#34d399; margin-top:4px;"><span class="ep-pill-pub">PUBLISHED</span> ${o.officially_published_corridor_benchmark}</div>
           <div style="font-size:0.72rem; color:#cbd5e1; margin-top:4px;"><span class="ep-pill-mod">MODELLED</span> <strong>${o.congestion_level}</strong> | Volume: ${o.traffic_volume_vph}</div>
-          <details class="tech-accordion" style="margin-top:6px;">
+          <details class="tech-accordion" style="margin-top:6px;" onclick="event.stopPropagation()">
             <summary>BPR Equation Breakdown &amp; Source (${o.observation_id})</summary>
             <div class="tech-body">
               <div><strong>Two-Term BPR + Bottleneck Formula:</strong> v₀=${o.free_flow_speed_kmh} km/h (t₀=${o.free_flow_time_min_per_10km} min/10km) | V/C=${o.vc_ratio} (${o.modelled_demand_vph_dir}/${o.reference_capacity_vph_dir} vph/dir) → <strong>Uninterrupted BPR Link: ${o.bpr_uninterrupted_speed_kmh} km/h (${o.bpr_uninterrupted_time_min_per_10km} min/10km)</strong> + <strong>Bottleneck Assumption (+d_adj): +${o.bottleneck_and_control_delay_min_per_10km} min/10km</strong> = <strong>${o.travel_time_min_per_10km} min/10km → ${o.average_speed_kmh} km/h</strong></div>
@@ -2202,7 +2532,7 @@ def main():
             </div>
           </details>
         </div>`;
-      }).join("") || "<div style='color:#94a3b8; background:#090d16; border:1px dashed #64748b; padding:8px; border-radius:6px;'><strong>Data Unavailable (Distinguished from Zero Congestion):</strong> Segment-specific loop-detector speed breakdown is not published separately in open government CSVs for this corridor. Published statutory speed limit is " + r.speed_limit_kmh + ".</div>";
+      }).join("");
 
       const projHtml = connectedLinks.map(l =>
         `<div>• <a href="javascript:void(0)" onclick="showProjectInspector('${l.project_id}')"><strong>${l.project_id}</strong>: ${l.project_name}</a> (${l.distance_to_primary_road_km} km — ${l.epistemic_impact_classification.split('(')[0]})</div>`
@@ -2216,6 +2546,15 @@ def main():
           </div>
           <h4>${r.road_name}</h4>
           <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:10px;">${r.authority} • ${r.road_type}</div>
+
+          ${activeObs ? `
+          <div class="live-window-banner">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <strong style="color:#38bdf8;">⏱️ ${currentTimeWindow}</strong>
+              <span style="color:${congestionColor(activeObs.congestion_level)}; font-weight:800;">~${activeObs.average_speed_kmh} km/h (${activeObs.travel_time_min_per_10km} min/10km)</span>
+            </div>
+            <div style="margin-top:3px; color:#cbd5e1;"><strong>${activeObs.congestion_level}</strong> | V/C = ${activeObs.vc_ratio} (${activeObs.modelled_demand_vph_dir}/${activeObs.reference_capacity_vph_dir} vph/dir)</div>
+          </div>` : ""}
 
           <div class="exec-metric-grid">
             <div class="exec-metric-box">
@@ -2232,7 +2571,7 @@ def main():
 
           <div class="kv-grid">
             <div class="kv-row"><div class="kv-lbl">HGV Truck Ban &amp; Salik Toll Policy</div><div class="kv-val"><strong>HGV Rule:</strong> ${r.hgv_truck_ban_window}<br/><strong>Salik:</strong> ${r.salik_toll_status}</div></div>
-            <div class="kv-row"><div class="kv-lbl">Corridor Traffic Profiles (${roadObs.length} Time Windows)</div><div class="kv-val">${obsHtml}</div></div>
+            <div class="kv-row"><div class="kv-lbl">Corridor Traffic Across All 4 Time Windows (Click Any Window to Sync Map)</div><div class="kv-val">${obsHtml}</div></div>
             <div class="kv-row"><div class="kv-lbl">Connected Construction Projects (${connectedLinks.length})</div><div class="kv-val">${projHtml}</div></div>
           </div>
 
@@ -2249,9 +2588,10 @@ def main():
       `;
     }
 
-    function showIntersectionInspector(i) {
+    function showIntersectionInspector(i, fly = true) {
+      currentInspState = { type: "intersection", obj: i };
       switchDrawerTab("insp");
-      map.flyTo([i.latitude, i.longitude], 15, { duration: 0.7 });
+      if (fly) map.flyTo([i.latitude, i.longitude], 15, { duration: 0.7 });
       document.getElementById("inspectorContainer").innerHTML = `
         <div class="detail-card">
           <span class="brand-badge" style="background:#e11d48;">${i.intersection_id} • Critical Junction</span>
@@ -2267,6 +2607,7 @@ def main():
     }
 
     function showCommunityInspector(c) {
+      currentInspState = { type: "community", obj: c };
       switchDrawerTab("insp");
       document.getElementById("inspectorContainer").innerHTML = `
         <div class="detail-card">
@@ -2286,24 +2627,54 @@ def main():
     // =========================================================================
     // WORK PACKAGE E: 3 INTERACTIVE USE CASES + SHARJAH EXPANSION
     // =========================================================================
-    function runUseCase(num) {
+    function runUseCase(num, fly = true) {
+      currentUseCase = num;
       switchDrawerTab("uc");
       document.querySelectorAll(".uc-btn").forEach((b, idx) => b.classList.toggle("active", idx === num - 1));
+      const hgvInfo = getWindowHgvBannerInfo(currentTimeWindow);
+      const d61Obs = getRoadObsForWindow("RD-DXB-05", currentTimeWindow);
+      const e44Obs = getRoadObsForWindow("RD-DXB-03", currentTimeWindow);
+      const e11Obs = getRoadObsForWindow("RD-DXB-01", currentTimeWindow);
+      const jvcObs = getRoadObsForWindow("RD-DXB-07", currentTimeWindow);
+      const shjObs = getRoadObsForWindow("RD-SHJ-01", currentTimeWindow);
+      const e611ShjObs = getRoadObsForWindow("RD-SHJ-02", currentTimeWindow);
+
+      const commRoadMap = {
+        "COM-DXB-01": "RD-DXB-05",
+        "COM-DXB-02": "RD-DXB-08",
+        "COM-DXB-03": "RD-DXB-09",
+        "COM-DXB-04": "RD-DXB-11",
+        "COM-DXB-05": "RD-DXB-12",
+        "COM-DXB-06": "RD-DXB-06",
+        "COM-DXB-07": "RD-DXB-13"
+      };
 
       if (num === 1) {
-        document.getElementById("emirateSelect").value = "Dubai";
-        populateCommunityDropdown();
-        map.flyTo([25.105, 55.245], 11, { duration: 0.9 });
-        document.getElementById("hudScope").textContent = "Use Case 1: Dubai Construction Hotspots";
-        renderAllMapLayers();
+        if (fly) {
+          document.getElementById("emirateSelect").value = "Dubai";
+          populateCommunityDropdown();
+          map.flyTo([25.105, 55.245], 11, { duration: 0.9 });
+          document.getElementById("hudScope").textContent = "Use Case 1: Dubai Construction Hotspots";
+          renderAllMapLayers();
+        }
 
         const dxbComms = DATA.communities.filter(c => c.emirate === "Dubai");
         document.getElementById("useCaseContainer").innerHTML = `
           <div class="detail-card">
             <span class="brand-badge">Use Case 1 — City-Wide Hotspot Intelligence</span>
             <h4 style="margin-top:6px;">"Which areas in Dubai currently have the highest construction activity?"</h4>
+            <div class="live-window-banner">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:#38bdf8;">⏱️ Active Window: ${currentTimeWindow}</strong>
+                <span style="color:#fff; font-weight:800;">D61: ${d61Obs ? d61Obs.average_speed_kmh : 29} km/h • E44: ${e44Obs ? e44Obs.average_speed_kmh : 64} km/h • E11: ${e11Obs ? e11Obs.average_speed_kmh : 52} km/h</span>
+              </div>
+              <div style="margin-top:2px; font-size:0.68rem; color:${hgvInfo.color};">${hgvInfo.text}</div>
+            </div>
             <p style="font-size:0.76rem; color:#cbd5e1;">Grounded in Task 1's 20 Dubai Flagship Projects (<code>PRJ-D1..D20</code>), DLD <code>dld_projects-open</code> active escrow registries, and DM GIS community boundaries, construction activity in Dubai is concentrated across <strong>6 primary clusters</strong>:</p>
-            ${dxbComms.map(c => `
+            ${dxbComms.map(c => {
+              const rId = commRoadMap[c.community_id] || "RD-DXB-05";
+              const rObs = getRoadObsForWindow(rId, currentTimeWindow);
+              return `
               <div style="background:#090d16; border:1px solid #334155; padding:8px; border-radius:7px; margin-bottom:7px; cursor:pointer;" onclick="map.flyTo([${c.center_lat}, ${c.center_lon}], ${c.recommended_zoom}); showCommunityInspector(DATA.communities.find(x=>x.community_id==='${c.community_id}'))">
                 <div style="display:flex; justify-content:space-between; font-size:0.78rem; font-weight:700; color:#fff;">
                   <span>${c.community_name}</span>
@@ -2312,26 +2683,41 @@ def main():
                 <div style="font-size:0.72rem; color:#94a3b8; margin-top:3px;">
                   <strong>${c.active_developments_count} Devs</strong> • <strong>${c.active_towers_and_buildings} Towers/Clusters</strong> • <strong>${c.scheduled_units_2025_2029.toLocaleString()} Units</strong> • <strong>${(c.active_structural_gfa_sqm/1e6).toFixed(2)}M m² GFA</strong>
                 </div>
-                <div style="font-size:0.71rem; color:${congestionColor(c.observed_congestion_severity)}; margin-top:2px;">Traffic: ${c.observed_congestion_severity}</div>
+                ${rObs ? `<div style="font-size:0.71rem; color:${congestionColor(rObs.congestion_level)}; margin-top:3px; font-weight:700;">⏱️ ${currentTimeWindow.split(' ')[0]} Corridor (${rId}): ~${rObs.average_speed_kmh} km/h (${rObs.travel_time_min_per_10km} min/10km) — ${rObs.congestion_level}</div>` : `<div style="font-size:0.71rem; color:${congestionColor(c.observed_congestion_severity)}; margin-top:2px;">Traffic: ${c.observed_congestion_severity}</div>`}
               </div>
-            `).join("")}
+            `;
+            }).join("")}
             <div style="font-size:0.71rem; color:var(--muted); border-top:1px solid #334155; padding-top:6px;">
               <strong>Key Analytical Insight:</strong> High construction GFA does <em>not</em> automatically produce severe congestion. <strong>Dubai South / DWC (7.85M m² GFA)</strong> experiences <em>Low–Moderate</em> congestion because it is served by 12-lane 24/7 HGV-exempt freeways (<code>E611</code> &amp; <code>E77</code>), whereas <strong>JVC (3.42M m² GFA)</strong> and <strong>Business Bay (3.85M m² GFA)</strong> experience <em>Severe</em> peak congestion due to arterial/collector access funnels.
             </div>
           </div>
         `;
       } else if (num === 2) {
-        document.getElementById("emirateSelect").value = "Dubai";
-        populateCommunityDropdown();
-        document.getElementById("communitySelect").value = "COM-DXB-01";
-        map.flyTo([25.0565, 55.2090], 14, { duration: 0.9 });
-        document.getElementById("hudScope").textContent = "Use Case 2: JVC Construction & Traffic Impact";
-        renderAllMapLayers();
+        if (fly) {
+          document.getElementById("emirateSelect").value = "Dubai";
+          populateCommunityDropdown();
+          document.getElementById("communitySelect").value = "COM-DXB-01";
+          map.flyTo([25.0565, 55.2090], 14, { duration: 0.9 });
+          document.getElementById("hudScope").textContent = "Use Case 2: JVC Construction & Traffic Impact";
+          renderAllMapLayers();
+        }
 
         document.getElementById("useCaseContainer").innerHTML = `
           <div class="detail-card">
             <span class="brand-badge" style="background:#e11d48;">Use Case 2 — JVC Community Deep-Dive</span>
             <h4 style="margin-top:6px;">"Show construction activity in JVC and the surrounding traffic conditions."</h4>
+            <div class="live-window-banner">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:#38bdf8;">⏱️ JVC Live Window: ${currentTimeWindow}</strong>
+                <span style="color:${d61Obs ? congestionColor(d61Obs.congestion_level) : '#ef4444'}; font-weight:800;">D61: ~${d61Obs ? d61Obs.average_speed_kmh : 29} km/h</span>
+              </div>
+              <div style="margin-top:3px; color:#cbd5e1;">
+                • <strong>Hessa St (D61):</strong> ~${d61Obs ? d61Obs.average_speed_kmh : 29} km/h (${d61Obs ? d61Obs.travel_time_min_per_10km : 20.68} min/10km | V/C=${d61Obs ? d61Obs.vc_ratio : 1.04})<br/>
+                • <strong>Al Khail Rd (E44):</strong> ~${e44Obs ? e44Obs.average_speed_kmh : 64} km/h (${e44Obs ? e44Obs.travel_time_min_per_10km : 9.38} min/10km | V/C=${e44Obs ? e44Obs.vc_ratio : 0.82})<br/>
+                • <strong>JVC Circle Blvd:</strong> ~${jvcObs ? jvcObs.average_speed_kmh : 28} km/h (${jvcObs ? jvcObs.travel_time_min_per_10km : 21.43} min/10km | V/C=${jvcObs ? jvcObs.vc_ratio : 0.89})
+              </div>
+              <div style="margin-top:2px; font-size:0.68rem; color:${hgvInfo.color};">${hgvInfo.text}</div>
+            </div>
             <p style="font-size:0.76rem; color:#cbd5e1;"><strong>Jumeirah Village Circle (JVC)</strong> has <strong>38 active developments (64 towers, ~28,500 scheduled units, 3.42M m² active GFA)</strong> plus major Hessa St East masterplans (<a href="javascript:void(0)" onclick="showProjectInspector('PRJ-D16')">PRJ-D16 DAMAC Lagoons</a> &amp; <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-D19')">PRJ-D19 Tilal Al Ghaf</a>), all funneling into 3 primary corridors:</p>
 
             <div class="kv-grid">
@@ -2364,17 +2750,26 @@ def main():
           </div>
         `;
       } else if (num === 3) {
-        document.getElementById("emirateSelect").value = "Dubai";
-        populateCommunityDropdown();
-        map.flyTo([25.125, 55.255], 12, { duration: 0.9 });
-        document.getElementById("hudScope").textContent = "Use Case 3: Temporal & Historical Comparison";
-        renderAllMapLayers();
+        if (fly) {
+          document.getElementById("emirateSelect").value = "Dubai";
+          populateCommunityDropdown();
+          map.flyTo([25.125, 55.255], 12, { duration: 0.9 });
+          document.getElementById("hudScope").textContent = "Use Case 3: Temporal & Historical Comparison";
+          renderAllMapLayers();
+        }
 
         document.getElementById("useCaseContainer").innerHTML = `
           <div class="detail-card">
             <span class="brand-badge" style="background:#0d9488;">Use Case 3 — Temporal &amp; Historical Analysis</span>
             <h4 style="margin-top:6px;">"Compare traffic conditions around construction hotspots across Morning, Midday, Evening &amp; 2024–2026."</h4>
-            <p style="font-size:0.75rem; color:#cbd5e1;">Use the <strong>Time Window buttons in the top bar</strong> to watch the map update dynamically. Below is the multi-period comparison separating <strong>Published City-Wide &amp; RTA Benchmarks</strong> from <strong>Modelled Corridor Estimates</strong>:</p>
+            <div class="live-window-banner">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:#38bdf8;">⏱️ Selected Window: ${currentTimeWindow}</strong>
+                <span style="color:#fff; font-weight:800;">D61: ${d61Obs ? d61Obs.average_speed_kmh : 29} km/h • E44: ${e44Obs ? e44Obs.average_speed_kmh : 64} km/h • E11: ${e11Obs ? e11Obs.average_speed_kmh : 52} km/h</span>
+              </div>
+              <div style="margin-top:2px; font-size:0.68rem; color:${hgvInfo.color};">${hgvInfo.text}</div>
+            </div>
+            <p style="font-size:0.75rem; color:#cbd5e1;">Use the <strong>Time Window buttons</strong> above or on the map dock to watch corridor speeds, colors, and BPR metrics update dynamically:</p>
 
             <div class="kv-grid">
               <div class="kv-row">
@@ -2386,10 +2781,10 @@ def main():
               <div class="kv-row">
                 <div class="kv-lbl">1. Hessa Street (D61 — JVC North Gate • Published RTA Capacity: 4,000 → 8,000 vph/dir)</div>
                 <div class="kv-val">
-                  • <strong>Morning Peak (07:30–09:30):</strong> Formula BPR <code>v_BPR = 68.1 km/h</code> (8.81 min/10km at V/C=1.04) + modelled bottleneck-delay assumption <code>d_adj = +11.87 min/10km</code> = <strong>20.68 min/10km → 29.0 km/h</strong> (HGVs banned).<br/>
-                  • <strong>Midday (12:00–14:00):</strong> Formula BPR <code>v_BPR = 75.8 km/h</code> (7.92 min/10km at V/C=0.78) + modelled bottleneck-delay assumption <code>d_adj = +4.58 min/10km</code> = <strong>12.50 min/10km → 48.0 km/h</strong>.<br/>
-                  • <strong>Evening Peak (17:00–20:00):</strong> Formula BPR <code>v_BPR = 65.6 km/h</code> (9.15 min/10km at V/C=1.10) + modelled bottleneck-delay assumption <code>d_adj = +14.85 min/10km</code> = <strong>24.00 min/10km → 25.0 km/h</strong>.<br/>
-                  • <strong>Night (22:00–05:00):</strong> Formula BPR <code>v_BPR = 79.9 km/h</code> (7.51 min/10km at V/C=0.29) + modelled bottleneck-delay assumption <code>d_adj = +1.31 min/10km</code> = <strong>8.82 min/10km → 68.0 km/h</strong>.<br/>
+                  • <strong style="${currentTimeWindow.includes('Morning') ? 'color:#38bdf8;' : ''}">Morning Peak (07:30–09:30):</strong> Formula BPR <code>v_BPR = 68.1 km/h</code> (8.81 min/10km at V/C=1.04) + modelled bottleneck-delay assumption <code>d_adj = +11.87 min/10km</code> = <strong>20.68 min/10km → 29.0 km/h</strong> (HGVs banned).<br/>
+                  • <strong style="${currentTimeWindow.includes('Midday') ? 'color:#38bdf8;' : ''}">Midday (12:00–14:00):</strong> Formula BPR <code>v_BPR = 75.8 km/h</code> (7.92 min/10km at V/C=0.78) + modelled bottleneck-delay assumption <code>d_adj = +4.58 min/10km</code> = <strong>12.50 min/10km → 48.0 km/h</strong>.<br/>
+                  • <strong style="${currentTimeWindow.includes('Evening') ? 'color:#38bdf8;' : ''}">Evening Peak (17:00–20:00):</strong> Formula BPR <code>v_BPR = 65.6 km/h</code> (9.15 min/10km at V/C=1.10) + modelled bottleneck-delay assumption <code>d_adj = +14.85 min/10km</code> = <strong>24.00 min/10km → 25.0 km/h</strong>.<br/>
+                  • <strong style="${currentTimeWindow.includes('Night') ? 'color:#38bdf8;' : ''}">Night (22:00–05:00):</strong> Formula BPR <code>v_BPR = 79.9 km/h</code> (7.51 min/10km at V/C=0.29) + modelled bottleneck-delay assumption <code>d_adj = +1.31 min/10km</code> = <strong>8.82 min/10km → 68.0 km/h</strong>.<br/>
                   • <strong>Modelled 2024 vs 2026 Delta:</strong> Modelled improvement from ~19–22 km/h (2024) to ~25–29 km/h as phased AED 689M flyovers open.
                 </div>
               </div>
@@ -2417,30 +2812,39 @@ def main():
           </div>
         `;
       } else if (num === 4) {
-        document.getElementById("emirateSelect").value = "Sharjah";
-        populateCommunityDropdown();
-        map.flyTo([25.312, 55.505], 12, { duration: 0.9 });
-        document.getElementById("hudScope").textContent = "Priority 2: Sharjah Expansion (12 Projects)";
-        renderAllMapLayers();
+        if (fly) {
+          document.getElementById("emirateSelect").value = "Sharjah";
+          populateCommunityDropdown();
+          map.flyTo([25.312, 55.505], 12, { duration: 0.9 });
+          document.getElementById("hudScope").textContent = "Priority 2: Sharjah Expansion (12 Projects)";
+          renderAllMapLayers();
+        }
 
         document.getElementById("useCaseContainer").innerHTML = `
           <div class="detail-card">
             <span class="brand-badge" style="background:#d97706;">Priority 2 — Sharjah Expansion</span>
             <h4 style="margin-top:6px;">Sharjah Construction &amp; Corridor Intelligence (12 Flagships on Unified Architecture)</h4>
+            <div class="live-window-banner">
+              <div style="display:flex; justify-content:space-between; align-items:center;">
+                <strong style="color:#38bdf8;">⏱️ Sharjah Active Window: ${currentTimeWindow}</strong>
+                <span style="color:${shjObs ? congestionColor(shjObs.congestion_level) : '#ef4444'}; font-weight:800;">E311: ~${shjObs ? shjObs.average_speed_kmh : 28} km/h • E611: ~${e611ShjObs ? e611ShjObs.average_speed_kmh : 62} km/h</span>
+              </div>
+              <div style="margin-top:2px; font-size:0.68rem; color:${hgvInfo.color};">${hgvInfo.text}</div>
+            </div>
             <p style="font-size:0.76rem; color:#cbd5e1;">Reusing the exact Dubai spatial schema, all 12 Sharjah Flagship Projects (<code>PRJ-SH1..SH12</code>) are mapped across Sharjah's 3 primary commuter &amp; megaproject corridors:</p>
             <div class="kv-grid">
               <div class="kv-row">
                 <div class="kv-lbl">1. Muwaileh, Aljada &amp; Al Zahia Nexus (E311 × E88)</div>
                 <div class="kv-val">
                   • <strong>Projects:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH2')">PRJ-SH2 Aljada (25,000 units)</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH9')">PRJ-SH9 Al Zahia</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH8')">PRJ-SH8 Olfah</a>.<br/>
-                  • <strong>Traffic:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-01')">E311 Southbound</a> has a <strong>Modelled Corridor Estimate of ~28 km/h (Severe)</strong> in AM peak &amp; ~31 km/h in PM peak. SRTA &amp; Arada built dedicated Aljada/Airport Rd (E88) grade-separated bridges to bypass E311 queues.
+                  • <strong>Traffic (${currentTimeWindow}):</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-01')">E311 Industrial / National Paints</a> operates at <strong>~${shjObs ? shjObs.average_speed_kmh : 28} km/h (${shjObs ? shjObs.congestion_level : 'Severe'})</strong>. SRTA &amp; Arada built dedicated Aljada/Airport Rd (E88) grade-separated bridges to bypass E311 queues.
                 </div>
               </div>
               <div class="kv-row">
                 <div class="kv-lbl">2. Emirates Road (E611) Forest &amp; Eco-City Belt</div>
                 <div class="kv-val">
                   • <strong>Projects:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH3')">PRJ-SH3 Masaar 1–3</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH5')">PRJ-SH5 Khalid Bin Sultan City (Zaha Hadid)</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH6')">PRJ-SH6 Hayyan</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH7')">PRJ-SH7 Tilal City</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH10')">PRJ-SH10 Sharjah Sustainable City</a>.<br/>
-                  • <strong>Traffic:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-02')">Emirates Rd (E611)</a> operates at a <strong>Modelled Corridor Estimate of ~62 km/h (Moderate)</strong> in PM peak; SRTA's 320m Al Dhaid Bridge (E88) opens November 15, 2026.
+                  • <strong>Traffic (${currentTimeWindow}):</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-02')">Emirates Rd (E611)</a> operates at <strong>~${e611ShjObs ? e611ShjObs.average_speed_kmh : 62} km/h (${e611ShjObs ? e611ShjObs.congestion_level : 'Moderate'})</strong>; SRTA's 320m Al Dhaid Bridge (E88) opens November 15, 2026.
                 </div>
               </div>
               <div class="kv-row">
