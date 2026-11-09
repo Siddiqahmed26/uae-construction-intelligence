@@ -507,6 +507,10 @@ def main():
       width: 100%;
       height: 100%;
       z-index: 1;
+      background: #0b1120;
+    }}
+    .leaflet-tile.gis-dark-tiles {{
+      filter: invert(100%) hue-rotate(180deg) brightness(95%) contrast(90%);
     }}
     .map-hud-top {{
       position: absolute;
@@ -1248,15 +1252,19 @@ def main():
       if (baseTileLayer) map.removeLayer(baseTileLayer);
       if (mode === "sat") {
         baseTileLayer = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", {
+          maxZoom: 19,
           attribution: "Tiles &copy; Esri &mdash; Source: Esri, Maxar, Earthstar Geographics"
         });
       } else if (mode === "light") {
-        baseTileLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
-          attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
+        baseTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          attribution: "&copy; OpenStreetMap contributors (ODbL — No API Key Required)"
         });
       } else {
-        baseTileLayer = L.tileLayer("https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png", {
-          attribution: "&copy; OpenStreetMap contributors &copy; CARTO"
+        baseTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          maxZoom: 19,
+          className: "gis-dark-tiles",
+          attribution: "&copy; OpenStreetMap contributors (ODbL Dark GIS — No API Key Required)"
         });
       }
       baseTileLayer.addTo(map);

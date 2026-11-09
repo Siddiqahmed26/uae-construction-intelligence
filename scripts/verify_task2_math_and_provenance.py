@@ -255,15 +255,15 @@ def main():
     )
     assert "65" not in str(city_row["free_flow_speed_kmh"])
 
-    # Ensure stale TomTom rush-hour strings ("18 min 40 sec", "46% congestion", "26 min 35 sec", "69% congestion") do not exist anywhere
+    # Ensure stale TomTom rush-hour strings ("18 min 40 sec", "46% congestion", "26 min 35 sec", "69% congestion") and Carto API-key watermark tile URLs do not exist anywhere
     for check_p in (
         DATASETS_DIR / "17_traffic_congestion_observations.json",
         DATASETS_DIR / "11_provenance_source_register.json",
         WEB_DIR / "task2_gis_intelligence.html",
     ):
         txt = check_p.read_text(encoding="utf-8")
-        for forbidden in ("18 min 40 sec", "46% congestion", "26 min 35 sec", "69% congestion"):
-            assert forbidden not in txt, f"Found stale string '{forbidden}' in {check_p.name}"
+        for forbidden in ("18 min 40 sec", "46% congestion", "26 min 35 sec", "69% congestion", "basemaps.cartocdn.com"):
+            assert forbidden not in txt, f"Found forbidden string '{forbidden}' in {check_p.name}"
 
     # 2. Verify Two-Term BPR + Modelled Bottleneck-Delay Assumption across all 21 Corridor Rows
     corridor_rows = [r for r in obs_rows if r["observation_id"] != "OBS-DXB-CITY-00"]
