@@ -168,12 +168,33 @@
       gap: 6px;
     }
     @media (max-width: 768px) {
+      .hero { padding: 14px 12px 18px; }
+      .hero h1 { font-size: 1.15rem; margin-bottom: 6px; }
+      .hero p { font-size: 0.80rem; line-height: 1.4; }
+      .hero-actions { gap: 6px; }
+      .btn-pdf, .btn-repo { padding: 8px 10px; font-size: 0.78rem; }
+      .kpi-container {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 7px;
+        margin: -10px auto 12px;
+        padding: 0 10px;
+      }
+      .kpi-box { padding: 8px 10px; border-radius: 9px; }
+      .kpi-box .k-label { font-size: 0.62rem; }
+      .kpi-box .k-val { font-size: 0.96rem; margin: 2px 0; }
+      .kpi-box .k-sub { font-size: 0.68rem; }
+      .nav-inner { padding: 7px 10px; gap: 6px; }
       .tabs {
         flex-wrap: nowrap;
         overflow-x: auto;
-        padding-bottom: 4px;
+        padding-bottom: 3px;
         -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
       }
+      .tabs::-webkit-scrollbar { display: none; }
+      .tab-btn { padding: 6px 10px; font-size: 0.74rem; }
+      .search-input, .emirate-select { padding: 6px 10px; font-size: 0.78rem; }
+      .container { padding: 10px 10px 40px; }
     }
     .tab-btn {
       background: #f1f5f9;
@@ -502,16 +523,27 @@
 </head>
 <body>
 <!-- TASK 2 GLOBAL SWITCHER BANNER -->
-  <div id="task2-global-banner" style="background:linear-gradient(90deg,#090d16 0%,#0f172a 50%,#1e1b4b 100%); color:#fff; padding:10px 20px; border-bottom:2px solid #38bdf8; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-family:system-ui,sans-serif; z-index:9999;">
-    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-      <span style="background:#0284c7; color:#fff; font-weight:800; font-size:0.74rem; padding:3px 9px; border-radius:999px; text-transform:uppercase;">New — Task 2 Live Prototype</span>
-      <strong style="font-size:0.92rem;">Geographic Visualization, Construction Activity &amp; Traffic Impact Intelligence (Dubai &amp; Sharjah)</strong>
+  <style>
+    #task2-global-banner { background:linear-gradient(90deg,#090d16 0%,#0f172a 50%,#1e1b4b 100%); color:#fff; padding:9px 16px; border-bottom:2px solid #38bdf8; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-family:system-ui,sans-serif; z-index:9999; }
+    #task2-global-banner .t2-links { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+    @media (max-width: 768px) {
+      #task2-global-banner { padding:7px 10px; gap:5px; }
+      #task2-global-banner .t2-title { font-size:0.78rem !important; line-height:1.25; }
+      #task2-global-banner .t2-links { width:100%; overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+      #task2-global-banner .t2-links::-webkit-scrollbar { display:none; }
+      #task2-global-banner .t2-links a { flex-shrink:0; white-space:nowrap; font-size:0.72rem !important; padding:4px 9px !important; }
+    }
+  </style>
+  <div id="task2-global-banner">
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span style="background:#0284c7; color:#fff; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:999px; text-transform:uppercase;">Task 2 Live</span>
+      <strong class="t2-title" style="font-size:0.88rem;">Geographic Visualization &amp; Traffic Impact Intelligence (Dubai &amp; Sharjah)</strong>
     </div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <a href="task2_gis_intelligence.html" style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:6px 14px; border-radius:7px; font-weight:700; font-size:0.80rem; text-decoration:none;">🗺️ Launch Task 2 Interactive GIS &amp; Traffic Map →</a>
-      <a href="datasets/dubai_sharjah_gis_bundle.geojson" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:6px 11px; border-radius:7px; font-weight:600; font-size:0.76rem; text-decoration:none;">GeoJSON Bundle</a>
-      <a href="datasets/21_task2_spatial_database.sqlite" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:6px 11px; border-radius:7px; font-weight:600; font-size:0.76rem; text-decoration:none;">Task 2 Spatial SQLite</a>
-      <a href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/22_project_road_impact_links.csv" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:6px 11px; border-radius:7px; font-weight:600; font-size:0.76rem; text-decoration:none;">Road Impact Links CSV</a>
+    <div class="t2-links">
+      <a href="task2_gis_intelligence.html" style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:5px 12px; border-radius:7px; font-weight:700; font-size:0.78rem; text-decoration:none;">🗺️ Launch Task 2 GIS Map →</a>
+      <a href="datasets/dubai_sharjah_gis_bundle.geojson" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">GeoJSON Bundle</a>
+      <a href="datasets/21_task2_spatial_database.sqlite" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">Spatial SQLite</a>
+      <a href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/22_project_road_impact_links.csv" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">Impact Links CSV</a>
     </div>
   </div>
 

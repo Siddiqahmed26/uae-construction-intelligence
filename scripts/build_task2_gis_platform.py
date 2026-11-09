@@ -1123,6 +1123,285 @@ def main():
       font-weight: 600;
       font-size: 0.72rem;
     }}
+    .mobile-back-map-btn {{
+      display: none;
+    }}
+
+    /* =========================================================================
+       MOBILE & TABLET RESPONSIVE ARCHITECTURE (ZERO OVERLAP, ZERO OVERFLOW)
+       ========================================================================= */
+    @media (max-width: 1024px) {{
+      html, body {{
+        max-width: 100vw;
+        overflow-x: hidden;
+      }}
+      .exec-header {{
+        flex-wrap: wrap;
+        padding: 6px 10px;
+        gap: 6px;
+        min-height: auto;
+      }}
+      .brand-cluster {{
+        flex: 1 1 auto;
+        min-width: 0;
+      }}
+      .header-actions {{
+        margin-left: auto;
+        gap: 6px;
+      }}
+      .mode-switcher {{
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding: 3px;
+        gap: 4px;
+      }}
+      .mode-switcher::-webkit-scrollbar {{ display: none; }}
+      .mode-btn {{
+        flex-shrink: 0;
+        padding: 5px 10px;
+        font-size: 0.72rem;
+      }}
+      .workbench {{
+        display: flex !important;
+        flex-direction: column;
+        height: auto !important;
+        min-height: 0 !important;
+      }}
+      .map-stage {{
+        display: flex;
+        flex-direction: column;
+        height: auto;
+        overflow: visible;
+      }}
+      /* Move floating HUDs out of absolute map overlay so 100% of #mapCanvas is unobstructed */
+      .map-hud-top {{
+        position: static !important;
+        width: 100%;
+        background: #090e1a;
+        border-bottom: 1px solid var(--border);
+        padding: 6px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+        pointer-events: auto;
+      }}
+      .story-bar {{
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        background: transparent;
+        border: none;
+        padding: 0;
+        box-shadow: none;
+        gap: 4px;
+      }}
+      .story-bar::-webkit-scrollbar {{ display: none; }}
+      .story-lbl, .story-step, .story-arrow {{
+        flex-shrink: 0;
+      }}
+      .hud-right-stack {{
+        width: 100%;
+        justify-content: space-between;
+        gap: 4px;
+      }}
+      #collapseRightBtn {{
+        display: none !important;
+      }}
+      .epistemic-banner {{
+        position: static !important;
+        width: 100%;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+        border-top: none;
+        padding: 5px 8px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        white-space: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 6px;
+        font-size: 0.67rem;
+      }}
+      .epistemic-banner::-webkit-scrollbar {{ display: none; }}
+      .epistemic-banner > * {{
+        flex-shrink: 0;
+      }}
+      #mapCanvas {{
+        width: 100%;
+        height: 46vh !important;
+        min-height: 320px;
+        max-height: 430px;
+        flex: none;
+      }}
+      .map-hud-bottom {{
+        position: static !important;
+        width: 100%;
+        background: #090e1a;
+        border-top: 1px solid var(--border);
+        border-bottom: 1px solid var(--border);
+        padding: 6px 8px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+        align-items: stretch;
+        pointer-events: auto;
+      }}
+      .time-group {{
+        order: 1;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        width: 100%;
+        gap: 4px;
+        padding: 3px;
+        box-shadow: none;
+      }}
+      .time-btn {{
+        padding: 6px 4px;
+        font-size: 0.69rem;
+        text-align: center;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }}
+      .layer-pill-bar {{
+        order: 2;
+        width: 100%;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding: 2px 0;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        gap: 5px;
+      }}
+      .layer-pill-bar::-webkit-scrollbar {{ display: none; }}
+      .quick-layer-pill {{
+        flex-shrink: 0;
+        padding: 5px 9px;
+        font-size: 0.69rem;
+      }}
+      .map-legend {{
+        order: 3;
+        width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
+        padding: 4px 6px;
+        background: rgba(15, 23, 42, 0.75);
+      }}
+      .legend-inline {{
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        gap: 8px;
+      }}
+      .legend-inline::-webkit-scrollbar {{ display: none; }}
+      .layers-drawer-popover {{
+        position: fixed !important;
+        left: 8px !important;
+        right: 8px !important;
+        bottom: 8px !important;
+        top: auto !important;
+        width: auto !important;
+        max-height: 78vh !important;
+        z-index: 4500 !important;
+        box-shadow: 0 -10px 40px rgba(0,0,0,0.88) !important;
+      }}
+      .sidebar-right {{
+        width: 100%;
+        border-left: none !important;
+        border-top: 1px solid var(--border);
+        overflow: visible;
+      }}
+      .drawer-tabs {{
+        position: sticky;
+        top: 82px;
+        z-index: 1500;
+      }}
+      .drawer-body {{
+        max-height: none;
+        overflow-y: visible;
+        padding: 10px;
+      }}
+      .mobile-back-map-btn {{
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        background: rgba(2, 132, 199, 0.22);
+        border: 1px solid #38bdf8;
+        color: #38bdf8;
+        padding: 3px 8px;
+        border-radius: 6px;
+        font-size: 0.68rem;
+        font-weight: 700;
+        cursor: pointer;
+      }}
+    }}
+
+    @media (max-width: 768px) {{
+      .brand-title {{
+        font-size: 0.80rem;
+        gap: 5px;
+      }}
+      .brand-badge {{
+        font-size: 0.58rem;
+        padding: 2px 6px;
+      }}
+      .emirate-pill-select {{
+        font-size: 0.69rem;
+        padding: 4px 6px;
+        max-width: 132px;
+      }}
+      .export-dropdown summary {{
+        font-size: 0.68rem;
+        padding: 4px 7px;
+      }}
+      .export-menu {{
+        position: fixed;
+        top: 46px;
+        right: 8px;
+        left: 8px;
+        width: auto;
+        max-width: 340px;
+        margin-left: auto;
+        z-index: 4500;
+      }}
+      .dtab-btn {{
+        padding: 8px 4px;
+        font-size: 0.68rem;
+      }}
+      .road-speed-pill {{
+        font-size: 0.60rem;
+        padding: 1px 4px;
+        border-radius: 4px;
+      }}
+      .evidence-section {{
+        padding: 12px 10px 36px;
+      }}
+      .ev-tabs {{
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding-bottom: 6px;
+      }}
+      .ev-tabs::-webkit-scrollbar {{ display: none; }}
+      .ev-tab-btn {{
+        flex-shrink: 0;
+        white-space: nowrap;
+        font-size: 0.70rem;
+        padding: 5px 9px;
+      }}
+    }}
   </style>
 </head>
 <body>
@@ -1764,7 +2043,7 @@ def main():
     function initMap() {
       map = L.map("mapCanvas", {
         center: [25.115, 55.245],
-        zoom: 11,
+        zoom: window.innerWidth <= 768 ? 10 : 11,
         zoomControl: true
       });
 
@@ -1775,9 +2054,18 @@ def main():
         layerGroups[k].addTo(map);
       });
 
+      let lastMobileZoomTier = map.getZoom() >= 12;
+      map.on("zoomend", () => {
+        const curTier = map.getZoom() >= 12;
+        if (window.innerWidth <= 768 && curTier !== lastMobileZoomTier) {
+          lastMobileZoomTier = curTier;
+          renderAllMapLayers();
+        }
+      });
+
       populateCommunityDropdown();
       renderAllMapLayers();
-      runUseCase(1);
+      runUseCase(1, false);
     }
 
     function setPlatformMode(mode, btnEl) {
@@ -2082,6 +2370,20 @@ def main():
       let speedSum = 0;
       let speedCount = 0;
       const badgeRoadIds = new Set(["RD-DXB-01", "RD-DXB-03", "RD-DXB-05", "RD-DXB-07", "RD-DXB-09", "RD-DXB-11", "RD-DXB-13", "RD-SHJ-01", "RD-SHJ-02", "RD-SHJ-06"]);
+      const mobileCorePills = new Set(["RD-DXB-01", "RD-DXB-03", "RD-DXB-05", "RD-SHJ-01"]);
+      const shortRoadLabels = {
+        "RD-DXB-01": "E11 SZR",
+        "RD-DXB-03": "E44 Khail",
+        "RD-DXB-05": "D61 Hessa",
+        "RD-DXB-07": "JVC Blvd",
+        "RD-DXB-09": "D71 FinCtr",
+        "RD-DXB-11": "D62 Khor",
+        "RD-DXB-13": "E611 Freight",
+        "RD-SHJ-01": "E311 Shj",
+        "RD-SHJ-02": "E611 Shj",
+        "RD-SHJ-06": "S142 Coast"
+      };
+      const isMobileLowZoom = (window.innerWidth <= 768) && map && (map.getZoom() < 12);
 
       // 2. Layer 4 & Layer 6: Road Network & Dynamic 4-Window Traffic Speed/Congestion Overlay + Floating Speed Pills
       DATA.roads.forEach(r => {
@@ -2136,14 +2438,15 @@ def main():
         trafLine.addTo(layerGroups.traffic);
 
         // Floating On-Map Speed Pill for Key Corridors (Instantly updates when AM/Midday/PM/Night is clicked)
-        if (obs && badgeRoadIds.has(r.road_id)) {
+        const showPill = obs && (isMobileLowZoom ? mobileCorePills.has(r.road_id) : badgeRoadIds.has(r.road_id));
+        if (showPill) {
           const midPt = r.geometry_wgs84[Math.floor(r.geometry_wgs84.length / 2)];
-          const shortCode = r.road_code.split("/")[0].trim();
+          const shortCode = shortRoadLabels[r.road_id] || r.road_code.split("/")[0].trim();
           const pillIcon = L.divIcon({
             className: "",
-            html: `<div class="road-speed-pill" style="border-color:${tCol};" onclick="showRoadInspector('${r.road_id}')"><span style="width:7px;height:7px;border-radius:50%;background:${tCol};display:inline-block;"></span><span>${shortCode}: <strong>${obs.average_speed_kmh} km/h</strong></span></div>`,
-            iconSize: [96, 22],
-            iconAnchor: [48, 11]
+            html: `<div class="road-speed-pill" style="border-color:${tCol};" onclick="showRoadInspector('${r.road_id}')"><span style="width:6px;height:6px;border-radius:50%;background:${tCol};display:inline-block;"></span><span>${shortCode}: <strong>${obs.average_speed_kmh} km/h</strong></span></div>`,
+            iconSize: [86, 20],
+            iconAnchor: [43, 10]
           });
           const pillMarker = L.marker([midPt[1], midPt[0]], { icon: pillIcon });
           pillMarker.on("click", () => showRoadInspector(r.road_id));
@@ -2393,7 +2696,10 @@ def main():
         <div class="detail-card">
           <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
             <span class="brand-badge">${p.project_id} • ${p.emirate}</span>
-            <span class="conf-pill b-ver">${p.confidence_classification}</span>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="mobile-back-map-btn" onclick="document.getElementById('mapCanvas').scrollIntoView({behavior:'smooth',block:'center'})">🗺️ ↑ Map</button>
+              <span class="conf-pill b-ver">${p.confidence_classification}</span>
+            </div>
           </div>
           <h4>${p.project_name}</h4>
           <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:10px;">${p.developer} • ${p.city_district_community}</div>
@@ -2540,9 +2846,12 @@ def main():
 
       document.getElementById("inspectorContainer").innerHTML = `
         <div class="detail-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
             <span class="brand-badge">${r.road_id} • ${r.road_code}</span>
-            <span class="conf-pill ${r.confidence === 'Verified' ? 'b-ver' : 'b-est'}">${r.confidence}</span>
+            <div style="display:flex; gap:6px; align-items:center;">
+              <button class="mobile-back-map-btn" onclick="document.getElementById('mapCanvas').scrollIntoView({behavior:'smooth',block:'center'})">🗺️ ↑ Map</button>
+              <span class="conf-pill ${r.confidence === 'Verified' ? 'b-ver' : 'b-est'}">${r.confidence}</span>
+            </div>
           </div>
           <h4>${r.road_name}</h4>
           <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:10px;">${r.authority} • ${r.road_type}</div>
@@ -3062,26 +3371,48 @@ def main():
         (ARTIFACT_DIR / "uae_construction_portal.html").write_text(full_html, encoding="utf-8")
     print(f"Built Task 2 Interactive GIS & Traffic Platform: {out_path} ({out_path.stat().st_size // 1024} KB)")
 
-    # Inject a prominent Task 2 banner at the very top of web/index.html & web/validation_report.html
+    # Inject a prominent, mobile-responsive Task 2 banner at the very top of web/index.html & web/validation_report.html
     banner_html = """<!-- TASK 2 GLOBAL SWITCHER BANNER -->
-  <div id="task2-global-banner" style="background:linear-gradient(90deg,#090d16 0%,#0f172a 50%,#1e1b4b 100%); color:#fff; padding:10px 20px; border-bottom:2px solid #38bdf8; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; font-family:system-ui,sans-serif; z-index:9999;">
-    <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-      <span style="background:#0284c7; color:#fff; font-weight:800; font-size:0.74rem; padding:3px 9px; border-radius:999px; text-transform:uppercase;">New — Task 2 Live Prototype</span>
-      <strong style="font-size:0.92rem;">Geographic Visualization, Construction Activity &amp; Traffic Impact Intelligence (Dubai &amp; Sharjah)</strong>
+  <style>
+    #task2-global-banner { background:linear-gradient(90deg,#090d16 0%,#0f172a 50%,#1e1b4b 100%); color:#fff; padding:9px 16px; border-bottom:2px solid #38bdf8; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-family:system-ui,sans-serif; z-index:9999; }
+    #task2-global-banner .t2-links { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+    @media (max-width: 768px) {
+      #task2-global-banner { padding:7px 10px; gap:5px; }
+      #task2-global-banner .t2-title { font-size:0.78rem !important; line-height:1.25; }
+      #task2-global-banner .t2-links { width:100%; overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+      #task2-global-banner .t2-links::-webkit-scrollbar { display:none; }
+      #task2-global-banner .t2-links a { flex-shrink:0; white-space:nowrap; font-size:0.72rem !important; padding:4px 9px !important; }
+    }
+  </style>
+  <div id="task2-global-banner">
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span style="background:#0284c7; color:#fff; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:999px; text-transform:uppercase;">Task 2 Live</span>
+      <strong class="t2-title" style="font-size:0.88rem;">Geographic Visualization &amp; Traffic Impact Intelligence (Dubai &amp; Sharjah)</strong>
     </div>
-    <div style="display:flex; gap:8px; flex-wrap:wrap;">
-      <a href="task2_gis_intelligence.html" style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:6px 14px; border-radius:7px; font-weight:700; font-size:0.80rem; text-decoration:none;">🗺️ Launch Task 2 Interactive GIS &amp; Traffic Map →</a>
-      <a href="datasets/dubai_sharjah_gis_bundle.geojson" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:6px 11px; border-radius:7px; font-weight:600; font-size:0.76rem; text-decoration:none;">GeoJSON Bundle</a>
-      <a href="datasets/21_task2_spatial_database.sqlite" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:6px 11px; border-radius:7px; font-weight:600; font-size:0.76rem; text-decoration:none;">Task 2 Spatial SQLite</a>
-      <a href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/22_project_road_impact_links.csv" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:6px 11px; border-radius:7px; font-weight:600; font-size:0.76rem; text-decoration:none;">Road Impact Links CSV</a>
+    <div class="t2-links">
+      <a href="task2_gis_intelligence.html" style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:5px 12px; border-radius:7px; font-weight:700; font-size:0.78rem; text-decoration:none;">🗺️ Launch Task 2 GIS Map →</a>
+      <a href="datasets/dubai_sharjah_gis_bundle.geojson" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">GeoJSON Bundle</a>
+      <a href="datasets/21_task2_spatial_database.sqlite" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">Spatial SQLite</a>
+      <a href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/22_project_road_impact_links.csv" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">Impact Links CSV</a>
     </div>
   </div>"""
 
+    import re as _re
     for page_fn in ("index.html", "validation_report.html"):
         p_file = WEB_DIR / page_fn
         if p_file.exists():
             txt = p_file.read_text(encoding="utf-8")
-            if "id=\"task2-global-banner\"" not in txt:
+            if "<!-- TASK 2 GLOBAL SWITCHER BANNER -->" in txt:
+                txt = _re.sub(
+                    r"<!-- TASK 2 GLOBAL SWITCHER BANNER -->.*?</div>\s*</div>",
+                    banner_html,
+                    txt,
+                    count=1,
+                    flags=_re.S,
+                )
+                p_file.write_text(txt, encoding="utf-8")
+                print(f"Updated mobile-responsive Task 2 Navigation Banner in {page_fn}")
+            elif "id=\"task2-global-banner\"" not in txt:
                 txt = txt.replace("<body>", "<body>\n" + banner_html, 1)
                 p_file.write_text(txt, encoding="utf-8")
                 print(f"Injected Task 2 Navigation Banner into {page_fn}")
