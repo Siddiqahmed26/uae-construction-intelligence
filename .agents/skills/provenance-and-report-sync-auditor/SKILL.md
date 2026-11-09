@@ -14,7 +14,7 @@ Eliminate multi-round audit corrections by enforcing **Zero-Drift Programmatic G
 - Never verify only headline metrics (e.g., annual average speed) while leaving secondary sub-metrics (e.g., morning/evening rush-hour travel-time seconds or congestion percentages) or metadata (`publication_date`) approximate.
 - For every external benchmark row (such as TomTom Traffic Index `OBS-DXB-CITY-00`) and every provenance record (`11_provenance_source_register`):
   - Verify exact travel-time seconds (`18 min 41 sec`, `26 min 33 sec`) and exact congestion percentages (`42.3%`, `94.4%`).
-  - Verify that `publication_date` in both `11_provenance_source_register` and `17_traffic_congestion_observations` matches the linked official release date (`SRC-439` = `2022-12-25`, `SRC-452` = `2025-05-04`, `SRC-440` = `2025-05-25`, `SRC-451` = `2024-12-19`, `SRC-438` = `2025-07-13`, `SRC-434` = `2024-09-01`, `SRC-433` = `2024-12-22`).
+  - Verify that `publication_date` in both `11_provenance_source_register` and `17_traffic_congestion_observations` matches the linked official release date (`SRC-439` = `2022-12-25`, `SRC-452` = `2025-05-04`, `SRC-440` = `2025-05-25`, `SRC-451` = `2024-12-19`, `SRC-438` = `2025-07-13`, `SRC-434` = `2024-09-01`, `SRC-433` = `2025-11-18`).
 
 ### Gate 2 — Zero Manual Report Tables (100% Programmatic CSV-to-Report Generation)
 - **Never hand-type or partially edit a data table in a Markdown report or UI template.**

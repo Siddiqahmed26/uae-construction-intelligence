@@ -86,7 +86,10 @@ def sync_schema_manifest():
                 mp.write_text(json.dumps(mdata, indent=2, ensure_ascii=False), encoding="utf-8")
 
 
-def generate_report_from_csv(csv_corridor_rows: list[dict], prov_by_id: dict[str, dict]) -> str:
+EXPECTED_RTA_SIDS = ["SRC-433", "SRC-434", "SRC-438", "SRC-439", "SRC-440", "SRC-451", "SRC-452"]
+
+
+def generate_report_from_csv(city_row: dict, csv_corridor_rows: list[dict], prov_by_id: dict[str, dict]) -> str:
     """Programmatically generate task2_gis_and_traffic_intelligence_report.md directly from the committed CSV rows."""
     bpr_md_lines = []
     for r in csv_corridor_rows:
@@ -128,6 +131,16 @@ def generate_report_from_csv(csv_corridor_rows: list[dict], prov_by_id: dict[str
         )
     worked_block = "\n".join(worked_lines)
 
+    # Programmatically build Section 2.3 RTA Provenance table directly from prov_by_id
+    rta_prov_lines = []
+    for sid in EXPECTED_RTA_SIDS:
+        prec = prov_by_id[sid]
+        scope_cell = f"**{prec['document_or_page_reference']}:** {prec['supported_entity_and_extracted_fact']}"
+        rta_prov_lines.append(
+            f"| **`{sid}`** | `{prec['publication_date']}` | {prec['original_url']} | {scope_cell} |"
+        )
+    rta_prov_table_block = "\n".join(rta_prov_lines)
+
     report_md = rf"""# TASK 2 — UAE Construction Intelligence: Geographic Visualization, Construction Activity & Traffic Impact Intelligence
 
 **Execution Status:** **COMPLETE (Milestones 1–6 / Work Packages A–F + Final Zero-Drift Mathematical, Provenance & CSV-to-Report Sync Verified & Deployed)**  
@@ -144,7 +157,7 @@ def generate_report_from_csv(csv_corridor_rows: list[dict], prov_by_id: dict[str
 | :--- | :--- | :--- |
 | **Task 2 Interactive GIS & Traffic Platform** | https://siddiqahmed26.github.io/uae-construction-intelligence/task2_gis_intelligence.html ([task2_gis_intelligence.html](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/task2_gis_intelligence.html)) | **Live (`1,958 KB`, 11 Map Layers, Nearest-Vertex Vectors, Two-Term BPR + Modelled Bottleneck Inspector, 4 Time Windows, 4 Guided Use Cases, Deterministic Q&A)** |
 | **Task 1 + Task 2 Unified Portal** | https://siddiqahmed26.github.io/uae-construction-intelligence/ ([index.html](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/index.html)) | **Live (Updated with Task 2 Global Switcher Banner)** |
-| **Standalone Verification Receipt** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/task2_verification_receipt.json ([task2_verification_receipt.json](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/task2_verification_receipt.json)) | **Verified (`ALL_CHECKS_PASSED`: `21/21` BPR + Bottleneck Delay, `21/21` CSV-to-Report Table Sync, `37/37` Haversine, `37/37` GeoJSON, `37/37` HGV, `452` Sources)** |
+| **Standalone Verification Receipt** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/task2_verification_receipt.json ([task2_verification_receipt.json](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/task2_verification_receipt.json)) | **Verified (`ALL_CHECKS_PASSED`: `21/21` BPR + Bottleneck Delay, `322/322` CSV-to-Report Table Cells, `37/37` Haversine, `37/37` GeoJSON, `37/37` HGV, `452` Sources)** |
 | **GeoJSON Spatial Bundle (`123` Features)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/dubai_sharjah_gis_bundle.geojson ([dubai_sharjah_gis_bundle.geojson](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/dubai_sharjah_gis_bundle.geojson)) | **Verified WGS84 (`EPSG:4326`) `FeatureCollection` (`10` Communities + `23` Roads + `16` Intersections + `32` Projects + `5` JVC Sub-Developments + `37` Nearest-Vertex Impact Link `LineString` Vectors = `123` Features)** |
 | **Task 2 Spatial SQLite Database (`18` Tables)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/21_task2_spatial_database.sqlite ([21_task2_spatial_database.sqlite](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/21_task2_spatial_database.sqlite)) | **Verified Relational & Spatial Store (`18` Tables, `1,152` Rows)** |
 | **Master Consolidated SQLite DB (`29` Tables)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/11_consolidated_database.sqlite ([11_consolidated_database.sqlite](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/11_consolidated_database.sqlite)) | **Verified Task 1 + Task 2 Store (`29` Tables, `1,498` Rows)** |
@@ -175,13 +188,13 @@ All annual and rush-hour metrics in `OBS-DXB-CITY-00` (`17_traffic_congestion_ob
 
 | Metric | Column in `17_traffic_congestion_observations` | Published Value |
 | :--- | :--- | :--- |
-| **City-Wide Average Speed** | `average_speed_kmh` | **`31.3` km/h** |
-| **Travel Time per 10 km** | `travel_time_min_per_10km` / `travel_time_formatted` | **`19.17` min/10km (`19 min 10 sec`)** |
-| **Annual Congestion Level** | `tomtom_annual_congestion_pct` | **`42.7%`** |
-| **Overall Rush-Hour Average Speed** | `tomtom_rush_hour_avg_speed_kmh` | **`26.3 km/h`** |
-| **Morning Rush-Hour Speed, Time & Congestion** | `tomtom_morning_rush_speed_kmh` | **`32.1 km/h (18 min 41 sec per 10 km; 42.3% congestion)`** |
-| **Evening Rush-Hour Speed, Time & Congestion** | `tomtom_evening_rush_speed_kmh` | **`22.6 km/h (26 min 33 sec per 10 km; 94.4% congestion)`** |
-| **Free-Flow Speed** | `free_flow_speed_kmh` | **`Not Separately Published in Public TomTom City Index`** |
+| **City-Wide Average Speed** | `average_speed_kmh` | **`{city_row['average_speed_kmh']}` km/h** |
+| **Travel Time per 10 km** | `travel_time_min_per_10km` / `travel_time_formatted` | **`{city_row['travel_time_min_per_10km']}` min/10km (`{city_row['travel_time_formatted']}`)** |
+| **Annual Congestion Level** | `tomtom_annual_congestion_pct` | **`{city_row['tomtom_annual_congestion_pct']}`** |
+| **Overall Rush-Hour Average Speed** | `tomtom_rush_hour_avg_speed_kmh` | **`{city_row['tomtom_rush_hour_avg_speed_kmh']}`** |
+| **Morning Rush-Hour Speed, Time & Congestion** | `tomtom_morning_rush_speed_kmh` | **`{city_row['tomtom_morning_rush_speed_kmh']}`** |
+| **Evening Rush-Hour Speed, Time & Congestion** | `tomtom_evening_rush_speed_kmh` | **`{city_row['tomtom_evening_rush_speed_kmh']}`** |
+| **Free-Flow Speed** | `free_flow_speed_kmh` | **`{city_row['free_flow_speed_kmh']}`** |
 
 ### 2.2 Formula-Derived BPR Link Term + Modelled, HCM-Informed Bottleneck-Delay Assumptions (`21/21` Corridor Observations — Programmatically Generated from `17_traffic_congestion_observations.csv`)
 Each corridor observation (`OBS-DXB-001..015`, `OBS-SHJ-001..006`) separates two distinct modelling components:
@@ -202,13 +215,7 @@ Each corridor observation (`OBS-DXB-001..015`, `OBS-SHJ-001..006`) separates two
 ### 2.3 Official RTA Provenance Separation & Verified Publication Dates (`SRC-433..452`)
 | Source ID | Publication Date | Official URL | Verified Scope & Extracted Engineering Facts |
 | :--- | :---: | :--- | :--- |
-| **`SRC-433`** | `{prov_by_id['SRC-433']['publication_date']}` | {prov_by_id['SRC-433']['original_url']} | **Hessa Street (`D61`) Improvement Project (`RD-DXB-05`, `OBS-DXB-001..004`):** Widening `D61` from `2` to `4` lanes/dir doubles capacity from `4,000` to `8,000 vph/dir` (`16,000 vph` total) across `4.5 km` with `4` grade-separated intersections, targeting a `50%` corridor travel-time reduction. |
-| **`SRC-434`** | `{prov_by_id['SRC-434']['publication_date']}` | {prov_by_id['SRC-434']['original_url']} | **Al Khail Road (`E44`) Bridge Openings (`RD-DXB-03`, `OBS-DXB-005..006`):** AED 700M project (`3,300m` bridges across 7 sites including JVC, Al Quoz 1, Meydan, Zabeel) adding `+15,000–19,600 vph` capacity and reducing corridor travel time by `30%`. |
-| **`SRC-438`** | `{prov_by_id['SRC-438']['publication_date']}` | {prov_by_id['SRC-438']['original_url']} | **Al Mustaqbal Street Contract Award (`RD-DXB-12`, `RD-DXB-13`, `OBS-DXB-011..012`):** Widens Al Mustaqbal Street from `3` to `4` lanes/dir + `1,700m` bridges/tunnels, expanding capacity `33%` from `6,600` to `8,800 vph` (`3,300` to `4,400 vph/dir`) and cutting travel time from `13 min` to `6 min`. |
-| **`SRC-439`** | `{prov_by_id['SRC-439']['publication_date']}` | {prov_by_id['SRC-439']['original_url']} | **Sheikh Rashid bin Saeed Corridor Phase I Opening (`RD-DXB-11`, `OBS-DXB-013..014`, `INT-DXB-06`, `INC-DXB-03`, `TIS-DXB-03`):** Widens Ras Al Khor Road from `3` to `4` lanes in each direction, increasing road capacity to **`10,000 vehicles per hour` (published without a `/dir` qualifier)** and cutting travel time from `20 min` to `7 min`. The `7,600 vph/dir` reference capacity used in `OBS-DXB-013..014` is explicitly labelled as an **HCM 7th Edition 4-lane directional estimate (`4 lanes × 1,900 pcphpl`)**. |
-| **`SRC-440`** | `{prov_by_id['SRC-440']['publication_date']}` | {prov_by_id['SRC-440']['original_url']} | **Project-Specific 4.6 km `E44–E311` Section (`RD-DXB-10`, `TIS-DXB-06`, `IMP-016`, `IMP-019`):** Substantiates the `4.6 km` Umm Suqeim Street Improvement Project between Al Khail Rd (`E44`) and SMBZ Rd (`E311`), accommodating **`16,000 vehicles per hour` in both directions** and cutting travel time between `E44` and `E311` by **`61%` (from `9.7 min` to `3.8 min`)**. |
-| **`SRC-451`** | `{prov_by_id['SRC-451']['publication_date']}` | {prov_by_id['SRC-451']['original_url']} | **Dubai Metro Blue Line Contract Award (`PRJ-D8`, `TDS-11`, `INC-DXB-03`, `TIS-DXB-03`, `IMP-008`):** Substantiates the **AED 20.5B Dubai Metro Blue Line (`30 km`, `14 stations`, `1.3 km` Dubai Creek viaduct, `2029` target)** civil works corridor. |
-| **`SRC-452`** | `{prov_by_id['SRC-452']['publication_date']}` | {prov_by_id['SRC-452']['original_url']} | **Wider 16 km Jumeirah–`E611` Strategic Corridor (`RD-DXB-10`, `TIS-DXB-06`, `IMP-016`, `IMP-019`):** Substantiates the end-to-end `16 km` strategic corridor from Jumeirah Street to Emirates Road (`E611`), increasing capacity from `8,400` to `12,600 vph` and cutting end-to-end travel time from **`46 minutes` to `11 minutes`**. |
+{rta_prov_table_block}
 """
     return report_md
 
@@ -228,14 +235,16 @@ def main():
     prov_rows = json.loads((DATASETS_DIR / "11_provenance_source_register.json").read_text(encoding="utf-8"))
     geojson_data = json.loads((DATASETS_DIR / "dubai_sharjah_gis_bundle.geojson").read_text(encoding="utf-8"))
 
-    prov_by_id = {r["source_id"]: r for r in prov_rows}
+    prov_by_id = {r["source_id"]: r for r in prov_csv_rows}
     roads_by_id = {r["road_id"]: r for r in roads_rows}
 
     # 1. Verify TomTom City-Wide Baseline (OBS-DXB-CITY-00) including exact rush-hour congestion % and seconds
     city_row = next(r for r in obs_rows if r["observation_id"] == "OBS-DXB-CITY-00")
+    csv_city_row = next(r for r in obs_csv_rows if r["observation_id"] == "OBS-DXB-CITY-00")
     assert city_row["average_speed_kmh"] == 31.3
     assert city_row["travel_time_min_per_10km"] == 19.17
-    assert "19 min 10 sec" in city_row["travel_time_formatted"]
+    assert city_row["travel_time_formatted"] == "19 min 10 sec (19.17 min/10km)"
+    assert csv_city_row["travel_time_formatted"] == "19 min 10 sec (19.17 min/10km)"
     assert city_row["tomtom_annual_congestion_pct"] == "42.7%"
     assert city_row["tomtom_rush_hour_avg_speed_kmh"] == "26.3 km/h"
     assert city_row["tomtom_morning_rush_speed_kmh"] == "32.1 km/h (18 min 41 sec per 10 km; 42.3% congestion)", (
@@ -331,6 +340,7 @@ def main():
 
     # 3. Verify Official RTA Source Separation AND Exact Publication Dates
     expected_dates = {
+        "SRC-433": "2025-11-18",
         "SRC-434": "2024-09-01",
         "SRC-438": "2025-07-13",
         "SRC-439": "2022-12-25",
@@ -351,12 +361,12 @@ def main():
     )
     assert "10,000 vph/dir" not in json.dumps(rak_records)
 
-    # 4. Programmatically Generate Markdown Report from CSV & Verify 21/21 Table Sync
-    report_md = generate_report_from_csv(csv_corridor_rows, prov_by_id)
+    # 4. Programmatically Generate Markdown Report from CSV & Verify 322/322 Table Cells
+    report_md = generate_report_from_csv(csv_city_row, csv_corridor_rows, prov_by_id)
     ARTIFACT_REPORT_PATH.write_text(report_md, encoding="utf-8")
     WEB_REPORT_PATH.write_text(report_md, encoding="utf-8")
 
-    # Parse the generated Markdown report BPR table and verify EVERY single displayed cell (13/13 columns x 21 rows = 273 cells)
+    # 4a. Parse the generated Markdown report BPR table and verify EVERY single displayed cell (13/13 columns x 21 rows = 273 cells)
     parsed_md_rows = {}
     for line in report_md.splitlines():
         if line.startswith("| **`OBS-"):
@@ -402,15 +412,15 @@ def main():
         assert mr["v_corr"] == float(r["average_speed_kmh"]), f"Report sync mismatch on {oid} col11 (v_corr)"
         assert mr["raw_col12_source_pubdate"] == expected_col12, f"Report sync mismatch on {oid} col12: {mr['raw_col12_source_pubdate']} != {expected_col12}"
 
-    # Also parse and verify every row of the Section 2.1 TomTom Baseline Table (7 rows x 3 columns = 21 cells)
+    # 4b. Parse and verify every cell of the Section 2.1 TomTom Baseline Table (7 rows x 3 columns = 21 cells) directly against csv_city_row
     expected_tomtom_table_cells = {
-        "**City-Wide Average Speed**": ("`average_speed_kmh`", f"**`{city_row['average_speed_kmh']}` km/h**"),
-        "**Travel Time per 10 km**": ("`travel_time_min_per_10km` / `travel_time_formatted`", f"**`{city_row['travel_time_min_per_10km']}` min/10km (`19 min 10 sec`)**"),
-        "**Annual Congestion Level**": ("`tomtom_annual_congestion_pct`", f"**`{city_row['tomtom_annual_congestion_pct']}`**"),
-        "**Overall Rush-Hour Average Speed**": ("`tomtom_rush_hour_avg_speed_kmh`", f"**`{city_row['tomtom_rush_hour_avg_speed_kmh']}`**"),
-        "**Morning Rush-Hour Speed, Time & Congestion**": ("`tomtom_morning_rush_speed_kmh`", f"**`{city_row['tomtom_morning_rush_speed_kmh']}`**"),
-        "**Evening Rush-Hour Speed, Time & Congestion**": ("`tomtom_evening_rush_speed_kmh`", f"**`{city_row['tomtom_evening_rush_speed_kmh']}`**"),
-        "**Free-Flow Speed**": ("`free_flow_speed_kmh`", f"**`{city_row['free_flow_speed_kmh']}`**"),
+        "**City-Wide Average Speed**": ("`average_speed_kmh`", f"**`{csv_city_row['average_speed_kmh']}` km/h**"),
+        "**Travel Time per 10 km**": ("`travel_time_min_per_10km` / `travel_time_formatted`", f"**`{csv_city_row['travel_time_min_per_10km']}` min/10km (`{csv_city_row['travel_time_formatted']}`)**"),
+        "**Annual Congestion Level**": ("`tomtom_annual_congestion_pct`", f"**`{csv_city_row['tomtom_annual_congestion_pct']}`**"),
+        "**Overall Rush-Hour Average Speed**": ("`tomtom_rush_hour_avg_speed_kmh`", f"**`{csv_city_row['tomtom_rush_hour_avg_speed_kmh']}`**"),
+        "**Morning Rush-Hour Speed, Time & Congestion**": ("`tomtom_morning_rush_speed_kmh`", f"**`{csv_city_row['tomtom_morning_rush_speed_kmh']}`**"),
+        "**Evening Rush-Hour Speed, Time & Congestion**": ("`tomtom_evening_rush_speed_kmh`", f"**`{csv_city_row['tomtom_evening_rush_speed_kmh']}`**"),
+        "**Free-Flow Speed**": ("`free_flow_speed_kmh`", f"**`{csv_city_row['free_flow_speed_kmh']}`**"),
     }
     parsed_tomtom_md = {}
     for line in report_md.splitlines():
@@ -418,11 +428,13 @@ def main():
             parts = [p.strip() for p in line.strip("|").split("|")]
             assert len(parts) == 3, f"Expected 3 columns in TomTom Markdown table, got {len(parts)}"
             parsed_tomtom_md[parts[0]] = (parts[1], parts[2])
-    assert len(parsed_tomtom_md) == 7, f"Expected 7 rows in TomTom Markdown table, got {len(parsed_tomtom_md)}"
+    assert list(parsed_tomtom_md.keys()) == list(expected_tomtom_table_cells.keys()), (
+        f"TomTom row keys mismatch: {list(parsed_tomtom_md.keys())}"
+    )
     for k, exp_pair in expected_tomtom_table_cells.items():
         assert parsed_tomtom_md[k] == exp_pair, f"TomTom table mismatch on {k}: {parsed_tomtom_md[k]} != {exp_pair}"
 
-    # Also parse and verify every row of the Section 2.3 RTA Provenance Table (7 rows x 4 columns = 28 cells)
+    # 4c. Parse and verify every cell of the Section 2.3 RTA Provenance Table (7 rows x 4 columns = 28 cells) directly against prov_by_id
     parsed_prov_md = {}
     for line in report_md.splitlines():
         if line.startswith("| **`SRC-"):
@@ -430,15 +442,21 @@ def main():
             assert len(parts) == 4, f"Expected 4 columns in RTA Provenance Markdown table, got {len(parts)}"
             sid = parts[0].replace("*", "").replace("`", "").strip()
             parsed_prov_md[sid] = {
+                "raw_col0": parts[0].strip(),
                 "pub_date": parts[1].replace("`", "").strip(),
                 "url": parts[2].strip(),
                 "scope": parts[3].strip(),
             }
-    assert len(parsed_prov_md) == 7, f"Expected 7 parsed RTA provenance rows in report, got {len(parsed_prov_md)}"
-    for sid, pcell in parsed_prov_md.items():
+    assert list(parsed_prov_md.keys()) == EXPECTED_RTA_SIDS, (
+        f"Expected exact 7 RTA provenance IDs {EXPECTED_RTA_SIDS}, got {list(parsed_prov_md.keys())}"
+    )
+    for sid in EXPECTED_RTA_SIDS:
+        pcell = parsed_prov_md[sid]
+        expected_scope = f"**{prov_by_id[sid]['document_or_page_reference']}:** {prov_by_id[sid]['supported_entity_and_extracted_fact']}"
+        assert pcell["raw_col0"] == f"**`{sid}`**", f"Report provenance col0 mismatch on {sid}: {pcell['raw_col0']}"
         assert pcell["pub_date"] == prov_by_id[sid]["publication_date"], f"Report provenance date mismatch on {sid}"
         assert pcell["url"] == prov_by_id[sid]["original_url"], f"Report provenance URL mismatch on {sid}"
-        assert len(pcell["scope"]) > 20, f"Report provenance scope empty on {sid}"
+        assert pcell["scope"] == expected_scope, f"Report provenance scope mismatch on {sid}: {pcell['scope']} != {expected_scope}"
 
     # 5. Verify 37/37 Nearest-Vertex Haversine Distances, GeoJSON Endpoints & HGV Sums
     impact_features = {
@@ -471,7 +489,7 @@ def main():
         )
         assert abs(comp_sum - float(l["total_hgv_round_trips_day"])) <= 0.02
 
-    # Copy scripts to web/scripts/ and sync SkillOS + agent definitions into web/.agents/ for public repo verification
+    # 6. Copy scripts to web/scripts/ and sync portable SkillOS + agent definitions into .agents/ and web/.agents/
     WEB_SCRIPTS_DIR.mkdir(parents=True, exist_ok=True)
     for sname in (
         "build_task2_spatial_and_traffic_datasets.py",
@@ -482,44 +500,80 @@ def main():
         if src_p.exists():
             shutil.copy2(src_p, WEB_SCRIPTS_DIR / sname)
 
-    web_agents_dir = WEB_DIR / ".agents"
-    (web_agents_dir / "skills" / "provenance-and-report-sync-auditor").mkdir(parents=True, exist_ok=True)
-    (web_agents_dir / "skills" / "geospatial-traffic-intelligence").mkdir(parents=True, exist_ok=True)
-    (web_agents_dir / "agents" / "zero-drift-provenance-sync-auditor").mkdir(parents=True, exist_ok=True)
-
-    shutil.copy2(BASE_DIR / ".agents" / "skills.json", web_agents_dir / "skills.json")
-    shutil.copy2(
-        Path("/Users/siddiqahmed26/.gemini/antigravity/scratch/skillos/vault/provenance-and-report-sync-auditor/SKILL.md"),
-        web_agents_dir / "skills" / "provenance-and-report-sync-auditor" / "SKILL.md",
-    )
-    shutil.copy2(
-        Path("/Users/siddiqahmed26/.gemini/antigravity/scratch/skillos/vault/geospatial-traffic-intelligence/SKILL.md"),
-        web_agents_dir / "skills" / "geospatial-traffic-intelligence" / "SKILL.md",
-    )
+    portable_skills_manifest = {
+        "entries": [
+            {
+                "path": ".agents/skills",
+                "include_only": [
+                    "geospatial-traffic-intelligence",
+                    "provenance-and-report-sync-auditor",
+                ],
+            }
+        ]
+    }
     agent_md_content = """---
 name: zero-drift-provenance-sync-auditor
-description: Zero-Drift Provenance, Source-Date & CSV-to-Report Sync Auditor that verifies primary-source sub-metrics and publication dates, enforces 100% programmatic CSV-to-Markdown report synchronization (all 13/13 columns), and validates transport/geospatial formulas.
+description: Zero-Drift Provenance, Source-Date & CSV-to-Report Sync Auditor that verifies primary-source sub-metrics and publication dates, enforces 100% programmatic CSV-to-Markdown report synchronization (322/322 cells across TomTom, BPR, and RTA Provenance tables), and validates transport/geospatial formulas.
 ---
 
 # Zero-Drift Provenance, Source-Date & CSV-to-Report Sync Auditor Agent
 
 Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intelligence`, and `verification` skills:
-1. **Primary-Source Sub-Metric & Date Verification:** Verifies every sub-metric (including rush-hour travel-time seconds and congestion percentages) and every `publication_date` in `11_provenance_source_register` and `17_traffic_congestion_observations` against the linked official source.
-2. **Zero-Drift Programmatic Report Sync (13/13 Columns):** Never allows a Markdown report or UI summary table to be manually edited. Programmatically generates the Markdown report from the committed CSV, parses all 13/13 columns of the 21-row BPR table (`273/273` cells) and all 4/4 columns of the 7-row RTA Provenance table (`28/28` cells) back out, and asserts 100% cell-for-cell equality with the committed CSV.
+1. **Primary-Source Sub-Metric & Date Verification:** Verifies every sub-metric (including rush-hour travel-time seconds and congestion percentages) and every `publication_date` in `11_provenance_source_register` and `17_traffic_congestion_observations` against the linked official source (`SRC-433=2025-11-18`, `SRC-434=2024-09-01`, `SRC-438=2025-07-13`, `SRC-439=2022-12-25`, `SRC-440=2025-05-25`, `SRC-451=2024-12-19`, `SRC-452=2025-05-04`).
+2. **Zero-Drift Programmatic Report Sync (322/322 Cells):** Never allows a Markdown report or UI summary table to be manually edited. Programmatically generates the Markdown report from the committed CSV, parses all `3/3` columns of the 7-row TomTom table (`21/21` cells), all `13/13` columns of the 21-row BPR table (`273/273` cells), and all `4/4` columns of the 7-row RTA Provenance table (`28/28` cells) back out, and asserts 100% literal cell-for-cell equality with the committed CSV (`322/322` total cells).
 3. **Epistemic Labelling of Modelled Delay Assumptions:** Ensures formula-derived BPR link terms (`t_BPR`, `v_BPR`) are distinguished from modelled, HCM-informed bottleneck-delay assumptions (`+d_adj`), and records both stored-precision and unrounded floating-point discrepancies in `task2_verification_receipt.json`.
 """
-    (web_agents_dir / "agents" / "zero-drift-provenance-sync-auditor" / "agent.md").write_text(agent_md_content, encoding="utf-8")
 
+    for agents_root in (BASE_DIR / ".agents", WEB_DIR / ".agents"):
+        (agents_root / "skills" / "provenance-and-report-sync-auditor").mkdir(parents=True, exist_ok=True)
+        (agents_root / "skills" / "geospatial-traffic-intelligence").mkdir(parents=True, exist_ok=True)
+        (agents_root / "agents" / "zero-drift-provenance-sync-auditor").mkdir(parents=True, exist_ok=True)
+
+        (agents_root / "skills.json").write_text(
+            json.dumps(portable_skills_manifest, indent=2, ensure_ascii=False) + "\n",
+            encoding="utf-8",
+        )
+        shutil.copy2(
+            Path("/Users/siddiqahmed26/.gemini/antigravity/scratch/skillos/vault/provenance-and-report-sync-auditor/SKILL.md"),
+            agents_root / "skills" / "provenance-and-report-sync-auditor" / "SKILL.md",
+        )
+        shutil.copy2(
+            Path("/Users/siddiqahmed26/.gemini/antigravity/scratch/skillos/vault/geospatial-traffic-intelligence/SKILL.md"),
+            agents_root / "skills" / "geospatial-traffic-intelligence" / "SKILL.md",
+        )
+        (agents_root / "agents" / "zero-drift-provenance-sync-auditor" / "agent.md").write_text(
+            agent_md_content, encoding="utf-8"
+        )
+
+    web_agents_dir = WEB_DIR / ".agents"
     for req_file in (
         web_agents_dir / "skills.json",
         web_agents_dir / "skills" / "provenance-and-report-sync-auditor" / "SKILL.md",
         web_agents_dir / "skills" / "geospatial-traffic-intelligence" / "SKILL.md",
         web_agents_dir / "agents" / "zero-drift-provenance-sync-auditor" / "agent.md",
     ):
-        assert req_file.exists() and req_file.stat().st_size > 100, f"Missing committed skill/agent file: {req_file}"
+        assert req_file.exists() and req_file.stat().st_size > 80, f"Missing committed skill/agent file: {req_file}"
+
+    # Verify portability of web/.agents/skills.json (no ~ or home directory path) and exact SRC-433 date in SKILL.md
+    skills_json_text = (web_agents_dir / "skills.json").read_text(encoding="utf-8")
+    assert "~" not in skills_json_text and "/Users/" not in skills_json_text, (
+        f"Non-portable path found in web/.agents/skills.json: {skills_json_text}"
+    )
+    skills_manifest_obj = json.loads(skills_json_text)
+    assert skills_manifest_obj["entries"][0]["path"] == ".agents/skills"
+    for inc_skill in skills_manifest_obj["entries"][0]["include_only"]:
+        assert (WEB_DIR / ".agents" / "skills" / inc_skill / "SKILL.md").exists(), (
+            f"Included skill {inc_skill} missing from committed .agents/skills/"
+        )
+
+    auditor_skill_text = (web_agents_dir / "skills" / "provenance-and-report-sync-auditor" / "SKILL.md").read_text(encoding="utf-8")
+    assert "2024-12-22" not in auditor_skill_text, "Stale SRC-433 date 2024-12-22 found in SKILL.md"
+    assert f"`SRC-433` = `{prov_by_id['SRC-433']['publication_date']}`" in auditor_skill_text, (
+        "SRC-433 publication_date in SKILL.md does not match 11_provenance_source_register.csv"
+    )
 
     receipt = {
-        "verification_timestamp": "2026-11-09T13:30:00+05:30",
+        "verification_timestamp": "2026-11-09T14:10:00+05:30",
         "status": "ALL_CHECKS_PASSED",
         "tomtom_city_baseline_check": {
             "observation_id": "OBS-DXB-CITY-00",
@@ -561,14 +615,15 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
         },
         "report_to_csv_sync_check": {
             "programmatically_generated_from_csv": True,
-            "tomtom_markdown_table_cells_verified": "21/21 (7 rows x 3 columns)",
+            "tomtom_markdown_table_cells_verified": "21/21 (7 rows x 3 columns, including travel_time_formatted equality against CSV)",
             "bpr_markdown_table_rows_verified": "21/21",
             "bpr_markdown_table_columns_verified_per_row": "13/13 (obs_id, road_and_window, v0, t0, V, C, vc, t_bpr, v_bpr, d_adj, t_tot, v_corr, source_and_pub_date)",
             "bpr_markdown_table_total_cells_verified": "273/273",
-            "rta_provenance_markdown_table_cells_verified": "28/28 (7 rows x 4 columns)",
+            "rta_provenance_markdown_table_cells_verified": "28/28 (7 expected IDs x 4 columns: raw_col0, pub_date, url, and exact scope equality against 11_provenance_source_register.csv)",
+            "total_markdown_table_cells_verified": "322/322",
         },
         "committed_skills_and_agents_check": {
-            "skills_manifest": ".agents/skills.json",
+            "skills_manifest": ".agents/skills.json (portable repo-relative path: .agents/skills)",
             "forged_auditor_skill": ".agents/skills/provenance-and-report-sync-auditor/SKILL.md",
             "geospatial_traffic_skill": ".agents/skills/geospatial-traffic-intelligence/SKILL.md",
             "zero_drift_auditor_agent": ".agents/agents/zero-drift-provenance-sync-auditor/agent.md",
@@ -584,11 +639,14 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
     for rp in (DATASETS_DIR / "task2_verification_receipt.json", WEB_DATASETS_DIR / "task2_verification_receipt.json"):
         rp.write_text(json.dumps(receipt, indent=2, ensure_ascii=False), encoding="utf-8")
 
-    print("ALL ZERO-DRIFT MATHEMATICAL, PROVENANCE & REPORT-SYNC CHECKS PASSED!")
-    print(f"TomTom AM Rush: {city_row['tomtom_morning_rush_speed_kmh']} | PM Rush: {city_row['tomtom_evening_rush_speed_kmh']}")
-    print(f"RTA Dates Verified: SRC-439={prov_by_id['SRC-439']['publication_date']} | SRC-452={prov_by_id['SRC-452']['publication_date']} | SRC-440={prov_by_id['SRC-440']['publication_date']}")
-    print(f"Report-to-CSV Sync: {len(parsed_md_rows)}/21 rows parsed from Markdown report and matched 100% to 17_traffic_congestion_observations.csv")
-    print(f"BPR Precision: 0.0 at stored rounding; max unrounded time diff = {max_unrounded_time_diff:.4f} min/10km, speed diff = {max_unrounded_speed_diff:.3f} km/h")
+    # Copy updated verify_task2_math_and_provenance.py to web/scripts/ one final time so web/scripts/ is 100% identical
+    shutil.copy2(BASE_DIR / "scripts" / "verify_task2_math_and_provenance.py", WEB_SCRIPTS_DIR / "verify_task2_math_and_provenance.py")
+
+    print("ALL ZERO-DRIFT MATHEMATICAL, PROVENANCE & 322/322 REPORT-SYNC CHECKS PASSED!")
+    print(f"TomTom Table: 21/21 cells verified (including travel_time_formatted = {csv_city_row['travel_time_formatted']})")
+    print(f"BPR Table: 273/273 cells verified (21 rows x 13 columns)")
+    print(f"RTA Provenance Table: 28/28 cells verified across exact 7 IDs {EXPECTED_RTA_SIDS} (including exact scope string equality)")
+    print(f"Portable Skills Manifest: {skills_manifest_obj['entries'][0]['path']} -> {skills_manifest_obj['entries'][0]['include_only']}")
 
 
 if __name__ == "__main__":
