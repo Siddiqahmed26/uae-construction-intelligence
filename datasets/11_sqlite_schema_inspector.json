@@ -1,6 +1,15 @@
 [
   {
     "table_index": 1,
+    "table_name": "t21e_public_transport_assets",
+    "row_count": 3,
+    "column_count": 8,
+    "primary_key_and_columns": "transit_id, line_name, emirate, status, daily_ridership, stations_summary, source_id, confidence",
+    "sample_primary_key": "TRN-RED",
+    "integrity_status": "VERIFIED_NON_EMPTY"
+  },
+  {
+    "table_index": 2,
     "table_name": "t_01_geographic_directory",
     "row_count": 19,
     "column_count": 14,
@@ -9,7 +18,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 2,
+    "table_index": 3,
     "table_name": "t_02_government_sources",
     "row_count": 13,
     "column_count": 11,
@@ -18,7 +27,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 3,
+    "table_index": 4,
     "table_name": "t_03_developer_directory",
     "row_count": 45,
     "column_count": 12,
@@ -27,7 +36,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 4,
+    "table_index": 5,
     "table_name": "t_04_project_inventory",
     "row_count": 85,
     "column_count": 45,
@@ -36,7 +45,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 5,
+    "table_index": 6,
     "table_name": "t_04b_property_portal_listings",
     "row_count": 24,
     "column_count": 15,
@@ -45,7 +54,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 6,
+    "table_index": 7,
     "table_name": "t_05_project_documents",
     "row_count": 205,
     "column_count": 19,
@@ -54,7 +63,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 7,
+    "table_index": 8,
     "table_name": "t_05b_architectural_technical_intelligence",
     "row_count": 85,
     "column_count": 18,
@@ -63,7 +72,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 8,
+    "table_index": 9,
     "table_name": "t_06_development_buildings_units",
     "row_count": 8,
     "column_count": 12,
@@ -72,7 +81,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 9,
+    "table_index": 10,
     "table_name": "t_06b_supply_pipeline_reconciliation",
     "row_count": 8,
     "column_count": 13,
@@ -81,7 +90,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 10,
+    "table_index": 11,
     "table_name": "t_06c_pipeline_and_calculation_audit",
     "row_count": 85,
     "column_count": 27,
@@ -90,7 +99,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 11,
+    "table_index": 12,
     "table_name": "t_07_contractors_consultants_suppliers",
     "row_count": 85,
     "column_count": 11,
@@ -99,7 +108,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 12,
+    "table_index": 13,
     "table_name": "t_08_cost_benchmarks",
     "row_count": 15,
     "column_count": 21,
@@ -108,7 +117,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 13,
+    "table_index": 14,
     "table_name": "t_09_infrastructure_traffic_dataset",
     "row_count": 9,
     "column_count": 11,
@@ -117,7 +126,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 14,
+    "table_index": 15,
     "table_name": "t_09b_nearby_facilities_dataset",
     "row_count": 80,
     "column_count": 15,
@@ -126,7 +135,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 15,
+    "table_index": 16,
     "table_name": "t_10_project_timelines_status",
     "row_count": 85,
     "column_count": 16,
@@ -135,7 +144,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 16,
+    "table_index": 17,
     "table_name": "t_11_provenance_source_register",
     "row_count": 432,
     "column_count": 12,
@@ -144,7 +153,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 17,
+    "table_index": 18,
     "table_name": "t_13_rea_crawler_telemetry",
     "row_count": 35,
     "column_count": 17,
@@ -153,7 +162,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 18,
+    "table_index": 19,
     "table_name": "t_15_transport_open_data_register",
     "row_count": 18,
     "column_count": 18,
@@ -162,7 +171,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 19,
+    "table_index": 20,
     "table_name": "t_16_road_network_dataset",
     "row_count": 20,
     "column_count": 17,
@@ -171,7 +180,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 20,
+    "table_index": 21,
     "table_name": "t_17_traffic_congestion_observations",
     "row_count": 18,
     "column_count": 18,
@@ -180,7 +189,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 21,
+    "table_index": 22,
     "table_name": "t_18_tomtom_and_provider_assessment",
     "row_count": 6,
     "column_count": 12,
@@ -189,7 +198,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 22,
+    "table_index": 23,
     "table_name": "t_19_traffic_impact_studies_and_logistics",
     "row_count": 8,
     "column_count": 14,
@@ -198,7 +207,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 23,
+    "table_index": 24,
     "table_name": "t_20_parking_and_mobility_facilities",
     "row_count": 7,
     "column_count": 13,
@@ -207,7 +216,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 24,
+    "table_index": 25,
     "table_name": "t_21a_communities_and_hotspots",
     "row_count": 10,
     "column_count": 19,
@@ -216,7 +225,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 25,
+    "table_index": 26,
     "table_name": "t_21b_intersections_and_nodes",
     "row_count": 10,
     "column_count": 13,
@@ -225,7 +234,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 26,
+    "table_index": 27,
     "table_name": "t_21c_traffic_incidents_and_roadworks",
     "row_count": 5,
     "column_count": 14,
@@ -234,7 +243,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 27,
+    "table_index": 28,
     "table_name": "t_21d_jvc_and_community_subdevelopments",
     "row_count": 5,
     "column_count": 21,
@@ -243,7 +252,7 @@
     "integrity_status": "VERIFIED_NON_EMPTY"
   },
   {
-    "table_index": 28,
+    "table_index": 29,
     "table_name": "t_22_project_road_impact_links",
     "row_count": 37,
     "column_count": 21,
