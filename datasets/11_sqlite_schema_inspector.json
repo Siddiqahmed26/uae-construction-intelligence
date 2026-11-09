@@ -1,263 +1,176 @@
 [
   {
-    "table_index": 1,
     "table_name": "t21e_public_transport_assets",
     "row_count": 3,
     "column_count": 8,
-    "primary_key_and_columns": "transit_id, line_name, emirate, status, daily_ridership, stations_summary, source_id, confidence",
-    "sample_primary_key": "TRN-RED",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "transit_id, line_name, emirate, status, daily_ridership, stations_summary, source_id, confidence"
   },
   {
-    "table_index": 2,
     "table_name": "t_01_geographic_directory",
     "row_count": 19,
     "column_count": 14,
-    "primary_key_and_columns": "loc_id, emirate, emirate_iso, city, district_community, alt_names, master_development, coordinates, planning_authority, active_pipeline_units, source, retrieval_date, last_verified_date, confidence_classification",
-    "sample_primary_key": "GEO-AJM-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "loc_id, emirate, emirate_iso, city, district_community, alt_names, master_development, coordinates, planning_authority, active_pipeline_units, source, retrieval_date, last_verified_date, confidence_classification"
   },
   {
-    "table_index": 3,
     "table_name": "t_02_government_sources",
     "row_count": 13,
     "column_count": 11,
-    "primary_key_and_columns": "gov_id, jurisdiction, authority, portal_url, datasets_provided, access_terms, public_availability_verified, limitations, retrieval_date, last_verified_date, confidence_classification",
-    "sample_primary_key": "GOV-AJM-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "gov_id, jurisdiction, authority, portal_url, datasets_provided, access_terms, public_availability_verified, limitations, retrieval_date, last_verified_date, confidence_classification"
   },
   {
-    "table_index": 4,
     "table_name": "t_03_developer_directory",
     "row_count": 45,
     "column_count": 12,
-    "primary_key_and_columns": "dev_id, developer_name, legal_trading_name, ownership_and_parent_group, operating_emirates, flagship_communities_and_projects, published_units_and_pipeline_scale, official_website_and_directory, publication_date, retrieval_date, last_verified_date, confidence_classification",
-    "sample_primary_key": "DEV-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "dev_id, developer_name, legal_trading_name, ownership_and_parent_group, operating_emirates, flagship_communities_and_projects, published_units_and_pipeline_scale, official_website_and_directory, publication_date, retrieval_date, last_verified_date, confidence_classification"
   },
   {
-    "table_index": 5,
     "table_name": "t_04_project_inventory",
     "row_count": 85,
     "column_count": 46,
-    "primary_key_and_columns": "project_id, code, project_name, developer, emirate, city_district_community, coordinates, plot_reference_and_authority, project_category, lifecycle_status, status_evidence_and_history, observation_date, last_verified_date, land_plot_area, gross_floor_area, far_and_zoning, far_confidence, asset_mix, towers_and_buildings_count, floors_and_height, apartments_and_villas_count, apartment_configurations_and_sizes, timeline_milestones, published_investment_value, main_contractor_and_consultants, estimated_hard_cost_and_rate, elemental_boq_split, estimated_concrete_m3_and_rebar_t, calculation_formula_and_assumptions, linked_document_ids, nearby_facilities_ref, source_url, publisher, publication_date, retrieval_date, confidence_classification, secondary_source_url, masterplan_and_site_layout, plot_layout_and_boundaries, tower_and_building_floor_plans, typical_floor_plans_and_plates, elevations_and_building_sections, landscape_and_infrastructure_plan, parking_layouts_and_allocation, published_specifications_and_brochure_status, source_id",
-    "sample_primary_key": "PRJ-AD1",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "project_id, code, project_name, developer, emirate, city_district_community, coordinates, plot_reference_and_authority, project_category, lifecycle_status, status_evidence_and_history, observation_date, last_verified_date, land_plot_area, gross_floor_area, far_and_zoning, far_confidence, asset_mix, towers_and_buildings_count, floors_and_height, apartments_and_villas_count, apartment_configurations_and_sizes, timeline_milestones, published_investment_value, main_contractor_and_consultants, estimated_hard_cost_and_rate, elemental_boq_split, estimated_concrete_m3_and_rebar_t, calculation_formula_and_assumptions, linked_document_ids, nearby_facilities_ref, source_url, publisher, publication_date, retrieval_date, confidence_classification, secondary_source_url, masterplan_and_site_layout, plot_layout_and_boundaries, tower_and_building_floor_plans, typical_floor_plans_and_plates, elevations_and_building_sections, landscape_and_infrastructure_plan, parking_layouts_and_allocation, published_specifications_and_brochure_status, source_id"
   },
   {
-    "table_index": 6,
     "table_name": "t_04b_property_portal_listings",
     "row_count": 24,
     "column_count": 15,
-    "primary_key_and_columns": "portal_listing_id, platform, linked_project_id, project_and_community_name, developer_and_official_page, emirate_and_district, property_type_and_config, advertised_unit_size, advertised_price_aed, offplan_or_ready_status, listing_url, capture_and_retrieval_date, last_verified_date, cross_check_verification_and_caveats, confidence_classification",
-    "sample_primary_key": "PRT-001",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "portal_listing_id, platform, linked_project_id, project_and_community_name, developer_and_official_page, emirate_and_district, property_type_and_config, advertised_unit_size, advertised_price_aed, offplan_or_ready_status, listing_url, capture_and_retrieval_date, last_verified_date, cross_check_verification_and_caveats, confidence_classification"
   },
   {
-    "table_index": 7,
     "table_name": "t_05_project_documents",
     "row_count": 205,
     "column_count": 19,
-    "primary_key_and_columns": "doc_id, project_id, project_name, emirate, developer_or_authority, document_type, document_title, file_format, availability_status, source_url, secondary_portal_url, publisher, publication_date, retrieval_date, last_verified_date, page_references, extracted_facts_summary, evidential_limits_and_caveats, confidence_classification",
-    "sample_primary_key": "DOC-AD1-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "doc_id, project_id, project_name, emirate, developer_or_authority, document_type, document_title, file_format, availability_status, source_url, secondary_portal_url, publisher, publication_date, retrieval_date, last_verified_date, page_references, extracted_facts_summary, evidential_limits_and_caveats, confidence_classification"
   },
   {
-    "table_index": 8,
     "table_name": "t_05b_architectural_technical_intelligence",
     "row_count": 85,
     "column_count": 18,
-    "primary_key_and_columns": "arch_id, project_id, project_name, emirate, developer, cat1_masterplan_and_site_layout, cat2_plot_layout_and_boundaries, cat3_tower_and_building_floor_plans, cat4_typical_floor_plans_and_plates, cat5_elevations_and_building_sections, cat6_apartment_config_and_area_schedule, cat7_landscape_and_infrastructure_plan, cat8_parking_layouts_and_allocation, cat9_published_specs_and_brochure_status, primary_deep_source_url, secondary_corroboration_url, last_verified_date, confidence_classification",
-    "sample_primary_key": "ARCH-AD1",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "arch_id, project_id, project_name, emirate, developer, cat1_masterplan_and_site_layout, cat2_plot_layout_and_boundaries, cat3_tower_and_building_floor_plans, cat4_typical_floor_plans_and_plates, cat5_elevations_and_building_sections, cat6_apartment_config_and_area_schedule, cat7_landscape_and_infrastructure_plan, cat8_parking_layouts_and_allocation, cat9_published_specs_and_brochure_status, primary_deep_source_url, secondary_corroboration_url, last_verified_date, confidence_classification"
   },
   {
-    "table_index": 9,
     "table_name": "t_06_development_buildings_units",
     "row_count": 8,
     "column_count": 12,
-    "primary_key_and_columns": "unit_type_id, category, bedrooms, size_sqft_range, size_sqm_range, share_of_apartment_supply_pct, typical_layout_features, floor_plate_typology, representative_projects, source_reference, last_verified_date, confidence_classification",
-    "sample_primary_key": "UNIT-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "unit_type_id, category, bedrooms, size_sqft_range, size_sqm_range, share_of_apartment_supply_pct, typical_layout_features, floor_plate_typology, representative_projects, source_reference, last_verified_date, confidence_classification"
   },
   {
-    "table_index": 10,
     "table_name": "t_06b_supply_pipeline_reconciliation",
     "row_count": 8,
     "column_count": 13,
-    "primary_key_and_columns": "recon_id, emirate, catalogued_flagship_projects_count, catalogued_masterplan_total_units, scheduled_pipeline_2025_2029_units, historical_on_time_realization_rate, realistic_materialized_completions_2025_2029, unlisted_infill_and_sub_developer_share, primary_evidence_source, last_verified_date, confidence_classification, realization_methodology_and_empirical_cohorts, deduplication_and_phasing_bridge",
-    "sample_primary_key": "REC-AJM",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "recon_id, emirate, catalogued_flagship_projects_count, catalogued_masterplan_total_units, scheduled_pipeline_2025_2029_units, historical_on_time_realization_rate, realistic_materialized_completions_2025_2029, unlisted_infill_and_sub_developer_share, primary_evidence_source, last_verified_date, confidence_classification, realization_methodology_and_empirical_cohorts, deduplication_and_phasing_bridge"
   },
   {
-    "table_index": 11,
     "table_name": "t_06c_pipeline_and_calculation_audit",
     "row_count": 85,
     "column_count": 27,
-    "primary_key_and_columns": "audit_row_id, project_id, project_name, emirate, developer, macro_sector, valuation_basis, gross_project_value_aed_b, overlap_deduction_aed_b, net_deduplicated_value_aed_b, net_deduplicated_value_usd_b, active_2025_2030_capex_aed_b, long_term_2031_2040_masterplan_aed_b, overlap_deduction_explanation, gross_masterplan_units, overlap_unit_deduction, net_deduplicated_masterplan_units, ultimate_masterplan_gfa_sqm, active_2025_2030_structural_gfa_sqm, concrete_intensity_m3_per_sqm, rebar_intensity_t_per_m3, active_2025_2030_concrete_m3, active_2025_2030_rebar_tonnes, ultimate_masterplan_concrete_m3, ultimate_masterplan_rebar_tonnes, primary_source_url, confidence_classification",
-    "sample_primary_key": "AUD-AD1",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "audit_row_id, project_id, project_name, emirate, developer, macro_sector, valuation_basis, gross_project_value_aed_b, overlap_deduction_aed_b, net_deduplicated_value_aed_b, net_deduplicated_value_usd_b, active_2025_2030_capex_aed_b, long_term_2031_2040_masterplan_aed_b, overlap_deduction_explanation, gross_masterplan_units, overlap_unit_deduction, net_deduplicated_masterplan_units, ultimate_masterplan_gfa_sqm, active_2025_2030_structural_gfa_sqm, concrete_intensity_m3_per_sqm, rebar_intensity_t_per_m3, active_2025_2030_concrete_m3, active_2025_2030_rebar_tonnes, ultimate_masterplan_concrete_m3, ultimate_masterplan_rebar_tonnes, primary_source_url, confidence_classification"
   },
   {
-    "table_index": 12,
     "table_name": "t_07_contractors_consultants_suppliers",
     "row_count": 85,
     "column_count": 11,
-    "primary_key_and_columns": "org_id, company_name, category_and_role, hq_and_operating_emirates, core_specialization, verified_project_portfolio_and_awards, public_contact_details, official_website, retrieval_date, last_verified_date, confidence_classification",
-    "sample_primary_key": "ORG-001",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "org_id, company_name, category_and_role, hq_and_operating_emirates, core_specialization, verified_project_portfolio_and_awards, public_contact_details, official_website, retrieval_date, last_verified_date, confidence_classification"
   },
   {
-    "table_index": 13,
     "table_name": "t_08_cost_benchmarks",
     "row_count": 15,
     "column_count": 21,
-    "primary_key_and_columns": "bench_id, building_category, jurisdiction, rate_aed_sqft, rate_aed_sqm, rate_usd_sqm, area_basis, cost_scope, date, source, confidence, inclusions_exclusions, retrieval_date, last_verified_date, confidence_classification, specification_tier, detailed_inclusions, detailed_exclusions, location_and_emirate_multipliers, publication_date, source_url",
-    "sample_primary_key": "COST-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "bench_id, building_category, jurisdiction, rate_aed_sqft, rate_aed_sqm, rate_usd_sqm, area_basis, cost_scope, date, source, confidence, inclusions_exclusions, retrieval_date, last_verified_date, confidence_classification, specification_tier, detailed_inclusions, detailed_exclusions, location_and_emirate_multipliers, publication_date, source_url"
   },
   {
-    "table_index": 14,
     "table_name": "t_09_infrastructure_traffic_dataset",
     "row_count": 9,
     "column_count": 11,
-    "primary_key_and_columns": "infra_id, emirate, corridor_or_asset, served_communities, congestion_severity, evidence_type, baseline_and_upgrade, source_url, retrieval_date, last_verified_date, confidence_classification",
-    "sample_primary_key": "INF-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "infra_id, emirate, corridor_or_asset, served_communities, congestion_severity, evidence_type, baseline_and_upgrade, source_url, retrieval_date, last_verified_date, confidence_classification"
   },
   {
-    "table_index": 15,
     "table_name": "t_09b_nearby_facilities_dataset",
     "row_count": 80,
     "column_count": 15,
-    "primary_key_and_columns": "facility_id, feature_name, facility_category, emirate, city_district_address, coordinates, nearest_projects_and_distance_km, operator_or_authority, published_status_and_opening, source_url, publication_date, retrieval_date, last_verified_date, data_limitations, confidence_classification",
-    "sample_primary_key": "FAC-AJM-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "facility_id, feature_name, facility_category, emirate, city_district_address, coordinates, nearest_projects_and_distance_km, operator_or_authority, published_status_and_opening, source_url, publication_date, retrieval_date, last_verified_date, data_limitations, confidence_classification"
   },
   {
-    "table_index": 16,
     "table_name": "t_10_project_timelines_status",
     "row_count": 85,
     "column_count": 16,
-    "primary_key_and_columns": "status_id, project_id, project_name, emirate, developer, current_lifecycle_status, prior_status_history, announced_or_launch_date, planning_approval_authority, construction_start_window, expected_completion_developer_vs_observed, supporting_evidence_and_progress, source_url, observation_date, last_verified_date, confidence_classification",
-    "sample_primary_key": "STS-001",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "status_id, project_id, project_name, emirate, developer, current_lifecycle_status, prior_status_history, announced_or_launch_date, planning_approval_authority, construction_start_window, expected_completion_developer_vs_observed, supporting_evidence_and_progress, source_url, observation_date, last_verified_date, confidence_classification"
   },
   {
-    "table_index": 17,
     "table_name": "t_11_provenance_source_register",
     "row_count": 450,
     "column_count": 12,
-    "primary_key_and_columns": "source_id, original_url, publisher, emirate_or_scope, publication_date, retrieval_date, last_verified_date, document_or_page_reference, supported_entity_and_extracted_fact, derivation_method, verification_status, confidence_classification",
-    "sample_primary_key": "SRC-001",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "source_id, original_url, publisher, emirate_or_scope, publication_date, retrieval_date, last_verified_date, document_or_page_reference, supported_entity_and_extracted_fact, derivation_method, verification_status, confidence_classification"
   },
   {
-    "table_index": 18,
     "table_name": "t_13_rea_crawler_telemetry",
     "row_count": 35,
     "column_count": 17,
-    "primary_key_and_columns": "crawl_id, organization, emirate, portal_category, target_url, http_status, response_time_ms, payload_bytes_sampled, payload_sha256, rea_evidence_id, rea_operation, detected_frontend_stack, script_bundles_count, discovered_api_and_route_patterns, rea_semantic_findings, last_verified_date, confidence",
-    "sample_primary_key": "REA-CRL-001",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "crawl_id, organization, emirate, portal_category, target_url, http_status, response_time_ms, payload_bytes_sampled, payload_sha256, rea_evidence_id, rea_operation, detected_frontend_stack, script_bundles_count, discovered_api_and_route_patterns, rea_semantic_findings, last_verified_date, confidence"
   },
   {
-    "table_index": 19,
     "table_name": "t_15_transport_open_data_register",
     "row_count": 18,
     "column_count": 19,
-    "primary_key_and_columns": "dataset_id, dataset_name, publishing_authority, original_url, description, geographic_coverage, data_format, publication_date, last_update_date, update_frequency, api_availability, access_restrictions, licensing_conditions, available_fields, coordinate_reference_system, historical_data_availability, suitability_for_prototype, confidence, source_id",
-    "sample_primary_key": "TDS-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "dataset_id, dataset_name, publishing_authority, original_url, description, geographic_coverage, data_format, publication_date, last_update_date, update_frequency, api_availability, access_restrictions, licensing_conditions, available_fields, coordinate_reference_system, historical_data_availability, suitability_for_prototype, confidence, source_id"
   },
   {
-    "table_index": 20,
     "table_name": "t_16_road_network_dataset",
     "row_count": 23,
-    "column_count": 17,
-    "primary_key_and_columns": "road_id, road_code, road_name, emirate, road_type, authority, speed_limit_kmh, lanes_per_direction, capacity_vph_per_dir, capacity_basis, direction, hgv_truck_ban_window, salik_toll_status, geometry_wgs84, served_communities, source_id, confidence",
-    "sample_primary_key": "RD-DXB-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "column_count": 18,
+    "columns": "road_id, road_code, road_name, emirate, road_type, authority, speed_limit_kmh, lanes_per_direction, capacity_vph_per_dir, capacity_basis, direction, hgv_truck_ban_window, salik_toll_status, geometry_wgs84, served_communities, source_id, confidence, geometry_source_and_validation"
   },
   {
-    "table_index": 21,
     "table_name": "t_17_traffic_congestion_observations",
-    "row_count": 21,
-    "column_count": 25,
-    "primary_key_and_columns": "observation_id, road_id, road_name, emirate, community, timestamp, time_period, comparison_period, location, free_flow_speed_kmh, average_speed_kmh, travel_time_min_per_10km, traffic_volume_vph, congestion_level, observation_type, data_limitations, source_id, confidence, evidence_level, measurement_period, series_scope_note, source_report_title, source_publisher, source_url, publication_date",
-    "sample_primary_key": "OBS-DXB-001",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "row_count": 22,
+    "column_count": 26,
+    "columns": "observation_id, road_id, road_name, emirate, community, timestamp, time_period, comparison_period, location, free_flow_speed_kmh, average_speed_kmh, travel_time_min_per_10km, traffic_volume_vph, congestion_level, observation_type, data_limitations, source_id, confidence, source_report_title, source_url, publication_date, evidence_level, measurement_period, officially_published_corridor_benchmark, modelled_assumptions_and_derivation, series_scope_note"
   },
   {
-    "table_index": 22,
     "table_name": "t_18_tomtom_and_provider_assessment",
     "row_count": 6,
     "column_count": 13,
-    "primary_key_and_columns": "provider_id, provider_name, service_tier_evaluated, dubai_and_uae_coverage, live_vs_historical_capability, update_frequency, api_rate_limits, pricing_structure, commercial_usage_and_retention_terms, prototype_recommendation, official_url, confidence, source_id",
-    "sample_primary_key": "PRV-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "provider_id, provider_name, service_tier_evaluated, dubai_and_uae_coverage, live_vs_historical_capability, update_frequency, api_rate_limits, pricing_structure, commercial_usage_and_retention_terms, prototype_recommendation, official_url, confidence, source_id"
   },
   {
-    "table_index": 23,
     "table_name": "t_19_traffic_impact_studies_and_logistics",
     "row_count": 8,
     "column_count": 15,
-    "primary_key_and_columns": "tis_id, project_or_corridor, emirate, location_community, study_publisher, study_date, study_type_and_availability, traffic_assumptions_and_trip_rates, road_network_assessed, peak_periods_analyzed, forecast_traffic_volumes, proposed_mitigation_and_logistics, supporting_document_url, confidence, source_id",
-    "sample_primary_key": "TIS-DXB-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "tis_id, project_or_corridor, emirate, location_community, study_publisher, study_date, study_type_and_availability, traffic_assumptions_and_trip_rates, road_network_assessed, peak_periods_analyzed, forecast_traffic_volumes, proposed_mitigation_and_logistics, supporting_document_url, confidence, source_id"
   },
   {
-    "table_index": 24,
     "table_name": "t_20_parking_and_mobility_facilities",
     "row_count": 7,
     "column_count": 14,
-    "primary_key_and_columns": "parking_id, facility_name, emirate, community, facility_category, latitude, longitude, capacity_bays, statutory_requirement_or_tariff, occupancy_and_congestion_impact, operator_and_source, source_url, confidence, source_id",
-    "sample_primary_key": "PRK-DXB-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "parking_id, facility_name, emirate, community, facility_category, latitude, longitude, capacity_bays, statutory_requirement_or_tariff, occupancy_and_congestion_impact, operator_and_source, source_url, confidence, source_id"
   },
   {
-    "table_index": 25,
     "table_name": "t_21a_communities_and_hotspots",
     "row_count": 10,
     "column_count": 19,
-    "primary_key_and_columns": "community_id, community_name, emirate, planning_authority, center_lat, center_lon, recommended_zoom, polygon_wgs84, flagship_project_ids, active_developments_count, active_towers_and_buildings, scheduled_units_2025_2029, active_structural_gfa_sqm, primary_road_corridors, observed_congestion_severity, construction_activity_index_score, activity_index_formula_and_limitations, source_id, confidence",
-    "sample_primary_key": "COM-DXB-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "community_id, community_name, emirate, planning_authority, center_lat, center_lon, recommended_zoom, polygon_wgs84, flagship_project_ids, active_developments_count, active_towers_and_buildings, scheduled_units_2025_2029, active_structural_gfa_sqm, primary_road_corridors, observed_congestion_severity, construction_activity_index_score, activity_index_formula_and_limitations, source_id, confidence"
   },
   {
-    "table_index": 26,
     "table_name": "t_21b_intersections_and_nodes",
     "row_count": 16,
     "column_count": 13,
-    "primary_key_and_columns": "intersection_id, intersection_name, emirate, community, intersection_type, latitude, longitude, connected_road_ids, served_project_ids, peak_level_of_service, rta_upgrade_and_mitigation, source_id, confidence",
-    "sample_primary_key": "INT-DXB-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "intersection_id, intersection_name, emirate, community, intersection_type, latitude, longitude, connected_road_ids, served_project_ids, peak_level_of_service, rta_upgrade_and_mitigation, source_id, confidence"
   },
   {
-    "table_index": 27,
     "table_name": "t_21c_traffic_incidents_and_roadworks",
     "row_count": 5,
     "column_count": 15,
-    "primary_key_and_columns": "incident_id, road_id, road_name, emirate, community, incident_category, latitude, longitude, active_period, epistemic_tier, evidence_level, speed_and_capacity_impact, mitigation_advice, source_id, confidence",
-    "sample_primary_key": "INC-DXB-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "columns": "incident_id, road_id, road_name, emirate, community, incident_category, latitude, longitude, active_period, epistemic_tier, evidence_level, speed_and_capacity_impact, mitigation_advice, source_id, confidence"
   },
   {
-    "table_index": 28,
     "table_name": "t_21d_jvc_and_community_subdevelopments",
     "row_count": 5,
-    "column_count": 31,
-    "primary_key_and_columns": "subdev_id, parent_community_id, linked_task1_ref, development_name, developer, emirate, community_district, latitude, longitude, building_count, floors_range, total_units, active_gfa_sqm, active_concrete_m3, active_rebar_t, construction_status, primary_access_road_id, nearest_intersection_id, distance_to_road_km, epistemic_impact_tier, project_source_id, source_id, confidence, concrete_mixer_loads_day, rebar_trailer_loads_day, earthworks_tipper_loads_day, mep_fitout_truck_loads_day, total_hgv_round_trips_day, total_hgv_one_way_movements_day, estimated_midday_hgv_trips_per_day, evidence_level",
-    "sample_primary_key": "SUB-JVC-01",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "column_count": 33,
+    "columns": "subdev_id, parent_community_id, linked_task1_ref, development_name, developer, emirate, community_district, latitude, longitude, building_count, floors_range, total_units, active_gfa_sqm, active_concrete_m3, active_rebar_t, construction_status, primary_access_road_id, nearest_intersection_id, distance_to_road_km, epistemic_impact_tier, project_source_id, source_id, confidence, nearest_road_vertex_wgs84, concrete_mixer_loads_day, rebar_trailer_loads_day, earthworks_tipper_loads_day, mep_fitout_truck_loads_day, total_hgv_round_trips_day, total_hgv_one_way_movements_day, estimated_midday_hgv_trips_per_day, hgv_modelling_assumptions_and_sensitivity, evidence_level"
   },
   {
-    "table_index": 29,
     "table_name": "t_22_project_road_impact_links",
     "row_count": 37,
-    "column_count": 35,
-    "primary_key_and_columns": "link_id, project_id, project_name, emirate, community, project_coordinates, primary_road_id, primary_road_name, secondary_road_id, distance_to_primary_road_km, connection_relationship_type, nearest_intersection_id, nearest_intersection_name, distance_to_intersection_km, observed_road_traffic_condition, active_gfa_sqm, active_concrete_m3, active_rebar_t, concrete_mixer_loads_day, rebar_trailer_loads_day, earthworks_tipper_loads_day, mep_fitout_truck_loads_day, total_hgv_round_trips_day, total_hgv_one_way_movements_day, modelled_daily_hgv_concrete_rebar_trips, hgv_routing_and_ban_compliance, evidence_level, epistemic_impact_classification, impact_radius_justification, project_source_id, corridor_traffic_source_id, source_id, corridor_source_title, corridor_source_url, confidence",
-    "sample_primary_key": "IMP-001",
-    "integrity_status": "VERIFIED_NON_EMPTY"
+    "column_count": 41,
+    "columns": "link_id, project_id, project_name, emirate, community, project_coordinates, primary_road_id, primary_road_name, secondary_road_id, nearest_road_vertex_lat, nearest_road_vertex_lon, nearest_road_vertex_wgs84, distance_to_primary_road_km, geometry_validation_method, connection_relationship_type, nearest_intersection_id, nearest_intersection_name, distance_to_intersection_km, published_road_capacity_and_upgrade_fact, observed_road_traffic_condition, active_gfa_sqm, active_concrete_m3, active_rebar_t, concrete_mixer_loads_day, rebar_trailer_loads_day, earthworks_tipper_loads_day, mep_fitout_truck_loads_day, total_hgv_round_trips_day, total_hgv_one_way_movements_day, modelled_daily_hgv_concrete_rebar_trips, hgv_modelling_assumptions_and_sensitivity, hgv_routing_and_ban_compliance, evidence_level, epistemic_impact_classification, impact_radius_justification, project_source_id, corridor_traffic_source_id, source_id, corridor_source_title, corridor_source_url, confidence"
   }
 ]

@@ -160,28 +160,30 @@ def main():
         ("road_type", "Road Class"), ("authority", "Authority"), ("speed_limit_kmh", "Published Speed Limit"),
         ("lanes_per_direction", "Lanes/Dir"), ("capacity_vph_per_dir", "Capacity (vph/dir)"),
         ("capacity_basis", "Published vs. HCM Basis"), ("hgv_truck_ban_window", "HGV Truck Ban Schedule"),
-        ("salik_toll_status", "Salik Dynamic Toll Status"), ("served_communities", "Served Communities"),
-        ("source_id", "Source ID"), ("confidence", "Confidence")
+        ("salik_toll_status", "Salik Dynamic Toll Status"), ("geometry_source_and_validation", "Polyline Geometry Source & Validation"),
+        ("served_communities", "Served Communities"), ("source_id", "Source ID"), ("confidence", "Confidence")
     ])
     tbl_obs = render_table_html(payload["observations"], [
-        ("observation_id", "Obs ID"), ("road_id", "Road ID"), ("road_name", "Road Segment"), ("community", "Community"),
-        ("location", "Geographic Coverage / Coordinates"), ("measurement_period", "Measurement Period"),
-        ("time_period", "Time Period"), ("average_speed_kmh", "Avg Speed (km/h)"), ("free_flow_speed_kmh", "Free-Flow (km/h)"),
+        ("observation_id", "Obs ID"), ("road_id", "Road / City Scope"), ("road_name", "Corridor / Benchmark Scope"), ("community", "Community"),
+        ("location", "Geographic Coverage / Coordinates"), ("measurement_period", "Measurement / Scenario Period"),
+        ("time_period", "Time Period"), ("average_speed_kmh", "Speed (km/h)"), ("free_flow_speed_kmh", "Free-Flow (km/h)"),
         ("travel_time_min_per_10km", "Travel Time (min/10km)"), ("traffic_volume_vph", "Volume (vph/dir)"),
-        ("congestion_level", "Congestion Level"), ("evidence_level", "Evidence Level"),
-        ("series_scope_note", "Benchmark Scope Note"), ("comparison_period", "2024 vs. 2026 Historical Comparison"),
+        ("congestion_level", "Congestion Level"), ("evidence_level", "Evidence Classification"),
+        ("officially_published_corridor_benchmark", "Officially Published RTA/SRTA/TomTom Benchmark"),
+        ("modelled_assumptions_and_derivation", "Modelled BPR Derivation & Assumptions"),
+        ("comparison_period", "2024 vs. 2026 Comparison"),
         ("source_report_title", "Substantiating Report Title"), ("source_url", "Report URL"),
         ("publication_date", "Pub Date"), ("source_id", "Source ID"), ("confidence", "Confidence")
     ])
     tbl_intersections = render_table_html(payload["intersections"], [
         ("intersection_id", "ID"), ("intersection_name", "Intersection / Interchange"), ("emirate", "Emirate"),
         ("community", "Community"), ("intersection_type", "Type"), ("connected_road_ids", "Connected Roads"),
-        ("peak_level_of_service", "Peak LOS"), ("rta_upgrade_and_mitigation", "RTA/SRTA Upgrade & Mitigation"),
+        ("peak_level_of_service", "Modelled Peak LOS"), ("rta_upgrade_and_mitigation", "Officially Published RTA/SRTA Upgrade"),
         ("served_project_ids", "Served Projects"), ("source_id", "Source ID"), ("confidence", "Confidence")
     ])
     tbl_incidents = render_table_html(payload["incidents"], [
         ("incident_id", "ID"), ("road_id", "Road ID"), ("road_name", "Road Corridor"), ("emirate", "Emirate"),
-        ("community", "Community"), ("incident_category", "Category"), ("active_window", "Active Window"),
+        ("community", "Community"), ("incident_category", "Category"), ("active_period", "Active Window"),
         ("speed_and_capacity_impact", "Speed & Capacity Impact"), ("epistemic_tier", "Epistemic Tier"),
         ("source_id", "Source ID"), ("confidence", "Confidence")
     ])
@@ -189,8 +191,11 @@ def main():
         ("subdev_id", "Cluster ID"), ("development_name", "Sub-Development Cluster"), ("developer", "Developer"),
         ("community_district", "District"), ("linked_task1_ref", "Task 1 Link"), ("building_count", "Towers"),
         ("floors_range", "Floors"), ("total_units", "Total Units"), ("active_gfa_sqm", "Active GFA (m²)"),
-        ("primary_access_road_id", "Access Road"), ("distance_to_road_km", "Dist (km)"),
-        ("estimated_midday_hgv_trips_per_day", "Modelled 4-Component HGV Trips/Day"), ("epistemic_impact_tier", "Epistemic Tier"),
+        ("primary_access_road_id", "Access Road"), ("nearest_road_vertex_wgs84", "Nearest Road Vertex (WGS84)"),
+        ("distance_to_road_km", "Haversine Dist (km)"),
+        ("estimated_midday_hgv_trips_per_day", "Scenario-Based Modelled HGV Trips/Day"),
+        ("hgv_modelling_assumptions_and_sensitivity", "HGV Scenario Assumptions & Sensitivity"),
+        ("epistemic_impact_tier", "Epistemic Tier"),
         ("source_id", "Source ID"), ("confidence", "Confidence")
     ])
     tbl_providers = render_table_html(payload["providers"], [
@@ -202,17 +207,20 @@ def main():
     ])
     tbl_impacts = render_table_html(payload["impact_links"], [
         ("link_id", "Link ID"), ("project_id", "Project ID"), ("project_name", "Project / Development"),
-        ("emirate", "Emirate"), ("community", "Community"), ("primary_road_id", "Road ID"),
-        ("primary_road_name", "Connected Road"), ("distance_to_primary_road_km", "Dist (km)"),
-        ("connection_relationship_type", "Connection Basis"), ("nearest_intersection_id", "Junction ID"),
-        ("observed_road_traffic_condition", "Observed Traffic on Road"),
+        ("emirate", "Emirate"), ("community", "Community"), ("project_coordinates", "Project Coords (WGS84)"),
+        ("primary_road_id", "Road ID"), ("primary_road_name", "Connected Road"),
+        ("nearest_road_vertex_wgs84", "Nearest Road Vertex (WGS84)"),
+        ("distance_to_primary_road_km", "Haversine Dist (km)"),
+        ("geometry_validation_method", "Geometry Validation Method"),
+        ("published_road_capacity_and_upgrade_fact", "Officially Published Road Capacity Benchmark"),
+        ("observed_road_traffic_condition", "Modelled Corridor Traffic Estimate"),
         ("concrete_mixer_loads_day", "Mixers/d"), ("rebar_trailer_loads_day", "Rebar/d"),
         ("earthworks_tipper_loads_day", "Tippers/d"), ("mep_fitout_truck_loads_day", "MEP/d"),
-        ("total_hgv_round_trips_day", "Total HGV Round-Trips/d"),
-        ("modelled_daily_hgv_concrete_rebar_trips", "Full 4-Component HGV Equation"),
+        ("total_hgv_round_trips_day", "Est. HGV Round-Trips/d"),
+        ("modelled_daily_hgv_concrete_rebar_trips", "Scenario-Based 4-Component HGV Equation"),
+        ("hgv_modelling_assumptions_and_sensitivity", "HGV Modelling Assumptions & Peak Multiplier"),
         ("evidence_level", "Evidence Level"),
         ("epistemic_impact_classification", "Epistemic Classification"),
-        ("impact_radius_justification", "Radius Justification (<3.0 km)"),
         ("source_id", "Source IDs"), ("corridor_source_url", "Corridor Source URL"), ("confidence", "Confidence")
     ])
     tbl_tis = render_table_html(payload["tis"], [
@@ -897,15 +905,15 @@ def main():
           </div>
           <div class="layer-item">
             <label><input type="checkbox" id="chk-L4" checked onchange="toggleLayerGroup('roads', this.checked)"/><span class="layer-dot" style="background:#94a3b8;"></span> 4. Road Network (E-Freeways &amp; D-Arterials)</label>
-            <span class="prov-tag prov-ver">Verified</span>
+            <span class="prov-tag prov-ver">RTA Cap</span>
           </div>
           <div class="layer-item">
             <label><input type="checkbox" id="chk-L5" checked onchange="toggleLayerGroup('intersections', this.checked)"/><span class="layer-dot" style="background:#f43f5e;"></span> 5. Intersections &amp; Access Bottlenecks</label>
-            <span class="prov-tag prov-ver">Verified</span>
+            <span class="prov-tag prov-ver">Corrob.</span>
           </div>
           <div class="layer-item">
             <label><input type="checkbox" id="chk-L6" checked onchange="toggleLayerGroup('traffic', this.checked)"/><span class="layer-dot" style="background:#ef4444;"></span> 6. Traffic &amp; Congestion Speed Overlay</label>
-            <span class="prov-tag prov-ver">Obs+Mod</span>
+            <span class="prov-tag prov-mod">Modelled</span>
           </div>
           <div class="layer-item">
             <label><input type="checkbox" id="chk-L7" checked onchange="toggleLayerGroup('incidents', this.checked)"/><span class="layer-dot" style="background:#f97316;"></span> 7. Active RTA/SRTA Roadworks &amp; Incidents</label>
@@ -937,7 +945,7 @@ def main():
         <div class="hud-kpi-bar">
           <div class="hud-kpi"><span style="color:var(--muted);">Active Map Scope</span><strong id="hudScope">Dubai (Priority 1)</strong></div>
           <div class="hud-kpi"><span style="color:var(--muted);">Mapped Projects &amp; Clusters</span><strong id="hudProjects">25 Active Sites</strong></div>
-          <div class="hud-kpi"><span style="color:var(--muted);">Connected Road Corridors</span><strong id="hudRoads">23 Corridors (81 GeoJSON Features)</strong></div>
+          <div class="hud-kpi"><span style="color:var(--muted);">Connected Road Corridors</span><strong id="hudRoads">23 Corridors (123 GeoJSON Features)</strong></div>
           <div class="hud-kpi"><span style="color:var(--muted);">Active Time Window</span><strong id="hudTime">Evening Peak (17:00–20:00)</strong></div>
         </div>
         <div class="basemap-switcher">
@@ -951,20 +959,20 @@ def main():
 
       <!-- MAP LEGEND & EPISTEMIC GUARDRAIL -->
       <div class="map-legend">
-        <div style="font-weight:800; color:#fff; margin-bottom:4px;">Legend — Observed Traffic vs. Modelled Impact (Section D4 &amp; 12)</div>
+        <div style="font-weight:800; color:#fff; margin-bottom:4px;">Legend — Published RTA Capacities vs. Modelled Corridor Traffic &amp; HGV Scenarios</div>
         <div class="legend-grid">
-          <div class="leg-row"><span class="leg-line" style="background:#ef4444;"></span> Severe Congestion (v/v_free &lt; 0.40)</div>
-          <div class="leg-row"><span class="leg-line" style="background:#f97316;"></span> High Congestion (0.40–0.58)</div>
-          <div class="leg-row"><span class="leg-line" style="background:#eab308;"></span> Moderate Flow (0.58–0.72)</div>
-          <div class="leg-row"><span class="leg-line" style="background:#10b981;"></span> Free-Flow / Low (v/v_free &gt; 0.72)</div>
+          <div class="leg-row"><span class="leg-line" style="background:#ef4444;"></span> Modelled Severe Congestion (v/v_free &lt; 0.40)</div>
+          <div class="leg-row"><span class="leg-line" style="background:#f97316;"></span> Modelled High Congestion (0.40–0.58)</div>
+          <div class="leg-row"><span class="leg-line" style="background:#eab308;"></span> Modelled Moderate Flow (0.58–0.72)</div>
+          <div class="leg-row"><span class="leg-line" style="background:#10b981;"></span> Modelled Free-Flow / Low (v/v_free &gt; 0.72)</div>
           <div class="leg-row"><span class="leg-line" style="background:#64748b; border-bottom:2px dashed #cbd5e1;"></span> Data Unavailable for Window (≠ Zero Congestion)</div>
           <div class="leg-row"><span class="layer-dot" style="background:#38bdf8;"></span> Flagship Project (`PRJ-*`)</div>
           <div class="leg-row"><span class="layer-dot" style="background:#a855f7;"></span> JVC Sub-Cluster (`SUB-JVC-*`)</div>
           <div class="leg-row"><span class="layer-dot" style="background:#f43f5e;"></span> Bottleneck Interchange (`INT-*`)</div>
-          <div class="leg-row"><span class="leg-line" style="background:#f59e0b; border-bottom:2px dashed #f59e0b;"></span> Project-to-Road Link (`IMP-*`)</div>
+          <div class="leg-row"><span class="leg-line" style="background:#f59e0b; border-bottom:2px dashed #f59e0b;"></span> Nearest-Vertex Road Link (`IMP-*`)</div>
         </div>
         <div style="margin-top:6px; font-size:0.68rem; color:#94a3b8; border-top:1px solid #1e293b; padding-top:4px;">
-          <strong>Epistemic Rule:</strong> Proximity alone never proves causation. Every link distinguishes <em>Observed Congestion</em>, <em>Spatial Association</em>, <em>Modelled HGV/Trip Impact</em>, and <em>Confirmed RTA Roadwork Impact</em>.
+          <strong>Epistemic Rule:</strong> Official RTA/SRTA releases substantiate corridor capacities &amp; upgrade travel-time reductions; TomTom Dubai Traffic Index (<code>SRC-436</code>) is used strictly at city level (<code>OBS-DXB-CITY-00</code>). Segment speeds/volumes (<code>OBS-DXB-001..015</code>, <code>OBS-SHJ-001..006</code>) and daily HGV movements are explicitly classified as <strong>Modelled Estimates</strong>.
         </div>
       </div>
     </section>
@@ -1025,7 +1033,7 @@ def main():
 
     <div class="ev-tabs">
       <button class="ev-tab-btn active" onclick="openEvTab('ev-impacts', this)">1. #22 Project-to-Road Links (37)</button>
-      <button class="ev-tab-btn" onclick="openEvTab('ev-obs', this)">2. #17 Traffic Observations (21)</button>
+      <button class="ev-tab-btn" onclick="openEvTab('ev-obs', this)">2. #17 Traffic Benchmarks &amp; Estimates (22)</button>
       <button class="ev-tab-btn" onclick="openEvTab('ev-roads', this)">3. #16 Road Network (23)</button>
       <button class="ev-tab-btn" onclick="openEvTab('ev-comm', this)">4. #21A Communities (10)</button>
       <button class="ev-tab-btn" onclick="openEvTab('ev-ints', this)">5. #21B Intersections (16)</button>
@@ -1040,7 +1048,7 @@ def main():
 
     <div id="ev-impacts" class="ev-panel active">
       <div class="dl-bar">
-        <strong>Dataset #22 — Project-to-Road Connection &amp; 4-Tier Epistemic Impact Matrix (37 Links, All &lt; 3.0 km):</strong>
+        <strong>Dataset #22 — Project-to-Road Nearest-Vertex Geometry &amp; Scenario-Based HGV Impact Matrix (37 Links, All &lt; 3.0 km):</strong>
         <a class="dl-chip" href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/22_project_road_impact_links.csv">GitHub Raw CSV</a>
         <a class="dl-chip" href="csv_raw/22_project_road_impact_links.csv.txt">Plain-Text (.csv.txt)</a>
         <a class="dl-chip" href="csv_view/22_project_road_impact_links.html">Browser Table</a>
@@ -1052,7 +1060,7 @@ def main():
 
     <div id="ev-obs" class="ev-panel">
       <div class="dl-bar">
-        <strong>Dataset #17 — Multi-Period Traffic &amp; Congestion Observations (21 Benchmarks • Morning / Midday / Evening / Night + 2024 vs. 2026):</strong>
+        <strong>Dataset #17 — 1 Published TomTom City-Wide Benchmark (<code>OBS-DXB-CITY-00</code>) + 21 Modelled Corridor Estimates Calibrated to Official RTA/SRTA Capacity Benchmarks:</strong>
         <a class="dl-chip" href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/17_traffic_congestion_observations.csv">GitHub Raw CSV</a>
         <a class="dl-chip" href="csv_raw/17_traffic_congestion_observations.csv.txt">Plain-Text (.csv.txt)</a>
         <a class="dl-chip" href="csv_view/17_traffic_congestion_observations.html">Browser Table</a>
@@ -1164,10 +1172,10 @@ def main():
     <div id="ev-arch" class="ev-panel">
       <div class="detail-card" style="line-height:1.6;">
         <h4>1. Dataset Identifier Range Reconciliation (`15` through `22` = 11 Distinct Datasets + 18-Table Spatial SQLite DB)</h4>
-        <p>Why do identifiers <code>15</code> through <code>22</code> (8 root numbers) yield <strong>11 new CSV/JSON datasets</strong>? Because identifier <code>21</code> (the Spatial Database package) is normalized into <strong>4 distinct spatial entity datasets (<code>21a</code>, <code>21b</code>, <code>21c</code>, <code>21d</code>)</strong> plus the 7 single-numbered datasets (<code>15</code>, <code>16</code>, <code>17</code>, <code>18</code>, <code>19</code>, <code>20</code>, <code>22</code>) = <strong>11 datasets (156 rows)</strong>, all compiled into <code>21_task2_spatial_database.sqlite</code> (18 tables) and <code>11_consolidated_database.sqlite</code> (29 tables, 1,495 total rows).</p>
+        <p>Why do identifiers <code>15</code> through <code>22</code> (8 root numbers) yield <strong>11 new CSV/JSON datasets</strong>? Because identifier <code>21</code> (the Spatial Database package) is normalized into <strong>4 distinct spatial entity datasets (<code>21a</code>, <code>21b</code>, <code>21c</code>, <code>21d</code>)</strong> plus the 7 single-numbered datasets (<code>15</code>, <code>16</code>, <code>17</code>, <code>18</code>, <code>19</code>, <code>20</code>, <code>22</code>) = <strong>11 datasets (157 rows)</strong>, all compiled into <code>21_task2_spatial_database.sqlite</code> (18 tables) and <code>11_consolidated_database.sqlite</code> (29 tables, 1,496 total rows).</p>
         <h4>2. Technical Architecture, Epistemic Methodology &amp; Community Digital Twin Roadmap (Sections 11, 16 &amp; 17)</h4>
-        <p><strong>Data Pipeline &amp; Spatial Reference Architecture:</strong> Task 1 + Task 2 Validated Repository (85 projects, 205 documents, 450 sources) → Normalized Relational &amp; Spatial Store (<code>21_task2_spatial_database.sqlite</code> / PostGIS-ready schema + <code>dubai_sharjah_gis_bundle.geojson</code> in WGS84 <code>EPSG:4326</code> with geodesic/UTM Zone 40N <code>EPSG:32640</code> distance math) → Deterministic Spatial &amp; Temporal Query Engine → Interactive 11-Layer Geospatial Map + Map-Linked Q&amp;A Layer.</p>
-        <p><strong>Strict Epistemic Guardrails (Zero Fabricated Causality &amp; Missing Data vs. Zero Congestion):</strong> Every road capacity separates <code>PUBLISHED_OFFICIAL</code> (RTA statutory corridor capacities) from <code>HCM_7TH_EDITION_ESTIMATE</code>. Whenever a corridor does not have a published observation for a selected time window (e.g., off-peak <code>Midday</code> or <code>Night</code> on peak-only open-data segments), it is rendered in <strong>dashed slate-grey (<code>Data Unavailable for Selected Window</code>)</strong> and never conflated with free-flow/zero congestion (green).</p>
+        <p><strong>Data Pipeline &amp; Spatial Reference Architecture:</strong> Task 1 + Task 2 Validated Repository (85 projects, 205 documents, 450 sources) → Normalized Relational &amp; Spatial Store (<code>21_task2_spatial_database.sqlite</code> / PostGIS-ready schema + <code>dubai_sharjah_gis_bundle.geojson</code> with 123 WGS84 <code>EPSG:4326</code> features and exact nearest-vertex Haversine distance math) → Deterministic Spatial &amp; Temporal Query Engine → Interactive 11-Layer Geospatial Map + Map-Linked Q&amp;A Layer.</p>
+        <p><strong>Strict Epistemic Guardrails (Zero Fabricated Telemetry &amp; Missing Data vs. Zero Congestion):</strong> Every road capacity separates <code>PUBLISHED_OFFICIAL</code> (RTA/SRTA statutory corridor capacities and upgrade travel-time reduction targets) from <code>HCM_7TH_EDITION_ESTIMATE</code>. TomTom Dubai Traffic Index (<code>SRC-436</code>, <code>https://www.tomtom.com/traffic-index/city/dubai/</code>) is used strictly at the city-wide level (<code>OBS-DXB-CITY-00</code>). All 21 corridor-level speed, volume, and congestion records (<code>OBS-DXB-001..015</code>, <code>OBS-SHJ-001..006</code>) are classified as <strong>Modelled Corridor Estimates</strong> derived via the BPR volume-delay function, and all daily HGV figures are classified as <strong>Scenario-Based Estimated Daily HGV Movements</strong> with 5 explicit modelling assumptions.</p>
       </div>
     </div>
   </section>
@@ -1526,17 +1534,19 @@ def main():
         });
         bufCircle.addTo(layerGroups.impacts);
 
-        // Project-to-Road Vector Line (Layer 11)
-        if (link && roadById[link.primary_road_id]) {
-          const rCoords = roadById[link.primary_road_id].geometry_wgs84;
-          const midPt = rCoords[Math.floor(rCoords.length / 2)];
-          const vecLine = L.polyline([[lat, lon], [midPt[1], midPt[0]]], {
+        // Project-to-Road Nearest-Vertex Vector Line (Layer 11)
+        if (link && link.nearest_road_vertex_lat !== undefined && link.nearest_road_vertex_lon !== undefined) {
+          const vecLine = L.polyline([[lat, lon], [link.nearest_road_vertex_lat, link.nearest_road_vertex_lon]], {
             color: "#fbbf24",
             weight: 2,
             dashArray: "5,5",
-            opacity: 0.8
+            opacity: 0.85
           });
-          vecLine.bindTooltip(`<strong>${p.project_id} → ${link.primary_road_id}</strong> (${link.distance_to_primary_road_km} km)<br/>${link.epistemic_impact_classification}`);
+          vecLine.bindTooltip(
+            `<strong>${p.project_id} → ${link.primary_road_id}</strong> (${link.distance_to_primary_road_km} km Haversine)<br/>` +
+            `Project: [${lat.toFixed(4)}, ${lon.toFixed(4)}] → Nearest Road Vertex: [${link.nearest_road_vertex_lat.toFixed(4)}, ${link.nearest_road_vertex_lon.toFixed(4)}]<br/>` +
+            `${link.epistemic_impact_classification}`
+          );
           vecLine.addTo(layerGroups.impacts);
         }
 
@@ -1553,7 +1563,7 @@ def main():
           `Developer: ${p.developer} | ${p.city_district_community}<br/>` +
           `Status: ${p.lifecycle_status}<br/>` +
           `Value: ${p.published_investment_value}<br/>` +
-          (link ? `Connected Road: <strong>${link.primary_road_name} (${link.distance_to_primary_road_km} km)</strong><br/>Impact Tier: <strong>${link.epistemic_impact_classification.split('(')[0]}</strong>` : ""),
+          (link ? `Connected Road: <strong>${link.primary_road_name} (${link.distance_to_primary_road_km} km to nearest vertex)</strong><br/>Impact Tier: <strong>${link.epistemic_impact_classification.split('(')[0]}</strong>` : ""),
           { direction: "top" }
         );
         marker.on("click", () => showProjectInspector(p.project_id));
@@ -1568,6 +1578,16 @@ def main():
         if (q && !JSON.stringify(sd).toLowerCase().includes(q)) return;
 
         visibleProjectsCount++;
+        if (link && link.nearest_road_vertex_lat !== undefined && link.nearest_road_vertex_lon !== undefined) {
+          const sdVec = L.polyline([[sd.latitude, sd.longitude], [link.nearest_road_vertex_lat, link.nearest_road_vertex_lon]], {
+            color: "#c084fc",
+            weight: 2,
+            dashArray: "4,4",
+            opacity: 0.8
+          });
+          sdVec.bindTooltip(`<strong>${sd.subdev_id} → ${link.primary_road_id}</strong> (${link.distance_to_primary_road_km} km Haversine to nearest vertex [${link.nearest_road_vertex_wgs84}])`);
+          sdVec.addTo(layerGroups.impacts);
+        }
         const sm = L.circleMarker([sd.latitude, sd.longitude], {
           radius: 7,
           color: "#fff",
@@ -1579,7 +1599,8 @@ def main():
           `<strong>🏢 ${sd.subdev_id}: ${sd.development_name}</strong><br/>` +
           `Developer: ${sd.developer}<br/>` +
           `Scale: ${sd.building_count} Towers (${sd.total_units.toLocaleString()} Units | ${sd.active_gfa_sqm.toLocaleString()} m² GFA)<br/>` +
-          `Midday Load: ${sd.estimated_midday_hgv_trips_per_day}<br/>` +
+          `Nearest Vertex Dist: ${sd.distance_to_road_km} km to ${sd.primary_access_road_id}<br/>` +
+          `Scenario HGV Load: ${sd.estimated_midday_hgv_trips_per_day}<br/>` +
           `<strong>${sd.epistemic_impact_tier}</strong>`,
           { direction: "top" }
         );
@@ -1629,11 +1650,11 @@ def main():
             <div class="kv-row"><div class="kv-lbl">2. Project Category &amp; Current Lifecycle Status</div><div class="kv-val"><strong>${p.lifecycle_status}</strong> (${p.project_category})<br/><span style="color:var(--muted);">${p.status_evidence_and_history}</span></div></div>
             <div class="kv-row"><div class="kv-lbl">3. Construction Timeline &amp; Milestones</div><div class="kv-val">${p.timeline_milestones}</div></div>
             <div class="kv-row"><div class="kv-lbl">4. Site Plot Area, GFA &amp; Building Scale</div><div class="kv-val"><strong>Plot:</strong> ${p.land_plot_area}<br/><strong>GFA:</strong> ${p.gross_floor_area}<br/><strong>Towers/Buildings:</strong> ${p.towers_and_buildings_count} (${p.floors_and_height})<br/><strong>Units:</strong> ${p.apartments_and_villas_count}</div></div>
-            <div class="kv-row"><div class="kv-lbl">5. Nearby Road Connections &amp; Geodesic Distance (Section D2 — Verified &lt; 3.0 km)</div><div class="kv-val">${link ? `<strong>Primary Corridor:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a> (<strong>${link.distance_to_primary_road_km} km</strong> — ${link.connection_relationship_type})<br/><strong>Nearest Junction:</strong> ${link.nearest_intersection_name} (${link.distance_to_intersection_km} km)<br/><span style="color:var(--muted);">${link.impact_radius_justification}</span>` : "Connected to arterial grid"}</div></div>
-            <div class="kv-row"><div class="kv-lbl">6. Observed Traffic &amp; 4-Component Modelled Construction HGV Breakdown (Section D4)</div><div class="kv-val">${link ? `<strong>Road Condition:</strong> ${link.observed_road_traffic_condition}<br/><strong>4-Component HGV Math:</strong> <strong>${link.total_hgv_round_trips_day} HGV round-trips/day (${link.total_hgv_one_way_movements_day} one-way/day)</strong> = ${link.concrete_mixer_loads_day} concrete mixers + ${link.rebar_trailer_loads_day} rebar trailers + ${link.earthworks_tipper_loads_day} earthworks tippers + ${link.mep_fitout_truck_loads_day} MEP/fit-out trucks<br/><span style="color:var(--cyan);">Equation: ${link.modelled_daily_hgv_concrete_rebar_trips}</span><br/><strong>HGV Ban Window:</strong> ${link.hgv_routing_and_ban_compliance}` : ""}</div></div>
+            <div class="kv-row"><div class="kv-lbl">5. Project-to-Road Geometry Validation (Nearest Polyline Vertex &amp; WGS84 Haversine &lt; 3.0 km)</div><div class="kv-val">${link ? `<strong>Primary Corridor:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a> (<strong>${link.distance_to_primary_road_km} km</strong>)<br/><strong>Project Centroid (WGS84):</strong> <code>${link.project_coordinates}</code> → <strong>Nearest Road Polyline Vertex (WGS84):</strong> <code>${link.nearest_road_vertex_wgs84}</code><br/><strong>Geometry Validation Method:</strong> ${link.geometry_validation_method}<br/><strong>Nearest Junction:</strong> ${link.nearest_intersection_name} (${link.distance_to_intersection_km} km)` : "Connected to arterial grid"}</div></div>
+            <div class="kv-row"><div class="kv-lbl">6. Officially Published Road Capacity vs. Modelled Corridor Traffic &amp; Scenario HGV Breakdown</div><div class="kv-val">${link ? `<strong>Officially Published Corridor Capacity Benchmark:</strong> <span style="color:#34d399;">${link.published_road_capacity_and_upgrade_fact}</span><br/><strong>Modelled Corridor Traffic Estimate:</strong> ${link.observed_road_traffic_condition}<br/><strong>Scenario-Based Estimated Daily HGV Movements (Not Observed Traffic):</strong> <strong>${link.total_hgv_round_trips_day} HGV round-trips/day (${link.total_hgv_one_way_movements_day} one-way/day)</strong> = ${link.concrete_mixer_loads_day} concrete mixers + ${link.rebar_trailer_loads_day} rebar trailers + ${link.earthworks_tipper_loads_day} earthworks tippers + ${link.mep_fitout_truck_loads_day} MEP/fit-out trucks<br/><span style="color:var(--cyan);">${link.modelled_daily_hgv_concrete_rebar_trips}</span><br/><span style="color:#fcd34d; font-size:0.70rem;"><strong>Modelling Assumptions &amp; Sensitivity:</strong> ${link.hgv_modelling_assumptions_and_sensitivity}</span><br/><strong>HGV Ban Window:</strong> ${link.hgv_routing_and_ban_compliance}` : ""}</div></div>
             <div class="kv-row"><div class="kv-lbl">7. Main Contractors &amp; Consultants</div><div class="kv-val">${p.main_contractor_and_consultants}</div></div>
             <div class="kv-row"><div class="kv-lbl">8. Supporting Project Documents (${docs.length} Verified)</div><div class="kv-val">${docsHtml}</div></div>
-            <div class="kv-row"><div class="kv-lbl">9. Dual Provenance Trail (Project Source + Corridor Traffic Source)</div><div class="kv-val"><strong>Project Record (${link ? link.project_source_id : p.project_id}):</strong> <a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> (Verified: ${p.last_verified_date})<br/>${link ? `<strong>Corridor Traffic (${link.corridor_traffic_source_id}):</strong> <a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_source_title} ↗</a>` : ""}</div></div>
+            <div class="kv-row"><div class="kv-lbl">9. Dual Provenance Trail (Project Source + Corridor Capacity Source)</div><div class="kv-val"><strong>Project Record (${link ? link.project_source_id : p.project_id}):</strong> <a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> (Verified: ${p.last_verified_date})<br/>${link ? `<strong>Corridor Capacity Benchmark (${link.corridor_traffic_source_id}):</strong> <a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_source_title} ↗</a>` : ""}</div></div>
           </div>
         </div>
       `;
@@ -1646,17 +1667,17 @@ def main():
         <div class="detail-card">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
             <span class="brand-badge" style="background:#7e22ce;">${sd.subdev_id} • JVC Sub-Cluster</span>
-            <span class="conf-pill b-ver">${sd.confidence}</span>
+            <span class="conf-pill b-est">${sd.confidence}</span>
           </div>
           <h4>${sd.development_name}</h4>
           <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:8px;">Developer: ${sd.developer} | ${sd.community_district}</div>
-          <div style="margin-bottom:8px;"><span class="ep-badge ep-t2">${sd.epistemic_impact_tier}</span></div>
+          <div style="margin-bottom:8px;"><span class="ep-badge ep-t3">${sd.epistemic_impact_tier}</span></div>
           <div class="kv-grid">
             <div class="kv-row"><div class="kv-lbl">Task 1 Cross-Reference (Zero Inventory Duplication)</div><div class="kv-val">${sd.linked_task1_ref}</div></div>
             <div class="kv-row"><div class="kv-lbl">Active Building Scale &amp; Units</div><div class="kv-val">${sd.building_count} Towers (${sd.floors_range}) | <strong>${sd.total_units.toLocaleString()} Units</strong> | <strong>${sd.active_gfa_sqm.toLocaleString()} m² Active GFA</strong></div></div>
             <div class="kv-row"><div class="kv-lbl">Construction Status</div><div class="kv-val">${sd.construction_status}</div></div>
-            <div class="kv-row"><div class="kv-lbl">Connected Road &amp; Access Gate</div><div class="kv-val"><a href="javascript:void(0)" onclick="showRoadInspector('${sd.primary_access_road_id}')">${sd.primary_access_road_id}</a> (${sd.distance_to_road_km} km to ${sd.nearest_intersection_id})</div></div>
-            <div class="kv-row"><div class="kv-lbl">Modelled Midday HGV Delivery Load</div><div class="kv-val">${sd.estimated_midday_hgv_trips_per_day}</div></div>
+            <div class="kv-row"><div class="kv-lbl">Nearest-Vertex Road Geometry Validation</div><div class="kv-val"><a href="javascript:void(0)" onclick="showRoadInspector('${sd.primary_access_road_id}')">${sd.primary_access_road_id}</a> (<strong>${sd.distance_to_road_km} km</strong> Haversine from [${sd.latitude.toFixed(4)}, ${sd.longitude.toFixed(4)}] to nearest road vertex [${sd.nearest_road_vertex_wgs84}])</div></div>
+            <div class="kv-row"><div class="kv-lbl">Scenario-Based Estimated Daily HGV Movements &amp; Assumptions</div><div class="kv-val">${sd.estimated_midday_hgv_trips_per_day}<br/><span style="color:#fcd34d; font-size:0.70rem;">${sd.hgv_modelling_assumptions_and_sensitivity}</span></div></div>
           </div>
         </div>
       `;
@@ -1670,6 +1691,7 @@ def main():
       const r = DATA.roads.find(x => x.road_id === roadId);
       if (!r) return;
       const roadObs = DATA.observations.filter(o => o.road_id === roadId);
+      const cityObs = DATA.observations.find(o => o.observation_id === "OBS-DXB-CITY-00");
       const connectedLinks = DATA.impact_links.filter(l => l.primary_road_id === roadId || l.secondary_road_id === roadId);
       const midPt = r.geometry_wgs84[Math.floor(r.geometry_wgs84.length / 2)];
       map.flyTo([midPt[1], midPt[0]], 13, { duration: 0.7 });
@@ -1682,21 +1704,20 @@ def main():
         <div style="background:#090d16; border:1px solid #334155; padding:7px; border-radius:6px; margin-bottom:6px;">
           <div style="display:flex; justify-content:space-between; font-weight:700; color:#fff;">
             <span>${o.time_period}</span>
-            <span style="color:${congestionColor(o.congestion_level)};">${o.average_speed_kmh} km/h (${o.travel_time_min_per_10km} min/10km)</span>
+            <span style="color:${congestionColor(o.congestion_level)};">Modelled ~${o.average_speed_kmh} km/h (${o.travel_time_min_per_10km} min/10km)</span>
           </div>
-          <div style="font-size:0.71rem; color:#38bdf8; margin-top:3px;"><strong>Evidence Level:</strong> ${o.evidence_level || o.confidence} | <strong>Period:</strong> ${o.measurement_period || o.timestamp}</div>
-          <div style="font-size:0.71rem; color:#e2e8f0; margin-top:2px;"><strong>Provenance:</strong> ${srcHtml}</div>
-          <div style="font-size:0.71rem; color:#cbd5e1; margin-top:2px;"><strong>Geographic Coverage:</strong> ${o.community} — ${o.location}</div>
-          <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;"><strong>Congestion:</strong> ${o.congestion_level} | <strong>Vol:</strong> ${o.traffic_volume_vph}</div>
-          <div style="font-size:0.70rem; color:var(--cyan); margin-top:2px;"><strong>Basis:</strong> ${o.observation_type}</div>
-          <div style="font-size:0.70rem; color:#fcd34d; margin-top:2px;"><strong>Benchmark Scope:</strong> ${o.series_scope_note || 'Representative corridor benchmark snapshot (not a live sensor stream)'}</div>
-          <div style="font-size:0.70rem; color:var(--muted); margin-top:2px;"><strong>2024 vs 2026:</strong> ${o.comparison_period}</div>
+          <div style="font-size:0.71rem; color:#fcd34d; margin-top:3px;"><strong>Classification:</strong> ${o.evidence_level} (${o.confidence}) | <strong>Scenario:</strong> ${o.measurement_period}</div>
+          <div style="font-size:0.71rem; color:#34d399; margin-top:2px;"><strong>Officially Published Corridor Fact:</strong> ${o.officially_published_corridor_benchmark}</div>
+          <div style="font-size:0.71rem; color:#7dd3fc; margin-top:2px;"><strong>Modelled Speed/Volume Derivation:</strong> ${o.modelled_assumptions_and_derivation}</div>
+          <div style="font-size:0.71rem; color:#e2e8f0; margin-top:2px;"><strong>Source Reference:</strong> ${srcHtml}</div>
+          <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;"><strong>Modelled Congestion:</strong> ${o.congestion_level} | <strong>Modelled Vol:</strong> ${o.traffic_volume_vph}</div>
+          <div style="font-size:0.70rem; color:var(--muted); margin-top:2px;"><strong>2024 vs 2026 Comparison:</strong> ${o.comparison_period}</div>
           <div style="font-size:0.69rem; color:#94a3b8; margin-top:2px;"><em>Limitation: ${o.data_limitations}</em></div>
         </div>`;
       }).join("") || "<div style='color:#94a3b8; background:#090d16; border:1px dashed #64748b; padding:8px; border-radius:6px;'><strong>Data Unavailable (Distinguished from Zero Congestion):</strong> Segment-specific loop-detector speed breakdown is not published separately in open government CSVs for this corridor. Published statutory speed limit is " + r.speed_limit_kmh + ".</div>";
 
       const projHtml = connectedLinks.map(l =>
-        `<div>• <a href="javascript:void(0)" onclick="showProjectInspector('${l.project_id}')"><strong>${l.project_id}</strong>: ${l.project_name}</a> (${l.distance_to_primary_road_km} km — ${l.epistemic_impact_classification.split('(')[0]})</div>`
+        `<div>• <a href="javascript:void(0)" onclick="showProjectInspector('${l.project_id}')"><strong>${l.project_id}</strong>: ${l.project_name}</a> (${l.distance_to_primary_road_km} km Haversine to vertex [${l.nearest_road_vertex_wgs84}] — ${l.epistemic_impact_classification.split('(')[0]})</div>`
       ).join("") || "Serves general corridor traffic";
 
       document.getElementById("inspectorContainer").innerHTML = `
@@ -1709,12 +1730,13 @@ def main():
           <div style="font-size:0.78rem; color:var(--cyan); font-weight:700; margin-bottom:8px;">Authority: ${r.authority} | ${r.road_type}</div>
 
           <div class="kv-grid">
-            <div class="kv-row"><div class="kv-lbl">1. Published Speed Limit &amp; Lane Geometry</div><div class="kv-val"><strong>Speed Limit:</strong> ${r.speed_limit_kmh}<br/><strong>Lanes:</strong> ${r.lanes_per_direction} lanes per direction (${r.direction})</div></div>
-            <div class="kv-row"><div class="kv-lbl">2. Directional Capacity &amp; Methodology (Section A2 Guardrail)</div><div class="kv-val"><strong>${r.capacity_vph_per_dir}</strong><br/><span style="color:var(--cyan);">${r.capacity_basis}</span></div></div>
+            <div class="kv-row"><div class="kv-lbl">1. Published Speed Limit &amp; Polyline Geometry Validation</div><div class="kv-val"><strong>Speed Limit:</strong> ${r.speed_limit_kmh}<br/><strong>Lanes:</strong> ${r.lanes_per_direction} lanes per direction (${r.direction})<br/><strong>Geometry Validation:</strong> ${r.geometry_source_and_validation}</div></div>
+            <div class="kv-row"><div class="kv-lbl">2. Officially Published Directional Capacity vs. HCM Basis (Section A2 Guardrail)</div><div class="kv-val"><strong>${r.capacity_vph_per_dir}</strong><br/><span style="color:var(--cyan);">${r.capacity_basis}</span></div></div>
             <div class="kv-row"><div class="kv-lbl">3. Heavy Goods Vehicle (HGV) Truck Ban Schedule &amp; Salik Status</div><div class="kv-val"><strong>HGV Rule:</strong> ${r.hgv_truck_ban_window}<br/><strong>Salik Toll:</strong> ${r.salik_toll_status}</div></div>
-            <div class="kv-row"><div class="kv-lbl">4. Time-of-Day &amp; Historical Traffic Observations (${roadObs.length} Windows)</div><div class="kv-val">${obsHtml}</div></div>
-            <div class="kv-row"><div class="kv-lbl">5. Connected Construction Projects (${connectedLinks.length})</div><div class="kv-val">${projHtml}</div></div>
-            <div class="kv-row"><div class="kv-lbl">6. Served Communities &amp; Provenance</div><div class="kv-val">${r.served_communities} (Source: ${r.source_id} | Verified: 2026-11-07)</div></div>
+            ${cityObs && r.emirate === 'Dubai' ? `<div class="kv-row"><div class="kv-lbl">4. Published City-Wide Reference Only (TomTom Dubai Traffic Index — SRC-436)</div><div class="kv-val"><strong>${cityObs.observation_id} (City-Level Only):</strong> ${cityObs.officially_published_corridor_benchmark} (<a href="${cityObs.source_url}" target="_blank" rel="noopener">tomtom.com/traffic-index/city/dubai/ ↗</a>)</div></div>` : ""}
+            <div class="kv-row"><div class="kv-lbl">5. Modelled Corridor Estimates Calibrated to Published RTA/SRTA Capacity Benchmarks (${roadObs.length} Windows)</div><div class="kv-val">${obsHtml}</div></div>
+            <div class="kv-row"><div class="kv-lbl">6. Connected Construction Projects (${connectedLinks.length})</div><div class="kv-val">${projHtml}</div></div>
+            <div class="kv-row"><div class="kv-lbl">7. Served Communities &amp; Provenance</div><div class="kv-val">${r.served_communities} (Source: ${r.source_id} | Verified: 2026-11-09)</div></div>
           </div>
         </div>
       `;
@@ -1807,22 +1829,22 @@ def main():
 
             <div class="kv-grid">
               <div class="kv-row">
-                <div class="kv-lbl">1. Tier 1 — Observed Traffic Congestion (Direct Evidence)</div>
+                <div class="kv-lbl">1. Officially Published RTA Capacity Benchmarks vs. Modelled Corridor Estimates</div>
                 <div class="kv-val">
-                  • <a href="javascript:void(0)" onclick="showRoadInspector('RD-DXB-05')"><strong>Hessa St (D61 West)</strong></a>: Observed <strong>29 km/h AM Peak</strong> (20.7 min/10km) &amp; <strong>25 km/h PM Peak</strong> (24.0 min/10km) vs. 80 km/h free-flow (<strong>Severe, LOS F</strong> at JVC North Gate 1).<br/>
-                  • <a href="javascript:void(0)" onclick="showRoadInspector('RD-DXB-03')"><strong>Al Khail Rd (E44 JVC Segment)</strong></a>: Improved from 41–46 km/h (2024) to <strong>58–64 km/h (2026)</strong> after RTA's AED 700M bridge upgrade, though JVC slip-ramp weaves remain at 24 km/h during PM peak.
+                  • <a href="javascript:void(0)" onclick="showRoadInspector('RD-DXB-05')"><strong>Hessa St (D61 West)</strong></a>: <strong>Officially Published RTA Fact (<code>SRC-433</code>):</strong> AED 689M upgrade widens D61 from 2 to 4 lanes/dir, doubling capacity from <strong>4,000 to 8,000 vph/dir</strong>. <strong>Modelled Corridor Estimate (BPR V/C = 1.04–1.10):</strong> <strong>~29 km/h AM Peak</strong> (20.7 min/10km) &amp; <strong>~25 km/h PM Peak</strong> (24.0 min/10km) vs. 80 km/h free-flow.<br/>
+                  • <a href="javascript:void(0)" onclick="showRoadInspector('RD-DXB-03')"><strong>Al Khail Rd (E44 JVC Segment)</strong></a>: <strong>Officially Published RTA Fact (<code>SRC-434</code>):</strong> AED 700M upgrade adds +15,000–19,600 vph capacity and cuts corridor travel time by <strong>30%</strong>. <strong>Modelled Corridor Estimate:</strong> <strong>~58–64 km/h (2026)</strong> vs. modelled ~41–46 km/h pre-upgrade.
                 </div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">2. Tier 2 — Spatial Association (Co-Located Projects)</div>
+                <div class="kv-lbl">2. Tier 2 — Spatial Association &amp; Nearest-Vertex Geometry Validation</div>
                 <div class="kv-val">
-                  5 multi-tower JVC clusters (<a href="javascript:void(0)" onclick="showSubdevInspector(DATA.subdevs[0])">SUB-JVC-01 Binghatti [6 towers]</a>, <a href="javascript:void(0)" onclick="showSubdevInspector(DATA.subdevs[1])">SUB-JVC-02 Ellington</a>, <a href="javascript:void(0)" onclick="showSubdevInspector(DATA.subdevs[2])">SUB-JVC-03 Samana</a>, <a href="javascript:void(0)" onclick="showSubdevInspector(DATA.subdevs[3])">SUB-JVC-04 Tiger Sky 122F</a>, <a href="javascript:void(0)" onclick="showSubdevInspector(DATA.subdevs[4])">SUB-JVC-05 Nakheel</a>) sit <strong>150m–580m</strong> from JVC's Hessa St and Al Khail Rd access gates.
+                  5 multi-tower JVC clusters (<a href="javascript:void(0)" onclick="showSubdevInspector(DATA.subdevs[0])">SUB-JVC-01 Binghatti [6 towers]</a>, <a href="javascript:void(0)" onclick="showSubdevInspector(DATA.subdevs[1])">SUB-JVC-02 Ellington</a>, <a href="javascript:void(0)" onclick="showSubdevInspector(DATA.subdevs[2])">SUB-JVC-03 Samana</a>, <a href="javascript:void(0)" onclick="showSubdevInspector(DATA.subdevs[3])">SUB-JVC-04 Tiger Sky 122F</a>, <a href="javascript:void(0)" onclick="showSubdevInspector(DATA.subdevs[4])">SUB-JVC-05 Nakheel</a>) sit <strong>0.50–1.19 km (WGS84 Haversine to nearest road polyline vertex)</strong> from JVC's Hessa St, Al Khail Rd, and Circle Blvd corridors.
                 </div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">3. Tier 3 — Modelled Construction Impact (When Do Trucks Actually Operate?)</div>
+                <div class="kv-lbl">3. Tier 3 — Scenario-Based Estimated Daily HGV Movements (Not Observed Construction Traffic)</div>
                 <div class="kv-val">
-                  Because RTA bans HGVs on D61/E44 during <strong>06:30–08:30 &amp; 17:30–20:00</strong>, construction trucks are <em>not</em> the primary driver of AM/PM rush-hour queues. Instead, active JVC sites generate an estimated <strong>~168–280 HGV concrete/rebar trips/hr during the Midday (08:30–13:00) &amp; Night (20:30–05:00) windows</strong>, causing curb constriction on <a href="javascript:void(0)" onclick="showRoadInspector('RD-DXB-07')">JVC Circle Blvd</a>.
+                  Because RTA bans HGVs on D61/E44 during <strong>06:30–08:30 &amp; 17:30–20:00</strong>, construction trucks are <em>not</em> the primary driver of AM/PM rush-hour queues. Using our 4-component scenario formula (8.5 m³ mixers, 25 t rebar trailers, 0.35 m³/m² earthworks in 18 m³ tippers, 0.18 t/m² MEP in 12 t trucks over 1,825 days; peak-phase multiplier 1.8x–2.5x), active JVC sites generate an estimated <strong>~168–280 HGV movements/hr during Midday (08:30–13:00) &amp; Night (20:30–05:00)</strong> on <a href="javascript:void(0)" onclick="showRoadInspector('RD-DXB-07')">JVC Circle Blvd</a>.
                 </div>
               </div>
               <div class="kv-row">
@@ -1845,37 +1867,43 @@ def main():
           <div class="detail-card">
             <span class="brand-badge" style="background:#0d9488;">Use Case 3 — Temporal &amp; Historical Analysis</span>
             <h4 style="margin-top:6px;">"Compare traffic conditions around construction hotspots across Morning, Midday, Evening &amp; 2024–2026."</h4>
-            <p style="font-size:0.75rem; color:#cbd5e1;">Use the <strong>Time Window buttons in the top bar</strong> to watch the map update dynamically. Below is the verified multi-period comparison across our top 3 Dubai hotspots:</p>
+            <p style="font-size:0.75rem; color:#cbd5e1;">Use the <strong>Time Window buttons in the top bar</strong> to watch the map update dynamically. Below is the multi-period comparison separating <strong>Published City-Wide &amp; RTA Benchmarks</strong> from <strong>Modelled Corridor Estimates</strong>:</p>
 
             <div class="kv-grid">
               <div class="kv-row">
-                <div class="kv-lbl">1. Hessa Street (D61 — JVC North Gate)</div>
+                <div class="kv-lbl">0. Published City-Wide Reference Only (TomTom Dubai Traffic Index — OBS-DXB-CITY-00)</div>
                 <div class="kv-val">
-                  • <strong>Morning Peak (07:30–09:30):</strong> 29 km/h (20.7 min/10km) — Outbound commuter wave toward SZR/Al Khail (HGVs banned).<br/>
-                  • <strong>Midday (12:00–14:00):</strong> 48 km/h (12.5 min/10km) — Peak HGV concrete mixer &amp; steel delivery window.<br/>
-                  • <strong>Evening Peak (17:00–20:00):</strong> 25 km/h (24.0 min/10km) — Severe inbound queue + dark-kitchen delivery surge.<br/>
-                  • <strong>Night (22:00–05:00):</strong> 68 km/h (8.8 min/10km) — Free-flow with overnight RTA bridge deck pours.<br/>
-                  • <strong>2024 vs 2026 Historical Delta:</strong> Improved from 19–22 km/h (2024) to 25–29 km/h as phased AED 689M flyovers open.
+                  • <strong>TomTom City-Wide Aggregate (<a href="https://www.tomtom.com/traffic-index/city/dubai/" target="_blank" rel="noopener">SRC-436 ↗</a>):</strong> ~41 km/h metropolitan rush-hour average speed (~14.6 min/10km). <em>Used strictly at city level; never disaggregated to individual road segments.</em>
                 </div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">2. Al Khail Road (E44 — JVC to Business Bay)</div>
+                <div class="kv-lbl">1. Hessa Street (D61 — JVC North Gate • Published RTA Capacity: 4,000 → 8,000 vph/dir)</div>
                 <div class="kv-val">
-                  • <strong>Morning Peak:</strong> 64 km/h (up from 46 km/h in 2024 — <strong>30% RTA travel-time reduction</strong> post-AED 700M bridges).<br/>
-                  • <strong>Evening Peak:</strong> 58 km/h mainline (24 km/h on JVC exit slip ramp).
+                  • <strong>Morning Peak (07:30–09:30):</strong> Modelled ~29 km/h (20.7 min/10km; BPR V/C = 1.04 at ~4,150 vph/dir est. flow; HGVs banned).<br/>
+                  • <strong>Midday (12:00–14:00):</strong> Modelled ~48 km/h (12.5 min/10km; BPR V/C = 0.78 during permitted HGV delivery window).<br/>
+                  • <strong>Evening Peak (17:00–20:00):</strong> Modelled ~25 km/h (24.0 min/10km; BPR V/C = 1.10 at ~4,380 vph/dir est. inbound flow).<br/>
+                  • <strong>Night (22:00–05:00):</strong> Modelled ~68 km/h (8.8 min/10km; BPR V/C = 0.29 free-flow with overnight RTA bridge deck pours).<br/>
+                  • <strong>Modelled 2024 vs 2026 Delta:</strong> Modelled improvement from ~19–22 km/h (2024) to ~25–29 km/h as phased AED 689M flyovers open.
                 </div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">3. Sheikh Zayed Road (E11 — Burj Azizi / DIFC / Business Bay)</div>
+                <div class="kv-lbl">2. Al Khail Road (E44 — Published RTA Benchmark: +15,000–19,600 vph &amp; 30% Travel-Time Reduction)</div>
                 <div class="kv-val">
-                  • <strong>Morning Peak:</strong> 52 km/h | <strong>Evening Peak:</strong> 44 km/h.<br/>
-                  • <strong>2024 vs 2025/2026 Dynamic Salik Effect:</strong> Introduction of AED 6 peak / AED 4 off-peak Salik (Jan 31, 2025) + Al Safa South gate smoothed peak volume by ~9–12%. Zero daytime HGV impact due to 06:00–22:00 truck ban.
+                  • <strong>Morning Peak:</strong> Modelled ~64 km/h (vs. modelled ~46 km/h in 2024 — calibrated to <strong>RTA's published 30% travel-time reduction</strong> post-AED 700M bridges).<br/>
+                  • <strong>Evening Peak:</strong> Modelled ~58 km/h mainline (BPR V/C = 0.86).
                 </div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">Explicit Data Limitations (Section D5 &amp; E3 Guardrail)</div>
+                <div class="kv-lbl">3. Sheikh Zayed Road (E11 — Published Salik Benchmark: AED 6 Peak / AED 4 Off-Peak)</div>
+                <div class="kv-val">
+                  • <strong>Morning Peak:</strong> Modelled ~52 km/h | <strong>Evening Peak:</strong> Modelled ~44 km/h.<br/>
+                  • <strong>Published Salik Effect (<code>SRC-435</code>):</strong> Dynamic Salik pricing (Jan 31, 2025) + Al Safa South gate redistributes ~9–12% peak traffic. Zero daytime HGV impact due to 06:00–22:00 truck ban.
+                </div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">Explicit Epistemic Guardrail (Section D5 &amp; E3)</div>
                 <div class="kv-val" style="color:#fcd34d;">
-                  Where official RTA / Salik / TomTom published benchmarks exist (AM &amp; PM peaks on E11, E44, D61, D62, D71, E311), values are marked <strong>Observed</strong>. Midday and Night segment speeds on internal collectors are explicitly labelled <strong>Modelled Estimate</strong> because open government portals do not expose raw 24-hour 5-minute loop-detector CSVs without a commercial TomTom Move or RTA EC3 enterprise feed.
+                  Official RTA, SRTA, and Salik releases substantiate corridor capacities, bridge upgrades, travel-time reduction percentages, and HGV ban windows. TomTom's public Dubai Traffic Index is cited strictly at the city-wide level (<code>OBS-DXB-CITY-00</code>). All 21 corridor-level speed, volume, and congestion values (<code>OBS-DXB-001..015</code>, <code>OBS-SHJ-001..006</code>) are explicitly classified as <strong>Modelled Corridor Estimates</strong> (<code>confidence = "Estimated"</code>).
                 </div>
               </div>
             </div>
@@ -1898,14 +1926,14 @@ def main():
                 <div class="kv-lbl">1. Muwaileh, Aljada &amp; Al Zahia Nexus (E311 × E88)</div>
                 <div class="kv-val">
                   • <strong>Projects:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH2')">PRJ-SH2 Aljada (25,000 units)</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH9')">PRJ-SH9 Al Zahia</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH8')">PRJ-SH8 Olfah</a>.<br/>
-                  • <strong>Traffic:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-01')">E311 Southbound</a> drops to <strong>28 km/h (Severe)</strong> in AM peak &amp; 31 km/h in PM peak. SRTA &amp; Arada built dedicated Aljada/Airport Rd (E88) grade-separated bridges to bypass E311 queues.
+                  • <strong>Traffic:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-01')">E311 Southbound</a> has a <strong>Modelled Corridor Estimate of ~28 km/h (Severe)</strong> in AM peak &amp; ~31 km/h in PM peak. SRTA &amp; Arada built dedicated Aljada/Airport Rd (E88) grade-separated bridges to bypass E311 queues.
                 </div>
               </div>
               <div class="kv-row">
                 <div class="kv-lbl">2. Emirates Road (E611) Forest &amp; Eco-City Belt</div>
                 <div class="kv-val">
                   • <strong>Projects:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH3')">PRJ-SH3 Masaar 1–3</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH5')">PRJ-SH5 Khalid Bin Sultan City (Zaha Hadid)</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH6')">PRJ-SH6 Hayyan</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH7')">PRJ-SH7 Tilal City</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH10')">PRJ-SH10 Sharjah Sustainable City</a>.<br/>
-                  • <strong>Traffic:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-02')">Emirates Rd (E611)</a> operates at <strong>62 km/h (Moderate)</strong> in PM peak; SRTA's 320m Al Dhaid Bridge (E88) opens November 15, 2026.
+                  • <strong>Traffic:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-02')">Emirates Rd (E611)</a> operates at a <strong>Modelled Corridor Estimate of ~62 km/h (Moderate)</strong> in PM peak; SRTA's 320m Al Dhaid Bridge (E88) opens November 15, 2026.
                 </div>
               </div>
               <div class="kv-row">
@@ -1959,16 +1987,16 @@ def main():
           <div class="detail-card">
             <span class="brand-badge">Deterministic SQL/JSON Query Result • Auto-Zoomed to JVC [25.0565, 55.2090]</span>
             <h4 style="margin-top:6px;">JVC &amp; Hessa Street Construction-to-Traffic Query (${jvcLinks.length} Linked Records)</h4>
-            <p style="font-size:0.76rem; color:#cbd5e1;"><strong>Database Findings:</strong> JVC (<code>COM-DXB-01</code>) records <strong>38 active developments, 64 active towers, 28,500 scheduled units, and 3,420,000 m² active structural GFA</strong>. Surrounding traffic on <code>RD-DXB-05</code> (Hessa St West) averages <strong>29 km/h (AM Peak)</strong> and <strong>25 km/h (PM Peak — Severe)</strong>, while <code>RD-DXB-03</code> (Al Khail Rd E44) averages <strong>58–64 km/h</strong> following RTA's AED 700M upgrade.</p>
+            <p style="font-size:0.76rem; color:#cbd5e1;"><strong>Database Findings:</strong> JVC (<code>COM-DXB-01</code>) records <strong>38 active developments, 64 active towers, 28,500 scheduled units, and 3,420,000 m² active structural GFA</strong>. Officially published RTA capacity on <code>RD-DXB-05</code> (Hessa St D61) doubles from <strong>4,000 to 8,000 vph/dir</strong> under the AED 689M upgrade, while modelled corridor speeds are <strong>~29 km/h (AM Peak)</strong> and <strong>~25 km/h (PM Peak — Severe)</strong>, and <code>RD-DXB-03</code> (Al Khail Rd E44) is modelled at <strong>~58–64 km/h</strong> calibrated to RTA's published 30% travel-time reduction.</p>
             <div class="kv-grid">
               ${jvcLinks.map(l => `
                 <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${l.project_id}')">
-                  <div class="kv-lbl">${l.project_id} → ${l.primary_road_id} (${l.distance_to_primary_road_km} km)</div>
-                  <div class="kv-val"><strong>${l.project_name}</strong><br/>${l.observed_road_traffic_condition}<br/><em>${l.modelled_daily_hgv_concrete_rebar_trips}</em><br/><span style="color:var(--cyan);">${l.epistemic_impact_classification}</span></div>
+                  <div class="kv-lbl">${l.project_id} → ${l.primary_road_id} (${l.distance_to_primary_road_km} km Haversine to [${l.nearest_road_vertex_wgs84}])</div>
+                  <div class="kv-val"><strong>${l.project_name}</strong><br/><span style="color:#34d399;">${l.published_road_capacity_and_upgrade_fact}</span><br/>${l.observed_road_traffic_condition}<br/><em>${l.modelled_daily_hgv_concrete_rebar_trips}</em><br/><span style="color:var(--cyan);">${l.epistemic_impact_classification}</span></div>
                 </div>
               `).join("")}
             </div>
-            <div style="margin-top:8px; font-size:0.70rem; color:var(--muted);"><strong>Sources:</strong> DLD <code>dld_projects-open</code> (<code>SRC-020</code> JVC Master Community), RTA AED 689M Hessa St D61 Release (<code>SRC-433</code>), and RTA AED 700M Al Khail Rd E44 Release (<code>SRC-434</code>).</div>
+            <div style="margin-top:8px; font-size:0.70rem; color:var(--muted);"><strong>Sources:</strong> DLD <code>dld_projects-open</code> (<code>SRC-020</code> JVC Master Community), RTA AED 689M Hessa St D61 Capacity Release (<code>SRC-433</code>), and RTA AED 700M Al Khail Rd E44 Capacity Release (<code>SRC-434</code>).</div>
           </div>
         `;
       } else if (q.includes("morning") || q.includes("evening") || q.includes("compare") || q.includes("vary") || q.includes("time")) {
@@ -1977,16 +2005,16 @@ def main():
         out.innerHTML = `
           <div class="detail-card">
             <span class="brand-badge">Deterministic Temporal Comparison Query • Hessa St (D61) &amp; Al Khail Rd (E44)</span>
-            <h4 style="margin-top:6px;">Morning vs. Midday vs. Evening vs. Night Traffic Comparison (${d61Obs.length} Observations)</h4>
+            <h4 style="margin-top:6px;">Morning vs. Midday vs. Evening vs. Night Traffic Comparison (${d61Obs.length} Modelled Corridor Scenarios)</h4>
             <div class="kv-grid">
               ${d61Obs.map(o => `
                 <div class="kv-row" style="cursor:pointer;" onclick="showRoadInspector('${o.road_id}')">
-                  <div class="kv-lbl">${o.road_id} • ${o.time_period}</div>
-                  <div class="kv-val"><strong>Speed: ${o.average_speed_kmh} km/h</strong> vs ${o.free_flow_speed_kmh} km/h free-flow (<strong>${o.travel_time_min_per_10km} min/10km</strong>)<br/>Volume: ${o.traffic_volume_vph}<br/>Historical: ${o.comparison_period}<br/><span style="color:var(--cyan);">Basis: ${o.observation_type}</span></div>
+                  <div class="kv-lbl">${o.road_id} • ${o.time_period} (${o.evidence_level})</div>
+                  <div class="kv-val"><strong>Modelled Speed: ~${o.average_speed_kmh} km/h</strong> vs ${o.free_flow_speed_kmh} km/h free-flow (<strong>${o.travel_time_min_per_10km} min/10km</strong>)<br/><strong>Published Benchmark:</strong> <span style="color:#34d399;">${o.officially_published_corridor_benchmark}</span><br/><strong>Modelled Derivation:</strong> ${o.modelled_assumptions_and_derivation}<br/><strong>Modelled Volume:</strong> ${o.traffic_volume_vph}</div>
                 </div>
               `).join("")}
             </div>
-            <div style="margin-top:8px; font-size:0.71rem; color:#fcd34d;"><strong>Limitation Notice:</strong> AM/PM peak speeds &amp; volumes are official RTA/TomTom observations; Midday &amp; Night windows are engineering estimates calibrated to RTA HGV truck-ban schedules.</div>
+            <div style="margin-top:8px; font-size:0.71rem; color:#fcd34d;"><strong>Epistemic Notice:</strong> Corridor capacities and upgrade travel-time reduction targets are officially published by RTA (<code>SRC-433</code>, <code>SRC-434</code>). Segment-specific hourly speeds and volumes are Modelled Corridor Estimates derived via the BPR volume-delay function.</div>
           </div>
         `;
       } else if (q.includes("dubai south") || q.includes("dwc") || q.includes("maktoum") || q.includes("expo") || q.includes("e611")) {
@@ -1996,7 +2024,7 @@ def main():
           <div class="detail-card">
             <span class="brand-badge">Deterministic Spatial Query • Auto-Zoomed to Dubai South &amp; DWC [24.912, 55.158]</span>
             <h4 style="margin-top:6px;">Dubai South, Expo City &amp; DWC Airport Traffic &amp; Freight Intelligence</h4>
-            <p style="font-size:0.76rem; color:#cbd5e1;"><strong>Database Findings:</strong> Dubai South (<code>COM-DXB-04</code>) has the largest active construction GFA in the UAE (<strong>7.85M m²</strong> across <code>PRJ-D1</code> DWC AED 128B Airport, <code>PRJ-D15</code> Azizi Venice &amp; <code>PRJ-D18</code> Expo City), yet observed congestion is <strong>Low (86 km/h average speed on E611, LOS B)</strong> because <strong>Emirates Road (E611)</strong> provides 11,400 vph/dir capacity and is <strong>100% exempt from Dubai's daytime HGV truck bans</strong>.</p>
+            <p style="font-size:0.76rem; color:#cbd5e1;"><strong>Database Findings:</strong> Dubai South (<code>COM-DXB-04</code>) has the largest active construction GFA in the UAE (<strong>7.85M m²</strong> across <code>PRJ-D1</code> DWC AED 128B Airport, <code>PRJ-D15</code> Azizi Venice &amp; <code>PRJ-D18</code> Expo City), yet modelled congestion is <strong>Low (~86 km/h modelled speed on E611, LOS B)</strong> because <strong>Emirates Road (E611)</strong> provides a published 11,400 vph/dir 6-lane capacity and is <strong>100% exempt from Dubai's daytime HGV truck bans</strong>.</p>
             <div class="kv-grid">
               ${dsLinks.map(l => `
                 <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${l.project_id}')">

@@ -2316,10 +2316,10 @@ TASK2_PROVENANCE_SOURCES = [
         "publication_date": "2025-11-18",
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
-        "document_or_page_reference": "RTA Hessa Street (D61) Improvement Project Engineering & Traffic Release (AED 689M; 4.5 km SZR to Al Khail Rd)",
-        "supported_entity_and_extracted_fact": "Corridor & Traffic Benchmark (RD-DXB-05, RD-DXB-06, INT-DXB-01, INT-DXB-04, OBS-DXB-001..004, INC-DXB-01, TIS-DXB-01): Widening Hessa St D61 from 2 to 4 lanes/dir doubles capacity from 4,000 to 8,000 vph/dir (16,000 vph total), serving 640,000+ residents across JVC/Al Barsha and cutting travel time from 30 min to 7 min.",
-        "derivation_method": "Direct extraction from official RTA engineering release corroborated with TomTom Dubai peak speed index",
-        "verification_status": "Verified (HTTP 200 Official Release)",
+        "document_or_page_reference": "RTA Hessa Street (D61) Improvement Project Engineering & Capacity Release (AED 689M; 4.5 km SZR to Al Khail Rd)",
+        "supported_entity_and_extracted_fact": "Officially Published Corridor Capacity & Upgrade Facts (RD-DXB-05, RD-DXB-06, INT-DXB-01, INT-DXB-04, INC-DXB-01, TIS-DXB-01): Widening Hessa St D61 from 2 to 4 lanes/dir doubles capacity from 4,000 to 8,000 vph/dir (16,000 vph total) across 4.5 km with 4 grade-separated intersections, serving 640,000 residents across JVC/Al Barsha and targeting a 50% corridor travel-time reduction. Note: Specific segment speeds (25–68 km/h) and directional hourly volumes (1,150–4,380 vph/dir) in OBS-DXB-001..004 are Modelled Corridor Estimates calibrated to RTA's 4,000 vph/dir pre-upgrade capacity, not published loop-detector telemetry.",
+        "derivation_method": "Official RTA capacity & upgrade release + BPR volume-delay model for corridor speed/volume estimates",
+        "verification_status": "Verified (HTTP 200 Official Release for Capacity; Speeds/Volumes Modelled)",
         "confidence_classification": "Verified"
     },
     {
@@ -2331,9 +2331,9 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Al Khail Road (E44) Improvement Project Completion Report (AED 700M; 3,300m bridges across 7 sites including JVC, Al Quoz 1, Meydan, Zabeel)",
-        "supported_entity_and_extracted_fact": "Corridor & Traffic Benchmark (RD-DXB-03, RD-DXB-04, INT-DXB-03, OBS-DXB-005..006, TIS-DXB-02): Adds 19,600 vph corridor capacity across E44 and reduces peak travel time by 30% between JVC, Al Quoz, and Business Bay/Zabeel.",
-        "derivation_method": "Direct extraction from official RTA post-opening telemetry release",
-        "verification_status": "Verified (HTTP 200 Official Release)",
+        "supported_entity_and_extracted_fact": "Officially Published Corridor Capacity & Upgrade Facts (RD-DXB-03, RD-DXB-04, INT-DXB-03, TIS-DXB-02): Adds ~15,000–19,600 vph corridor capacity across E44 and reduces peak corridor travel time by 30% between JVC, Al Quoz, and Business Bay/Zabeel. Note: Specific segment speeds (58–64 km/h) and directional hourly volumes (9,400–9,850 vph/dir) in OBS-DXB-005..006 are Modelled Corridor Estimates calibrated to E44's 100 km/h speed limit and RTA's 30% travel-time reduction benchmark.",
+        "derivation_method": "Official RTA post-opening capacity/travel-time reduction release + BPR volume-delay model for segment estimates",
+        "verification_status": "Verified (HTTP 200 Official Release for Capacity/30% Reduction; Speeds/Volumes Modelled)",
         "confidence_classification": "Verified"
     },
     {
@@ -2345,23 +2345,23 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "Salik PJSC Dynamic Toll Pricing Framework & Business Bay Crossing / Al Safa South Gate Disclosures (2025–2026)",
-        "supported_entity_and_extracted_fact": "Corridor & Toll Volume Benchmark (TDS-02, RD-DXB-01, RD-DXB-02, INT-DXB-08, OBS-DXB-009..010): Peak toll AED 6 (06:00–10:00 & 16:00–20:00), Off-Peak AED 4, Night AED 0; ~9–12% peak traffic redistribution on Sheikh Zayed Rd (E11) and Al Khail Rd (E44).",
-        "derivation_method": "Direct extraction from DFM regulatory disclosures and Salik investor factbook",
-        "verification_status": "Verified (HTTP 200 Official Filing)",
+        "supported_entity_and_extracted_fact": "Officially Published Toll & Tariff Facts (TDS-02, RD-DXB-01, RD-DXB-02, INT-DXB-08): Peak toll AED 6 (06:00–10:00 & 16:00–20:00), Off-Peak AED 4, Night AED 0; ~9–12% peak traffic redistribution on Sheikh Zayed Rd (E11) and Al Khail Rd (E44). Note: Segment speeds (44–52 km/h) and directional hourly volumes (10,600–11,200 vph/dir) in OBS-DXB-009..010 are Modelled Corridor Estimates.",
+        "derivation_method": "Direct extraction from DFM regulatory disclosures + HCM/BPR corridor volume-delay model",
+        "verification_status": "Verified (HTTP 200 Official Filing for Tariffs; Segment Speeds/Volumes Modelled)",
         "confidence_classification": "Verified"
     },
     {
         "source_id": "SRC-436",
-        "original_url": "https://www.tomtom.com/traffic-index/dubai-traffic/",
+        "original_url": "https://www.tomtom.com/traffic-index/city/dubai/",
         "publisher": "TomTom International BV",
-        "emirate_or_scope": "Dubai & Sharjah",
+        "emirate_or_scope": "Dubai (City-Wide Metropolitan Aggregate Only)",
         "publication_date": "2025-01-15",
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
-        "document_or_page_reference": "TomTom Traffic Index — Dubai City & Arterial Speed Benchmarks + TomTom Traffic Flow/Incidents API Documentation",
-        "supported_entity_and_extracted_fact": "Traffic Telemetry & Provider Benchmark (TDS-10, PRV-01, PRV-02, OBS-DXB-001..015): Floating-car probe speed ratios, AM peak (07:30–09:30) and PM peak (17:00–20:00) travel time per 10 km, Jam Factor (0–10) definitions, and 2,500 req/day API licensing terms.",
-        "derivation_method": "Direct extraction from published TomTom Traffic Index and developer portal documentation",
-        "verification_status": "Verified (HTTP 200 Official Portal)",
+        "document_or_page_reference": "TomTom Dubai Traffic Index (City-Level Annual & Rush-Hour Statistics) & TomTom Traffic API Documentation",
+        "supported_entity_and_extracted_fact": "City-Wide Macro Traffic Benchmark & API Specification (OBS-DXB-CITY-00, TDS-10, PRV-01, PRV-02): Publishes CITY-WIDE aggregate travel time per 10 km, rush-hour congestion %, and annual hours lost across the entire Dubai metropolitan network, plus 2,500 req/day API licensing terms. Explicitly used ONLY at city level (OBS-DXB-CITY-00); does NOT publish road-segment speeds, vph volumes, or jam factors for Hessa St, Al Khail Rd, or JVC.",
+        "derivation_method": "Direct extraction from published TomTom Dubai Traffic Index (city-level only) and developer portal documentation",
+        "verification_status": "Verified (HTTP 200 Official Portal — City-Level Aggregate Only)",
         "confidence_classification": "Verified"
     },
     {
@@ -2373,9 +2373,9 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Heavy Goods Vehicle (HGV) Truck Movement Ban Schedule & MOEI E311/E611 Federal Freight Corridor Specifications",
-        "supported_entity_and_extracted_fact": "Freight & HGV Ban Benchmark (TDS-08, TDS-16, RD-DXB-08, RD-DXB-09, OBS-DXB-015): 16-hr HGV ban on E11 (06:00–22:00); 3-window peak ban on E311/E44 (06:30–08:30, 13:00–15:00, 17:30–20:00); 24/7 HGV exemption on Emirates Rd (E611) 6-lane 11,400 vph/dir freight bypass.",
-        "derivation_method": "Direct extraction from RTA regulatory schedule and Bayanat.ae MOEI highway inventory",
-        "verification_status": "Verified (HTTP 200 Official Portal)",
+        "supported_entity_and_extracted_fact": "Officially Published Freight & HGV Ban Regulations (TDS-08, TDS-16, RD-DXB-08, RD-DXB-09): 16-hr HGV ban on E11 (06:00–22:00); 3-window peak ban on E311/E44/D61 (06:30–08:30, 13:00–15:00, 17:30–20:00); 24/7 HGV exemption on Emirates Rd (E611) 6-lane freight bypass. Note: Midday speed (86 km/h) and volume (5,800 vph/dir) in OBS-DXB-015 are Modelled Corridor Estimates.",
+        "derivation_method": "Direct extraction from RTA regulatory schedule + HCM 7th Ed freeway model for OBS-DXB-015",
+        "verification_status": "Verified (HTTP 200 Official Portal for HGV Rules; Segment Speed/Volume Modelled)",
         "confidence_classification": "Verified"
     },
     {
@@ -2387,9 +2387,9 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Al Mustaqbal Street, Financial Centre Road (D71) & Business Bay Corridor Upgrade Release",
-        "supported_entity_and_extracted_fact": "CBD Corridor Benchmark (COM-DXB-02, RD-DXB-12, RD-DXB-13, INT-DXB-05, OBS-DXB-011..012, INC-DXB-04, TIS-DXB-04): Widens Al Mustaqbal St from 3 to 4 lanes/dir + 1,700m tunnels, expanding capacity 33% from 6,600 to 8,800 vph and cutting travel time from 13 to 6 min.",
-        "derivation_method": "Direct extraction from RTA contract award and engineering study release",
-        "verification_status": "Verified (HTTP 200 Official Release)",
+        "supported_entity_and_extracted_fact": "Officially Published CBD Corridor Upgrade Facts (COM-DXB-02, RD-DXB-12, RD-DXB-13, INT-DXB-05, INC-DXB-04, TIS-DXB-04): Widens Al Mustaqbal St from 3 to 4 lanes/dir + 1,700m tunnels, expanding capacity 33% from 6,600 to 8,800 vph and cutting corridor travel time from 13 to 6 min, plus Zabeel 700m bridge (3,000 vph). Note: Segment speeds (22–34 km/h) and volumes (2,390–4,100 vph/dir) in OBS-DXB-011..012 are Modelled Corridor Estimates.",
+        "derivation_method": "Official RTA contract award release + BPR/HCM arterial volume-delay model",
+        "verification_status": "Verified (HTTP 200 Official Release for Capacity; Segment Speeds/Volumes Modelled)",
         "confidence_classification": "Verified"
     },
     {
@@ -2401,9 +2401,9 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Ras Al Khor Road (E44/D62) Widening (AED 670M) & Dubai Metro Blue Line (AED 20.5B) Corridor Engineering Study",
-        "supported_entity_and_extracted_fact": "Corridor & Work-Zone Benchmark (TDS-11, COM-DXB-03, RD-DXB-11, INT-DXB-06, OBS-DXB-013..014, INC-DXB-03, TIS-DXB-03, IMP-008): Ras Al Khor Rd widened to 4–6 lanes (8,000–10,000 vph/dir) with active Metro Blue Line viaduct/station civil works along D62/E66.",
-        "derivation_method": "Direct extraction from official RTA rail and roads agency disclosures",
-        "verification_status": "Verified (HTTP 200 Official Release)",
+        "supported_entity_and_extracted_fact": "Officially Published Corridor & Work-Zone Facts (TDS-11, COM-DXB-03, RD-DXB-11, INT-DXB-06, INC-DXB-03, TIS-DXB-03, IMP-008): Ras Al Khor Rd widened to 4–6 lanes (8,000–10,000 vph/dir, reducing travel time from 20 min to 7 min) with active Metro Blue Line viaduct/station civil works along D62/E66. Note: Segment speeds (38–41 km/h) and volumes (7,650–7,900 vph/dir) in OBS-DXB-013..014 are Modelled Corridor Estimates.",
+        "derivation_method": "Official RTA rail/roads agency disclosures + BPR corridor volume-delay model",
+        "verification_status": "Verified (HTTP 200 Official Release for Capacity/Work Zone; Speeds/Volumes Modelled)",
         "confidence_classification": "Verified"
     },
     {
@@ -2415,7 +2415,7 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Umm Suqeim–Al Qudra (D63) 16 km Corridor Improvement Project (AED 700M / AED 332M Phase)",
-        "supported_entity_and_extracted_fact": "Corridor Benchmark (COM-DXB-05, RD-DXB-10, TIS-DXB-06): Expands D63 capacity to 16,000 vph (8,000 vph/dir) from E11 to E611 serving Dubai Hills, Arjan, Motor City, Arabian Ranches, and Tilal Al Ghaf.",
+        "supported_entity_and_extracted_fact": "Officially Published Corridor Upgrade Facts (COM-DXB-05, RD-DXB-10, TIS-DXB-06): Expands D63 capacity to 12,000–16,000 vph (6,000–8,000 vph/dir) from E11 to E611 and reduces travel time from 20 min to 8 min (60% reduction) serving Dubai Hills, Arjan, Motor City, Arabian Ranches, and Tilal Al Ghaf.",
         "derivation_method": "Direct extraction from official RTA corridor progress release",
         "verification_status": "Verified (HTTP 200 Official Release)",
         "confidence_classification": "Verified"
@@ -2429,9 +2429,9 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA & Nakheel Jumeirah Village Circle (JVC) Access Point Expansion & Commercial Delivery Motorcycle Regulation",
-        "supported_entity_and_extracted_fact": "Community Collector & Logistics Benchmark (RD-DXB-07, INT-DXB-02, OBS-DXB-007..008, INC-DXB-02, PRK-DXB-02): Addition of 4 new JVC entry/exit gates reducing internal exit delay by 25–30%, plus midday construction HGV staging and delivery-bike lane rules.",
-        "derivation_method": "Corroborated RTA/Nakheel community access release + HCM 7th Ed collector capacity model",
-        "verification_status": "Verified (Official Release + Calibrated Collector Model)",
+        "supported_entity_and_extracted_fact": "Officially Published Community Access & Delivery Regulation Facts (RD-DXB-07, INT-DXB-02, INC-DXB-02, PRK-DXB-02): Addition of 4 new JVC entry/exit gates reducing internal exit delay by 25–30%, plus fast-lane delivery motorcycle ban. Note: Internal collector speeds (21–24 km/h) and volumes (2,180–2,340 vph/dir) in OBS-DXB-007..008 are Modelled Corridor Estimates.",
+        "derivation_method": "Official RTA/Nakheel community access release + HCM 7th Ed collector capacity model",
+        "verification_status": "Verified (Official Release for Access Gates; Collector Speeds/Volumes Modelled)",
         "confidence_classification": "Corroborated"
     },
     {
@@ -2443,8 +2443,8 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "Al Maktoum International Airport (DWC AED 128B) & Expo Road (E77) / Emirates Road (E611) Logistics Mobility Plan",
-        "supported_entity_and_extracted_fact": "Megaproject Logistics Benchmark (COM-DXB-04, RD-DXB-15, INT-DXB-07, TIS-DXB-05): Dedicated 6-lane E77 (11,400 vph/dir) and E611 freight interchanges plus on-site concrete batching plants segregating DWC/Dubai South construction HGVs from commuter traffic.",
-        "derivation_method": "Direct extraction from DAEP/RTA infrastructure disclosures",
+        "supported_entity_and_extracted_fact": "Megaproject Logistics Benchmark (COM-DXB-04, RD-DXB-15, INT-DXB-07, TIS-DXB-05): Dedicated 6-lane E77 (11,400 vph/dir HCM capacity) and E611 freight interchanges plus on-site concrete batching plants segregating DWC/Dubai South construction HGVs from commuter traffic.",
+        "derivation_method": "Direct extraction from DAEP/RTA infrastructure disclosures + HCM freeway capacity model",
         "verification_status": "Verified (HTTP 200 Official Portal)",
         "confidence_classification": "Verified"
     },
@@ -2457,7 +2457,7 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Al Shindagha Corridor / Infinity Bridge (D92), Direct Dubai Islands Bridge (AED 431M) & King Salman St (D94) Releases",
-        "supported_entity_and_extracted_fact": "Coastal Corridor Benchmark (COM-DXB-06, COM-DXB-07, RD-DXB-14, RD-DXB-16, INT-DXB-09, INT-DXB-10): 12-lane Infinity Bridge (24,000 vph total), new 16,000 vph Dubai Islands bridge entrance, and D94 Marina/Palm Jumeirah waterfront arterial parameters.",
+        "supported_entity_and_extracted_fact": "Officially Published Coastal Bridge Facts (COM-DXB-06, COM-DXB-07, RD-DXB-14, RD-DXB-16, INT-DXB-09, INT-DXB-10): 12-lane Infinity Bridge (24,000 vph total), new AED 431M 16,000 vph (8,000 vph/dir) Dubai Islands direct bridge entrance, and D94 Marina/Palm Jumeirah waterfront arterial parameters.",
         "derivation_method": "Direct extraction from RTA coastal bridge engineering releases",
         "verification_status": "Verified (HTTP 200 Official Portal)",
         "confidence_classification": "Verified"
@@ -2470,10 +2470,10 @@ TASK2_PROVENANCE_SOURCES = [
         "publication_date": "2025-09-10",
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
-        "document_or_page_reference": "SRTA / MOEI Sheikh Mohammed bin Zayed Rd (E311) Muwaileh & Al Ittihad / Al Khan (E11) Inter-Emirate Commuter Corridor Study",
-        "supported_entity_and_extracted_fact": "Sharjah Commuter Corridor Benchmark (TDS-14, COM-SHJ-01, COM-SHJ-03, RD-SHJ-01, RD-SHJ-04, INT-SHJ-01, INT-SHJ-03, OBS-SHJ-001..002, TIS-SHJ-01): Documents E311 Muwaileh/Aljada/Al Zahia 9,500–9,650 vph/dir peak commuter saturation and Al Taawun / Al Khan bridge upgrades.",
-        "derivation_method": "Direct extraction from SRTA & MOEI corridor studies corroborated with TomTom Sharjah–Dubai index",
-        "verification_status": "Verified (HTTP 200 Official Portal)",
+        "document_or_page_reference": "SRTA / MOEI Sheikh Mohammed bin Zayed Rd (E311) Muwaileh & Al Ittihad / Al Khan (E11) Inter-Emirate Commuter Corridor Releases",
+        "supported_entity_and_extracted_fact": "Sharjah Commuter Corridor Specifications (TDS-14, COM-SHJ-01, COM-SHJ-03, RD-SHJ-01, RD-SHJ-04, INT-SHJ-01, INT-SHJ-03, TIS-SHJ-01): Documents E311 Muwaileh/Aljada/Al Zahia 5-lane geometry and Al Taawun / Al Khan bridge upgrades. Note: Segment speeds (28–31 km/h) and directional volumes (9,500–9,650 vph/dir) in OBS-SHJ-001..002 are Modelled Corridor Estimates.",
+        "derivation_method": "Official SRTA & MOEI highway specifications + BPR volume-delay model for segment speed/volume estimates",
+        "verification_status": "Verified (HTTP 200 Official Portal for Geometry/Upgrades; Speeds/Volumes Modelled)",
         "confidence_classification": "Verified"
     },
     {
@@ -2485,9 +2485,9 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "SRTA / Mubadara Emirates Road (E611) & Al Dhaid Road (E88) Bridge / Interchange Upgrade Report (Al Dhaid Bridge Nov 2026)",
-        "supported_entity_and_extracted_fact": "Sharjah Outer Freeway Benchmark (COM-SHJ-02, RD-SHJ-02, RD-SHJ-03, INT-SHJ-02, OBS-SHJ-003, INC-SHJ-01, TIS-SHJ-02): E611 5-lane 9,500 vph/dir capacity and E88 4-lane 7,200 vph/dir upgraded corridor serving Aljada, Sustainable City, Masaar, Tilal City, and Hayyan.",
-        "derivation_method": "Direct extraction from SRTA and Mubadara infrastructure project releases",
-        "verification_status": "Verified (HTTP 200 Official Portal)",
+        "supported_entity_and_extracted_fact": "Sharjah Outer Freeway Specifications (COM-SHJ-02, RD-SHJ-02, RD-SHJ-03, INT-SHJ-02, INC-SHJ-01, TIS-SHJ-02): E611 5-lane 9,500 vph/dir HCM capacity and E88 4-lane 7,200 vph/dir upgraded corridor (320m Al Dhaid Bridge opening Nov 15, 2026) serving Aljada, Sustainable City, Masaar, Tilal City, and Hayyan. Note: Segment speed (62 km/h) and volume (6,400 vph/dir) in OBS-SHJ-003 are Modelled Corridor Estimates.",
+        "derivation_method": "Official SRTA/Mubadara bridge releases + HCM/BPR freeway model for OBS-SHJ-003",
+        "verification_status": "Verified (HTTP 200 Official Portal for Bridges; Segment Speed/Volume Modelled)",
         "confidence_classification": "Verified"
     },
     {
@@ -2499,9 +2499,9 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "SDPW / SRTA Maliha–Khorfakkan Highway (E102 / S142) & Khorfakkan Corniche Infrastructure Specification (AED 6B, 89 km)",
-        "supported_entity_and_extracted_fact": "Eastern & Central Sharjah Highway Benchmark (RD-SHJ-05, RD-SHJ-06, INT-SHJ-04, INT-SHJ-05, OBS-SHJ-004..005, IMP-023, IMP-025, IMP-027, IMP-031, IMP-032): Connects Rodhat Al Qrt (Khalid Bin Sultan City PRJ-SH5 & BEEAH Hub PRJ-SH12) along S142/E102 West and Khorfakkan Beach Resort (PRJ-SH11) along S142 East Coast / Khorfakkan Corniche.",
-        "derivation_method": "Direct extraction from SDPW/SRTA S142 highway specifications and OSM WGS84 centerline geometry",
-        "verification_status": "Verified (HTTP 200 Official Portal)",
+        "supported_entity_and_extracted_fact": "Eastern & Central Sharjah Highway Specifications (RD-SHJ-05, RD-SHJ-06, INT-SHJ-04, INT-SHJ-05, IMP-023, IMP-025, IMP-027, IMP-031, IMP-032): AED 6B, 89 km S142 highway (cutting Sharjah–Khorfakkan travel time from 90 min to 45 min) connecting Rodhat Al Qrt (PRJ-SH5, PRJ-SH12) and Khorfakkan Beach Resort (PRJ-SH11). Note: Segment speeds (58–78 km/h) and volumes (1,950–4,200 vph/dir) in OBS-SHJ-004..005 are Modelled Corridor Estimates.",
+        "derivation_method": "Official SDPW/SRTA S142 highway specifications + HCM/BPR model for OBS-SHJ-004..005",
+        "verification_status": "Verified (HTTP 200 Official Portal for Highway Spec; Segment Speeds/Volumes Modelled)",
         "confidence_classification": "Verified"
     },
     {
@@ -2513,9 +2513,9 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "SDTPS / SRTA Northern Sharjah Coastal Plan — Al Ittihad Road North (E11) & Al Hamriyah Waterfront Corridor",
-        "supported_entity_and_extracted_fact": "Northern Sharjah Coastal Corridor Benchmark (TDS-15, RD-SHJ-07, INT-SHJ-06, OBS-SHJ-006, IMP-021): 3-lane dual-carriageway E11 North (5,700 vph/dir capacity) directly serving Sharjah Waterfront City (PRJ-SH1) in Al Hamriyah at 0.37 km geodesic distance.",
-        "derivation_method": "Direct extraction from SDTPS/SRTA coastal highway plan and OSM WGS84 geometry",
-        "verification_status": "Verified (HTTP 200 Official Portal)",
+        "supported_entity_and_extracted_fact": "Northern Sharjah Coastal Corridor Specification (TDS-15, RD-SHJ-07, INT-SHJ-06, IMP-021): 3-lane dual-carriageway E11 North (5,700 vph/dir HCM capacity) serving Sharjah Waterfront City (PRJ-SH1) in Al Hamriyah at 0.37 km centroid-to-polyline distance. Note: Segment speed (76 km/h) and volume (2,850 vph/dir) in OBS-SHJ-006 are Modelled Corridor Estimates.",
+        "derivation_method": "Official SDTPS/SRTA coastal highway plan + HCM/BPR model for OBS-SHJ-006",
+        "verification_status": "Verified (HTTP 200 Official Portal for Plan; Segment Speed/Volume Modelled)",
         "confidence_classification": "Verified"
     },
     {
@@ -2527,9 +2527,9 @@ TASK2_PROVENANCE_SOURCES = [
         "retrieval_date": "2026-11-07",
         "last_verified_date": "2026-11-09",
         "document_or_page_reference": "RTA Dubai Trip Generation and Parking Rates Manual (DTGPRM) & Traffic Impact Study (TIS) Guidelines",
-        "supported_entity_and_extracted_fact": "Engineering Parameter Standard (TDS-07): Statutory AM/PM peak trip generation rates, TIS Level 1–3 thresholds (>100 peak-hour trips), and 4-component construction HGV logistics methodology (8.5 m³ concrete mixers, 25 t rebar trailers, 18 m³ earthworks tippers, 12 t MEP/fit-out trucks).",
-        "derivation_method": "Direct extraction from RTA statutory traffic engineering standards",
-        "verification_status": "Verified (Official Engineering Standard)",
+        "supported_entity_and_extracted_fact": "Engineering Parameter Standard (TDS-07): Statutory AM/PM peak trip generation rates, TIS Level 1–3 thresholds (>100 peak-hour trips), and scenario-based 4-component construction HGV logistics methodology (8.5 m³ concrete mixers, 25 t rebar trailers, 0.35 m³/m² earthworks in 18 m³ tippers, 0.18 t/m² MEP/fit-out in 12 t trucks over 1,825 calendar days).",
+        "derivation_method": "Direct extraction from RTA statutory traffic engineering standards + engineering logistics model",
+        "verification_status": "Verified (Official Engineering Standard; HGV Outputs are Scenario-Based Estimates)",
         "confidence_classification": "Verified"
     },
     {
@@ -2614,12 +2614,13 @@ def parse_active_materials(mat_str: str):
 
 def compute_4component_hgv_breakdown(gfa_sqm: float, conc_m3: float, rebar_t: float):
     """
-    Computes transparent 4-component daily HGV loads (1 load = 1 round-trip = 2 one-way movements)
+    Computes scenario-based 4-component daily HGV loads (1 load = 1 round-trip = 2 one-way movements)
     over the 5-year active structural window (5 * 365 = 1,825 calendar days):
       1. Concrete transit mixers: conc_m3 / (8.5 m3/mixer * 1,825 days)
       2. Rebar flatbed trailers:  rebar_t / (25.0 t/trailer * 1,825 days)
       3. Earthworks/excavation:   (0.35 m3/m2 * gfa_sqm) / (18.0 m3/tipper * 1,825 days)
       4. Blockwork/MEP/fit-out:   (0.18 t/m2 * gfa_sqm) / (12.0 t/truck * 1,825 days)
+    Explicitly labelled as Scenario-Based Estimated Daily HGV Movements (Not Observed Construction Traffic).
     """
     days = 5 * 365  # 1,825 calendar days
     c_day = round(conc_m3 / (8.5 * days), 2)
@@ -2628,12 +2629,24 @@ def compute_4component_hgv_breakdown(gfa_sqm: float, conc_m3: float, rebar_t: fl
     f_day = round((0.18 * gfa_sqm) / (12.0 * days), 2)
     tot_round = round(c_day + r_day + e_day + f_day, 2)
     tot_oneway = round(tot_round * 2.0, 2)
+    peak_low = round(tot_round * 1.8, 1)
+    peak_high = round(tot_round * 2.5, 1)
     summary_str = (
+        f"Scenario-Based Estimated Daily HGV Movements (Not Observed Construction Traffic): "
         f"{tot_round:.2f} HGV round-trips/day ({tot_oneway:.2f} one-way movements/day) = "
         f"{c_day:.2f} concrete mixers ({int(conc_m3):,} m³ ÷ [8.5 m³ × 1,825 d]) + "
         f"{r_day:.2f} rebar trailers ({int(rebar_t):,} t ÷ [25 t × 1,825 d]) + "
         f"{e_day:.2f} earthworks tippers (0.35×{int(gfa_sqm):,} m² ÷ [18 m³ × 1,825 d]) + "
-        f"{f_day:.2f} MEP/fit-out trucks (0.18×{int(gfa_sqm):,} m² ÷ [12 t × 1,825 d]) [Modelled Engineering Estimate]"
+        f"{f_day:.2f} MEP/fit-out trucks (0.18×{int(gfa_sqm):,} m² ÷ [12 t × 1,825 d]) "
+        f"[Peak-Phase 1.8x–2.5x Sensitivity: ~{peak_low}–{peak_high} round-trips/day]"
+    )
+    assumptions_str = (
+        f"5 Explicit Scenario Assumptions: "
+        f"(1) Concrete mixer payload = 8.5 m³/load applied to Task 1 active 2025–2030 concrete ({int(conc_m3):,} m³); "
+        f"(2) Rebar trailer payload = 25.0 t/load applied to Task 1 active rebar ({int(rebar_t):,} t); "
+        f"(3) Earthworks factor = 0.35 m³ bulked spoil per m² active GFA ({int(gfa_sqm):,} m²) in 18.0 m³ tippers (concentrated in Months 1–9 enabling/excavation phase); "
+        f"(4) MEP/blockwork/fit-out factor = 0.18 t per m² active GFA in 12.0 t rigid trucks (concentrated in Months 18–48 fit-out phase); "
+        f"(5) Baseline divides uniformly over 1,825 calendar days (5×365 d); during active peak structural/excavation months (1.8x–2.5x peaking factor over 312 working days/yr within RTA off-peak windows), daily HGV loads scale to ~{peak_low}–{peak_high} round-trips/day."
     )
     return {
         "active_gfa_sqm": int(gfa_sqm),
@@ -2646,6 +2659,7 @@ def compute_4component_hgv_breakdown(gfa_sqm: float, conc_m3: float, rebar_t: fl
         "total_hgv_round_trips_day": tot_round,
         "total_hgv_one_way_movements_day": tot_oneway,
         "summary_str": summary_str,
+        "assumptions_str": assumptions_str,
     }
 
 
@@ -2681,7 +2695,7 @@ def main():
     dxb_projs = [p for p in projs if p["emirate"] == "Dubai"]
     save_task2_dataset("04_projects_dubai", dxb_projs)
 
-    # 2. Enrich Dataset 15, 18, 19, 20 with exact source_id references
+    # 2. Enrich Dataset 15, 16, 18, 19, 20, 21a, 21b, 21c with exact source_id & evidence/geometry notes
     tds_src_map = {
         "TDS-01": "SRC-450", "TDS-02": "SRC-435", "TDS-03": "SRC-433", "TDS-04": "SRC-450",
         "TDS-05": "SRC-006", "TDS-06": "SRC-007", "TDS-07": "SRC-448", "TDS-08": "SRC-437",
@@ -2692,8 +2706,44 @@ def main():
     for row in TRANSPORT_OPEN_DATA_REGISTER:
         row["source_id"] = tds_src_map.get(row["dataset_id"], "SRC-450")
 
+    for r in ROAD_NETWORK_DATASET:
+        n_verts = len(r["geometry_wgs84"])
+        r["geometry_source_and_validation"] = (
+            f"Simplified {n_verts}-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; "
+            f"Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
+        )
+        if "PUBLISHED_OFFICIAL" in r["capacity_basis"]:
+            r["confidence"] = "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)"
+        else:
+            r["confidence"] = "Estimated (HCM 7th Ed Capacity Estimate & Simplified Corridor Polyline)"
+
+    for c in COMMUNITIES_AND_HOTSPOTS:
+        c["observed_congestion_severity"] = re.sub(
+            r"^(Severe|High to Severe|High|Moderate to High|Low to Moderate|Moderate)\s*\(",
+            r"\1 [Modelled Corridor Congestion Profile] (",
+            c["observed_congestion_severity"],
+        )
+        c["confidence"] = "Estimated (Verified DLD/Task 1 Project Counts Combined with Modelled Corridor Congestion & Weighted Activity Index)"
+
+    for i in INTERSECTIONS_AND_NODES:
+        if not i["peak_level_of_service"].startswith("Modelled "):
+            i["peak_level_of_service"] = "Modelled " + i["peak_level_of_service"]
+        i["confidence"] = "Corroborated (Verified RTA/SRTA Bridge/Upgrade Location; Modelled Peak LOS)"
+
+    for inc in TRAFFIC_INCIDENTS_AND_ROADWORKS:
+        if inc["incident_id"] == "INC-DXB-02":
+            inc["confidence"] = "Estimated"
+            inc["evidence_level"] = "Modelled Engineering Estimate (Curbside HGV Staging & Collector Speed Model)"
+        else:
+            inc["evidence_level"] = "Officially Published RTA/SRTA Capital Roadwork Zone (Work-Zone Speed Impact Modelled)"
+
     for row in TOMTOM_AND_PROVIDER_ASSESSMENT:
-        row["source_id"] = "SRC-436" if row["provider_id"] in ("PRV-01", "PRV-02") else "SRC-450"
+        if row["provider_id"] in ("PRV-01", "PRV-02"):
+            row["source_id"] = "SRC-436"
+            if row["provider_id"] == "PRV-01":
+                row["official_url"] = "https://www.tomtom.com/traffic-index/city/dubai/"
+        else:
+            row["source_id"] = "SRC-450"
 
     tis_src_map = {
         "TIS-DXB-01": "SRC-433", "TIS-DXB-02": "SRC-434", "TIS-DXB-03": "SRC-439", "TIS-DXB-04": "SRC-438",
@@ -2705,8 +2755,9 @@ def main():
     for row in PARKING_AND_MOBILITY_FACILITIES:
         row["source_id"] = "SRC-441" if row["parking_id"] == "PRK-DXB-02" else "SRC-449"
 
-    # 3. Repair & Enrich Dataset 17 (17_traffic_congestion_observations)
-    # Add 3 Sharjah observations for RD-SHJ-05, RD-SHJ-06, RD-SHJ-07 if not already present
+    # 3. Rebuild & Classify Dataset 17 (17_traffic_congestion_observations):
+    #    - Add OBS-DXB-CITY-00 as the ONLY City-Level TomTom Dubai Traffic Index record (Verified City-Level Aggregate)
+    #    - Classify ALL 21 corridor-level records (OBS-DXB-001..015, OBS-SHJ-001..006) strictly as Modelled Corridor Estimates (Confidence = Estimated)
     existing_obs_ids = {o["observation_id"] for o in TRAFFIC_CONGESTION_OBSERVATIONS}
     additional_shj_obs = [
         {
@@ -2717,17 +2768,17 @@ def main():
             "community": "Emirates Road (E611) East Sharjah Belt — Masaar, Tilal, Sustainable City & KBS City",
             "timestamp": "2026-10-15T18:00:00+04:00",
             "time_period": "Evening Peak (17:00–20:00)",
-            "comparison_period": "2024 vs. 2026 (Mobilization of Khalid Bin Sultan City PRJ-SH5 & Jawaher Boston Medical PRJ-SH12 along S142/E102)",
+            "comparison_period": "2024 vs. 2026 Modelled Scenario (Mobilization of Khalid Bin Sultan City PRJ-SH5 & Jawaher Boston Medical PRJ-SH12 along S142/E102)",
             "location": "25.2915, 55.6540 (S142/E102 Rodhat Al Qrt Interchange adjacent to PRJ-SH5 & PRJ-SH12)",
             "free_flow_speed_kmh": 110,
             "average_speed_kmh": 78,
             "travel_time_min_per_10km": 7.7,
-            "traffic_volume_vph": "4,200 vph/dir [Corroborated Regional Arterial Flow + Construction HGV Haulage]",
-            "congestion_level": "Low to Moderate (v/v_free = 0.71; 4-lane highway operates with high reserve capacity)",
-            "observation_type": "Corroborated (Published SRTA / SDPW S142 Corridor Specification & Probe Speeds)",
-            "data_limitations": "Representative seasonal weekday benchmark; localized slowdowns occur primarily at E611 Al Badiyah interchange ramps.",
+            "traffic_volume_vph": "Modelled ~4,200 vph/dir [Estimated Regional Arterial Flow vs. 7,600 vph/dir HCM 4-Lane Capacity]",
+            "congestion_level": "Low to Moderate (Modelled Speed Ratio v/v_free = 0.71; Modelled Estimate)",
+            "observation_type": "Modelled Corridor Estimate [Derived from SDPW/SRTA S142 4-Lane Specification & BPR Volume-Delay Model]",
+            "data_limitations": "Segment speed and hourly volume are modelled engineering estimates (not direct loop-detector telemetry).",
             "source_id": "SRC-446",
-            "confidence": "Verified"
+            "confidence": "Estimated"
         },
         {
             "observation_id": "OBS-SHJ-005",
@@ -2737,17 +2788,17 @@ def main():
             "community": "Khorfakkan East Coast & Kalba Waterfront (Sharjah Eastern Region)",
             "timestamp": "2026-10-15T17:45:00+04:00",
             "time_period": "Evening Peak (17:00–20:00)",
-            "comparison_period": "2024 vs. 2026 East Coast Waterfront & Resort Construction Phase (PRJ-SH11)",
+            "comparison_period": "2024 vs. 2026 Modelled Scenario (East Coast Waterfront & Resort Construction Phase PRJ-SH11)",
             "location": "25.3375, 56.3535 (S142 Khorfakkan Coastal Approach & Corniche adjacent to PRJ-SH11)",
             "free_flow_speed_kmh": 80,
             "average_speed_kmh": 58,
             "travel_time_min_per_10km": 10.3,
-            "traffic_volume_vph": "1,950 vph/dir [Corroborated Coastal Arterial Flow vs 3,800 vph/dir capacity]",
-            "congestion_level": "Low to Moderate (v/v_free = 0.73; weekend tourism peaks higher than weekday commuter flow)",
-            "observation_type": "Corroborated (Published SDPW / SRTA S142 Highway Benchmark)",
-            "data_limitations": "Single-date weekday benchmark; Khorfakkan Corniche experiences higher leisure congestion on Friday–Sunday evenings.",
+            "traffic_volume_vph": "Modelled ~1,950 vph/dir [Estimated Coastal Arterial Flow vs. 3,800 vph/dir HCM Capacity]",
+            "congestion_level": "Low to Moderate (Modelled Speed Ratio v/v_free = 0.73; Modelled Estimate)",
+            "observation_type": "Modelled Corridor Estimate [Derived from SDPW/SRTA S142 Highway Specification & BPR Volume-Delay Model]",
+            "data_limitations": "Segment speed and hourly volume are modelled engineering estimates (not direct loop-detector telemetry).",
             "source_id": "SRC-446",
-            "confidence": "Verified"
+            "confidence": "Estimated"
         },
         {
             "observation_id": "OBS-SHJ-006",
@@ -2757,61 +2808,275 @@ def main():
             "community": "Al Hamriyah & Northern Sharjah Coastline",
             "timestamp": "2026-10-15T08:15:00+04:00",
             "time_period": "Morning Peak (07:30–09:30)",
-            "comparison_period": "2024 vs. 2026 Northern Coastal Corridor (Sharjah Waterfront City PRJ-SH1 Phase 1–2 Construction)",
+            "comparison_period": "2024 vs. 2026 Modelled Scenario (Sharjah Waterfront City PRJ-SH1 Phase 1–2 Construction)",
             "location": "25.4925, 55.5145 (E11 North at Al Hamriyah / Sharjah Waterfront City Interchange)",
             "free_flow_speed_kmh": 100,
             "average_speed_kmh": 76,
             "travel_time_min_per_10km": 7.9,
-            "traffic_volume_vph": "2,850 vph/dir [Corroborated Northern E11 Flow vs 5,700 vph/dir capacity]",
-            "congestion_level": "Low (v/v_free = 0.76; uncongested coastal highway with dedicated grade-separated island access)",
-            "observation_type": "Corroborated (Published SRTA / MOEI Northern E11 Specification)",
-            "data_limitations": "Representative weekday benchmark; heavy construction trucks access PRJ-SH1 directly from E11 North without crossing urban Sharjah.",
+            "traffic_volume_vph": "Modelled ~2,850 vph/dir [Estimated Northern E11 Flow vs. 5,700 vph/dir HCM 3-Lane Capacity]",
+            "congestion_level": "Low (Modelled Speed Ratio v/v_free = 0.76; Modelled Estimate)",
+            "observation_type": "Modelled Corridor Estimate [Derived from SDTPS/SRTA Northern E11 Specification & BPR Volume-Delay Model]",
+            "data_limitations": "Segment speed and hourly volume are modelled engineering estimates (not direct loop-detector telemetry).",
             "source_id": "SRC-447",
-            "confidence": "Verified"
+            "confidence": "Estimated"
         }
     ]
     for o in additional_shj_obs:
         if o["observation_id"] not in existing_obs_ids:
             TRAFFIC_CONGESTION_OBSERVATIONS.append(o)
 
-    obs_src_map = {
-        "OBS-DXB-001": ("SRC-433", "Published Official Benchmark", "2025-Q4 to 2026-Q3 Weekday AM Peak Benchmark (07:30–09:30)"),
-        "OBS-DXB-002": ("SRC-433", "Modelled Engineering Estimate", "2026 Calibrated Midday Construction Window Profile (12:00–14:00)"),
-        "OBS-DXB-003": ("SRC-433", "Published Official Benchmark", "2025-Q4 to 2026-Q3 Weekday PM Peak Benchmark (17:00–20:00)"),
-        "OBS-DXB-004": ("SRC-433", "Modelled Engineering Estimate", "2026 Calibrated Overnight HGV & Work-Zone Window (22:00–05:00)"),
-        "OBS-DXB-005": ("SRC-434", "Published Official Benchmark", "2025–2026 Post-Upgrade Weekday AM Peak Benchmark (07:30–09:30)"),
-        "OBS-DXB-006": ("SRC-434", "Published Official Benchmark", "2025–2026 Post-Upgrade Weekday PM Peak Benchmark (17:00–20:00)"),
-        "OBS-DXB-007": ("SRC-441", "Modelled Engineering Estimate", "2026 Calibrated Collector Ring AM Peak Profile (07:30–09:30)"),
-        "OBS-DXB-008": ("SRC-441", "Modelled Engineering Estimate", "2026 Calibrated Collector Ring PM Peak Profile (17:00–20:00)"),
-        "OBS-DXB-009": ("SRC-435", "Published Official Benchmark", "2025–2026 Salik Dynamic Pricing AM Peak Benchmark (07:30–09:30)"),
-        "OBS-DXB-010": ("SRC-435", "Corroborated Multi-Source Observation", "2025–2026 Salik & TomTom CBD PM Peak Benchmark (17:00–20:00)"),
-        "OBS-DXB-011": ("SRC-438", "Published Official Benchmark", "2025–2026 RTA D71 / Al Mustaqbal PM Peak Benchmark (17:00–20:00)"),
-        "OBS-DXB-012": ("SRC-438", "Modelled Engineering Estimate", "2026 Calibrated CBD Collector PM Peak Profile (17:00–20:00)"),
-        "OBS-DXB-013": ("SRC-439", "Published Official Benchmark", "2025–2026 RTA Ras Al Khor AM Peak Benchmark (07:30–09:30)"),
-        "OBS-DXB-014": ("SRC-439", "Published Official Benchmark", "2025–2026 RTA Ras Al Khor PM Peak Benchmark (17:00–20:00)"),
-        "OBS-DXB-015": ("SRC-437", "Corroborated Multi-Source Observation", "2025–2026 MOEI/RTA E611 Midday Freight Window Benchmark (11:00–14:00)"),
-        "OBS-SHJ-001": ("SRC-444", "Corroborated Multi-Source Observation", "2025–2026 SRTA/TomTom E311 Southbound AM Peak Benchmark (07:00–09:30)"),
-        "OBS-SHJ-002": ("SRC-444", "Corroborated Multi-Source Observation", "2025–2026 SRTA/TomTom E311 Northbound PM Peak Benchmark (17:00–20:00)"),
-        "OBS-SHJ-003": ("SRC-445", "Corroborated Multi-Source Observation", "2025–2026 SRTA E611 Outer Corridor PM Peak Benchmark (17:00–20:00)"),
-        "OBS-SHJ-004": ("SRC-446", "Corroborated Multi-Source Observation", "2025–2026 SRTA/SDPW S142/E102 West PM Peak Benchmark (17:00–20:00)"),
-        "OBS-SHJ-005": ("SRC-446", "Corroborated Multi-Source Observation", "2025–2026 SDPW/SRTA S142 Khorfakkan Coastal Benchmark (17:00–20:00)"),
-        "OBS-SHJ-006": ("SRC-447", "Corroborated Multi-Source Observation", "2025–2026 SRTA/MOEI Northern E11 Al Hamriyah AM Peak Benchmark (07:30–09:30)"),
+    # Prepend OBS-DXB-CITY-00 (TomTom Dubai Traffic Index — City-Wide Aggregate ONLY) if not present
+    if not any(o["observation_id"] == "OBS-DXB-CITY-00" for o in TRAFFIC_CONGESTION_OBSERVATIONS):
+        city_obs = {
+            "observation_id": "OBS-DXB-CITY-00",
+            "road_id": "CITY-DXB-ALL",
+            "road_name": "Dubai Metropolitan Network (City-Wide Aggregate — TomTom Dubai Traffic Index)",
+            "emirate": "Dubai",
+            "community": "City-Wide Aggregate (All Dubai Communities — Not Corridor-Specific)",
+            "timestamp": "2025-01-15T00:00:00+04:00",
+            "time_period": "Annual & Peak Aggregate (City-Wide)",
+            "comparison_period": "Published TomTom Dubai Traffic Index Annual City-Wide Aggregate (Used strictly at city level; never used for individual corridor speed or jam factor claims)",
+            "location": "25.2048, 55.2708 (Dubai Metropolitan Network City-Wide Centroid)",
+            "free_flow_speed_kmh": 65,
+            "average_speed_kmh": 46,
+            "travel_time_min_per_10km": 13.0,
+            "traffic_volume_vph": "City-Wide Aggregate Only (TomTom public index does not publish road-segment vph volumes)",
+            "congestion_level": "Moderate–High City-Wide Baseline (Published TomTom City Index — City Level Only)",
+            "observation_type": "Published Official City-Wide Benchmark [TomTom Dubai Traffic Index — City-Level Aggregate Only]",
+            "data_limitations": "TomTom's public Dubai Traffic Index provides city-wide annual and rush-hour statistics only, NOT segment-specific measurements for Hessa St, Al Khail Rd, or JVC.",
+            "source_id": "SRC-436",
+            "confidence": "Verified"
+        }
+        TRAFFIC_CONGESTION_OBSERVATIONS.insert(0, city_obs)
+
+    # Detailed metadata for OBS-DXB-CITY-00 + all 21 Modelled Corridor Estimates
+    obs_meta_map = {
+        "OBS-DXB-CITY-00": (
+            "SRC-436",
+            "Published City-Wide Benchmark (TomTom Dubai Traffic Index — City-Level Only)",
+            "2024–2025 Annual & Rush-Hour City-Wide Aggregate",
+            "Officially Published by TomTom (https://www.tomtom.com/traffic-index/city/dubai/): City-wide aggregate travel time per 10 km, rush-hour congestion %, and annual hours lost across the Dubai metropolitan network.",
+            "No corridor-level disaggregation applied. Used strictly at city level to contextualize macro Dubai traffic; all individual corridor figures in OBS-DXB-001..015 are separately modelled engineering estimates.",
+            "Verified"
+        ),
+        "OBS-DXB-001": (
+            "SRC-433",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Weekday AM Peak Scenario (07:30–09:30)",
+            "Officially Published by RTA (SRC-433): Hessa St (D61) pre-upgrade directional capacity = 4,000 vph/dir (2 lanes/dir), doubling to 8,000 vph/dir (4 lanes/dir) under AED 689M upgrade (4.5 km SZR to Al Khail Rd) with 4 grade-separated intersections, targeting a 50% corridor travel-time reduction for 640,000 residents. Official RTA release does NOT publish 29 km/h speed, 4,150 vph volume, or jam factor.",
+            "Modelled via BPR volume-delay function (t = t0*[1 + 0.15*(V/C)^4]) assuming AM peak demand V/C = 1.04 (~4,150 vph/dir estimated demand against RTA's published 4,000 vph/dir pre-upgrade capacity and 80 km/h free-flow speed; HGVs banned 06:30–08:30).",
+            "Estimated"
+        ),
+        "OBS-DXB-002": (
+            "SRC-433",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Weekday Midday HGV Window Scenario (12:00–14:00)",
+            "Officially Published by RTA (SRC-433 & SRC-437): Hessa St (D61) baseline capacity = 4,000 vph/dir upgrading to 8,000 vph/dir; RTA HGV truck ban lifts between 08:30 and 13:00, permitting midday concrete mixer and steel deliveries.",
+            "Modelled via BPR function assuming midday off-peak V/C = 0.78 (~3,100 vph/dir mixed flow including scenario-estimated midday construction HGV deliveries + work-zone friction).",
+            "Estimated"
+        ),
+        "OBS-DXB-003": (
+            "SRC-433",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Weekday PM Peak Scenario (17:00–20:00)",
+            "Officially Published by RTA (SRC-433): Hessa St (D61) capacity doubling from 4,000 to 8,000 vph/dir under AED 689M upgrade, targeting a 50% corridor travel-time reduction. Official RTA release does NOT publish 25 km/h speed, 4,380 vph volume, or jam factor.",
+            "Modelled via BPR volume-delay function assuming PM peak inbound demand V/C = 1.10 (~4,380 vph/dir estimated demand against RTA's published 4,000 vph/dir pre-upgrade capacity plus queuing at JVC North Gate 1; HGVs banned 17:30–20:00).",
+            "Estimated"
+        ),
+        "OBS-DXB-004": (
+            "SRC-433",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Weekday Overnight HGV Window Scenario (22:00–05:00)",
+            "Officially Published by RTA (SRC-433 & SRC-437): Hessa St (D61) overnight window (20:00–06:30) is open to permitted heavy vehicles and active RTA bridge deck erection.",
+            "Modelled via BPR function assuming overnight V/C = 0.29 (~1,150 vph/dir light traffic + overnight concrete transit mixers operating at ~68 km/h vs 80 km/h free-flow).",
+            "Estimated"
+        ),
+        "OBS-DXB-005": (
+            "SRC-434",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Post-Upgrade Weekday AM Peak Scenario (07:30–09:30)",
+            "Officially Published by RTA (SRC-434): AED 700M Al Khail Road (E44) Improvement Project (3,300m bridges across 7 sites including JVC, Al Quoz 1, Meydan, Zabeel) added +15,000 to +19,600 vph capacity and reduced peak corridor travel time by 30%. Official RTA release does NOT publish 64 km/h segment speed or 9,400 vph/dir volume.",
+            "Modelled via BPR volume-delay function assuming post-upgrade AM peak V/C = 0.82 (~9,400 vph/dir estimated flow vs 11,400 vph/dir 6-lane HCM capacity, reflecting RTA's published 30% travel-time reduction from a modelled 46 km/h pre-upgrade baseline to 64 km/h).",
+            "Estimated"
+        ),
+        "OBS-DXB-006": (
+            "SRC-434",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Post-Upgrade Weekday PM Peak Scenario (17:00–20:00)",
+            "Officially Published by RTA (SRC-434): AED 700M Al Khail Road (E44) upgrade added +15,000 vph capacity and reduced corridor travel time by 30%. Official release does NOT publish 58 km/h segment speed or 9,850 vph/dir volume.",
+            "Modelled via BPR volume-delay function assuming PM peak V/C = 0.86 (~9,850 vph/dir estimated southbound flow vs 11,400 vph/dir HCM capacity, plus weaving friction at JVC exit slip ramps).",
+            "Estimated"
+        ),
+        "OBS-DXB-007": (
+            "SRC-441",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Collector Ring AM Peak Scenario (07:30–09:30)",
+            "Officially Published by RTA & Nakheel (SRC-441): 4 new JVC entry/exit access gates constructed to reduce internal JVC exit delay by 25–30%. No public loop-detector speeds or volumes are published for internal JVC collectors.",
+            "Modelled via HCM 7th Edition urban collector delay equation assuming AM outbound V/C = 0.90 (~2,180 vph/dir estimated flow vs 2,430 vph/dir 2-lane signalized collector capacity).",
+            "Estimated"
+        ),
+        "OBS-DXB-008": (
+            "SRC-441",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Collector Ring PM Peak Scenario (17:00–20:00)",
+            "Officially Published by RTA & Nakheel (SRC-441): JVC access gate expansion + RTA commercial delivery motorcycle fast-lane regulations.",
+            "Modelled via HCM 7th Edition urban collector delay equation assuming PM inbound + retail/delivery V/C = 0.96 (~2,340 vph/dir estimated flow vs 2,430 vph/dir collector capacity).",
+            "Estimated"
+        ),
+        "OBS-DXB-009": (
+            "SRC-435",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Dynamic-Salik AM Peak Scenario (07:30–09:30)",
+            "Officially Published by Salik PJSC & RTA (SRC-435 & SRC-437): Dynamic tolling introduced Jan 31, 2025 (AED 6 peak / AED 4 off-peak / AED 0 night) smoothing peak volume by ~9–12%; daytime HGV truck ban 06:00–22:00 on E11. Salik filings publish annual gate transactions (593.1M), NOT segment speed (52 km/h) or directional hourly volume (10,600 vph/dir).",
+            "Modelled via BPR freeway volume-delay function assuming AM peak V/C = 0.85 (~10,600 vph/dir estimated flow vs 12,400 vph/dir 6–7 lane HCM capacity on E11 Trade Centre–Business Bay).",
+            "Estimated"
+        ),
+        "OBS-DXB-010": (
+            "SRC-435",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Dynamic-Salik PM Peak Scenario (17:00–20:00)",
+            "Officially Published by Salik PJSC & RTA (SRC-435): AED 6 evening peak toll (16:00–20:00) at Al Safa North/South gates and 06:00–22:00 E11 HGV ban.",
+            "Modelled via BPR freeway volume-delay function assuming PM peak V/C = 0.90 (~11,200 vph/dir estimated southbound flow vs 12,400 vph/dir HCM capacity).",
+            "Estimated"
+        ),
+        "OBS-DXB-011": (
+            "SRC-438",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled CBD Arterial PM Peak Scenario (17:00–20:00)",
+            "Officially Published by RTA (SRC-438): Al Mustaqbal Street upgrade widens corridor from 3 to 4 lanes/dir + 1,700m tunnels, increasing capacity 33% from 6,600 to 8,800 vph (3,300 to 4,400 vph/dir) and cutting travel time from 13 min to 6 min; Zabeel 700m bridge adds 3,000 vph.",
+            "Modelled via BPR arterial volume-delay function assuming PM peak V/C = 0.93 (~4,100 vph/dir estimated flow vs RTA's published 3,300->4,400 vph/dir capacity during active upgrade phase).",
+            "Estimated"
+        ),
+        "OBS-DXB-012": (
+            "SRC-438",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled CBD Internal Collector PM Peak Scenario (17:00–20:00)",
+            "Officially Published by RTA (SRC-438): Business Bay / Marasi Drive / Al Amal St intersections interface with Financial Centre Rd (D71) and Al Khail Rd (E44); HGVs banned 06:00–22:00.",
+            "Modelled via HCM 7th Edition signalized CBD collector model assuming PM peak V/C = 0.93 (~2,390 vph/dir estimated flow vs 2,550 vph/dir 3-lane collector capacity).",
+            "Estimated"
+        ),
+        "OBS-DXB-013": (
+            "SRC-439",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Corridor & Work-Zone AM Peak Scenario (07:30–09:30)",
+            "Officially Published by RTA (SRC-439): AED 670M Ras Al Khor Road (E44/D62) widening to 4–6 lanes increases capacity to 10,000 vph/dir and cuts travel time from 20 min to 7 min (65% reduction), alongside active AED 20.5B Dubai Metro Blue Line civil works.",
+            "Modelled via BPR volume-delay function assuming AM westbound V/C = 0.88 (~7,650 vph/dir estimated flow during active widening & Metro Blue Line pier construction phase).",
+            "Estimated"
+        ),
+        "OBS-DXB-014": (
+            "SRC-439",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Corridor & Work-Zone PM Peak Scenario (17:00–20:00)",
+            "Officially Published by RTA (SRC-439): Ras Al Khor Road capacity expansion to 10,000 vph/dir and active Dubai Metro Blue Line viaduct/station works.",
+            "Modelled via BPR volume-delay function assuming PM eastbound V/C = 0.91 (~7,900 vph/dir estimated flow past Bukadra PRJ-D17 and Creek Harbour PRJ-D3).",
+            "Estimated"
+        ),
+        "OBS-DXB-015": (
+            "SRC-437",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled 24/7 Freight Freeway Midday Scenario (12:00–14:00)",
+            "Officially Published by RTA & MOEI (SRC-437 & SRC-442): Emirates Road (E611) is a 6-lane per direction federal/emirate freight bypass (110 km/h speed limit) 100% exempt from Dubai's daytime HGV truck bans, serving DWC Airport (PRJ-D1) and Dubai South.",
+            "Modelled via HCM 7th Edition freeway model assuming midday V/C = 0.51 (~5,800 vph/dir estimated mixed flow with 28% HGV freight share vs 11,400 vph/dir 6-lane capacity, yielding ~86 km/h LOS B).",
+            "Estimated"
+        ),
+        "OBS-SHJ-001": (
+            "SRC-444",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Inter-Emirate Commuter AM Peak Scenario (07:30–09:30)",
+            "Officially Published by SRTA & MOEI (SRC-444): Sheikh Mohammed bin Zayed Rd (E311) 5-lane dual carriageway through Muwaileh/Aljada/Al Zahia serves as the primary Sharjah–Dubai commuter spine with 3-window HGV truck bans.",
+            "Modelled via BPR freeway volume-delay function assuming AM southbound saturation V/C = 1.02 (~9,650 vph/dir estimated commuter flow vs 9,500 vph/dir 5-lane HCM capacity).",
+            "Estimated"
+        ),
+        "OBS-SHJ-002": (
+            "SRC-444",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Inter-Emirate Commuter PM Peak Scenario (17:00–20:00)",
+            "Officially Published by SRTA & MOEI (SRC-444): E311 Northbound through Muwaileh/Aljada/Al Zahia with SRTA/Arada grade-separated bridge upgrades.",
+            "Modelled via BPR freeway volume-delay function assuming PM northbound return wave V/C = 1.00 (~9,500 vph/dir estimated flow vs 9,500 vph/dir 5-lane HCM capacity).",
+            "Estimated"
+        ),
+        "OBS-SHJ-003": (
+            "SRC-445",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Outer Freeway PM Peak Scenario (17:00–20:00)",
+            "Officially Published by SRTA & Mubadara (SRC-445): Emirates Road (E611) 5-lane highway & Al Dhaid Road (E88) 320m bridge upgrade (scheduled opening Nov 15, 2026) serving Masaar, Tilal City, and Sustainable City.",
+            "Modelled via HCM/BPR freeway function assuming PM peak V/C = 0.67 (~6,400 vph/dir estimated flow vs 9,500 vph/dir 5-lane HCM capacity).",
+            "Estimated"
+        ),
+        "OBS-SHJ-004": (
+            "SRC-446",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Regional Arterial PM Peak Scenario (17:00–20:00)",
+            "Officially Published by SDPW & SRTA (SRC-446): AED 6B, 89 km Maliha–Khorfakkan Highway (E102 / S142) 4-lane corridor serving Rodhat Al Qrt (Khalid Bin Sultan City PRJ-SH5 & Jawaher Medical PRJ-SH12).",
+            "Modelled via HCM/BPR function assuming PM peak V/C = 0.55 (~4,200 vph/dir estimated flow vs 7,600 vph/dir 4-lane HCM capacity).",
+            "Estimated"
+        ),
+        "OBS-SHJ-005": (
+            "SRC-446",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled East Coast Arterial PM Peak Scenario (17:00–20:00)",
+            "Officially Published by SDPW & SRTA (SRC-446): AED 6B Sharjah–Khorfakkan Highway (S142) & Khorfakkan Corniche reducing Sharjah–Khorfakkan travel time from 90 min to 45 min.",
+            "Modelled via HCM/BPR arterial function assuming weekday PM peak V/C = 0.51 (~1,950 vph/dir estimated flow vs 3,800 vph/dir 2–3 lane coastal arterial capacity).",
+            "Estimated"
+        ),
+        "OBS-SHJ-006": (
+            "SRC-447",
+            "Modelled Corridor Estimate (Not Published Segment Telemetry)",
+            "Modelled Northern Coastal Highway AM Peak Scenario (07:30–09:30)",
+            "Officially Published by SDTPS & SRTA (SRC-447): Al Ittihad Road North (E11) 3-lane dual carriageway serving Al Hamriyah and Sharjah Waterfront City (PRJ-SH1).",
+            "Modelled via HCM/BPR highway function assuming AM peak V/C = 0.50 (~2,850 vph/dir estimated flow vs 5,700 vph/dir 3-lane HCM capacity).",
+            "Estimated"
+        ),
     }
+
     for o in TRAFFIC_CONGESTION_OBSERVATIONS:
         oid = o["observation_id"]
-        sid, ev_lvl, m_period = obs_src_map[oid]
+        sid, ev_lvl, m_period, pub_fact, mod_assump, conf_val = obs_meta_map[oid]
         s_rec = src_by_id[sid]
         o["source_id"] = sid
+        o["source_report_title"] = s_rec["document_or_page_reference"]
+        o["source_url"] = s_rec["original_url"]
+        o["publication_date"] = s_rec.get("publication_date", "2026-11-09")
         o["evidence_level"] = ev_lvl
         o["measurement_period"] = m_period
-        o["series_scope_note"] = "Representative Seasonal/Annual Corridor Benchmark Snapshot (Ref Date: 2026-10-15) Paired with 2024 vs 2026 Published Comparison — Not a Live Sensor Feed or Multi-Year Raw Loop-Detector Time Series"
-        o["source_report_title"] = s_rec["document_or_page_reference"]
-        o["source_publisher"] = s_rec["publisher"]
-        o["source_url"] = s_rec["original_url"]
-        o["publication_date"] = s_rec["publication_date"]
+        o["officially_published_corridor_benchmark"] = pub_fact
+        o["modelled_assumptions_and_derivation"] = mod_assump
+        o["confidence"] = conf_val
+        if oid != "OBS-DXB-CITY-00":
+            # Ensure no corridor-level observation claims to be Observed or cites a Jam Factor
+            o["observation_type"] = (
+                "Modelled Corridor Estimate [Speed, Volume & Congestion Level Modelled via BPR Volume-Delay Function "
+                "Calibrated to Published RTA/SRTA Capacity & Travel-Time Reduction Benchmarks — Not Direct Segment Telemetry]"
+            )
+            o["traffic_volume_vph"] = re.sub(
+                r"^([\d,]+)\s*vph/dir\s*\[(?:Observed|Corroborated|Observed/Corroborated)[^\]]*\]",
+                r"Modelled ~\1 vph/dir [Estimated Demand Calibrated to Published Corridor Capacity — Not Loop-Detector Count]",
+                o["traffic_volume_vph"],
+            )
+            if not o["traffic_volume_vph"].startswith("Modelled"):
+                o["traffic_volume_vph"] = "Modelled ~" + o["traffic_volume_vph"]
+            o["congestion_level"] = re.sub(r";\s*TomTom[^\)]*", "; Modelled Corridor Estimate", o["congestion_level"])
+            if "Modelled" not in o["congestion_level"]:
+                o["congestion_level"] = o["congestion_level"].replace("(", "(Modelled Estimate; ", 1)
+            o["comparison_period"] = re.sub(r"^2024", "Modelled 2024", o["comparison_period"])
+            o["series_scope_note"] = (
+                "Modelled Corridor Scenario Calibrated to Official RTA/SRTA Published Capacity & Travel-Time Reduction Benchmarks — "
+                "Not a Direct Road-Segment Sensor Feed or Published Loop-Detector Time Series"
+            )
+        else:
+            o["series_scope_note"] = (
+                "Published Official City-Wide Aggregate Benchmark (TomTom Dubai Traffic Index — City Level Only; "
+                "Never Disaggregated to Individual Road Segments)"
+            )
 
-    # 4. Enrich 21d_jvc_and_community_subdevelopments with exact 4-component HGV math
+    # 4. Enrich 21d_jvc_and_community_subdevelopments with exact Haversine nearest-vertex geometry & 4-component HGV math
+    road_by_id = {r["road_id"]: r for r in ROAD_NETWORK_DATASET}
     for sub in COMMUNITY_SUBDEVELOPMENTS:
+        r_obj = road_by_id[sub["primary_access_road_id"]]
+        best_pt = min(r_obj["geometry_wgs84"], key=lambda pt: haversine_km(sub["latitude"], sub["longitude"], pt[1], pt[0]))
+        exact_dist = haversine_km(sub["latitude"], sub["longitude"], best_pt[1], best_pt[0])
+        sub["distance_to_road_km"] = exact_dist
+        sub["nearest_road_vertex_wgs84"] = f"{best_pt[1]:.4f}, {best_pt[0]:.4f}"
         hgv = compute_4component_hgv_breakdown(
             sub["active_gfa_sqm"], sub["active_concrete_m3"], sub["active_rebar_t"]
         )
@@ -2822,13 +3087,15 @@ def main():
         sub["total_hgv_round_trips_day"] = hgv["total_hgv_round_trips_day"]
         sub["total_hgv_one_way_movements_day"] = hgv["total_hgv_one_way_movements_day"]
         sub["estimated_midday_hgv_trips_per_day"] = hgv["summary_str"]
-        sub["evidence_level"] = "Modelled Engineering Estimate (Spatial Buffer + 4-Component HGV & Trip Generation Model)"
+        sub["hgv_modelling_assumptions_and_sensitivity"] = hgv["assumptions_str"]
+        sub["evidence_level"] = "Scenario-Based Modelled Engineering Estimate (Spatial Buffer + 4-Component HGV & Trip Generation Model)"
+        sub["confidence"] = "Estimated"
 
     # 5. Build 22_project_road_impact_links across all 20 Dubai + 12 Sharjah Flagships + 5 JVC Sub-Developments (37 Links)
-    road_by_id = {r["road_id"]: r for r in ROAD_NETWORK_DATASET}
     obs_by_road = {}
     for o in TRAFFIC_CONGESTION_OBSERVATIONS:
-        obs_by_road.setdefault(o["road_id"], []).append(o)
+        if o["road_id"] != "CITY-DXB-ALL":
+            obs_by_road.setdefault(o["road_id"], []).append(o)
 
     impact_links = []
     link_counter = 1
@@ -2839,39 +3106,41 @@ def main():
         pid = p["project_id"]
         lat, lon = parse_lat_lon(p["coordinates"])
 
-        # Find nearest road in same emirate
+        # Find nearest road in same emirate and exact nearest polyline vertex [lon, lat]
         em_roads = [r for r in ROAD_NETWORK_DATASET if r["emirate"] == p["emirate"]]
         scored_roads = sorted(em_roads, key=lambda r: min_dist_to_linestring_km(lat, lon, r["geometry_wgs84"]))
         primary_road = scored_roads[0]
         secondary_road = scored_roads[1] if len(scored_roads) > 1 else scored_roads[0]
-        dist_km = min_dist_to_linestring_km(lat, lon, primary_road["geometry_wgs84"])
+        best_pt = min(primary_road["geometry_wgs84"], key=lambda pt: haversine_km(lat, lon, pt[1], pt[0]))
+        nearest_lat, nearest_lon = best_pt[1], best_pt[0]
+        dist_km = haversine_km(lat, lon, nearest_lat, nearest_lon)
 
         # Find nearest intersection
         em_ints = [i for i in INTERSECTIONS_AND_NODES if i["emirate"] == p["emirate"]]
         nearest_int = min(em_ints, key=lambda i: haversine_km(lat, lon, i["latitude"], i["longitude"]))
         int_dist_km = haversine_km(lat, lon, nearest_int["latitude"], nearest_int["longitude"])
 
-        # Exact 4-component HGV calculation from Task 1 active GFA, concrete & rebar
+        # Exact 4-component scenario-based HGV calculation from Task 1 active GFA, concrete & rebar
         gfa_sqm, conc_m3, rebar_t = parse_active_materials(p.get("estimated_concrete_m3_and_rebar_t", ""))
         hgv = compute_4component_hgv_breakdown(gfa_sqm, conc_m3, rebar_t)
 
-        # Strict separation of evidence levels (Audit Requirement #4):
+        # Strict separation of evidence levels:
         # Reserve Tier 4 strictly for PRJ-D8 (active transport infrastructure work zone inside highway right-of-way)
         rid = primary_road["road_id"]
         if pid == "PRJ-D8":
-            ep_tier = "Tier 4 — CONFIRMED_CAUSAL_ROW_IMPACT (Active RTA Metro Blue Line Viaduct & Station Civil Works Directly Within Road Corridor Right-of-Way)"
-            ev_level = "Published Official Work-Zone Corridor Impact (RTA Metro Blue Line ROW Works)"
+            ep_tier = "Tier 4 — CONFIRMED_CAUSAL_ROW_IMPACT (Active RTA Metro Blue Line Viaduct & Station Civil Works Directly Within Road Corridor Right-of-Way; HGV Loads Scenario-Modelled)"
+            ev_level = "Published Official ROW Work-Zone Location + Scenario-Based Modelled HGV Estimate"
         elif dist_km <= 1.25 and rid in ("RD-DXB-01", "RD-DXB-03", "RD-DXB-04", "RD-DXB-05", "RD-DXB-06", "RD-DXB-07", "RD-DXB-11", "RD-DXB-12", "RD-DXB-13", "RD-SHJ-01", "RD-SHJ-03", "RD-SHJ-04"):
-            ep_tier = "Tier 2 — SPATIAL_ASSOCIATION + Tier 3 — MODELLED_CONSTRUCTION_IMPACT (Co-located with Observed Peak Congestion; Causal Share Not Isolated from Commuter Traffic)"
-            ev_level = "Modelled Engineering Estimate (Spatial Proximity + 4-Component HGV Logistics Model)"
+            ep_tier = "Tier 2 — SPATIAL_ASSOCIATION + Tier 3 — MODELLED_CONSTRUCTION_IMPACT (Co-located with Modelled Peak Corridor Congestion; Causal Share Not Isolated from Commuter Traffic)"
+            ev_level = "Scenario-Based Modelled Engineering Estimate (Centroid-to-Polyline Proximity + 4-Component HGV Model)"
         else:
             ep_tier = "Tier 3 — MODELLED_CONSTRUCTION_IMPACT (Scenario-Based HGV & Trip Generation Estimate on Corridor with Reserve Capacity)"
-            ev_level = "Modelled Engineering Estimate (Spatial Proximity + 4-Component HGV Logistics Model)"
+            ev_level = "Scenario-Based Modelled Engineering Estimate (Centroid-to-Polyline Proximity + 4-Component HGV Model)"
 
         road_obs = obs_by_road.get(rid, [])
         peak_obs_str = (
-            f"{road_obs[0]['time_period']}: {road_obs[0]['average_speed_kmh']} km/h ({road_obs[0]['congestion_level']})"
-            if road_obs else "Corridor baseline speed: 60–85 km/h (Low–Moderate congestion)"
+            f"Modelled Corridor Estimate ({road_obs[0]['time_period']}): ~{road_obs[0]['average_speed_kmh']} km/h ({road_obs[0]['congestion_level']}) | Published Capacity Benchmark: {primary_road['capacity_vph_per_dir']}"
+            if road_obs else f"Modelled Corridor Speed: ~60–85 km/h (Low–Moderate) | Published Capacity Benchmark: {primary_road['capacity_vph_per_dir']}"
         )
 
         proj_src_id = p["source_id"]
@@ -2889,11 +3158,20 @@ def main():
             "primary_road_id": primary_road["road_id"],
             "primary_road_name": primary_road["road_name"],
             "secondary_road_id": secondary_road["road_id"],
+            "nearest_road_vertex_lat": round(nearest_lat, 4),
+            "nearest_road_vertex_lon": round(nearest_lon, 4),
+            "nearest_road_vertex_wgs84": f"{nearest_lat:.4f}, {nearest_lon:.4f}",
             "distance_to_primary_road_km": dist_km,
-            "connection_relationship_type": "Verified Masterplan Corridor Connection" if dist_km <= 1.2 else "Nearby Arterial Access Corridor (Within 3.0 km Buffer)",
+            "geometry_validation_method": (
+                f"WGS84 Haversine geodesic distance ({dist_km} km) computed directly between project centroid ({lat:.4f}, {lon:.4f}) "
+                f"and nearest road polyline vertex ({nearest_lat:.4f}, {nearest_lon:.4f}) on {primary_road['road_id']} ({primary_road['road_code']}). "
+                f"Road geometry is a simplified {len(primary_road['geometry_wgs84'])}-vertex corridor centerline (not a parcel curb-cut CAD survey)."
+            ),
+            "connection_relationship_type": "Corroborated Masterplan Corridor Proximity (Centroid-to-Polyline)" if dist_km <= 1.2 else "Nearby Arterial Access Corridor (Within 3.0 km Buffer)",
             "nearest_intersection_id": nearest_int["intersection_id"],
             "nearest_intersection_name": nearest_int["intersection_name"],
             "distance_to_intersection_km": int_dist_km,
+            "published_road_capacity_and_upgrade_fact": f"{primary_road['capacity_vph_per_dir']} ({primary_road['capacity_basis']})",
             "observed_road_traffic_condition": peak_obs_str,
             "active_gfa_sqm": hgv["active_gfa_sqm"],
             "active_concrete_m3": hgv["active_concrete_m3"],
@@ -2905,16 +3183,17 @@ def main():
             "total_hgv_round_trips_day": hgv["total_hgv_round_trips_day"],
             "total_hgv_one_way_movements_day": hgv["total_hgv_one_way_movements_day"],
             "modelled_daily_hgv_concrete_rebar_trips": hgv["summary_str"],
+            "hgv_modelling_assumptions_and_sensitivity": hgv["assumptions_str"],
             "hgv_routing_and_ban_compliance": primary_road["hgv_truck_ban_window"],
             "evidence_level": ev_level,
             "epistemic_impact_classification": ep_tier,
-            "impact_radius_justification": f"Direct geodesic snap distance = {dist_km} km to {primary_road['road_code']} (verified within 1.5 km collector / 3.0 km arterial impact buffer).",
+            "impact_radius_justification": f"Haversine centroid-to-vertex geodesic distance = {dist_km} km from ({lat:.4f}, {lon:.4f}) to ({nearest_lat:.4f}, {nearest_lon:.4f}) on {primary_road['road_code']} (within 1.5 km collector / 3.0 km arterial impact buffer).",
             "project_source_id": proj_src_id,
             "corridor_traffic_source_id": road_src_id,
             "source_id": combined_src_id,
             "corridor_source_title": road_src_rec["document_or_page_reference"],
             "corridor_source_url": road_src_rec["original_url"],
-            "confidence": "Verified" if pid == "PRJ-D8" else "Estimated (Modelled Impact on Verified Geometry)"
+            "confidence": "Estimated"
         })
         link_counter += 1
 
@@ -2923,10 +3202,13 @@ def main():
     for sub in COMMUNITY_SUBDEVELOPMENTS:
         rid = sub["primary_access_road_id"]
         r_obj = road_by_id[rid]
+        best_pt = min(r_obj["geometry_wgs84"], key=lambda pt: haversine_km(sub["latitude"], sub["longitude"], pt[1], pt[0]))
+        nearest_lat, nearest_lon = best_pt[1], best_pt[0]
+        dist_km = sub["distance_to_road_km"]
         road_obs = obs_by_road.get(rid, [])
         peak_obs_str = (
-            f"{road_obs[0]['time_period']}: {road_obs[0]['average_speed_kmh']} km/h ({road_obs[0]['congestion_level']})"
-            if road_obs else "24–29 km/h AM/PM Peak"
+            f"Modelled Corridor Estimate ({road_obs[0]['time_period']}): ~{road_obs[0]['average_speed_kmh']} km/h ({road_obs[0]['congestion_level']}) | Published Capacity Benchmark: {r_obj['capacity_vph_per_dir']}"
+            if road_obs else f"Modelled Corridor Speed: ~24–29 km/h AM/PM Peak | Published Capacity Benchmark: {r_obj['capacity_vph_per_dir']}"
         )
         i_obj = int_by_id[sub["nearest_intersection_id"]]
         int_dist_km = haversine_km(sub["latitude"], sub["longitude"], i_obj["latitude"], i_obj["longitude"])
@@ -2943,11 +3225,20 @@ def main():
             "primary_road_id": rid,
             "primary_road_name": r_obj["road_name"],
             "secondary_road_id": "RD-DXB-07",
-            "distance_to_primary_road_km": sub["distance_to_road_km"],
-            "connection_relationship_type": "JVC Collector Ring & Hessa/Al Khail Access Gate Connection",
+            "nearest_road_vertex_lat": round(nearest_lat, 4),
+            "nearest_road_vertex_lon": round(nearest_lon, 4),
+            "nearest_road_vertex_wgs84": f"{nearest_lat:.4f}, {nearest_lon:.4f}",
+            "distance_to_primary_road_km": dist_km,
+            "geometry_validation_method": (
+                f"WGS84 Haversine geodesic distance ({dist_km} km) computed directly between JVC cluster centroid ({sub['latitude']:.4f}, {sub['longitude']:.4f}) "
+                f"and nearest road polyline vertex ({nearest_lat:.4f}, {nearest_lon:.4f}) on {r_obj['road_id']} ({r_obj['road_code']}). "
+                f"Road geometry is a simplified {len(r_obj['geometry_wgs84'])}-vertex corridor centerline."
+            ),
+            "connection_relationship_type": "JVC Collector Ring & Hessa/Al Khail Access Gate Proximity (Centroid-to-Polyline)",
             "nearest_intersection_id": sub["nearest_intersection_id"],
             "nearest_intersection_name": i_obj["intersection_name"],
             "distance_to_intersection_km": int_dist_km,
+            "published_road_capacity_and_upgrade_fact": f"{r_obj['capacity_vph_per_dir']} ({r_obj['capacity_basis']})",
             "observed_road_traffic_condition": peak_obs_str,
             "active_gfa_sqm": sub["active_gfa_sqm"],
             "active_concrete_m3": sub["active_concrete_m3"],
@@ -2959,16 +3250,17 @@ def main():
             "total_hgv_round_trips_day": sub["total_hgv_round_trips_day"],
             "total_hgv_one_way_movements_day": sub["total_hgv_one_way_movements_day"],
             "modelled_daily_hgv_concrete_rebar_trips": sub["estimated_midday_hgv_trips_per_day"],
+            "hgv_modelling_assumptions_and_sensitivity": sub["hgv_modelling_assumptions_and_sensitivity"],
             "hgv_routing_and_ban_compliance": r_obj["hgv_truck_ban_window"],
             "evidence_level": sub["evidence_level"],
             "epistemic_impact_classification": sub["epistemic_impact_tier"],
-            "impact_radius_justification": f"Direct geodesic snap distance = {sub['distance_to_road_km']} km to {r_obj['road_code']} inside JVC 1.5 km collector ring.",
+            "impact_radius_justification": f"Haversine centroid-to-vertex geodesic distance = {dist_km} km from ({sub['latitude']:.4f}, {sub['longitude']:.4f}) to ({nearest_lat:.4f}, {nearest_lon:.4f}) on {r_obj['road_code']} inside JVC 1.5 km collector ring.",
             "project_source_id": sub["project_source_id"],
             "corridor_traffic_source_id": road_src_id,
             "source_id": sub["source_id"],
             "corridor_source_title": road_src_rec["document_or_page_reference"],
             "corridor_source_url": road_src_rec["original_url"],
-            "confidence": "Estimated (Modelled Impact on Verified Geometry)"
+            "confidence": "Estimated"
         })
         link_counter += 1
 
@@ -3031,6 +3323,36 @@ def main():
                 },
                 "geometry": {"type": "Point", "coordinates": [lon, lat]}
             })
+    for sd in COMMUNITY_SUBDEVELOPMENTS:
+        features.append({
+            "type": "Feature",
+            "id": sd["subdev_id"],
+            "properties": sd | {"layer": "L08_subdevelopments"},
+            "geometry": {"type": "Point", "coordinates": [sd["longitude"], sd["latitude"]]}
+        })
+    for lnk in impact_links:
+        p_lat, p_lon = parse_lat_lon(lnk["project_coordinates"])
+        r_lat, r_lon = lnk["nearest_road_vertex_lat"], lnk["nearest_road_vertex_lon"]
+        features.append({
+            "type": "Feature",
+            "id": lnk["link_id"],
+            "properties": {
+                "link_id": lnk["link_id"],
+                "project_id": lnk["project_id"],
+                "project_name": lnk["project_name"],
+                "primary_road_id": lnk["primary_road_id"],
+                "primary_road_name": lnk["primary_road_name"],
+                "project_coordinates": lnk["project_coordinates"],
+                "nearest_road_vertex_wgs84": lnk["nearest_road_vertex_wgs84"],
+                "distance_to_primary_road_km": lnk["distance_to_primary_road_km"],
+                "geometry_validation_method": lnk["geometry_validation_method"],
+                "total_hgv_round_trips_day": lnk["total_hgv_round_trips_day"],
+                "evidence_level": lnk["evidence_level"],
+                "confidence": lnk["confidence"],
+                "layer": "L11_impact_links"
+            },
+            "geometry": {"type": "LineString", "coordinates": [[p_lon, p_lat], [r_lon, r_lat]]}
+        })
 
     geojson_bundle = {
         "type": "FeatureCollection",

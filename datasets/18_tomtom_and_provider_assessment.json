@@ -10,7 +10,7 @@
     "pricing_structure": "Free up to 2,500 req/day (no credit card required); Paid tier ~$0.40–$0.50 per 1,000 requests above free tier.",
     "commercial_usage_and_retention_terms": "Permits live visualization in commercial/client dashboards; STRICTLY PROHIBITS archiving or banking live API responses to build a standalone historical traffic database.",
     "prototype_recommendation": "RECOMMENDED PRIMARY LIVE API — Best price-to-coverage ratio and 30s update resolution for live Dubai & Sharjah road overlays.",
-    "official_url": "https://developer.tomtom.com/traffic-api/documentation/product-information/introduction",
+    "official_url": "https://www.tomtom.com/traffic-index/city/dubai/",
     "confidence": "Verified",
     "source_id": "SRC-436"
   },

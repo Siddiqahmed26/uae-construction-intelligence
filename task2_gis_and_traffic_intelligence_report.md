@@ -1,6 +1,6 @@
 # TASK 2 — UAE Construction Intelligence: Geographic Visualization, Construction Activity & Traffic Impact Intelligence
 
-**Execution Status:** **COMPLETE (Milestones 1–6 / Work Packages A–F + Post-Audit Remediation Verified & Deployed)**  
+**Execution Status:** **COMPLETE (Milestones 1–6 / Work Packages A–F + Final Epistemic & Geometry Audit Remediation Verified & Deployed)**  
 **Date:** 9 November 2026  
 **Primary Focus (Priority 1):** Dubai, UAE (`20` Flagship Projects + `5` JVC Sub-Clusters, `16` Road Corridors, `10` Intersections, `6` Community Hotspots)  
 **Secondary Focus (Priority 2):** Sharjah, UAE (`12` Flagship Projects, `7` Road Corridors including `S142` East Coast Khorfakkan & `E11` North Al Hamriyah, `6` Intersections, `4` Community Hotspots)  
@@ -12,20 +12,20 @@
 
 | Deliverable | Live URL / Local Path | Verification Status |
 | :--- | :--- | :--- |
-| **Task 2 Interactive GIS & Traffic Platform** | https://siddiqahmed26.github.io/uae-construction-intelligence/task2_gis_intelligence.html ([task2_gis_intelligence.html](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/task2_gis_intelligence.html)) | **Live (`1,690 KB`, 11 Map Layers, 4 Time Windows, 4 Guided Use Cases, Deterministic Q&A, Playwright Verified `0` Console Errors)** |
+| **Task 2 Interactive GIS & Traffic Platform** | https://siddiqahmed26.github.io/uae-construction-intelligence/task2_gis_intelligence.html ([task2_gis_intelligence.html](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/task2_gis_intelligence.html)) | **Live (`1,877 KB`, 11 Map Layers, Nearest-Vertex Vectors, 4 Time Windows, 4 Guided Use Cases, Deterministic Q&A, Playwright Verified `0` Console Errors)** |
 | **Task 1 + Task 2 Unified Portal** | https://siddiqahmed26.github.io/uae-construction-intelligence/ ([index.html](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/index.html)) | **Live (Updated with Task 2 Global Switcher Banner)** |
-| **GeoJSON Spatial Bundle (`81` Features)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/dubai_sharjah_gis_bundle.geojson ([dubai_sharjah_gis_bundle.geojson](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/dubai_sharjah_gis_bundle.geojson)) | **Verified WGS84 (`EPSG:4326`) `FeatureCollection` (`10` Communities + `23` Roads + `16` Intersections + `32` Projects = `81` Features)** |
-| **Task 2 Spatial SQLite Database (`18` Tables)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/21_task2_spatial_database.sqlite ([21_task2_spatial_database.sqlite](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/21_task2_spatial_database.sqlite)) | **Verified Relational & Spatial Store (`18` Tables, `1,149` Rows)** |
-| **Master Consolidated SQLite DB (`29` Tables)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/11_consolidated_database.sqlite ([11_consolidated_database.sqlite](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/11_consolidated_database.sqlite)) | **Verified Task 1 + Task 2 Store (`29` Tables, `1,495` Rows)** |
+| **GeoJSON Spatial Bundle (`123` Features)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/dubai_sharjah_gis_bundle.geojson ([dubai_sharjah_gis_bundle.geojson](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/dubai_sharjah_gis_bundle.geojson)) | **Verified WGS84 (`EPSG:4326`) `FeatureCollection` (`10` Communities + `23` Roads + `16` Intersections + `32` Projects + `5` JVC Sub-Developments + `37` Nearest-Vertex Impact Link `LineString` Vectors = `123` Features)** |
+| **Task 2 Spatial SQLite Database (`18` Tables)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/21_task2_spatial_database.sqlite ([21_task2_spatial_database.sqlite](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/21_task2_spatial_database.sqlite)) | **Verified Relational & Spatial Store (`18` Tables, `1,150` Rows)** |
+| **Master Consolidated SQLite DB (`29` Tables)** | https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/11_consolidated_database.sqlite ([11_consolidated_database.sqlite](file:///Users/siddiqahmed26/.gemini/antigravity/scratch/uae-construction-research/web/datasets/11_consolidated_database.sqlite)) | **Verified Task 1 + Task 2 Store (`29` Tables, `1,496` Rows)** |
 
-### Direct Raw CSV, Plain-Text & JSON Links for All 11 Task 2 Datasets (`156` Total Rows) + Provenance Register (`450` Sources)
+### Direct Raw CSV, Plain-Text & JSON Links for All 11 Task 2 Datasets (`157` Total Rows) + Provenance Register (`450` Sources)
 
 | Dataset ID & Name | Rows | GitHub Raw CSV (`text/plain`) | Same-Origin Plain Text (`.csv.txt`) | Browser Table (`.html`) | JSON (`.json`) |
 | :--- | :---: | :--- | :--- | :--- | :--- |
 | **`11_provenance_source_register`** | `450` | [GitHub Raw CSV](https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/11_provenance_source_register.csv) | [Plain Text](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_raw/11_provenance_source_register.csv.txt) | [HTML View](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_view/11_provenance_source_register.html) | [JSON](https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/11_provenance_source_register.json) |
 | **`15_transport_open_data_register`** | `18` | [GitHub Raw CSV](https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/15_transport_open_data_register.csv) | [Plain Text](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_raw/15_transport_open_data_register.csv.txt) | [HTML View](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_view/15_transport_open_data_register.html) | [JSON](https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/15_transport_open_data_register.json) |
 | **`16_road_network_dataset`** | `23` | [GitHub Raw CSV](https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/16_road_network_dataset.csv) | [Plain Text](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_raw/16_road_network_dataset.csv.txt) | [HTML View](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_view/16_road_network_dataset.html) | [JSON](https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/16_road_network_dataset.json) |
-| **`17_traffic_congestion_observations`** | `21` | [GitHub Raw CSV](https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/17_traffic_congestion_observations.csv) | [Plain Text](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_raw/17_traffic_congestion_observations.csv.txt) | [HTML View](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_view/17_traffic_congestion_observations.html) | [JSON](https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/17_traffic_congestion_observations.json) |
+| **`17_traffic_congestion_observations`** | `22` | [GitHub Raw CSV](https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/17_traffic_congestion_observations.csv) | [Plain Text](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_raw/17_traffic_congestion_observations.csv.txt) | [HTML View](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_view/17_traffic_congestion_observations.html) | [JSON](https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/17_traffic_congestion_observations.json) |
 | **`18_tomtom_and_provider_assessment`** | `6` | [GitHub Raw CSV](https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/18_tomtom_and_provider_assessment.csv) | [Plain Text](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_raw/18_tomtom_and_provider_assessment.csv.txt) | [HTML View](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_view/18_tomtom_and_provider_assessment.html) | [JSON](https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/18_tomtom_and_provider_assessment.json) |
 | **`19_traffic_impact_studies_and_logistics`** | `8` | [GitHub Raw CSV](https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/19_traffic_impact_studies_and_logistics.csv) | [Plain Text](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_raw/19_traffic_impact_studies_and_logistics.csv.txt) | [HTML View](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_view/19_traffic_impact_studies_and_logistics.html) | [JSON](https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/19_traffic_impact_studies_and_logistics.json) |
 | **`20_parking_and_mobility_facilities`** | `7` | [GitHub Raw CSV](https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/20_parking_and_mobility_facilities.csv) | [Plain Text](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_raw/20_parking_and_mobility_facilities.csv.txt) | [HTML View](https://siddiqahmed26.github.io/uae-construction-intelligence/csv_view/20_parking_and_mobility_facilities.html) | [JSON](https://siddiqahmed26.github.io/uae-construction-intelligence/datasets/20_parking_and_mobility_facilities.json) |
@@ -37,50 +37,33 @@
 
 ---
 
-## 2. Task 2 Intelligence Audit Remediation & Verification Receipt
+## 2. Final Epistemic & Geometry Audit Remediation Receipt (Post-`9d542ff`)
 
-Every finding raised in the post-deployment audit of commit `f9f5cfe` has been resolved and empirically verified in code and in a live Chromium browser:
+### 2.1 Strict Separation of Published RTA/TomTom Benchmarks vs. Modelled Corridor Estimates (`17_traffic_congestion_observations` — `22` Rows)
+- **City-Level TomTom Benchmark Only (`OBS-DXB-CITY-00`):** Sourced strictly to `SRC-436` (https://www.tomtom.com/traffic-index/city/dubai/) with `evidence_level = "Published City-Wide Benchmark (TomTom Dubai Traffic Index — City-Level Only)"` and `confidence = "Verified"`. Never disaggregated to individual road segments.
+- **All 21 Corridor-Level Records (`OBS-DXB-001..015`, `OBS-SHJ-001..006`) Classified as Modelled Estimates:**
+  - `evidence_level = "Modelled Corridor Estimate (Not Published Segment Telemetry)"` and `confidence = "Estimated"`.
+  - All `"Jam Factor 8.2/10"` and `"Observed"` claims on segment speeds (`29 km/h`, `25 km/h`, `58–64 km/h`, etc.) and directional volumes (`~4,150 vph/dir`, `~4,380 vph/dir`, etc.) have been removed (`0` occurrences).
+  - **Officially Published Corridor Benchmarks Preserved (`officially_published_corridor_benchmark`):** Explicitly records the published RTA/SRTA engineering facts:
+    - `SRC-433` (Hessa St `D61`): AED 689M upgrade widening `D61` from `2` to `4` lanes/dir and doubling capacity from `4,000` to `8,000 vph/dir` (`16,000 vph` total) with `50%` travel-time reduction target.
+    - `SRC-434` (Al Khail Rd `E44`): AED 700M bridge upgrade adding `+15,000–19,600 vph` capacity and reducing corridor travel time by `30%`.
+    - `SRC-439` (Ras Al Khor Rd `E44/D62`): AED 670M upgrade increasing capacity to `10,000 vph/dir` and cutting travel time from `20 min` to `7 min` (`65%` reduction).
+    - `SRC-440` (Umm Suqeim–Al Qudra `D63`): AED 700M upgrade increasing capacity to `8,000 vph/dir` (`16,000 vph` total) and cutting travel time from `46 min` to `11 min`.
+  - **Modelled BPR Derivation Documented (`modelled_assumptions_and_derivation`):** Documents the exact Bureau of Public Roads (BPR) volume-delay formula ($t = t_0 [1 + 0.15(V/C)^4]$) and assumed peak $V/C$ ratio used to estimate each corridor speed and travel time.
 
-### 2.1 Provenance Register Repair (`11_provenance_source_register` Expanded from `432` to `450` Sources)
-- **Root Cause Fixed:** Previously, several Dubai, JVC, and Sharjah traffic and impact records pointed to unrelated Task 1 geographic source IDs (`SRC-016` Al Reem Island, Abu Dhabi; `SRC-022` Dubai South; `SRC-023` Dubailand).
-- **Remediation:** Added `18` dedicated traffic, corridor, and transport provenance records (`SRC-433` through `SRC-450`) to `11_provenance_source_register` and linked every Task 2 record to its exact substantiating source(s):
+### 2.2 Scenario-Based HGV Labelling & 5 Explicit Modelling Assumptions (`22_project_road_impact_links` & `21d_jvc_and_community_subdevelopments`)
+- All `37` project-road links in `22_project_road_impact_links` and all `5` JVC sub-developments in `21d_jvc_and_community_subdevelopments` carry `confidence = "Estimated"` and prefix `modelled_daily_hgv_concrete_rebar_trips` with **`Scenario-Based Estimated Daily HGV Movements (Not Observed Construction Traffic):`**.
+- Every record includes a dedicated field **`hgv_modelling_assumptions_and_sensitivity`** documenting all 5 modelling assumptions and peak-phase sensitivity:
+  1. **Concrete:** `8.5 m³` effective payload per transit mixer (`10–12 m³` nominal drum at `75–80%` agitation fill).
+  2. **Rebar:** `25.0 t` flat-bed steel trailer payload.
+  3. **Earthworks / Excavation:** `0.35 m³` bulked excavation per $\text{m}^2$ active GFA (`1.25` bulking factor) hauled in `18.0 m³` (`35–40 t`) tippers (concentrated in Months 1–9).
+  4. **MEP / Façade / Fit-Out:** `0.18 t` per $\text{m}^2$ active GFA hauled in `12.0 t` medium/heavy box trucks (concentrated in Months 18–48).
+  5. **Horizon & Peak Sensitivity:** Uniform `1,825-day` (`5-year`) calendar average (`2025–2030`); peak structural/raft-pour months experience **`1.8x–2.5x`** higher daily HGV movements than the 5-year mean.
 
-| Audited Record | Previous Mismatched `source_id` | Repaired `source_id` | Verified Substantiating Source Record |
-| :--- | :--- | :--- | :--- |
-| **`OBS-DXB-001` (Hessa St D61 AM Peak)** | `SRC-022` (Dubai South) | **`SRC-433`** | RTA Hessa Street (`D61`) Improvement Project Engineering & Traffic Release (`AED 689M`; `4,000 -> 8,000 vph/dir`) |
-| **`OBS-DXB-005` (Al Khail Rd E44 AM Peak)** | `SRC-023` (Dubailand) | **`SRC-434`** | RTA Al Khail Road (`E44`) Improvement Project Completion Report (`AED 700M`; `30%` travel-time reduction across JVC/Al Quoz/Meydan/Zabeel) |
-| **`IMP-017` (`PRJ-D17` Palm Jebel Ali -> `RD-DXB-11`)** | `SRC-016` (Al Reem Island) | **`SRC-094; SRC-439`** | `SRC-094` (`PRJ-D17` Palm Jebel Ali Project Record) + `SRC-439` (RTA `E11` / `D94` King Salman St Corridor Release) |
-| **`IMP-019` (`PRJ-D19` Tilal Al Ghaf -> `RD-DXB-06`)** | `SRC-016` (Al Reem Island) | **`SRC-096; SRC-433`** | `SRC-096` (`PRJ-D19` Tilal Al Ghaf Project Record) + `SRC-433` (RTA Hessa St `D61` East Corridor Release) |
-| **`IMP-033` (`SUB-JVC-01` Binghatti JVC -> `RD-DXB-05`)** | `SRC-016` (Al Reem Island) | **`SRC-047; SRC-020; SRC-433`** | `SRC-047` (`DEV-05` Binghatti Developer Profile) + `SRC-020` (JVC Master Community) + `SRC-433` (RTA Hessa St `D61` Release) |
-
-### 2.2 Geographic Corridor Alignment (`0` Links $> 3.0\text{ km}$, `0` Links at $0.0\text{ km}$)
-- **Root Cause Fixed:** `IMP-031` (`PRJ-SH11` Khorfakkan Beach Resort / Kalba Waterfront on Sharjah's East Coast `[25.3390, 56.3560]`) was previously snapped to West Sharjah `RD-SHJ-02` (`E611`) at `73.47 km`, and `IMP-021` (`PRJ-SH1` Sharjah Waterfront City Al Hamriyah) was `16.90 km` from `RD-SHJ-04`.
-- **Remediation:** Added Sharjah's actual Eastern and Northern highway corridors (`RD-SHJ-05` Maliha–Khorfakkan Highway `E102/S142` West, `RD-SHJ-06` Sharjah–Khorfakkan Highway `S142` East Coast & Khorfakkan Corniche, and `RD-SHJ-07` Al Ittihad Road North `E11` — Al Hamriyah Coastal Corridor) plus `6` coastal/eastern interchanges (`INT-DXB-08..10`, `INT-SHJ-04..06`).
-- **Verified Geodesic Distances Across All 37 Links (`22_project_road_impact_links`):**
-  - Minimum distance: **`0.12 km`** (`IMP-010` `PRJ-D10` Burj Azizi -> `RD-DXB-01` Sheikh Zayed Road `E11`)
-  - Maximum distance: **`2.46 km`** (`IMP-015` `PRJ-D15` Azizi Venice -> `RD-DXB-04` Emirates Road `E611`)
-  - `IMP-031` (`PRJ-SH11` Khorfakkan Beach Resort -> `RD-SHJ-06` `S142` Khorfakkan Corniche): **`0.30 km`**
-  - `IMP-021` (`PRJ-SH1` Sharjah Waterfront City -> `RD-SHJ-07` `E11` Al Hamriyah Coastal Corridor): **`0.37 km`**
-  - `IMP-025` (`PRJ-SH5`), `IMP-027` (`PRJ-SH7`), `IMP-032` (`PRJ-SH12` -> `RD-SHJ-05`): **`0.37 km`, `0.41 km`, `0.42 km`**
-  - `IMP-014` (`PRJ-D14` -> `RD-DXB-16`) & `IMP-024` (`PRJ-SH4` -> `RD-SHJ-04`): **`0.23 km` & `0.28 km`**
-
-### 2.3 Transparent 4-Component Construction HGV Math (`22_project_road_impact_links`)
-- **Root Cause Fixed:** Previously, the builder script looked up `p.get("active_2025_2030_concrete_m3", 50000)` instead of Task 1's actual field `p["estimated_concrete_m3_and_rebar_t"]` and clamped values below `12` to `12 HGV round-trips/day`.
-- **Remediation:** Every project's exact `Active 2025–2030 Structural Scope` GFA ($\text{m}^2$), concrete ($\text{m}^3$), and rebar ($\text{t}$) are parsed directly from `p["estimated_concrete_m3_and_rebar_t"]` and converted into a 4-component daily HGV breakdown over $5 \times 365 = 1,825$ calendar days:
-  $$\text{Total HGV Round-Trips/Day} = \underbrace{\frac{V_{\text{conc}}}{8.5 \times 1825}}_{\text{Concrete Mixers}} + \underbrace{\frac{M_{\text{rebar}}}{25 \times 1825}}_{\text{Rebar Trailers}} + \underbrace{\frac{0.35 \times \text{GFA}}{18 \times 1825}}_{\text{Earthworks Tippers}} + \underbrace{\frac{0.18 \times \text{GFA}}{12 \times 1825}}_{\text{MEP/Fit-Out Trucks}}$$
-- **Verified Examples:**
-  - **`IMP-017` (`PRJ-D17` Palm Jebel Ali — Active GFA $990,000\text{ m}^2$, Concrete $396,000\text{ m}^3$, Rebar $45,540\text{ t}$):** `25.53` concrete mixers + `1.00` rebar trailers + `10.55` earthworks tippers + `8.14` MEP/fit-out trucks = **`45.22` HGV round-trips/day** (`90.44` one-way movements/day).
-  - **`IMP-031` (`PRJ-SH11` Khorfakkan Beach Resort — Active GFA $256,500\text{ m}^2$, Concrete $118,000\text{ m}^3$, Rebar $16,520\text{ t}$):** `7.61` concrete mixers + `0.36` rebar trailers + `2.73` earthworks tippers + `2.11` MEP/fit-out trucks = **`12.81` HGV round-trips/day** (`25.62` one-way movements/day).
-
-### 2.4 Evidence-Level Separation & Traffic Observation Metadata (`17_traffic_congestion_observations`)
-- Every record in `17_traffic_congestion_observations` (`21` rows) includes `evidence_level` (`Published Official Benchmark`, `Corroborated Multi-Source Observation`, or `Modelled Engineering Estimate`), `measurement_period`, `series_scope_note` (explicitly stating that values are representative seasonal/annual corridor benchmarks, not a continuous live loop-detector stream), `source_report_title`, `source_publisher`, `source_url`, and `publication_date`.
-- In `22_project_road_impact_links`, only **`PRJ-D8` (`IMP-008` Dubai Metro Blue Line active viaduct/station civil works inside the road right-of-way)** carries `Tier 4 — CONFIRMED_CAUSAL_ROW_IMPACT`. All building and masterplan projects carry `Tier 2 + Tier 3` or `Tier 3` (`Modelled Engineering Estimate`).
-
-### 2.5 Live Browser Verification (Playwright Chromium)
-- Loaded `task2_gis_intelligence.html` in Chromium via Playwright MCP and verified:
-  - **`0` console errors and `0` runtime errors**
-  - All **11 layer checkboxes (`chk-L1`..`chk-L11`)** toggle cleanly off and on
-  - All **4 time-window controls (`Morning Peak`, `Midday`, `Evening Peak`, `Night`)** update road styling and HUD state
-  - All **4 guided use cases (`Use Case 1`..`Use Case 4`)** fly to the target coordinates and populate the briefing drawer
-  - All **5 filter controls (`emirateSelect`, `communitySelect`, `congestionFilter`, `radiusSelect`, `epistemicFilter`)** filter markers and corridors accurately (`Dubai` = `25` active sites; `Sharjah` = `12` active sites; `ALL` = `37` active sites; `Tier 4` = `1` active site `PRJ-D8`)
-  - Project and Road detail drawers (`PRJ-D17`, `PRJ-SH11`, `RD-DXB-05`, `RD-SHJ-06`) and all **8 deterministic Q&A preset queries** render the repaired provenance IDs and 4-component HGV equations.
+### 2.3 Nearest-Vertex WGS84 Haversine Geometry Validation (`16_road_network_dataset`, `21d`, `22_project_road_impact_links`, `dubai_sharjah_gis_bundle.geojson` & Map UI)
+- Every link (`IMP-001` through `IMP-037`, including `SUB-JVC-01..05`) now records:
+  - `project_coordinates`: WGS84 `[lat, lon]` of the project/cluster centroid
+  - `nearest_road_vertex_lat`, `nearest_road_vertex_lon`, and `nearest_road_vertex_wgs84`: Exact nearest vertex on the connected road's `geometry_wgs84` polyline
+  - `distance_to_primary_road_km`: Exact WGS84 Haversine geodesic distance ($R = 6,371\text{ km}$) between `project_coordinates` and `nearest_road_vertex_wgs84` (`0.12 km` to `2.46 km`, `100%` match verified in Python)
+  - `geometry_validation_method`: Explicitly notes that road geometries are simplified `4–6` vertex WGS84 corridor centerlines (`Corroborated` / `Estimated`), not parcel curb-cut CAD surveys.
+- In both `dubai_sharjah_gis_bundle.geojson` (`L11_impact_links`, `37` `LineString` features) and `task2_gis_intelligence.html` (Layer 11), every project-to-road vector is drawn directly from `[lat, lon]` to `[nearest_road_vertex_lat, nearest_road_vertex_lon]`.

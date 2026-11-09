@@ -45,7 +45,8 @@
     ],
     "served_communities": "Sheikh Zayed Road, DIFC, Downtown Dubai, Business Bay, Al Barsha, Dubai Marina, Palm Jumeirah",
     "source_id": "SRC-435",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 7-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-02",
@@ -85,7 +86,8 @@
     ],
     "served_communities": "Palm Jebel Ali, Jebel Ali Industrial, Dubai Waterfront, Dubai Marina South",
     "source_id": "SRC-435",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 5-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-03",
@@ -125,7 +127,8 @@
     ],
     "served_communities": "Jumeirah Village Circle (JVC), Jumeirah Village Triangle (JVT), Dubai Hills Estate, Al Barsha South, Al Quoz",
     "source_id": "SRC-434",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 5-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-04",
@@ -165,7 +168,8 @@
     ],
     "served_communities": "Business Bay, Downtown Dubai, MBR City / Meydan, Sobha Hartland, Dubai Design District (d3), Festival City",
     "source_id": "SRC-434",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 5-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-05",
@@ -201,7 +205,8 @@
     ],
     "served_communities": "Jumeirah Village Circle (JVC), Al Barsha, Barsha Heights (Tecom), Dubai Science Park",
     "source_id": "SRC-433",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 4-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-06",
@@ -237,7 +242,8 @@
     ],
     "served_communities": "Jumeirah Village Circle (JVC), Dubai Sports City, Motor City, Tilal Al Ghaf (PRJ-D19), DAMAC Lagoons (PRJ-D16)",
     "source_id": "SRC-433",
-    "confidence": "Corroborated"
+    "confidence": "Estimated (HCM 7th Ed Capacity Estimate & Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 4-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-07",
@@ -285,7 +291,8 @@
     ],
     "served_communities": "Jumeirah Village Circle (JVC Districts 10, 11, 12, 13, 14, 15, 16, 17, 18)",
     "source_id": "SRC-441",
-    "confidence": "Estimated"
+    "confidence": "Estimated (HCM 7th Ed Capacity Estimate & Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 7-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-08",
@@ -329,7 +336,8 @@
     ],
     "served_communities": "Dubai South, Expo City, JVC South, Motor City, Tilal Al Ghaf, The Oasis, Global Village, International City",
     "source_id": "SRC-437",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 6-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-09",
@@ -373,7 +381,8 @@
     ],
     "served_communities": "Dubai South (DWC PRJ-D1, Azizi Venice PRJ-D15), The Heights (PRJ-D6), Grand Polo (PRJ-D7), The Oasis (PRJ-D5), Al Marmoom",
     "source_id": "SRC-437",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 6-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-10",
@@ -413,7 +422,8 @@
     ],
     "served_communities": "Dubai Hills Estate, Al Barsha South, Arjan, Motor City, Arabian Ranches, Tilal Al Ghaf, DAMAC Hills",
     "source_id": "SRC-440",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 5-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-11",
@@ -453,7 +463,8 @@
     ],
     "served_communities": "Dubai Creek Harbour (PRJ-D3), Sobha Hartland II / Bukadra (PRJ-D17), Ras Al Khor, Nad Al Hamar, International City",
     "source_id": "SRC-439",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 5-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-12",
@@ -489,7 +500,8 @@
     ],
     "served_communities": "DIFC Zabeel District (PRJ-D20), Downtown Dubai, Business Bay (PRJ-D11), Burj Azizi Corridor (PRJ-D10)",
     "source_id": "SRC-438",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 4-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-13",
@@ -525,7 +537,8 @@
     ],
     "served_communities": "Business Bay (PRJ-D11 Burj Binghatti Jacob & Co, Canal Front Towers)",
     "source_id": "SRC-438",
-    "confidence": "Estimated"
+    "confidence": "Estimated (HCM 7th Ed Capacity Estimate & Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 4-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-14",
@@ -565,7 +578,8 @@
     ],
     "served_communities": "Dubai Islands (PRJ-D4), Deira, Mina Rashid, DXB Airport, Al Rashidiya",
     "source_id": "SRC-443",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 5-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-15",
@@ -601,7 +615,8 @@
     ],
     "served_communities": "Dubai South, Al Maktoum International Airport DWC (PRJ-D1), Expo City Dubai (PRJ-D18), Azizi Venice (PRJ-D15)",
     "source_id": "SRC-442",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 4-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-DXB-16",
@@ -637,7 +652,8 @@
     ],
     "served_communities": "Dubai Marina (PRJ-D12, PRJ-D13), Palm Jumeirah (PRJ-D14), Dubai Harbour, JBR",
     "source_id": "SRC-443",
-    "confidence": "Estimated"
+    "confidence": "Estimated (HCM 7th Ed Capacity Estimate & Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 4-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-SHJ-01",
@@ -673,7 +689,8 @@
     ],
     "served_communities": "Muwaileh, Aljada (PRJ-SH2), Al Zahia (PRJ-SH9), Al Mamsha & Olfah (PRJ-SH6, PRJ-SH8)",
     "source_id": "SRC-444",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 4-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-SHJ-02",
@@ -709,7 +726,8 @@
     ],
     "served_communities": "Masaar (PRJ-SH3), Tilal City (PRJ-SH7), Hayyan (PRJ-SH6), Sharjah Sustainable City (PRJ-SH10)",
     "source_id": "SRC-445",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 4-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-SHJ-03",
@@ -749,7 +767,8 @@
     ],
     "served_communities": "Aljada (PRJ-SH2), Muwaileh, University City, Sharjah Sustainable City (PRJ-SH10)",
     "source_id": "SRC-445",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 5-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-SHJ-04",
@@ -785,7 +804,8 @@
     ],
     "served_communities": "Al Khan, Al Mamzar, Maryam Island (PRJ-SH4), Al Taawun",
     "source_id": "SRC-444",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 4-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-SHJ-05",
@@ -825,7 +845,8 @@
     ],
     "served_communities": "Tilal City (PRJ-SH7), Masaar (PRJ-SH3), Khalid Bin Sultan City (PRJ-SH5), Jawaher Boston Medical District & BEEAH Hub (PRJ-SH12)",
     "source_id": "SRC-446",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 5-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-SHJ-06",
@@ -865,7 +886,8 @@
     ],
     "served_communities": "Khorfakkan Beach Resort, Jabal Resort & Kalba Waterfront Masterplan (PRJ-SH11)",
     "source_id": "SRC-446",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 5-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   },
   {
     "road_id": "RD-SHJ-07",
@@ -905,6 +927,7 @@
     ],
     "served_communities": "Sharjah Waterfront City (PRJ-SH1), Al Hamriyah Coastal Zone",
     "source_id": "SRC-447",
-    "confidence": "Verified"
+    "confidence": "Corroborated (Published RTA/SRTA Capacity & Statutory Speed; Simplified Corridor Polyline)",
+    "geometry_source_and_validation": "Simplified 5-Vertex Corridor Centerline Polyline (Aligned to OpenStreetMap / RTA / SRTA Route Axis in WGS84 EPSG:4326; Suitable for Regional & Community GIS Buffer Analysis — Not a Parcel-Level Curb-Cut CAD Survey)"
   }
 ]
