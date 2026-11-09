@@ -166,11 +166,14 @@ def main():
     tbl_obs = render_table_html(payload["observations"], [
         ("observation_id", "Obs ID"), ("road_id", "Road / City Scope"), ("road_name", "Corridor / Benchmark Scope"), ("community", "Community"),
         ("location", "Geographic Coverage / Coordinates"), ("measurement_period", "Measurement / Scenario Period"),
-        ("time_period", "Time Period"), ("average_speed_kmh", "Speed (km/h)"), ("free_flow_speed_kmh", "Free-Flow (km/h)"),
-        ("travel_time_min_per_10km", "Travel Time (min/10km)"), ("traffic_volume_vph", "Volume (vph/dir)"),
+        ("time_period", "Time Period"), ("average_speed_kmh", "Corridor Speed (km/h)"), ("travel_time_min_per_10km", "Total Time (min/10km)"),
+        ("free_flow_speed_kmh", "Free-Flow v0 (km/h)"), ("free_flow_time_min_per_10km", "t0 (min/10km)"),
+        ("modelled_demand_vph_dir", "Demand V (vph/dir)"), ("reference_capacity_vph_dir", "Ref Cap C (vph/dir)"), ("vc_ratio", "V/C Ratio"),
+        ("bpr_uninterrupted_time_min_per_10km", "t_BPR (min/10km)"), ("bpr_uninterrupted_speed_kmh", "v_BPR (km/h)"),
+        ("bottleneck_and_control_delay_min_per_10km", "+d_adj (min/10km)"), ("bottleneck_delay_parameters", "Bottleneck / Control Delay Model"),
         ("congestion_level", "Congestion Level"), ("evidence_level", "Evidence Classification"),
         ("officially_published_corridor_benchmark", "Officially Published RTA/SRTA/TomTom Benchmark"),
-        ("modelled_assumptions_and_derivation", "Modelled BPR Derivation & Assumptions"),
+        ("modelled_assumptions_and_derivation", "Complete Two-Term BPR + Bottleneck Delay Derivation"),
         ("comparison_period", "2024 vs. 2026 Comparison"),
         ("source_report_title", "Substantiating Report Title"), ("source_url", "Report URL"),
         ("publication_date", "Pub Date"), ("source_id", "Source ID"), ("confidence", "Confidence")
@@ -1172,10 +1175,10 @@ def main():
     <div id="ev-arch" class="ev-panel">
       <div class="detail-card" style="line-height:1.6;">
         <h4>1. Dataset Identifier Range Reconciliation (`15` through `22` = 11 Distinct Datasets + 18-Table Spatial SQLite DB)</h4>
-        <p>Why do identifiers <code>15</code> through <code>22</code> (8 root numbers) yield <strong>11 new CSV/JSON datasets</strong>? Because identifier <code>21</code> (the Spatial Database package) is normalized into <strong>4 distinct spatial entity datasets (<code>21a</code>, <code>21b</code>, <code>21c</code>, <code>21d</code>)</strong> plus the 7 single-numbered datasets (<code>15</code>, <code>16</code>, <code>17</code>, <code>18</code>, <code>19</code>, <code>20</code>, <code>22</code>) = <strong>11 datasets (157 rows)</strong>, all compiled into <code>21_task2_spatial_database.sqlite</code> (18 tables) and <code>11_consolidated_database.sqlite</code> (29 tables, 1,496 total rows).</p>
+        <p>Why do identifiers <code>15</code> through <code>22</code> (8 root numbers) yield <strong>11 new CSV/JSON datasets</strong>? Because identifier <code>21</code> (the Spatial Database package) is normalized into <strong>4 distinct spatial entity datasets (<code>21a</code>, <code>21b</code>, <code>21c</code>, <code>21d</code>)</strong> plus the 7 single-numbered datasets (<code>15</code>, <code>16</code>, <code>17</code>, <code>18</code>, <code>19</code>, <code>20</code>, <code>22</code>) = <strong>11 datasets (157 rows)</strong>, all compiled into <code>21_task2_spatial_database.sqlite</code> (18 tables) and <code>11_consolidated_database.sqlite</code> (29 tables, 1,498 total rows).</p>
         <h4>2. Technical Architecture, Epistemic Methodology &amp; Community Digital Twin Roadmap (Sections 11, 16 &amp; 17)</h4>
-        <p><strong>Data Pipeline &amp; Spatial Reference Architecture:</strong> Task 1 + Task 2 Validated Repository (85 projects, 205 documents, 450 sources) → Normalized Relational &amp; Spatial Store (<code>21_task2_spatial_database.sqlite</code> / PostGIS-ready schema + <code>dubai_sharjah_gis_bundle.geojson</code> with 123 WGS84 <code>EPSG:4326</code> features and exact nearest-vertex Haversine distance math) → Deterministic Spatial &amp; Temporal Query Engine → Interactive 11-Layer Geospatial Map + Map-Linked Q&amp;A Layer.</p>
-        <p><strong>Strict Epistemic Guardrails (Zero Fabricated Telemetry &amp; Missing Data vs. Zero Congestion):</strong> Every road capacity separates <code>PUBLISHED_OFFICIAL</code> (RTA/SRTA statutory corridor capacities and upgrade travel-time reduction targets) from <code>HCM_7TH_EDITION_ESTIMATE</code>. TomTom Dubai Traffic Index (<code>SRC-436</code>, <code>https://www.tomtom.com/traffic-index/city/dubai/</code>) is used strictly at the city-wide level (<code>OBS-DXB-CITY-00</code>). All 21 corridor-level speed, volume, and congestion records (<code>OBS-DXB-001..015</code>, <code>OBS-SHJ-001..006</code>) are classified as <strong>Modelled Corridor Estimates</strong> derived via the BPR volume-delay function, and all daily HGV figures are classified as <strong>Scenario-Based Estimated Daily HGV Movements</strong> with 5 explicit modelling assumptions.</p>
+        <p><strong>Data Pipeline &amp; Spatial Reference Architecture:</strong> Task 1 + Task 2 Validated Repository (85 projects, 205 documents, 452 sources) → Normalized Relational &amp; Spatial Store (<code>21_task2_spatial_database.sqlite</code> / PostGIS-ready schema + <code>dubai_sharjah_gis_bundle.geojson</code> with 123 WGS84 <code>EPSG:4326</code> features and exact nearest-vertex Haversine distance math) → Deterministic Spatial &amp; Temporal Query Engine → Interactive 11-Layer Geospatial Map + Map-Linked Q&amp;A Layer.</p>
+        <p><strong>Strict Epistemic Guardrails (Zero Fabricated Telemetry &amp; Two-Term BPR + Bottleneck Delay Reproducibility):</strong> Every road capacity separates <code>PUBLISHED_OFFICIAL</code> (RTA/SRTA statutory corridor capacities and upgrade travel-time reduction targets) from <code>HCM_7TH_EDITION_ESTIMATE</code>. TomTom Dubai Traffic Index (<code>SRC-436</code>, <code>https://www.tomtom.com/traffic-index/city/dubai/</code>) is used strictly at the city-wide level (<code>OBS-DXB-CITY-00</code>: 31.3 km/h average speed, 19 min 10 sec per 10 km, 42.7% annual congestion, 26.3 km/h rush-hour average, 32.1 km/h AM rush, 22.6 km/h PM rush). All 21 corridor-level speed, volume, and congestion records (<code>OBS-DXB-001..015</code>, <code>OBS-SHJ-001..006</code>) are classified as <strong>Modelled Corridor Estimates</strong> derived via a fully reproducible <strong>Two-Term BPR Uninterrupted Link (<code>t_BPR, v_BPR</code>) + HCM Bottleneck/Control Delay (<code>+d_adj</code>) Model</strong>, and all daily HGV figures are classified as <strong>Scenario-Based Estimated Daily HGV Movements</strong> with 5 explicit modelling assumptions.</p>
       </div>
     </div>
   </section>
@@ -1708,7 +1711,8 @@ def main():
           </div>
           <div style="font-size:0.71rem; color:#fcd34d; margin-top:3px;"><strong>Classification:</strong> ${o.evidence_level} (${o.confidence}) | <strong>Scenario:</strong> ${o.measurement_period}</div>
           <div style="font-size:0.71rem; color:#34d399; margin-top:2px;"><strong>Officially Published Corridor Fact:</strong> ${o.officially_published_corridor_benchmark}</div>
-          <div style="font-size:0.71rem; color:#7dd3fc; margin-top:2px;"><strong>Modelled Speed/Volume Derivation:</strong> ${o.modelled_assumptions_and_derivation}</div>
+          <div style="font-size:0.71rem; color:#38bdf8; margin-top:2px;"><strong>Two-Term BPR + Bottleneck Breakdown:</strong> v₀=${o.free_flow_speed_kmh} km/h (t₀=${o.free_flow_time_min_per_10km} min/10km) | V/C=${o.vc_ratio} (${o.modelled_demand_vph_dir}/${o.reference_capacity_vph_dir} vph/dir) → <strong>Uninterrupted BPR: ${o.bpr_uninterrupted_speed_kmh} km/h (${o.bpr_uninterrupted_time_min_per_10km} min/10km)</strong> + <strong>Bottleneck/Control Delay (+d_adj): +${o.bottleneck_and_control_delay_min_per_10km} min/10km</strong> = <strong>${o.travel_time_min_per_10km} min/10km → ${o.average_speed_kmh} km/h</strong></div>
+          <div style="font-size:0.70rem; color:#7dd3fc; margin-top:2px;"><strong>Full Derivation:</strong> ${o.modelled_assumptions_and_derivation}</div>
           <div style="font-size:0.71rem; color:#e2e8f0; margin-top:2px;"><strong>Source Reference:</strong> ${srcHtml}</div>
           <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;"><strong>Modelled Congestion:</strong> ${o.congestion_level} | <strong>Modelled Vol:</strong> ${o.traffic_volume_vph}</div>
           <div style="font-size:0.70rem; color:var(--muted); margin-top:2px;"><strong>2024 vs 2026 Comparison:</strong> ${o.comparison_period}</div>
@@ -1831,8 +1835,8 @@ def main():
               <div class="kv-row">
                 <div class="kv-lbl">1. Officially Published RTA Capacity Benchmarks vs. Modelled Corridor Estimates</div>
                 <div class="kv-val">
-                  • <a href="javascript:void(0)" onclick="showRoadInspector('RD-DXB-05')"><strong>Hessa St (D61 West)</strong></a>: <strong>Officially Published RTA Fact (<code>SRC-433</code>):</strong> AED 689M upgrade widens D61 from 2 to 4 lanes/dir, doubling capacity from <strong>4,000 to 8,000 vph/dir</strong>. <strong>Modelled Corridor Estimate (BPR V/C = 1.04–1.10):</strong> <strong>~29 km/h AM Peak</strong> (20.7 min/10km) &amp; <strong>~25 km/h PM Peak</strong> (24.0 min/10km) vs. 80 km/h free-flow.<br/>
-                  • <a href="javascript:void(0)" onclick="showRoadInspector('RD-DXB-03')"><strong>Al Khail Rd (E44 JVC Segment)</strong></a>: <strong>Officially Published RTA Fact (<code>SRC-434</code>):</strong> AED 700M upgrade adds +15,000–19,600 vph capacity and cuts corridor travel time by <strong>30%</strong>. <strong>Modelled Corridor Estimate:</strong> <strong>~58–64 km/h (2026)</strong> vs. modelled ~41–46 km/h pre-upgrade.
+                  • <a href="javascript:void(0)" onclick="showRoadInspector('RD-DXB-05')"><strong>Hessa St (D61 West)</strong></a>: <strong>Officially Published RTA Fact (<code>SRC-433</code>):</strong> AED 689M upgrade widens D61 from 2 to 4 lanes/dir, doubling capacity from <strong>4,000 to 8,000 vph/dir</strong>. <strong>Modelled Corridor Estimate (Two-Term BPR + Bottleneck Delay):</strong> AM Peak V/C=1.04 → <code>v_BPR = 68.1 km/h</code> (8.81 min/10km) + <code>d_adj = +11.87 min/10km</code> queue/signal delay = <strong>20.68 min/10km → 29.0 km/h</strong>; PM Peak V/C=1.10 → <code>v_BPR = 65.6 km/h</code> (9.15 min/10km) + <code>d_adj = +14.85 min/10km</code> = <strong>24.00 min/10km → 25.0 km/h</strong>.<br/>
+                  • <a href="javascript:void(0)" onclick="showRoadInspector('RD-DXB-03')"><strong>Al Khail Rd (E44 JVC Segment)</strong></a>: <strong>Officially Published RTA Fact (<code>SRC-434</code>):</strong> AED 700M upgrade adds +15,000–19,600 vph capacity and cuts corridor travel time by <strong>30%</strong>. <strong>Modelled Corridor Estimate:</strong> AM Peak V/C=0.79 → <code>v_BPR = 93.6 km/h</code> (6.41 min/10km) + <code>d_adj = +2.97 min/10km</code> weaving delay = <strong>9.38 min/10km → 64.0 km/h</strong> (vs. modelled 58.0 km/h PM Peak).
                 </div>
               </div>
               <div class="kv-row">
@@ -1873,24 +1877,24 @@ def main():
               <div class="kv-row">
                 <div class="kv-lbl">0. Published City-Wide Reference Only (TomTom Dubai Traffic Index — OBS-DXB-CITY-00)</div>
                 <div class="kv-val">
-                  • <strong>TomTom City-Wide Aggregate (<a href="https://www.tomtom.com/traffic-index/city/dubai/" target="_blank" rel="noopener">SRC-436 ↗</a>):</strong> ~41 km/h metropolitan rush-hour average speed (~14.6 min/10km). <em>Used strictly at city level; never disaggregated to individual road segments.</em>
+                  • <strong>TomTom 2025 Dubai Traffic Index (<a href="https://www.tomtom.com/traffic-index/city/dubai/" target="_blank" rel="noopener">SRC-436 ↗</a>):</strong> <strong>31.3 km/h</strong> city-wide average speed (<strong>19 min 10 sec</strong> / 19.17 min per 10 km); <strong>42.7%</strong> annual congestion level; <strong>26.3 km/h</strong> overall rush-hour average speed; <strong>32.1 km/h</strong> morning rush-hour speed (18 min 40 sec per 10 km; 46% congestion); <strong>22.6 km/h</strong> evening rush-hour speed (26 min 35 sec per 10 km; 69% congestion). <em>Used strictly at city level; never disaggregated to individual road segments.</em>
                 </div>
               </div>
               <div class="kv-row">
                 <div class="kv-lbl">1. Hessa Street (D61 — JVC North Gate • Published RTA Capacity: 4,000 → 8,000 vph/dir)</div>
                 <div class="kv-val">
-                  • <strong>Morning Peak (07:30–09:30):</strong> Modelled ~29 km/h (20.7 min/10km; BPR V/C = 1.04 at ~4,150 vph/dir est. flow; HGVs banned).<br/>
-                  • <strong>Midday (12:00–14:00):</strong> Modelled ~48 km/h (12.5 min/10km; BPR V/C = 0.78 during permitted HGV delivery window).<br/>
-                  • <strong>Evening Peak (17:00–20:00):</strong> Modelled ~25 km/h (24.0 min/10km; BPR V/C = 1.10 at ~4,380 vph/dir est. inbound flow).<br/>
-                  • <strong>Night (22:00–05:00):</strong> Modelled ~68 km/h (8.8 min/10km; BPR V/C = 0.29 free-flow with overnight RTA bridge deck pours).<br/>
+                  • <strong>Morning Peak (07:30–09:30):</strong> <code>v_BPR = 68.1 km/h</code> (8.81 min/10km at V/C=1.04) + <code>d_adj = +11.87 min/10km</code> bottleneck/signal delay = <strong>20.68 min/10km → 29.0 km/h</strong> (HGVs banned).<br/>
+                  • <strong>Midday (12:00–14:00):</strong> <code>v_BPR = 75.8 km/h</code> (7.92 min/10km at V/C=0.78) + <code>d_adj = +4.58 min/10km</code> signal/HGV delay = <strong>12.50 min/10km → 48.0 km/h</strong>.<br/>
+                  • <strong>Evening Peak (17:00–20:00):</strong> <code>v_BPR = 65.6 km/h</code> (9.15 min/10km at V/C=1.10) + <code>d_adj = +14.85 min/10km</code> queue/signal delay = <strong>24.00 min/10km → 25.0 km/h</strong>.<br/>
+                  • <strong>Night (22:00–05:00):</strong> <code>v_BPR = 79.9 km/h</code> (7.51 min/10km at V/C=0.29) + <code>d_adj = +1.31 min/10km</code> = <strong>8.82 min/10km → 68.0 km/h</strong>.<br/>
                   • <strong>Modelled 2024 vs 2026 Delta:</strong> Modelled improvement from ~19–22 km/h (2024) to ~25–29 km/h as phased AED 689M flyovers open.
                 </div>
               </div>
               <div class="kv-row">
                 <div class="kv-lbl">2. Al Khail Road (E44 — Published RTA Benchmark: +15,000–19,600 vph &amp; 30% Travel-Time Reduction)</div>
                 <div class="kv-val">
-                  • <strong>Morning Peak:</strong> Modelled ~64 km/h (vs. modelled ~46 km/h in 2024 — calibrated to <strong>RTA's published 30% travel-time reduction</strong> post-AED 700M bridges).<br/>
-                  • <strong>Evening Peak:</strong> Modelled ~58 km/h mainline (BPR V/C = 0.86).
+                  • <strong>Morning Peak:</strong> <code>v_BPR = 93.6 km/h</code> (6.41 min/10km at V/C=0.79) + <code>d_adj = +2.97 min/10km</code> ramp-weave delay = <strong>9.38 min/10km → 64.0 km/h</strong> (calibrated to <strong>RTA's published 30% travel-time reduction</strong> post-AED 700M bridges).<br/>
+                  • <strong>Evening Peak:</strong> <code>v_BPR = 92.4 km/h</code> (6.49 min/10km at V/C=0.86) + <code>d_adj = +3.85 min/10km</code> weave delay = <strong>10.34 min/10km → 58.0 km/h</strong>.
                 </div>
               </div>
               <div class="kv-row">
@@ -2010,7 +2014,7 @@ def main():
               ${d61Obs.map(o => `
                 <div class="kv-row" style="cursor:pointer;" onclick="showRoadInspector('${o.road_id}')">
                   <div class="kv-lbl">${o.road_id} • ${o.time_period} (${o.evidence_level})</div>
-                  <div class="kv-val"><strong>Modelled Speed: ~${o.average_speed_kmh} km/h</strong> vs ${o.free_flow_speed_kmh} km/h free-flow (<strong>${o.travel_time_min_per_10km} min/10km</strong>)<br/><strong>Published Benchmark:</strong> <span style="color:#34d399;">${o.officially_published_corridor_benchmark}</span><br/><strong>Modelled Derivation:</strong> ${o.modelled_assumptions_and_derivation}<br/><strong>Modelled Volume:</strong> ${o.traffic_volume_vph}</div>
+                  <div class="kv-val"><strong>Corridor Speed: ~${o.average_speed_kmh} km/h</strong> (${o.travel_time_min_per_10km} min/10km) | <strong>Uninterrupted BPR: ${o.bpr_uninterrupted_speed_kmh} km/h</strong> (${o.bpr_uninterrupted_time_min_per_10km} min/10km at V/C=${o.vc_ratio}) + <strong>Bottleneck Delay (+d_adj): +${o.bottleneck_and_control_delay_min_per_10km} min/10km</strong><br/><strong>Published Benchmark:</strong> <span style="color:#34d399;">${o.officially_published_corridor_benchmark}</span><br/><strong>Modelled Derivation:</strong> ${o.modelled_assumptions_and_derivation}<br/><strong>Modelled Volume:</strong> ${o.traffic_volume_vph}</div>
                 </div>
               `).join("")}
             </div>

@@ -45,9 +45,9 @@
     "active_period": "2025-Q1 to 2029-Q3",
     "epistemic_tier": "Tier 4 — CONFIRMED_CAUSAL_ROW_IMPACT (Official RTA Infrastructure Work Zone Inside Corridor Right-of-Way)",
     "evidence_level": "Officially Published RTA/SRTA Capital Roadwork Zone (Work-Zone Speed Impact Modelled)",
-    "speed_and_capacity_impact": "Work-zone speed control (80 km/h) near Nad Al Hamar and Creek Harbour bridge piers; long-term upgrade increases corridor capacity to 10,000+ vph/dir.",
+    "speed_and_capacity_impact": "Work-zone speed control (80 km/h) near Nad Al Hamar and Creek Harbour bridge piers; long-term Sheikh Rashid bin Saeed Corridor upgrade widens Ras Al Khor Rd from 3 to 4 lanes/dir (published capacity 10,000 vph without /dir qualifier; travel time cut from 20 to 7 min [SRC-439]).",
     "mitigation_advice": "Use Rebat St (D83) or Al Khail Rd Business Bay Crossing during off-peak AED 4 Salik window.",
-    "source_id": "SRC-439",
+    "source_id": "SRC-439; SRC-451",
     "confidence": "Verified"
   },
   {

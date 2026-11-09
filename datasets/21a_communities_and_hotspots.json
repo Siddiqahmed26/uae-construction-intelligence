@@ -121,8 +121,8 @@
     "primary_road_corridors": "RD-DXB-11 (Ras Al Khor Rd E44/D62), RD-DXB-04 (Al Khail Rd E44 Business Bay Crossing)",
     "observed_congestion_severity": "High [Modelled Corridor Congestion Profile] (AM Peak westbound & PM Peak eastbound on Ras Al Khor Rd D62 & Nad Al Hamar interchange)",
     "construction_activity_index_score": "92.8 / 100 (Major Masterplan & Metro Infrastructure Hotspot)",
-    "activity_index_formula_and_limitations": "Combines 4.65M m² active residential/commercial GFA with AED 18B Dubai Metro Blue Line viaduct/tunnel civil works and AED 670M Ras Al Khor Rd widening.",
-    "source_id": "SRC-024; SRC-439",
+    "activity_index_formula_and_limitations": "Combines 4.65M m² active residential/commercial GFA with AED 20.5B Dubai Metro Blue Line viaduct/tunnel civil works (SRC-451) and Ras Al Khor Rd / Sheikh Rashid bin Saeed Corridor widening (SRC-439).",
+    "source_id": "SRC-024; SRC-439; SRC-451",
     "confidence": "Estimated (Verified DLD/Task 1 Project Counts Combined with Modelled Corridor Congestion & Weighted Activity Index)"
   },
   {
@@ -206,7 +206,7 @@
     "observed_congestion_severity": "Moderate to High [Modelled Corridor Congestion Profile] (Peak bottleneck at Hessa St D61 / E311 and Umm Suqeim D63 / E311 interchanges)",
     "construction_activity_index_score": "93.4 / 100 (#1 Master-Planned Villa & Lagoon Community Construction Belt)",
     "activity_index_formula_and_limitations": "Reflects 34,800 scheduled villa/townhouse/apartment units across 5 contiguous masterplans between E311 and E611.",
-    "source_id": "SRC-023; SRC-440",
+    "source_id": "SRC-023; SRC-440; SRC-452",
     "confidence": "Estimated (Verified DLD/Task 1 Project Counts Combined with Modelled Corridor Congestion & Weighted Activity Index)"
   },
   {

@@ -85,8 +85,8 @@
     "connected_road_ids": "RD-DXB-11, RD-DXB-04",
     "served_project_ids": "PRJ-D3 (Dubai Creek Harbour & Creek Tower), PRJ-D8 (Dubai Metro Blue Line), PRJ-D17 (Sobha Hartland II)",
     "peak_level_of_service": "Modelled LOS D (Active roadwork zone for Ras Al Khor widening & Metro Blue Line viaduct piers)",
-    "rta_upgrade_and_mitigation": "RTA widening Ras Al Khor Rd to 6 lanes + constructing dedicated Creek Harbour access bridges (capacity up to 10,000–30,000 vph).",
-    "source_id": "SRC-439",
+    "rta_upgrade_and_mitigation": "RTA widening Ras Al Khor Rd from 3 to 4 lanes per direction (published capacity 10,000 vph without /dir qualifier; travel time cut from 20 to 7 min [SRC-439]) + intersection bridges up to 30,000 vph.",
+    "source_id": "SRC-439; SRC-451",
     "confidence": "Corroborated (Verified RTA/SRTA Bridge/Upgrade Location; Modelled Peak LOS)"
   },
   {
