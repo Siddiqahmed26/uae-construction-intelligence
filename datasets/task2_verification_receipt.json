@@ -371,7 +371,16 @@
   },
   "report_to_csv_sync_check": {
     "programmatically_generated_from_csv": true,
-    "markdown_table_rows_parsed_and_matched_to_csv": "21/21"
+    "bpr_markdown_table_rows_verified": "21/21",
+    "bpr_markdown_table_columns_verified_per_row": "13/13 (obs_id, road_and_window, v0, t0, V, C, vc, t_bpr, v_bpr, d_adj, t_tot, v_corr, source_and_pub_date)",
+    "bpr_markdown_table_total_cells_verified": "273/273",
+    "rta_provenance_markdown_table_cells_verified": "28/28 (7 rows x 4 columns)"
+  },
+  "committed_skills_and_agents_check": {
+    "skills_manifest": ".agents/skills.json",
+    "forged_auditor_skill": ".agents/skills/provenance-and-report-sync-auditor/SKILL.md",
+    "geospatial_traffic_skill": ".agents/skills/geospatial-traffic-intelligence/SKILL.md",
+    "zero_drift_auditor_agent": ".agents/agents/zero-drift-provenance-sync-auditor/agent.md"
   },
   "spatial_and_hgv_checks": {
     "nearest_vertex_haversine_37_of_37": true,

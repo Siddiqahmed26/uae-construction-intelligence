@@ -1,0 +1,16 @@
+{
+  "entries": [
+    {
+      "path": "~/.gemini/antigravity/scratch/skillos/vault",
+      "include_only": [
+        "geospatial-traffic-intelligence",
+        "playwright-cli",
+        "provenance-and-report-sync-auditor",
+        "review-delta",
+        "tinyfish-deep-research",
+        "use-tinyfish",
+        "web-crawling-scraping"
+      ]
+    }
+  ]
+}
