@@ -17,7 +17,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326) & DLTM (Dubai Local Transverse Mercator)",
     "historical_data_availability": "Yes (2020–2026 published annual/quarterly benchmarks; 5-year archive in RTA Data Drive)",
     "suitability_for_prototype": "High — Primary official baseline for Dubai highway and arterial traffic volumes and peak-period comparisons.",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-450"
   },
   {
     "dataset_id": "TDS-02",
@@ -37,7 +38,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326)",
     "historical_data_availability": "Yes (2020–2026 quarterly gate volumes and pre/post dynamic pricing elasticity metrics)",
     "suitability_for_prototype": "High — Anchors observed traffic redistribution between E11 Sheikh Zayed Rd and E44 Al Khail Rd / Business Bay Crossing.",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-435"
   },
   {
     "dataset_id": "TDS-03",
@@ -57,7 +59,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326)",
     "historical_data_availability": "Yes (Pre-upgrade 2023/2024 vs. 2025/2026 post-upgrade capacity and travel-time benchmarks)",
     "suitability_for_prototype": "High — Essential for non-fabricated statutory road capacities and Confirmed Causal Impact (Tier 4) roadwork attributions.",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-433"
   },
   {
     "dataset_id": "TDS-04",
@@ -77,7 +80,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326)",
     "historical_data_availability": "Yes (Multi-year historical incident records 2019–2026)",
     "suitability_for_prototype": "High — Supports Layer 7 (Traffic Incidents & Roadworks) and hotspot delay attribution.",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-450"
   },
   {
     "dataset_id": "TDS-05",
@@ -97,7 +101,8 @@
     "coordinate_reference_system": "Community/Plot linked to Makani & WGS84 (EPSG:4326)",
     "historical_data_availability": "Yes (Complete historical project lifecycle registry 2008–2026)",
     "suitability_for_prototype": "High — Direct statutory backbone for Use Case 1 (Dubai construction hotspots) and Use Case 2 (JVC active project density).",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-006"
   },
   {
     "dataset_id": "TDS-06",
@@ -117,7 +122,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326) & DLTM (EPSG:3997)",
     "historical_data_availability": "Yes (Quarterly building permit counts 2018–2026)",
     "suitability_for_prototype": "High — Provides official community polygons for Layer 3 (Community Boundaries) and Use Case 1/2.",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-007"
   },
   {
     "dataset_id": "TDS-07",
@@ -137,7 +143,8 @@
     "coordinate_reference_system": "N/A (Engineering parameter table applied to WGS84 project sites)",
     "historical_data_availability": "N/A (Reference engineering standard)",
     "suitability_for_prototype": "High — Provides the documented mathematical formula for Tier 3 (Modelled Construction Impact) without inventing arbitrary scores.",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-448"
   },
   {
     "dataset_id": "TDS-08",
@@ -157,7 +164,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326)",
     "historical_data_availability": "Yes (2021–2026 regulatory schedules)",
     "suitability_for_prototype": "High — Explains why concrete/rebar HGV deliveries surge during Midday (10:00–13:00) and Night (22:00–05:00) windows while commuter cars dominate AM/PM peaks.",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-437"
   },
   {
     "dataset_id": "TDS-09",
@@ -177,7 +185,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326)",
     "historical_data_availability": "Yes (OSM history snapshots)",
     "suitability_for_prototype": "High — Primary source for verified WGS84 road centerline geometries, intersections, and network topology.",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-450"
   },
   {
     "dataset_id": "TDS-10",
@@ -197,7 +206,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326) & Web Mercator (EPSG:3857)",
     "historical_data_availability": "Restricted (Published city-level Traffic Index is open; road-segment historical queries require separate paid TomTom Move license)",
     "suitability_for_prototype": "High — Best-in-class commercial provider for real-time speed/incident overlays; published TomTom Index benchmarks integrated into prototype.",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-436"
   },
   {
     "dataset_id": "TDS-11",
@@ -217,7 +227,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326)",
     "historical_data_availability": "Yes (2019–2026 station-level ridership)",
     "suitability_for_prototype": "High — Powers Layer 8 (Transport Infrastructure) and transit-oriented mitigation analysis.",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-439"
   },
   {
     "dataset_id": "TDS-12",
@@ -237,7 +248,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326)",
     "historical_data_availability": "Yes (2023–2026 quarterly occupancy and bay count series)",
     "suitability_for_prototype": "High — Directly supports Work Package A8 and Layer 10 (Parking Facilities).",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-449"
   },
   {
     "dataset_id": "TDS-13",
@@ -257,7 +269,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326)",
     "historical_data_availability": "Partial (Annual network expansion totals)",
     "suitability_for_prototype": "Medium-High — Supports Priority 3 Secondary Mobility & Digital Twin layers (EV + delivery-bike logistics).",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-449"
   },
   {
     "dataset_id": "TDS-14",
@@ -277,7 +290,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326)",
     "historical_data_availability": "Partial (Project milestone history 2022–2026)",
     "suitability_for_prototype": "High — Core foundation for Priority 2 (Sharjah Expansion).",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-444"
   },
   {
     "dataset_id": "TDS-15",
@@ -297,7 +311,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326) & UTM Zone 40N (EPSG:32640)",
     "historical_data_availability": "No public historical time-series",
     "suitability_for_prototype": "High — Validates Sharjah community boundaries and masterplan road connections (`PRJ-SH1..12`).",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-447"
   },
   {
     "dataset_id": "TDS-16",
@@ -317,7 +332,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326)",
     "historical_data_availability": "Yes (2020–2025 annual federal highway statistics)",
     "suitability_for_prototype": "High — Links Dubai and Sharjah federal trunk corridors (`E11`, `E311`, `E611`).",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-437"
   },
   {
     "dataset_id": "TDS-17",
@@ -337,7 +353,8 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326)",
     "historical_data_availability": "Restricted (Requires separate HERE Historical Traffic Analytics license)",
     "suitability_for_prototype": "Medium-High — Documented in Work Package A4 provider comparison matrix.",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-450"
   },
   {
     "dataset_id": "TDS-18",
@@ -357,6 +374,7 @@
     "coordinate_reference_system": "WGS84 (EPSG:4326) & UTM Zone 40N (EPSG:32640)",
     "historical_data_availability": "Yes (Full multi-stage project status history 2018–2026)",
     "suitability_for_prototype": "High — Mandatory primary source for all construction project records in Task 2 (Section A5).",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-450"
   }
 ]

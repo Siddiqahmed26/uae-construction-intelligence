@@ -44,7 +44,7 @@
       ]
     ],
     "served_communities": "Sheikh Zayed Road, DIFC, Downtown Dubai, Business Bay, Al Barsha, Dubai Marina, Palm Jumeirah",
-    "source_id": "SRC-022",
+    "source_id": "SRC-435",
     "confidence": "Verified"
   },
   {
@@ -84,7 +84,7 @@
       ]
     ],
     "served_communities": "Palm Jebel Ali, Jebel Ali Industrial, Dubai Waterfront, Dubai Marina South",
-    "source_id": "SRC-022",
+    "source_id": "SRC-435",
     "confidence": "Verified"
   },
   {
@@ -124,7 +124,7 @@
       ]
     ],
     "served_communities": "Jumeirah Village Circle (JVC), Jumeirah Village Triangle (JVT), Dubai Hills Estate, Al Barsha South, Al Quoz",
-    "source_id": "SRC-023",
+    "source_id": "SRC-434",
     "confidence": "Verified"
   },
   {
@@ -164,7 +164,7 @@
       ]
     ],
     "served_communities": "Business Bay, Downtown Dubai, MBR City / Meydan, Sobha Hartland, Dubai Design District (d3), Festival City",
-    "source_id": "SRC-023",
+    "source_id": "SRC-434",
     "confidence": "Verified"
   },
   {
@@ -200,7 +200,7 @@
       ]
     ],
     "served_communities": "Jumeirah Village Circle (JVC), Al Barsha, Barsha Heights (Tecom), Dubai Science Park",
-    "source_id": "SRC-022",
+    "source_id": "SRC-433",
     "confidence": "Verified"
   },
   {
@@ -236,7 +236,7 @@
       ]
     ],
     "served_communities": "Jumeirah Village Circle (JVC), Dubai Sports City, Motor City, Tilal Al Ghaf (PRJ-D19), DAMAC Lagoons (PRJ-D16)",
-    "source_id": "SRC-022",
+    "source_id": "SRC-433",
     "confidence": "Corroborated"
   },
   {
@@ -284,7 +284,7 @@
       ]
     ],
     "served_communities": "Jumeirah Village Circle (JVC Districts 10, 11, 12, 13, 14, 15, 16, 17, 18)",
-    "source_id": "SRC-022",
+    "source_id": "SRC-441",
     "confidence": "Estimated"
   },
   {
@@ -328,7 +328,7 @@
       ]
     ],
     "served_communities": "Dubai South, Expo City, JVC South, Motor City, Tilal Al Ghaf, The Oasis, Global Village, International City",
-    "source_id": "SRC-022",
+    "source_id": "SRC-437",
     "confidence": "Verified"
   },
   {
@@ -372,7 +372,7 @@
       ]
     ],
     "served_communities": "Dubai South (DWC PRJ-D1, Azizi Venice PRJ-D15), The Heights (PRJ-D6), Grand Polo (PRJ-D7), The Oasis (PRJ-D5), Al Marmoom",
-    "source_id": "SRC-023",
+    "source_id": "SRC-437",
     "confidence": "Verified"
   },
   {
@@ -412,7 +412,7 @@
       ]
     ],
     "served_communities": "Dubai Hills Estate, Al Barsha South, Arjan, Motor City, Arabian Ranches, Tilal Al Ghaf, DAMAC Hills",
-    "source_id": "SRC-022",
+    "source_id": "SRC-440",
     "confidence": "Verified"
   },
   {
@@ -452,7 +452,7 @@
       ]
     ],
     "served_communities": "Dubai Creek Harbour (PRJ-D3), Sobha Hartland II / Bukadra (PRJ-D17), Ras Al Khor, Nad Al Hamar, International City",
-    "source_id": "SRC-023",
+    "source_id": "SRC-439",
     "confidence": "Verified"
   },
   {
@@ -488,7 +488,7 @@
       ]
     ],
     "served_communities": "DIFC Zabeel District (PRJ-D20), Downtown Dubai, Business Bay (PRJ-D11), Burj Azizi Corridor (PRJ-D10)",
-    "source_id": "SRC-022",
+    "source_id": "SRC-438",
     "confidence": "Verified"
   },
   {
@@ -524,7 +524,7 @@
       ]
     ],
     "served_communities": "Business Bay (PRJ-D11 Burj Binghatti Jacob & Co, Canal Front Towers)",
-    "source_id": "SRC-022",
+    "source_id": "SRC-438",
     "confidence": "Estimated"
   },
   {
@@ -564,7 +564,7 @@
       ]
     ],
     "served_communities": "Dubai Islands (PRJ-D4), Deira, Mina Rashid, DXB Airport, Al Rashidiya",
-    "source_id": "SRC-022",
+    "source_id": "SRC-443",
     "confidence": "Verified"
   },
   {
@@ -600,7 +600,7 @@
       ]
     ],
     "served_communities": "Dubai South, Al Maktoum International Airport DWC (PRJ-D1), Expo City Dubai (PRJ-D18), Azizi Venice (PRJ-D15)",
-    "source_id": "SRC-021",
+    "source_id": "SRC-442",
     "confidence": "Verified"
   },
   {
@@ -631,12 +631,12 @@
         25.098
       ],
       [
-        55.139,
-        25.1124
+        55.1372,
+        25.1112
       ]
     ],
     "served_communities": "Dubai Marina (PRJ-D12, PRJ-D13), Palm Jumeirah (PRJ-D14), Dubai Harbour, JBR",
-    "source_id": "SRC-022",
+    "source_id": "SRC-443",
     "confidence": "Estimated"
   },
   {
@@ -672,13 +672,13 @@
       ]
     ],
     "served_communities": "Muwaileh, Aljada (PRJ-SH2), Al Zahia (PRJ-SH9), Al Mamsha & Olfah (PRJ-SH6, PRJ-SH8)",
-    "source_id": "SRC-091",
+    "source_id": "SRC-444",
     "confidence": "Verified"
   },
   {
     "road_id": "RD-SHJ-02",
     "road_code": "E611-SHJ-MASAAR",
-    "road_name": "Emirates Road (E611) — Sharjah Al Rahmaniya, Masaar, Tilal City & KBS City Corridor",
+    "road_name": "Emirates Road (E611) — Sharjah Al Rahmaniya, Masaar, Tilal City & Hayyan Corridor",
     "emirate": "Sharjah",
     "road_type": "Primary Federal Outer Freeway (FRC0)",
     "authority": "Sharjah Roads and Transport Authority (SRTA) / MOEI",
@@ -686,7 +686,7 @@
     "lanes_per_direction": 5,
     "capacity_vph_per_dir": "9,500 vph/dir [Published MOEI 5-Lane Outer Corridor Capacity]",
     "capacity_basis": "PUBLISHED_OFFICIAL (MOEI / SRTA Emirates Road E611 Specification)",
-    "direction": "Bidirectional (Dubai E611 Border ↔ Tilal City PRJ-SH7, Masaar PRJ-SH3, Hayyan PRJ-SH6, Sharjah Sustainable City PRJ-SH10 & Khalid Bin Sultan City PRJ-SH5)",
+    "direction": "Bidirectional (Dubai E611 Border ↔ Tilal City PRJ-SH7, Masaar PRJ-SH3, Hayyan PRJ-SH6 & Sharjah Sustainable City PRJ-SH10)",
     "hgv_truck_ban_window": "Primary 24/7 inter-emirate heavy logistics corridor (localized peak controls at Al Badiyah interchange)",
     "salik_toll_status": "Toll-free federal highway",
     "geometry_wgs84": [
@@ -695,8 +695,8 @@
         25.235
       ],
       [
-        55.558,
-        25.272
+        55.576,
+        25.274
       ],
       [
         55.588,
@@ -707,8 +707,8 @@
         25.335
       ]
     ],
-    "served_communities": "Masaar (PRJ-SH3), Tilal City (PRJ-SH7), Hayyan (PRJ-SH6), Sharjah Sustainable City (PRJ-SH10), Khalid Bin Sultan City (PRJ-SH5), Jawaher Medical District (PRJ-SH12)",
-    "source_id": "SRC-091",
+    "served_communities": "Masaar (PRJ-SH3), Tilal City (PRJ-SH7), Hayyan (PRJ-SH6), Sharjah Sustainable City (PRJ-SH10)",
+    "source_id": "SRC-445",
     "confidence": "Verified"
   },
   {
@@ -739,12 +739,16 @@
         25.328
       ],
       [
+        55.552,
+        25.332
+      ],
+      [
         55.565,
         25.335
       ]
     ],
     "served_communities": "Aljada (PRJ-SH2), Muwaileh, University City, Sharjah Sustainable City (PRJ-SH10)",
-    "source_id": "SRC-091",
+    "source_id": "SRC-445",
     "confidence": "Verified"
   },
   {
@@ -767,8 +771,8 @@
         25.302
       ],
       [
-        55.358,
-        25.321
+        55.3605,
+        25.3198
       ],
       [
         55.372,
@@ -780,7 +784,127 @@
       ]
     ],
     "served_communities": "Al Khan, Al Mamzar, Maryam Island (PRJ-SH4), Al Taawun",
-    "source_id": "SRC-091",
+    "source_id": "SRC-444",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-SHJ-05",
+    "road_code": "E102-S142-MALIHA-WEST",
+    "road_name": "Maliha–Khorfakkan Highway (E102 / S142 West) — Tilal City, Masaar, KBS City & BEEAH Hub Corridor",
+    "emirate": "Sharjah",
+    "road_type": "Primary East-West Strategic Arterial & Inter-Regional Highway (FRC0/FRC1)",
+    "authority": "Sharjah Roads and Transport Authority (SRTA) / MOEI",
+    "speed_limit_kmh": "100–120 km/h (Published SRTA / MOEI Statutory Limit)",
+    "lanes_per_direction": 4,
+    "capacity_vph_per_dir": "7,600 vph/dir [Published SRTA / MOEI 4-Lane Divided Highway Capacity along Al Suyoh–Rodhat Al Qrt segment]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (SRTA Maliha Road E102 & S142 West Corridor Specification)",
+    "direction": "Bidirectional (E611 Al Badiyah Interchange ↔ Tilal City PRJ-SH7, Masaar PRJ-SH3, Jawaher Boston Medical / BEEAH Hub PRJ-SH12 & Khalid Bin Sultan City PRJ-SH5)",
+    "hgv_truck_ban_window": "Permitted strategic construction & regional freight corridor; localized peak signal/interchange controls at Al Badiyah",
+    "salik_toll_status": "Toll-free regional highway",
+    "geometry_wgs84": [
+      [
+        55.565,
+        25.258
+      ],
+      [
+        55.592,
+        25.2655
+      ],
+      [
+        55.622,
+        25.278
+      ],
+      [
+        55.6515,
+        25.2935
+      ],
+      [
+        55.6645,
+        25.2885
+      ]
+    ],
+    "served_communities": "Tilal City (PRJ-SH7), Masaar (PRJ-SH3), Khalid Bin Sultan City (PRJ-SH5), Jawaher Boston Medical District & BEEAH Hub (PRJ-SH12)",
+    "source_id": "SRC-446",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-SHJ-06",
+    "road_code": "S142-KHORFAKKAN-COAST",
+    "road_name": "Sharjah–Khorfakkan Highway (S142 East Coast Approach) & Khorfakkan Corniche / Rugaylat Road",
+    "emirate": "Sharjah",
+    "road_type": "Eastern Coast Mountain-to-Coast Highway & Waterfront Arterial (FRC1)",
+    "authority": "Sharjah Roads and Transport Authority (SRTA) / Sharjah Directorate of Public Works (SDPW)",
+    "speed_limit_kmh": "80–100 km/h (Published SRTA Limit; 80 km/h through tunnel/coastal approach)",
+    "lanes_per_direction": 2,
+    "capacity_vph_per_dir": "3,800 vph/dir [Published SDPW / SRTA AED 6B Sharjah–Khorfakkan 89 km Highway 2-Lane Dual Carriageway Specification]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (SRTA / SDPW Sharjah–Khorfakkan Highway S142 & Khorfakkan Corniche Specification)",
+    "direction": "Bidirectional (S142 Al Sidra/Al Multaqa Tunnels ↔ Khorfakkan Corniche, Khorfakkan Beach Resort PRJ-SH11 & Kalba E99)",
+    "hgv_truck_ban_window": "Heavy trucks restricted on mountain tunnel tourist peaks; coastal construction deliveries staged via E99/S142 off-peak windows",
+    "salik_toll_status": "Toll-free eastern region highway",
+    "geometry_wgs84": [
+      [
+        56.315,
+        25.332
+      ],
+      [
+        56.338,
+        25.3355
+      ],
+      [
+        56.3535,
+        25.3375
+      ],
+      [
+        56.3595,
+        25.3445
+      ],
+      [
+        56.363,
+        25.358
+      ]
+    ],
+    "served_communities": "Khorfakkan Beach Resort, Jabal Resort & Kalba Waterfront Masterplan (PRJ-SH11)",
+    "source_id": "SRC-446",
+    "confidence": "Verified"
+  },
+  {
+    "road_id": "RD-SHJ-07",
+    "road_code": "E11-SHJ-ALHAMRIYAH",
+    "road_name": "Al Ittihad Road North (E11) — Al Hamriyah & Sharjah Waterfront City Coastal Corridor",
+    "emirate": "Sharjah",
+    "road_type": "Northern Coastal Primary Arterial Highway (FRC1)",
+    "authority": "Sharjah Roads and Transport Authority (SRTA) / MOEI",
+    "speed_limit_kmh": "100 km/h (Published SRTA / MOEI Limit)",
+    "lanes_per_direction": 3,
+    "capacity_vph_per_dir": "5,700 vph/dir [Published MOEI / SRTA 3-Lane Northern Coastal Dual-Carriageway Capacity]",
+    "capacity_basis": "PUBLISHED_OFFICIAL (SRTA / MOEI Northern E11 Al Hamriyah Coastal Corridor Specification)",
+    "direction": "Bidirectional (Ajman/Sharjah Border ↔ Al Hamriyah, Sharjah Waterfront City PRJ-SH1 & Umm Al Quwain E11)",
+    "hgv_truck_ban_window": "Permitted off-peak coastal construction haulage; Al Hamriyah Port industrial access",
+    "salik_toll_status": "Toll-free northern coastal highway",
+    "geometry_wgs84": [
+      [
+        55.455,
+        25.435
+      ],
+      [
+        55.482,
+        25.462
+      ],
+      [
+        55.502,
+        25.483
+      ],
+      [
+        55.5145,
+        25.4925
+      ],
+      [
+        55.535,
+        25.512
+      ]
+    ],
+    "served_communities": "Sharjah Waterfront City (PRJ-SH1), Al Hamriyah Coastal Zone",
+    "source_id": "SRC-447",
     "confidence": "Verified"
   }
 ]

@@ -28,7 +28,7 @@
         "observed_congestion_severity": "Severe (AM Peak 07:30–09:30 & PM Peak 17:00–20:00 on Hessa St D61 & Al Khail Rd E44 slip ramps)",
         "construction_activity_index_score": "94.5 / 100 (Rank #1 High-Density Mid-Rise/High-Rise Construction Hotspot in Dubai)",
         "activity_index_formula_and_limitations": "Formula: CAI = 0.35*(Active_Units / 30,000) + 0.35*(Active_Structural_GFA_m2 / 4,000,000) + 0.30*(Active_Towers / 70) * 100. Limitation: Reflects spatial concentration of simultaneous multi-developer vertical construction; does not by itself prove causal share of Hessa St commuter congestion.",
-        "source_id": "SRC-016",
+        "source_id": "SRC-020; SRC-433",
         "confidence": "Verified",
         "layer": "L01_communities"
       },
@@ -80,7 +80,7 @@
         "observed_congestion_severity": "High to Severe (PM Peak 17:00–20:00 on Financial Centre Rd D71, Al Amal St & Al Khail Rd E44)",
         "construction_activity_index_score": "91.2 / 100 (Rank #1 Supertall & CBD Construction Hotspot)",
         "activity_index_formula_and_limitations": "Formula: Weighted active structural GFA (3.85M m² across supertall towers up to 133 floors) + active tower count. Limitation: CBD congestion is heavily driven by 400k+ daily office/retail commuters; heavy construction trucks are restricted to 22:00–06:00 night windows.",
-        "source_id": "SRC-016",
+        "source_id": "SRC-021; SRC-438",
         "confidence": "Verified",
         "layer": "L01_communities"
       },
@@ -132,7 +132,7 @@
         "observed_congestion_severity": "High (AM Peak westbound & PM Peak eastbound on Ras Al Khor Rd D62 & Nad Al Hamar interchange)",
         "construction_activity_index_score": "92.8 / 100 (Major Masterplan & Metro Infrastructure Hotspot)",
         "activity_index_formula_and_limitations": "Combines 4.65M m² active residential/commercial GFA with AED 18B Dubai Metro Blue Line viaduct/tunnel civil works and AED 670M Ras Al Khor Rd widening.",
-        "source_id": "SRC-016",
+        "source_id": "SRC-024; SRC-439",
         "confidence": "Verified",
         "layer": "L01_communities"
       },
@@ -184,7 +184,7 @@
         "observed_congestion_severity": "Low to Moderate (High highway reserve capacity on 12-lane E311/E611/E77; localized heavy HGV freight activity)",
         "construction_activity_index_score": "96.0 / 100 (#1 Megaproject Earthworks & Aviation/Residential CapEx Zone in UAE)",
         "activity_index_formula_and_limitations": "Highest active construction GFA (7.85M m²) and HGV concrete/earthworks volume in Dubai, but lowest passenger-car congestion due to direct 24/7 E611/E77 freight access.",
-        "source_id": "SRC-016",
+        "source_id": "SRC-022; SRC-442",
         "confidence": "Verified",
         "layer": "L01_communities"
       },
@@ -236,7 +236,7 @@
         "observed_congestion_severity": "Moderate to High (Peak bottleneck at Hessa St D61 / E311 and Umm Suqeim D63 / E311 interchanges)",
         "construction_activity_index_score": "93.4 / 100 (#1 Master-Planned Villa & Lagoon Community Construction Belt)",
         "activity_index_formula_and_limitations": "Reflects 34,800 scheduled villa/townhouse/apartment units across 5 contiguous masterplans between E311 and E611.",
-        "source_id": "SRC-016",
+        "source_id": "SRC-023; SRC-440",
         "confidence": "Verified",
         "layer": "L01_communities"
       },
@@ -288,7 +288,7 @@
         "observed_congestion_severity": "High (Evening & weekend leisure/commuter congestion on D94 Marina ring and Palm Jumeirah gateway)",
         "construction_activity_index_score": "82.5 / 100 (Ultra-Luxury Supertall & Coastal Reclamation Zone)",
         "activity_index_formula_and_limitations": "Marina supertalls operate on tight infill plots with strict overnight concrete delivery windows; Palm Jebel Ali marine/bridge works access directly from E11 South.",
-        "source_id": "SRC-016",
+        "source_id": "SRC-025; SRC-443",
         "confidence": "Verified",
         "layer": "L01_communities"
       },
@@ -340,7 +340,7 @@
         "observed_congestion_severity": "Moderate (Relieved by RTA 12-lane Infinity Bridge & Al Khaleej Street Tunnel project)",
         "construction_activity_index_score": "79.8 / 100 (Major Coastal Island Masterplan)",
         "activity_index_formula_and_limitations": "Island access is concentrated on Al Khaleej St (D92) bridges; RTA is currently constructing a new direct bridge from Bur Dubai/Al Khaleej St to Dubai Islands.",
-        "source_id": "SRC-016",
+        "source_id": "SRC-025; SRC-443",
         "confidence": "Verified",
         "layer": "L01_communities"
       },
@@ -392,7 +392,7 @@
         "observed_congestion_severity": "Severe (AM Peak southbound toward Dubai on E311 & PM Peak northbound + University City/Muwaileh school-commercial traffic)",
         "construction_activity_index_score": "90.6 / 100 (#1 Construction & Commuter Hotspot in Sharjah)",
         "activity_index_formula_and_limitations": "Concentrates >22,000 active units (Aljada, Al Zahia, Al Mamsha, Olfah) directly at the E311 / University City Rd / Airport Rd E88 nexus.",
-        "source_id": "SRC-091",
+        "source_id": "SRC-026; SRC-444",
         "confidence": "Verified",
         "layer": "L01_communities"
       },
@@ -440,11 +440,11 @@
         "active_towers_and_buildings": 68,
         "scheduled_units_2025_2029": 18600,
         "active_structural_gfa_sqm": 2950000,
-        "primary_road_corridors": "RD-SHJ-02 (Emirates Rd E611), RD-SHJ-03 (Al Dhaid Rd E88)",
-        "observed_congestion_severity": "Moderate (High capacity on E611; localized evening queues at Al Badiyah / Maliha E102 & Al Dhaid E88 interchanges)",
+        "primary_road_corridors": "RD-SHJ-02 (Emirates Rd E611), RD-SHJ-03 (Al Dhaid Rd E88), RD-SHJ-05 (Maliha–Khorfakkan Rd E102/S142)",
+        "observed_congestion_severity": "Moderate (High capacity on E611/E102; localized evening queues at Al Badiyah / Maliha E102 & Al Dhaid E88 interchanges)",
         "construction_activity_index_score": "86.4 / 100 (#1 Master-Planned Villa & Eco-City Growth Corridor in Sharjah)",
-        "activity_index_formula_and_limitations": "6 major masterplans (Masaar, Tilal, Hayyan, Sustainable City, KBS City, Jawaher Medical) feed directly onto Emirates Rd E611.",
-        "source_id": "SRC-091",
+        "activity_index_formula_and_limitations": "6 major masterplans (Masaar, Tilal, Hayyan, Sustainable City, KBS City, Jawaher Medical) feed directly onto Emirates Rd E611 and Maliha Rd E102.",
+        "source_id": "SRC-027; SRC-445",
         "confidence": "Verified",
         "layer": "L01_communities"
       },
@@ -496,7 +496,7 @@
         "observed_congestion_severity": "Severe (Cross-border Sharjah–Dubai AM/PM peak commuter bottleneck at Al Khan / Al Taawun / Al Mamzar E11)",
         "construction_activity_index_score": "76.2 / 100 (High-Friction Cross-Border Waterfront Hotspot)",
         "activity_index_formula_and_limitations": "Even moderate construction truck volume at Maryam Island interacts with extreme baseline E11/Al Taawun commuter congestion.",
-        "source_id": "SRC-091",
+        "source_id": "SRC-116; SRC-444",
         "confidence": "Verified",
         "layer": "L01_communities"
       },
@@ -546,7 +546,7 @@
         "hgv_truck_ban_window": "Banned 06:00–22:00 daily (16-hour HGV prohibition; overnight 22:00–06:00 permit only)",
         "salik_toll_status": "Active Dynamic Toll (Al Safa North & South, Al Barsha, Trade Centre — AED 6 Peak / AED 4 Off-Peak / AED 0 Night)",
         "served_communities": "Sheikh Zayed Road, DIFC, Downtown Dubai, Business Bay, Al Barsha, Dubai Marina, Palm Jumeirah",
-        "source_id": "SRC-022",
+        "source_id": "SRC-435",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -602,7 +602,7 @@
         "hgv_truck_ban_window": "Peak restrictions 06:30–08:30 & 17:30–20:00; dedicated Jebel Ali Port freight interchanges",
         "salik_toll_status": "Jebel Ali Toll Gate (AED 6 Peak / AED 4 Off-Peak)",
         "served_communities": "Palm Jebel Ali, Jebel Ali Industrial, Dubai Waterfront, Dubai Marina South",
-        "source_id": "SRC-022",
+        "source_id": "SRC-435",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -650,7 +650,7 @@
         "hgv_truck_ban_window": "Banned during 3 peak windows: 06:30–08:30, 13:00–15:00, 17:30–20:00",
         "salik_toll_status": "Toll-free on JVC–Al Quoz segment (Business Bay Crossing gate lies further north)",
         "served_communities": "Jumeirah Village Circle (JVC), Jumeirah Village Triangle (JVT), Dubai Hills Estate, Al Barsha South, Al Quoz",
-        "source_id": "SRC-023",
+        "source_id": "SRC-434",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -698,7 +698,7 @@
         "hgv_truck_ban_window": "Banned 06:30–08:30, 13:00–15:00, 17:30–20:00",
         "salik_toll_status": "Active Dynamic Toll at Business Bay Crossing (AED 6 Peak / AED 4 Off-Peak; launched Nov 24, 2024)",
         "served_communities": "Business Bay, Downtown Dubai, MBR City / Meydan, Sobha Hartland, Dubai Design District (d3), Festival City",
-        "source_id": "SRC-023",
+        "source_id": "SRC-434",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -746,7 +746,7 @@
         "hgv_truck_ban_window": "Peak HGV restrictions 06:30–08:30 & 17:30–20:00; active RTA bridge work zone speed/lane management",
         "salik_toll_status": "Toll-free arterial",
         "served_communities": "Jumeirah Village Circle (JVC), Al Barsha, Barsha Heights (Tecom), Dubai Science Park",
-        "source_id": "SRC-022",
+        "source_id": "SRC-433",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -790,7 +790,7 @@
         "hgv_truck_ban_window": "Peak restrictions 06:30–08:30 & 17:30–20:00; heavy concrete mixer & dump-truck activity 09:00–17:00 & 20:30–05:00",
         "salik_toll_status": "Toll-free arterial",
         "served_communities": "Jumeirah Village Circle (JVC), Dubai Sports City, Motor City, Tilal Al Ghaf (PRJ-D19), DAMAC Lagoons (PRJ-D16)",
-        "source_id": "SRC-022",
+        "source_id": "SRC-433",
         "confidence": "Corroborated",
         "layer": "L02_roads"
       },
@@ -834,7 +834,7 @@
         "hgv_truck_ban_window": "Nakheel/RTA community NOC required for concrete pours and mobile crane staging; peak commuter friction 07:30–09:30 & 17:30–20:00",
         "salik_toll_status": "Toll-free internal community collector",
         "served_communities": "Jumeirah Village Circle (JVC Districts 10, 11, 12, 13, 14, 15, 16, 17, 18)",
-        "source_id": "SRC-022",
+        "source_id": "SRC-441",
         "confidence": "Estimated",
         "layer": "L02_roads"
       },
@@ -890,7 +890,7 @@
         "hgv_truck_ban_window": "Banned during 3 peak windows: 06:30–08:30, 13:00–15:00, 17:30–20:00",
         "salik_toll_status": "Toll-free along southern/central Dubai corridor",
         "served_communities": "Dubai South, Expo City, JVC South, Motor City, Tilal Al Ghaf, The Oasis, Global Village, International City",
-        "source_id": "SRC-022",
+        "source_id": "SRC-437",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -942,7 +942,7 @@
         "hgv_truck_ban_window": "EXEMPT — 24/7 Permitted Heavy Goods Vehicle (HGV) Corridor in Dubai (primary construction haul artery)",
         "salik_toll_status": "Toll-free 24/7",
         "served_communities": "Dubai South (DWC PRJ-D1, Azizi Venice PRJ-D15), The Heights (PRJ-D6), Grand Polo (PRJ-D7), The Oasis (PRJ-D5), Al Marmoom",
-        "source_id": "SRC-023",
+        "source_id": "SRC-437",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -994,7 +994,7 @@
         "hgv_truck_ban_window": "24-hour HGV ban on Al Qudra recreational section; peak ban 06:30–08:30 & 17:30–20:00 on Umm Suqeim arterial",
         "salik_toll_status": "Toll-free arterial",
         "served_communities": "Dubai Hills Estate, Al Barsha South, Arjan, Motor City, Arabian Ranches, Tilal Al Ghaf, DAMAC Hills",
-        "source_id": "SRC-022",
+        "source_id": "SRC-440",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -1042,7 +1042,7 @@
         "hgv_truck_ban_window": "Peak restrictions 06:30–08:30, 13:00–15:00, 17:30–20:00",
         "salik_toll_status": "Toll-free east of Business Bay Crossing",
         "served_communities": "Dubai Creek Harbour (PRJ-D3), Sobha Hartland II / Bukadra (PRJ-D17), Ras Al Khor, Nad Al Hamar, International City",
-        "source_id": "SRC-023",
+        "source_id": "SRC-439",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -1090,7 +1090,7 @@
         "hgv_truck_ban_window": "Strict CBD heavy vehicle ban 06:00–22:00 (night concrete & steel delivery permits only)",
         "salik_toll_status": "Toll-free arterial connecting E11 and E44",
         "served_communities": "DIFC Zabeel District (PRJ-D20), Downtown Dubai, Business Bay (PRJ-D11), Burj Azizi Corridor (PRJ-D10)",
-        "source_id": "SRC-022",
+        "source_id": "SRC-438",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -1134,7 +1134,7 @@
         "hgv_truck_ban_window": "Daytime HGV restrictions; night concrete pouring NOCs for supertall towers (Burj Binghatti Jacob & Co PRJ-D11)",
         "salik_toll_status": "Toll-free internal CBD collector",
         "served_communities": "Business Bay (PRJ-D11 Burj Binghatti Jacob & Co, Canal Front Towers)",
-        "source_id": "SRC-022",
+        "source_id": "SRC-438",
         "confidence": "Estimated",
         "layer": "L02_roads"
       },
@@ -1178,7 +1178,7 @@
         "hgv_truck_ban_window": "24-hour HGV ban in Al Shindagha & Airport Tunnels; dedicated surface/bridge construction access to Dubai Islands",
         "salik_toll_status": "Active Salik at Airport Tunnel & Al Maktoum Bridge (Infinity Bridge is toll-free)",
         "served_communities": "Dubai Islands (PRJ-D4), Deira, Mina Rashid, DXB Airport, Al Rashidiya",
-        "source_id": "SRC-022",
+        "source_id": "SRC-443",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -1226,7 +1226,7 @@
         "hgv_truck_ban_window": "Dedicated heavy construction logistics corridors serving DWC AED 128B expansion and Dubai South",
         "salik_toll_status": "Toll-free express arterial",
         "served_communities": "Dubai South, Al Maktoum International Airport DWC (PRJ-D1), Expo City Dubai (PRJ-D18), Azizi Venice (PRJ-D15)",
-        "source_id": "SRC-021",
+        "source_id": "SRC-442",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -1270,7 +1270,7 @@
         "hgv_truck_ban_window": "Strict daytime HGV & concrete mixer restrictions; Nakheel/RTA night logistics window 22:00–06:00",
         "salik_toll_status": "Toll-free waterfront arterial",
         "served_communities": "Dubai Marina (PRJ-D12, PRJ-D13), Palm Jumeirah (PRJ-D14), Dubai Harbour, JBR",
-        "source_id": "SRC-022",
+        "source_id": "SRC-443",
         "confidence": "Estimated",
         "layer": "L02_roads"
       },
@@ -1290,8 +1290,8 @@
             25.098
           ],
           [
-            55.139,
-            25.1124
+            55.1372,
+            25.1112
           ]
         ]
       }
@@ -1314,7 +1314,7 @@
         "hgv_truck_ban_window": "Peak HGV commuter bans 06:30–08:30, 13:00–15:00 & 17:30–20:00 toward Dubai border",
         "salik_toll_status": "Toll-free federal highway",
         "served_communities": "Muwaileh, Aljada (PRJ-SH2), Al Zahia (PRJ-SH9), Al Mamsha & Olfah (PRJ-SH6, PRJ-SH8)",
-        "source_id": "SRC-091",
+        "source_id": "SRC-444",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -1346,7 +1346,7 @@
       "properties": {
         "road_id": "RD-SHJ-02",
         "road_code": "E611-SHJ-MASAAR",
-        "road_name": "Emirates Road (E611) — Sharjah Al Rahmaniya, Masaar, Tilal City & KBS City Corridor",
+        "road_name": "Emirates Road (E611) — Sharjah Al Rahmaniya, Masaar, Tilal City & Hayyan Corridor",
         "emirate": "Sharjah",
         "road_type": "Primary Federal Outer Freeway (FRC0)",
         "authority": "Sharjah Roads and Transport Authority (SRTA) / MOEI",
@@ -1354,11 +1354,11 @@
         "lanes_per_direction": 5,
         "capacity_vph_per_dir": "9,500 vph/dir [Published MOEI 5-Lane Outer Corridor Capacity]",
         "capacity_basis": "PUBLISHED_OFFICIAL (MOEI / SRTA Emirates Road E611 Specification)",
-        "direction": "Bidirectional (Dubai E611 Border ↔ Tilal City PRJ-SH7, Masaar PRJ-SH3, Hayyan PRJ-SH6, Sharjah Sustainable City PRJ-SH10 & Khalid Bin Sultan City PRJ-SH5)",
+        "direction": "Bidirectional (Dubai E611 Border ↔ Tilal City PRJ-SH7, Masaar PRJ-SH3, Hayyan PRJ-SH6 & Sharjah Sustainable City PRJ-SH10)",
         "hgv_truck_ban_window": "Primary 24/7 inter-emirate heavy logistics corridor (localized peak controls at Al Badiyah interchange)",
         "salik_toll_status": "Toll-free federal highway",
-        "served_communities": "Masaar (PRJ-SH3), Tilal City (PRJ-SH7), Hayyan (PRJ-SH6), Sharjah Sustainable City (PRJ-SH10), Khalid Bin Sultan City (PRJ-SH5), Jawaher Medical District (PRJ-SH12)",
-        "source_id": "SRC-091",
+        "served_communities": "Masaar (PRJ-SH3), Tilal City (PRJ-SH7), Hayyan (PRJ-SH6), Sharjah Sustainable City (PRJ-SH10)",
+        "source_id": "SRC-445",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -1370,8 +1370,8 @@
             25.235
           ],
           [
-            55.558,
-            25.272
+            55.576,
+            25.274
           ],
           [
             55.588,
@@ -1402,7 +1402,7 @@
         "hgv_truck_ban_window": "Peak urban commuter restrictions 06:30–08:30 & 17:00–20:00 west of Sharjah Airport",
         "salik_toll_status": "Toll-free arterial",
         "served_communities": "Aljada (PRJ-SH2), Muwaileh, University City, Sharjah Sustainable City (PRJ-SH10)",
-        "source_id": "SRC-091",
+        "source_id": "SRC-445",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -1420,6 +1420,10 @@
           [
             55.518,
             25.328
+          ],
+          [
+            55.552,
+            25.332
           ],
           [
             55.565,
@@ -1446,7 +1450,7 @@
         "hgv_truck_ban_window": "Banned 06:00–22:00 through Al Ittihad / Al Khan urban commuter corridor",
         "salik_toll_status": "Al Mamzar North/South Salik Gates at Dubai border (AED 6 Peak / AED 4 Off-Peak)",
         "served_communities": "Al Khan, Al Mamzar, Maryam Island (PRJ-SH4), Al Taawun",
-        "source_id": "SRC-091",
+        "source_id": "SRC-444",
         "confidence": "Verified",
         "layer": "L02_roads"
       },
@@ -1458,8 +1462,8 @@
             25.302
           ],
           [
-            55.358,
-            25.321
+            55.3605,
+            25.3198
           ],
           [
             55.372,
@@ -1468,6 +1472,150 @@
           [
             55.388,
             25.348
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "RD-SHJ-05",
+      "properties": {
+        "road_id": "RD-SHJ-05",
+        "road_code": "E102-S142-MALIHA-WEST",
+        "road_name": "Maliha–Khorfakkan Highway (E102 / S142 West) — Tilal City, Masaar, KBS City & BEEAH Hub Corridor",
+        "emirate": "Sharjah",
+        "road_type": "Primary East-West Strategic Arterial & Inter-Regional Highway (FRC0/FRC1)",
+        "authority": "Sharjah Roads and Transport Authority (SRTA) / MOEI",
+        "speed_limit_kmh": "100–120 km/h (Published SRTA / MOEI Statutory Limit)",
+        "lanes_per_direction": 4,
+        "capacity_vph_per_dir": "7,600 vph/dir [Published SRTA / MOEI 4-Lane Divided Highway Capacity along Al Suyoh–Rodhat Al Qrt segment]",
+        "capacity_basis": "PUBLISHED_OFFICIAL (SRTA Maliha Road E102 & S142 West Corridor Specification)",
+        "direction": "Bidirectional (E611 Al Badiyah Interchange ↔ Tilal City PRJ-SH7, Masaar PRJ-SH3, Jawaher Boston Medical / BEEAH Hub PRJ-SH12 & Khalid Bin Sultan City PRJ-SH5)",
+        "hgv_truck_ban_window": "Permitted strategic construction & regional freight corridor; localized peak signal/interchange controls at Al Badiyah",
+        "salik_toll_status": "Toll-free regional highway",
+        "served_communities": "Tilal City (PRJ-SH7), Masaar (PRJ-SH3), Khalid Bin Sultan City (PRJ-SH5), Jawaher Boston Medical District & BEEAH Hub (PRJ-SH12)",
+        "source_id": "SRC-446",
+        "confidence": "Verified",
+        "layer": "L02_roads"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            55.565,
+            25.258
+          ],
+          [
+            55.592,
+            25.2655
+          ],
+          [
+            55.622,
+            25.278
+          ],
+          [
+            55.6515,
+            25.2935
+          ],
+          [
+            55.6645,
+            25.2885
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "RD-SHJ-06",
+      "properties": {
+        "road_id": "RD-SHJ-06",
+        "road_code": "S142-KHORFAKKAN-COAST",
+        "road_name": "Sharjah–Khorfakkan Highway (S142 East Coast Approach) & Khorfakkan Corniche / Rugaylat Road",
+        "emirate": "Sharjah",
+        "road_type": "Eastern Coast Mountain-to-Coast Highway & Waterfront Arterial (FRC1)",
+        "authority": "Sharjah Roads and Transport Authority (SRTA) / Sharjah Directorate of Public Works (SDPW)",
+        "speed_limit_kmh": "80–100 km/h (Published SRTA Limit; 80 km/h through tunnel/coastal approach)",
+        "lanes_per_direction": 2,
+        "capacity_vph_per_dir": "3,800 vph/dir [Published SDPW / SRTA AED 6B Sharjah–Khorfakkan 89 km Highway 2-Lane Dual Carriageway Specification]",
+        "capacity_basis": "PUBLISHED_OFFICIAL (SRTA / SDPW Sharjah–Khorfakkan Highway S142 & Khorfakkan Corniche Specification)",
+        "direction": "Bidirectional (S142 Al Sidra/Al Multaqa Tunnels ↔ Khorfakkan Corniche, Khorfakkan Beach Resort PRJ-SH11 & Kalba E99)",
+        "hgv_truck_ban_window": "Heavy trucks restricted on mountain tunnel tourist peaks; coastal construction deliveries staged via E99/S142 off-peak windows",
+        "salik_toll_status": "Toll-free eastern region highway",
+        "served_communities": "Khorfakkan Beach Resort, Jabal Resort & Kalba Waterfront Masterplan (PRJ-SH11)",
+        "source_id": "SRC-446",
+        "confidence": "Verified",
+        "layer": "L02_roads"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            56.315,
+            25.332
+          ],
+          [
+            56.338,
+            25.3355
+          ],
+          [
+            56.3535,
+            25.3375
+          ],
+          [
+            56.3595,
+            25.3445
+          ],
+          [
+            56.363,
+            25.358
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "RD-SHJ-07",
+      "properties": {
+        "road_id": "RD-SHJ-07",
+        "road_code": "E11-SHJ-ALHAMRIYAH",
+        "road_name": "Al Ittihad Road North (E11) — Al Hamriyah & Sharjah Waterfront City Coastal Corridor",
+        "emirate": "Sharjah",
+        "road_type": "Northern Coastal Primary Arterial Highway (FRC1)",
+        "authority": "Sharjah Roads and Transport Authority (SRTA) / MOEI",
+        "speed_limit_kmh": "100 km/h (Published SRTA / MOEI Limit)",
+        "lanes_per_direction": 3,
+        "capacity_vph_per_dir": "5,700 vph/dir [Published MOEI / SRTA 3-Lane Northern Coastal Dual-Carriageway Capacity]",
+        "capacity_basis": "PUBLISHED_OFFICIAL (SRTA / MOEI Northern E11 Al Hamriyah Coastal Corridor Specification)",
+        "direction": "Bidirectional (Ajman/Sharjah Border ↔ Al Hamriyah, Sharjah Waterfront City PRJ-SH1 & Umm Al Quwain E11)",
+        "hgv_truck_ban_window": "Permitted off-peak coastal construction haulage; Al Hamriyah Port industrial access",
+        "salik_toll_status": "Toll-free northern coastal highway",
+        "served_communities": "Sharjah Waterfront City (PRJ-SH1), Al Hamriyah Coastal Zone",
+        "source_id": "SRC-447",
+        "confidence": "Verified",
+        "layer": "L02_roads"
+      },
+      "geometry": {
+        "type": "LineString",
+        "coordinates": [
+          [
+            55.455,
+            25.435
+          ],
+          [
+            55.482,
+            25.462
+          ],
+          [
+            55.502,
+            25.483
+          ],
+          [
+            55.5145,
+            25.4925
+          ],
+          [
+            55.535,
+            25.512
           ]
         ]
       }
@@ -1487,7 +1635,7 @@
         "served_project_ids": "PRJ-D16, PRJ-D19 + JVC Districts 10–15 High-Rise Cluster",
         "peak_level_of_service": "LOS F (Pre-Upgrade Evening Peak Queue) → Target LOS C post-RTA AED 689M 4-lane flyover completion",
         "rta_upgrade_and_mitigation": "Active RTA AED 689M Hessa St Upgrade & AED 700M Al Khail Rd Bridge expansion adding direct 2-lane collector ramps.",
-        "source_id": "SRC-022",
+        "source_id": "SRC-433",
         "confidence": "Verified",
         "layer": "L05_intersections"
       },
@@ -1514,7 +1662,7 @@
         "served_project_ids": "JVC Districts 10, 11, 12, 13 (Binghatti, Ellington, Danube, Samana active sites)",
         "peak_level_of_service": "LOS E/F (07:45–09:15 AM outbound merge & 17:30–19:45 PM inbound queue)",
         "rta_upgrade_and_mitigation": "RTA/Nakheel added 4 new entry/exit access points and signal timing optimization reducing internal JVC exit delay by 25–30%.",
-        "source_id": "SRC-022",
+        "source_id": "SRC-441",
         "confidence": "Verified",
         "layer": "L05_intersections"
       },
@@ -1541,7 +1689,7 @@
         "served_project_ids": "JVC Districts 14, 15, 16, 18 active tower construction sites",
         "peak_level_of_service": "LOS D/E (Weaving friction between outbound JVC commuters and E44 main-line flow)",
         "rta_upgrade_and_mitigation": "Upgraded under RTA AED 700M Al Khail Road Improvement Project with dedicated collector bridge.",
-        "source_id": "SRC-023",
+        "source_id": "SRC-434",
         "confidence": "Verified",
         "layer": "L05_intersections"
       },
@@ -1568,7 +1716,7 @@
         "served_project_ids": "PRJ-D16 (DAMAC Lagoons), PRJ-D19 (Tilal Al Ghaf & Ghaf Woods), PRJ-D5 (The Oasis)",
         "peak_level_of_service": "LOS E (High HGV concrete/earthworks turning volume during 09:00–13:00 + commuter peak 17:30–20:00)",
         "rta_upgrade_and_mitigation": "Primary construction logistics staging interchange connecting E311 to Tilal Al Ghaf & DAMAC Lagoons.",
-        "source_id": "SRC-022",
+        "source_id": "SRC-433",
         "confidence": "Verified",
         "layer": "L05_intersections"
       },
@@ -1595,7 +1743,7 @@
         "served_project_ids": "PRJ-D11 (Burj Binghatti Jacob & Co), PRJ-D20 (DIFC Zabeel), PRJ-D17 (Sobha Hartland II)",
         "peak_level_of_service": "LOS D/E (Improved from LOS F following RTA Zabeel 700m bridge & 3,000 vph slip ramp opening)",
         "rta_upgrade_and_mitigation": "RTA doubled exit lane capacity to 3,000 vph and opened 5-lane Zabeel bridge connecting Financial Centre Rd to Al Khail Rd.",
-        "source_id": "SRC-023",
+        "source_id": "SRC-438",
         "confidence": "Verified",
         "layer": "L05_intersections"
       },
@@ -1622,7 +1770,7 @@
         "served_project_ids": "PRJ-D3 (Dubai Creek Harbour & Creek Tower), PRJ-D8 (Dubai Metro Blue Line), PRJ-D17 (Sobha Hartland II)",
         "peak_level_of_service": "LOS D (Active roadwork zone for Ras Al Khor widening & Metro Blue Line viaduct piers)",
         "rta_upgrade_and_mitigation": "RTA widening Ras Al Khor Rd to 6 lanes + constructing dedicated Creek Harbour access bridges (capacity up to 10,000–30,000 vph).",
-        "source_id": "SRC-023",
+        "source_id": "SRC-439",
         "confidence": "Verified",
         "layer": "L05_intersections"
       },
@@ -1649,7 +1797,7 @@
         "served_project_ids": "PRJ-D1 (DWC Airport AED 128B), PRJ-D15 (Azizi Venice), PRJ-D18 (Expo City), PRJ-D6 (The Heights)",
         "peak_level_of_service": "LOS B/C (High geometric capacity; handles heavy 24/7 aggregate/concrete/rebar HGV fleets without passenger gridlock)",
         "rta_upgrade_and_mitigation": "Grade-separated 6-lane E611 × E77 interchange engineered for DWC & Expo 2020 logistics.",
-        "source_id": "SRC-021",
+        "source_id": "SRC-442",
         "confidence": "Verified",
         "layer": "L05_intersections"
       },
@@ -1658,6 +1806,87 @@
         "coordinates": [
           55.185,
           24.915
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INT-DXB-08",
+      "properties": {
+        "intersection_id": "INT-DXB-08",
+        "intersection_name": "Sheikh Zayed Road (E11) × Palm Jebel Ali Causeway & Waterfront Interchange",
+        "emirate": "Dubai",
+        "community": "Dubai Marina, Palm Jumeirah & Palm Jebel Ali Coastal Belt",
+        "intersection_type": "Grade-Separated Coastal Causeway & Marine Logistics Interchange",
+        "latitude": 24.992,
+        "longitude": 55.005,
+        "connected_road_ids": "RD-DXB-02",
+        "served_project_ids": "PRJ-D2 (Palm Jebel Ali Fronds A–G & Marine Infrastructure)",
+        "peak_level_of_service": "LOS B/C (Dedicated marine/causeway construction access ramps off E11 South)",
+        "rta_upgrade_and_mitigation": "RTA / Nakheel AED 270M+ public access road and bridge link connecting Palm Jebel Ali directly to E11.",
+        "source_id": "SRC-435",
+        "confidence": "Verified",
+        "layer": "L05_intersections"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          55.005,
+          24.992
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INT-DXB-09",
+      "properties": {
+        "intersection_id": "INT-DXB-09",
+        "intersection_name": "King Salman bin Abdulaziz Al Saud St (D94) × Palm Jumeirah Gateway & Marina Interchange",
+        "emirate": "Dubai",
+        "community": "Dubai Marina, Palm Jumeirah & Palm Jebel Ali Coastal Belt",
+        "intersection_type": "Multi-Level Coastal Trumpet Interchange & Monorail/Tram Crossing",
+        "latitude": 25.098,
+        "longitude": 55.151,
+        "connected_road_ids": "RD-DXB-01, RD-DXB-16",
+        "served_project_ids": "PRJ-D12 (Six Senses Marina), PRJ-D13 (Franck Muller Aeternitas), PRJ-D14 (Como Residences Palm)",
+        "peak_level_of_service": "LOS D/E (Evening leisure & residential peak queue; HGV deliveries restricted to 22:00–06:00)",
+        "rta_upgrade_and_mitigation": "RTA directional slip bridges from E11 Interchange 5 to D94 and Palm Jumeirah Trunk.",
+        "source_id": "SRC-443",
+        "confidence": "Verified",
+        "layer": "L05_intersections"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          55.151,
+          25.098
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INT-DXB-10",
+      "properties": {
+        "intersection_id": "INT-DXB-10",
+        "intersection_name": "Al Khaleej Street (D92 / Infinity Bridge) × Dubai Islands Causeway Interchange",
+        "emirate": "Dubai",
+        "community": "Dubai Islands & Deira Waterfront (Al Shindagha / Infinity Bridge Corridor)",
+        "intersection_type": "Multi-Span Coastal Bridge & Underpass Interchange",
+        "latitude": 25.298,
+        "longitude": 55.312,
+        "connected_road_ids": "RD-DXB-14",
+        "served_project_ids": "PRJ-D4 (Dubai Islands 5-Island Masterplan)",
+        "peak_level_of_service": "LOS C (Relieved by RTA 12-lane Infinity Bridge & new direct Dubai Islands bridge link)",
+        "rta_upgrade_and_mitigation": "RTA AED 431M direct bridge entrance from Bur Dubai / Al Khaleej St to Dubai Islands providing 16,000 vph capacity.",
+        "source_id": "SRC-443",
+        "confidence": "Verified",
+        "layer": "L05_intersections"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          55.312,
+          25.298
         ]
       }
     },
@@ -1676,7 +1905,7 @@
         "served_project_ids": "PRJ-SH2 (Aljada), PRJ-SH6 (Al Mamsha), PRJ-SH8 (Olfah), PRJ-SH9 (Al Zahia)",
         "peak_level_of_service": "LOS E/F (Morning southbound commuter wave to Dubai + University City/Aljada local traffic)",
         "rta_upgrade_and_mitigation": "SRTA / Arada upgraded Aljada & Madar access bridges and University City Road collector lanes.",
-        "source_id": "SRC-091",
+        "source_id": "SRC-444",
         "confidence": "Verified",
         "layer": "L05_intersections"
       },
@@ -1693,25 +1922,25 @@
       "id": "INT-SHJ-02",
       "properties": {
         "intersection_id": "INT-SHJ-02",
-        "intersection_name": "Emirates Road (E611) × Al Dhaid Road (E88) / Maliha Road (E102) Masaar–Tilal Gate",
+        "intersection_name": "Emirates Road (E611) × Al Dhaid Road (E88) / Al Badiyah Interchange (Masaar–Tilal Gate)",
         "emirate": "Sharjah",
         "community": "Masaar, Tilal City, Sustainable City & KBS City (Sharjah Priority 2)",
         "intersection_type": "Grade-Separated Cloverleaf Highway Interchange",
-        "latitude": 25.298,
-        "longitude": 55.588,
-        "connected_road_ids": "RD-SHJ-02, RD-SHJ-03",
-        "served_project_ids": "PRJ-SH3 (Masaar), PRJ-SH5 (KBS City), PRJ-SH6 (Hayyan), PRJ-SH7 (Tilal City), PRJ-SH10 (Sustainable City), PRJ-SH12",
-        "peak_level_of_service": "LOS C/D (Evening commuter queue returning from Dubai via E611 + HGV material deliveries to 6 masterplans)",
+        "latitude": 25.274,
+        "longitude": 55.576,
+        "connected_road_ids": "RD-SHJ-02, RD-SHJ-03, RD-SHJ-05",
+        "served_project_ids": "PRJ-SH3 (Masaar), PRJ-SH6 (Hayyan), PRJ-SH7 (Tilal City), PRJ-SH10 (Sustainable City)",
+        "peak_level_of_service": "LOS C/D (Evening commuter queue returning from Dubai via E611 + HGV material deliveries)",
         "rta_upgrade_and_mitigation": "SRTA Al Badiyah & E88 bridge upgrades plus dedicated collector slip lanes for Tilal City and Masaar.",
-        "source_id": "SRC-091",
+        "source_id": "SRC-445",
         "confidence": "Verified",
         "layer": "L05_intersections"
       },
       "geometry": {
         "type": "Point",
         "coordinates": [
-          55.588,
-          25.298
+          55.576,
+          25.274
         ]
       }
     },
@@ -1730,7 +1959,7 @@
         "served_project_ids": "PRJ-SH4 (Maryam Island Waterfront Masterplan)",
         "peak_level_of_service": "LOS F (06:30–09:30 AM toward Dubai & 17:00–20:30 PM toward Sharjah)",
         "rta_upgrade_and_mitigation": "SRTA inaugurated new Al Taawun bridge phases and waterfront corniche collector roads serving Maryam Island.",
-        "source_id": "SRC-091",
+        "source_id": "SRC-444",
         "confidence": "Verified",
         "layer": "L05_intersections"
       },
@@ -1739,6 +1968,87 @@
         "coordinates": [
           55.356,
           25.312
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INT-SHJ-04",
+      "properties": {
+        "intersection_id": "INT-SHJ-04",
+        "intersection_name": "Maliha–Khorfakkan Highway (E102 / S142) × Rodhat Al Qrt / Khalid Bin Sultan City Interchange",
+        "emirate": "Sharjah",
+        "community": "Emirates Road (E611) East Sharjah Belt — Masaar, Tilal, Sustainable City & KBS City",
+        "intersection_type": "Grade-Separated Regional Highway Overpass & Collector Access",
+        "latitude": 25.2915,
+        "longitude": 55.654,
+        "connected_road_ids": "RD-SHJ-05, RD-SHJ-02",
+        "served_project_ids": "PRJ-SH5 (Khalid Bin Sultan City), PRJ-SH12 (Jawaher Boston Medical District & BEEAH Healthcare Hub)",
+        "peak_level_of_service": "LOS B/C (High reserve capacity along E102/S142; direct HGV earthworks and concrete access)",
+        "rta_upgrade_and_mitigation": "SRTA / SDPW upgraded S142/E102 interchanges serving BEEAH HQ, Khalid Bin Sultan City, and Jawaher Medical District.",
+        "source_id": "SRC-446",
+        "confidence": "Verified",
+        "layer": "L05_intersections"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          55.654,
+          25.2915
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INT-SHJ-05",
+      "properties": {
+        "intersection_id": "INT-SHJ-05",
+        "intersection_name": "Sharjah–Khorfakkan Highway (S142) × Khorfakkan Corniche / Rugaylat Resort Gateway",
+        "emirate": "Sharjah",
+        "community": "Khorfakkan East Coast & Kalba Waterfront (Sharjah Eastern Region)",
+        "intersection_type": "Signalized Coastal Arterial Junction & Resort Access Roundabout",
+        "latitude": 25.3375,
+        "longitude": 56.3535,
+        "connected_road_ids": "RD-SHJ-06",
+        "served_project_ids": "PRJ-SH11 (Khorfakkan Beach Resort, Jabal Resort & Kalba Waterfront Masterplan)",
+        "peak_level_of_service": "LOS B/C (Moderate weekend leisure traffic; weekday construction logistics served via S142/E99)",
+        "rta_upgrade_and_mitigation": "Connected directly to the AED 6B Sharjah–Khorfakkan Highway (S142) and Khorfakkan Corniche waterfront upgrade.",
+        "source_id": "SRC-446",
+        "confidence": "Verified",
+        "layer": "L05_intersections"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          56.3535,
+          25.3375
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "INT-SHJ-06",
+      "properties": {
+        "intersection_id": "INT-SHJ-06",
+        "intersection_name": "Al Ittihad Road North (E11) × Al Hamriyah / Sharjah Waterfront City Interchange",
+        "emirate": "Sharjah",
+        "community": "Al Hamriyah & Northern Sharjah Coastline",
+        "intersection_type": "Grade-Separated Coastal Highway Interchange",
+        "latitude": 25.4925,
+        "longitude": 55.5145,
+        "connected_road_ids": "RD-SHJ-07",
+        "served_project_ids": "PRJ-SH1 (Sharjah Waterfront City — 10-Island Coastal Masterplan)",
+        "peak_level_of_service": "LOS B (Uncongested 3-lane dual carriageway along northern E11 Al Hamriyah corridor)",
+        "rta_upgrade_and_mitigation": "Direct grade-separated bridge access from E11 North into Sharjah Waterfront City islands and Al Hamriyah.",
+        "source_id": "SRC-447",
+        "confidence": "Verified",
+        "layer": "L05_intersections"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          55.5145,
+          25.4925
         ]
       }
     },
@@ -1756,6 +2066,7 @@
         "gfa_sqm": "~5.0M+ sq.m.",
         "units_total": "Capacity: 260M passengers/yr & 12M tonnes cargo",
         "completion": "Approved: Apr 2024 | Substructure Award: 2024–2025 | Phase 1 Completion: 2032",
+        "source_id": "SRC-078",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -1781,6 +2092,7 @@
         "gfa_sqm": "~9.5M sq.m.",
         "units_total": "~25,000+ units (35,000 families; 1,267+ villas under active contract)",
         "completion": "Relaunched: May 2023 | Launched: Sep 2023 | Start: Q4 2023 | Completion: Late 2027–2032",
+        "source_id": "SRC-079",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -1806,6 +2118,7 @@
         "gfa_sqm": "11.3M sq.m. (7.4M sq.m. Res + 2.6M sq.m. Dubai Square Retail)",
         "units_total": "48,500+ units (~200,000 residents)",
         "completion": "Announced: 2013/2016 | Tower Redesign: Feb 2024 | Completion: Phased to 2032+",
+        "source_id": "SRC-080",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -1831,6 +2144,7 @@
         "gfa_sqm": "~14.5M sq.m.",
         "units_total": "38,000+ units",
         "completion": "Relaunched: Aug 2022 | Bay Villas Launch: 2024 | Completion: Phased 2026–2032+",
+        "source_id": "SRC-081",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -1856,6 +2170,7 @@
         "gfa_sqm": "~3.2M sq.m.",
         "units_total": "7,000+ units",
         "completion": "Launched: Jun 2023 | Expanded: Jan 2024 | Start: 2024 | Completion: 2027–2029",
+        "source_id": "SRC-082",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -1881,6 +2196,7 @@
         "gfa_sqm": "~2.8M sq.m.",
         "units_total": "~6,500+ units (Est.)",
         "completion": "Announced: Feb 2024 | Sales Launch: 2024–2025 | Completion: 2028–2030",
+        "source_id": "SRC-083",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -1906,6 +2222,7 @@
         "gfa_sqm": "~1.9M sq.m.",
         "units_total": "~4,500+ units (Est.)",
         "completion": "Announced: Feb 2024 | Launch: May 2025 | Completion: 2029–2030",
+        "source_id": "SRC-084",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -1931,6 +2248,7 @@
         "gfa_sqm": "14 Stations (incl. 1.3 km Creek Viaduct)",
         "units_total": "Capacity: 320,000 passengers/day by 2040",
         "completion": "Approved: Nov 2023 | Contract Awarded: Dec 2024 | Start: Apr 2025 | Completion: Sep 9, 2029",
+        "source_id": "SRC-085",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -1956,6 +2274,7 @@
         "gfa_sqm": "Capacity: 20M cubic meters/day",
         "units_total": "N/A (Civic Utility Network)",
         "completion": "Announced: Jun 2023 / Jun 2024 | Phase Awards: 2024–2025 | Completion: Phased to 2033",
+        "source_id": "SRC-086",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -1981,6 +2300,7 @@
         "gfa_sqm": "~236,000 sq.m. (2.54M sq.ft.)",
         "units_total": "~700+ residential units + hotel suites",
         "completion": "Announced: Jan 2024 | Height Confirmed (725m): Sep 2024 | Sales Launch: Feb 2025 | Completion: 2028",
+        "source_id": "SRC-087",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2006,6 +2326,7 @@
         "gfa_sqm": "~140,000 sq.m.",
         "units_total": "299–304 units",
         "completion": "Launched: Nov 2022 | Start: 2023 | Completion: Q4 2026–2027",
+        "source_id": "SRC-088",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2031,6 +2352,7 @@
         "gfa_sqm": "~155,000 sq.m.",
         "units_total": "251 units",
         "completion": "Relaunched: Apr 2024 | Main Contract: Jul 2024 | Completion: Q3 2028 / 2029",
+        "source_id": "SRC-089",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2056,6 +2378,7 @@
         "gfa_sqm": "~125,000 sq.m.",
         "units_total": "649 units",
         "completion": "Launched: Jan 2024 | Start: Q1 2024 | Completion: Q2 2027",
+        "source_id": "SRC-090",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2081,6 +2404,7 @@
         "gfa_sqm": "~95,000 sq.m.",
         "units_total": "76–81 units",
         "completion": "Launched: May 2023 | Main Contract: Mar 2024 | Completion: Q2 2028",
+        "source_id": "SRC-091",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2106,6 +2430,7 @@
         "gfa_sqm": "Venice: 2.23M sq.m. (24M sq.ft.) | Riviera: ~1.4M sq.m.",
         "units_total": "52,000+ combined (Venice: 36,000+ units; Riviera: 16,000+ units)",
         "completion": "Riviera Launch: 2017 (Delivering 2024–2027) | Venice Launch: Oct 2023 (Completion 2026–2028)",
+        "source_id": "SRC-092",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2131,6 +2456,7 @@
         "gfa_sqm": "~5.5M+ sq.m. combined",
         "units_total": "24,000+ combined (Lagoons: ~11,000; Islands: ~12,000; Sun City: ~750)",
         "completion": "Lagoons Launch: Nov 2021 (Completion 2025–2028) | Sun City Launch: Aug 2024 | Islands Launch: Nov 2024 (Completion 2028–2029)",
+        "source_id": "SRC-093",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2156,6 +2482,7 @@
         "gfa_sqm": "~2.2M sq.m. combined",
         "units_total": "9,500+ combined (Hartland II: ~8,500; Elwood: ~1,000 villas)",
         "completion": "Hartland II Launch: Feb 2023 (Completion 2026–2029) | Elwood Launch: Jul 2024 (Completion Dec 2027)",
+        "source_id": "SRC-094",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2181,6 +2508,7 @@
         "gfa_sqm": "Expo Valley: 180,233 sq.m. BUA (+ towers)",
         "units_total": "~6,500+ active phase units (Expo City targeting 35,000–77,000 residents)",
         "completion": "South Bay Launch: 2022 (Completion 2026–2027) | Expo City Residential Launch: Mar 2023 (Completion 2026–2028)",
+        "source_id": "SRC-095",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2206,6 +2534,7 @@
         "gfa_sqm": "~2.9M sq.m. combined",
         "units_total": "13,500+ combined (Tilal Al Ghaf: ~6,500 villas/THs; Ghaf Woods: ~7,000 apartments)",
         "completion": "Tilal Al Ghaf Launch: 2019 (Handovers 2023–2027) | Ghaf Woods Launch: Jun 2024 (Completion 2027–2029)",
+        "source_id": "SRC-096",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2231,6 +2560,7 @@
         "gfa_sqm": "1.65M sq.m. (17.7M sq.ft. across 42 planned buildings)",
         "units_total": "~4,500+ residential apartments + 8.5M+ sq.ft. Grade-A office GLA",
         "completion": "Immersive Tower Start: 2024 (Completion 2027) | DIFC Heights Contract: Oct 2025 (Completion 2028) | Zabeel District: Phased to 2030",
+        "source_id": "SRC-097",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2256,6 +2586,7 @@
         "gfa_sqm": "~4.0M sq.m.",
         "units_total": "1,500+ villas + 200+ mixed-use towers (~10,000+ total units at full build)",
         "completion": "Launched: 2015/2018 | Thuraya & View Islands: 2023–2025 | Completion: Phased 2026–2030+",
+        "source_id": "SRC-113",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2281,6 +2612,7 @@
         "gfa_sqm": "~2.8M sq.m.",
         "units_total": "25,000+ units",
         "completion": "Launched: Sep 2017 | Il Teatro & CBD Launch: 2023–2024 | Completion: 2028–2030",
+        "source_id": "SRC-114",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2306,6 +2638,7 @@
         "gfa_sqm": "~1.1M sq.m. combined",
         "units_total": "3,000+ villas/townhouses (Masaar) + 238 units (Anantara)",
         "completion": "Masaar Launch: Jan 2021 (Completion 2026–2027) | Anantara Launch: May 2024 (Completion Late 2027)",
+        "source_id": "SRC-115",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2331,6 +2664,7 @@
         "gfa_sqm": "306,580 sq.m. (3.3M sq.ft.)",
         "units_total": "3,500+ units",
         "completion": "Launched: Jan 2018 | Phase 1 Handed Over: 2022–2024 | Completion: 2026–2028",
+        "source_id": "SRC-116",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2356,6 +2690,7 @@
         "gfa_sqm": "~450,000 sq.m.",
         "units_total": "~1,500 freehold villas & townhouses",
         "completion": "Masterplan Unveiled: May 2024 / 2025 | Phase 1 Launch: 2025 | Completion: Phased 2028–2030",
+        "source_id": "SRC-117",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2381,6 +2716,7 @@
         "gfa_sqm": "~1.3M sq.m. combined",
         "units_total": "Hayyan: 1,882 villas/townhouses | Al Mamsha: ~5,000+ apartments",
         "completion": "Al Mamsha Launch: 2018 (Final phases 2026–2027) | Hayyan Launch: May 2022 (Completion 2026–2028)",
+        "source_id": "SRC-118",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2406,6 +2742,7 @@
         "gfa_sqm": "~2.0M sq.m.",
         "units_total": "1,855 plots (Accommodating ~65,000 residents / ~12,000+ units)",
         "completion": "Launched: Nov 2014 | Infra Completed: 2021 | Vertical Build: Ongoing 2025–2029",
+        "source_id": "SRC-119",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2431,6 +2768,7 @@
         "gfa_sqm": "~340,000 sq.m. GFA",
         "units_total": "5,100+ apartments combined (Olfah: ~2,780 units; Nama: ~2,320 units)",
         "completion": "Nama Launch: Q4 2023 (Completion 2026–2027) | Olfah Launch: Oct 2024 (Completion 2028–2029)",
+        "source_id": "SRC-120",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2456,6 +2794,7 @@
         "gfa_sqm": "~720,000 sq.m. BUA",
         "units_total": "3,700+ units (12,000+ residents)",
         "completion": "Launched: 2014 | Uptown & Final Villa Phases: 2024–2026",
+        "source_id": "SRC-121",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2481,6 +2820,7 @@
         "gfa_sqm": "~350,000 sq.m. BUA",
         "units_total": "1,250 villas & townhouses",
         "completion": "Launched: Mar 2019 | Phases 1–3 Completed: 2022–2025 | Phase 4 Completion: 2026–2027",
+        "source_id": "SRC-122",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2506,6 +2846,7 @@
         "gfa_sqm": "~285,000 sq.m. GFA",
         "units_total": "1,200+ beachfront apartments & hotel keys",
         "completion": "Kalba Waterfront Opened: 2023 | Khorfakkan Towers & Resorts: 2024–2027",
+        "source_id": "SRC-123",
         "confidence": "Verified",
         "layer": "L07_projects"
       },
@@ -2531,6 +2872,7 @@
         "gfa_sqm": "~290,000 sq.m. GFA",
         "units_total": "260 hospital beds + 600+ staff residences",
         "completion": "Announced: 2023 | Enabling & Main Works: 2024–2026 | Completion: 2027–2028",
+        "source_id": "SRC-124",
         "confidence": "Verified",
         "layer": "L07_projects"
       },

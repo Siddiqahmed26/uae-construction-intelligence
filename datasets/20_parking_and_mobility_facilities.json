@@ -12,7 +12,8 @@
     "occupancy_and_congestion_impact": "High evening occupancy (84–92%); construction hoarding and worker vehicles historically displaced curb parking onto Circle Blvd, now mitigated via ANPR enforcement.",
     "operator_and_source": "Parkin PJSC (DFM: PARKIN) / Nakheel (Dubai Holding) / Parkonic",
     "source_url": "https://www.parkin.ae/en/investor-relations",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-449"
   },
   {
     "parking_id": "PRK-DXB-02",
@@ -27,7 +28,8 @@
     "occupancy_and_congestion_impact": "Major secondary congestion contributor during 12:00–14:30 and 18:30–21:30 around Circle Mall & JVC District 10–13 cloud kitchens.",
     "operator_and_source": "Roads and Transport Authority (RTA) Commercial Transport Activity",
     "source_url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-441"
   },
   {
     "parking_id": "PRK-DXB-03",
@@ -42,7 +44,8 @@
     "occupancy_and_congestion_impact": "88–95% daytime weekday occupancy in Business Bay; supertall towers require 6–14 podium levels because high water table limits deep basements.",
     "operator_and_source": "Parkin PJSC / Emaar / DAMAC / DIFC Authority",
     "source_url": "https://www.parkin.ae/en/investor-relations",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-449"
   },
   {
     "parking_id": "PRK-DXB-04",
@@ -57,7 +60,8 @@
     "occupancy_and_congestion_impact": "85%+ weekday peak utilization; directly connects to the under-construction AED 18B Dubai Metro Blue Line (PRJ-D8).",
     "operator_and_source": "Roads and Transport Authority (RTA) Rail Agency",
     "source_url": "https://www.rta.ae/wps/portal/rta/ae/public-transport/park-and-ride",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-449"
   },
   {
     "parking_id": "PRK-DXB-05",
@@ -72,7 +76,8 @@
     "occupancy_and_congestion_impact": "90%+ weekday AM peak occupancy; critical relief valve for Al Ittihad Rd (E11) and E311 cross-border congestion.",
     "operator_and_source": "Roads and Transport Authority (RTA) Rail Agency",
     "source_url": "https://www.rta.ae/wps/portal/rta/ae/public-transport/park-and-ride",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-449"
   },
   {
     "parking_id": "PRK-DXB-06",
@@ -87,7 +92,8 @@
     "occupancy_and_congestion_impact": "Integrated into Task 2 Phase C / Digital Twin foundation for sustainable community planning.",
     "operator_and_source": "Dubai Electricity and Water Authority (DEWA) & Parkin PJSC",
     "source_url": "https://www.dewa.gov.ae/en/consumer/ev-community/ev-green-charger",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-449"
   },
   {
     "parking_id": "PRK-SHJ-01",
@@ -102,6 +108,7 @@
     "occupancy_and_congestion_impact": "High evening occupancy in Muwaileh Commercial restaurant/cafe district; Aljada Madar provides 3,500+ dedicated visitor bays.",
     "operator_and_source": "Sharjah City Municipality & Arada Developments",
     "source_url": "https://portal.shjmun.gov.ae/en/Pages/Home.aspx",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-449"
   }
 ]

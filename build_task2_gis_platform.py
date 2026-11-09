@@ -160,16 +160,18 @@ def main():
         ("road_type", "Road Class"), ("authority", "Authority"), ("speed_limit_kmh", "Published Speed Limit"),
         ("lanes_per_direction", "Lanes/Dir"), ("capacity_vph_per_dir", "Capacity (vph/dir)"),
         ("capacity_basis", "Published vs. HCM Basis"), ("hgv_truck_ban_window", "HGV Truck Ban Schedule"),
-        ("salik_toll_status", "Salik Dynamic Toll Status"), ("served_communities", "Served Communities"), ("confidence", "Confidence")
+        ("salik_toll_status", "Salik Dynamic Toll Status"), ("served_communities", "Served Communities"),
+        ("source_id", "Source ID"), ("confidence", "Confidence")
     ])
     tbl_obs = render_table_html(payload["observations"], [
         ("observation_id", "Obs ID"), ("road_id", "Road ID"), ("road_name", "Road Segment"), ("community", "Community"),
-        ("location", "Geographic Coverage / Coordinates"), ("timestamp", "Observation Timestamp"),
+        ("location", "Geographic Coverage / Coordinates"), ("measurement_period", "Measurement Period"),
         ("time_period", "Time Period"), ("average_speed_kmh", "Avg Speed (km/h)"), ("free_flow_speed_kmh", "Free-Flow (km/h)"),
         ("travel_time_min_per_10km", "Travel Time (min/10km)"), ("traffic_volume_vph", "Volume (vph/dir)"),
-        ("congestion_level", "Congestion Level"), ("observation_type", "Observed vs. Modelled Basis"),
-        ("comparison_period", "2024 vs. 2026 Historical Comparison"), ("data_limitations", "Data Limitations"),
-        ("source_id", "Source ID"), ("confidence", "Confidence")
+        ("congestion_level", "Congestion Level"), ("evidence_level", "Evidence Level"),
+        ("series_scope_note", "Benchmark Scope Note"), ("comparison_period", "2024 vs. 2026 Historical Comparison"),
+        ("source_report_title", "Substantiating Report Title"), ("source_url", "Report URL"),
+        ("publication_date", "Pub Date"), ("source_id", "Source ID"), ("confidence", "Confidence")
     ])
     tbl_intersections = render_table_html(payload["intersections"], [
         ("intersection_id", "ID"), ("intersection_name", "Intersection / Interchange"), ("emirate", "Emirate"),
@@ -188,7 +190,7 @@ def main():
         ("community_district", "District"), ("linked_task1_ref", "Task 1 Link"), ("building_count", "Towers"),
         ("floors_range", "Floors"), ("total_units", "Total Units"), ("active_gfa_sqm", "Active GFA (m²)"),
         ("primary_access_road_id", "Access Road"), ("distance_to_road_km", "Dist (km)"),
-        ("estimated_midday_hgv_trips_per_day", "Modelled Midday HGV Trips"), ("epistemic_impact_tier", "Epistemic Tier"),
+        ("estimated_midday_hgv_trips_per_day", "Modelled 4-Component HGV Trips/Day"), ("epistemic_impact_tier", "Epistemic Tier"),
         ("source_id", "Source ID"), ("confidence", "Confidence")
     ])
     tbl_providers = render_table_html(payload["providers"], [
@@ -204,9 +206,14 @@ def main():
         ("primary_road_name", "Connected Road"), ("distance_to_primary_road_km", "Dist (km)"),
         ("connection_relationship_type", "Connection Basis"), ("nearest_intersection_id", "Junction ID"),
         ("observed_road_traffic_condition", "Observed Traffic on Road"),
-        ("modelled_daily_hgv_concrete_rebar_trips", "Modelled Daily HGV Trips"),
-        ("epistemic_impact_classification", "4-Tier Epistemic Classification"),
-        ("impact_radius_justification", "Radius Justification"), ("confidence", "Confidence")
+        ("concrete_mixer_loads_day", "Mixers/d"), ("rebar_trailer_loads_day", "Rebar/d"),
+        ("earthworks_tipper_loads_day", "Tippers/d"), ("mep_fitout_truck_loads_day", "MEP/d"),
+        ("total_hgv_round_trips_day", "Total HGV Round-Trips/d"),
+        ("modelled_daily_hgv_concrete_rebar_trips", "Full 4-Component HGV Equation"),
+        ("evidence_level", "Evidence Level"),
+        ("epistemic_impact_classification", "Epistemic Classification"),
+        ("impact_radius_justification", "Radius Justification (<3.0 km)"),
+        ("source_id", "Source IDs"), ("corridor_source_url", "Corridor Source URL"), ("confidence", "Confidence")
     ])
     tbl_tis = render_table_html(payload["tis"], [
         ("tis_id", "TIS ID"), ("project_or_corridor", "Project / Corridor Assessed"), ("emirate", "Emirate"),
@@ -235,6 +242,7 @@ def main():
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>TASK 2 — UAE Construction &amp; Traffic Impact Geospatial Intelligence Platform (Dubai &amp; Sharjah)</title>
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗺️</text></svg>"/>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <style>
@@ -929,7 +937,7 @@ def main():
         <div class="hud-kpi-bar">
           <div class="hud-kpi"><span style="color:var(--muted);">Active Map Scope</span><strong id="hudScope">Dubai (Priority 1)</strong></div>
           <div class="hud-kpi"><span style="color:var(--muted);">Mapped Projects &amp; Clusters</span><strong id="hudProjects">25 Active Sites</strong></div>
-          <div class="hud-kpi"><span style="color:var(--muted);">Connected Road Corridors</span><strong id="hudRoads">20 Corridors (72 GeoJSON Features)</strong></div>
+          <div class="hud-kpi"><span style="color:var(--muted);">Connected Road Corridors</span><strong id="hudRoads">23 Corridors (81 GeoJSON Features)</strong></div>
           <div class="hud-kpi"><span style="color:var(--muted);">Active Time Window</span><strong id="hudTime">Evening Peak (17:00–20:00)</strong></div>
         </div>
         <div class="basemap-switcher">
@@ -1017,10 +1025,10 @@ def main():
 
     <div class="ev-tabs">
       <button class="ev-tab-btn active" onclick="openEvTab('ev-impacts', this)">1. #22 Project-to-Road Links (37)</button>
-      <button class="ev-tab-btn" onclick="openEvTab('ev-obs', this)">2. #17 Traffic Observations (18)</button>
-      <button class="ev-tab-btn" onclick="openEvTab('ev-roads', this)">3. #16 Road Network (20)</button>
+      <button class="ev-tab-btn" onclick="openEvTab('ev-obs', this)">2. #17 Traffic Observations (21)</button>
+      <button class="ev-tab-btn" onclick="openEvTab('ev-roads', this)">3. #16 Road Network (23)</button>
       <button class="ev-tab-btn" onclick="openEvTab('ev-comm', this)">4. #21A Communities (10)</button>
-      <button class="ev-tab-btn" onclick="openEvTab('ev-ints', this)">5. #21B Intersections (10)</button>
+      <button class="ev-tab-btn" onclick="openEvTab('ev-ints', this)">5. #21B Intersections (16)</button>
       <button class="ev-tab-btn" onclick="openEvTab('ev-incs', this)">6. #21C Roadworks &amp; Incidents (5)</button>
       <button class="ev-tab-btn" onclick="openEvTab('ev-subdevs', this)">7. #21D JVC Sub-Clusters (5)</button>
       <button class="ev-tab-btn" onclick="openEvTab('ev-tds', this)">8. #15 Open-Data Sources (18)</button>
@@ -1032,7 +1040,7 @@ def main():
 
     <div id="ev-impacts" class="ev-panel active">
       <div class="dl-bar">
-        <strong>Dataset #22 — Project-to-Road Connection &amp; 4-Tier Epistemic Impact Matrix (37 Links):</strong>
+        <strong>Dataset #22 — Project-to-Road Connection &amp; 4-Tier Epistemic Impact Matrix (37 Links, All &lt; 3.0 km):</strong>
         <a class="dl-chip" href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/22_project_road_impact_links.csv">GitHub Raw CSV</a>
         <a class="dl-chip" href="csv_raw/22_project_road_impact_links.csv.txt">Plain-Text (.csv.txt)</a>
         <a class="dl-chip" href="csv_view/22_project_road_impact_links.html">Browser Table</a>
@@ -1044,7 +1052,7 @@ def main():
 
     <div id="ev-obs" class="ev-panel">
       <div class="dl-bar">
-        <strong>Dataset #17 — Multi-Period Traffic &amp; Congestion Observations (Morning / Midday / Evening / Night + 2024 vs. 2026):</strong>
+        <strong>Dataset #17 — Multi-Period Traffic &amp; Congestion Observations (21 Benchmarks • Morning / Midday / Evening / Night + 2024 vs. 2026):</strong>
         <a class="dl-chip" href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/17_traffic_congestion_observations.csv">GitHub Raw CSV</a>
         <a class="dl-chip" href="csv_raw/17_traffic_congestion_observations.csv.txt">Plain-Text (.csv.txt)</a>
         <a class="dl-chip" href="csv_view/17_traffic_congestion_observations.html">Browser Table</a>
@@ -1055,7 +1063,7 @@ def main():
 
     <div id="ev-roads" class="ev-panel">
       <div class="dl-bar">
-        <strong>Dataset #16 — Dubai &amp; Sharjah Road Network, Speed Limits, Published RTA vs. HCM Capacities &amp; HGV Bans (20 Corridors):</strong>
+        <strong>Dataset #16 — Dubai &amp; Sharjah Road Network, Speed Limits, Published RTA vs. HCM Capacities &amp; HGV Bans (23 Corridors):</strong>
         <a class="dl-chip" href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/16_road_network_dataset.csv">GitHub Raw CSV</a>
         <a class="dl-chip" href="csv_raw/16_road_network_dataset.csv.txt">Plain-Text (.csv.txt)</a>
         <a class="dl-chip" href="csv_view/16_road_network_dataset.html">Browser Table</a>
@@ -1078,7 +1086,7 @@ def main():
 
     <div id="ev-ints" class="ev-panel">
       <div class="dl-bar">
-        <strong>Dataset #21B — Critical Intersections, Grade-Separated Flyovers &amp; Access Bottleneck Nodes (10 Nodes):</strong>
+        <strong>Dataset #21B — Critical Intersections, Grade-Separated Flyovers &amp; Access Bottleneck Nodes (16 Nodes):</strong>
         <a class="dl-chip" href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/21b_intersections_and_nodes.csv">GitHub Raw CSV</a>
         <a class="dl-chip" href="csv_raw/21b_intersections_and_nodes.csv.txt">Plain-Text (.csv.txt)</a>
         <a class="dl-chip" href="csv_view/21b_intersections_and_nodes.html">Browser Table</a>
@@ -1156,9 +1164,9 @@ def main():
     <div id="ev-arch" class="ev-panel">
       <div class="detail-card" style="line-height:1.6;">
         <h4>1. Dataset Identifier Range Reconciliation (`15` through `22` = 11 Distinct Datasets + 18-Table Spatial SQLite DB)</h4>
-        <p>Why do identifiers <code>15</code> through <code>22</code> (8 root numbers) yield <strong>11 new CSV/JSON datasets</strong>? Because identifier <code>21</code> (the Spatial Database package) is normalized into <strong>4 distinct spatial entity datasets (<code>21a</code>, <code>21b</code>, <code>21c</code>, <code>21d</code>)</strong> plus the 7 single-numbered datasets (<code>15</code>, <code>16</code>, <code>17</code>, <code>18</code>, <code>19</code>, <code>20</code>, <code>22</code>) = <strong>11 datasets (144 rows)</strong>, all compiled into <code>21_task2_spatial_database.sqlite</code> (18 tables) and <code>11_consolidated_database.sqlite</code> (29 tables, 1,465 total rows).</p>
+        <p>Why do identifiers <code>15</code> through <code>22</code> (8 root numbers) yield <strong>11 new CSV/JSON datasets</strong>? Because identifier <code>21</code> (the Spatial Database package) is normalized into <strong>4 distinct spatial entity datasets (<code>21a</code>, <code>21b</code>, <code>21c</code>, <code>21d</code>)</strong> plus the 7 single-numbered datasets (<code>15</code>, <code>16</code>, <code>17</code>, <code>18</code>, <code>19</code>, <code>20</code>, <code>22</code>) = <strong>11 datasets (156 rows)</strong>, all compiled into <code>21_task2_spatial_database.sqlite</code> (18 tables) and <code>11_consolidated_database.sqlite</code> (29 tables, 1,495 total rows).</p>
         <h4>2. Technical Architecture, Epistemic Methodology &amp; Community Digital Twin Roadmap (Sections 11, 16 &amp; 17)</h4>
-        <p><strong>Data Pipeline &amp; Spatial Reference Architecture:</strong> Task 1 Validated Repository (85 projects, 205 documents, 432 sources) → Normalized Relational &amp; Spatial Store (<code>21_task2_spatial_database.sqlite</code> / PostGIS-ready schema + <code>dubai_sharjah_gis_bundle.geojson</code> in WGS84 <code>EPSG:4326</code> with geodesic/UTM Zone 40N <code>EPSG:32640</code> distance math) → Deterministic Spatial &amp; Temporal Query Engine → Interactive 11-Layer Geospatial Map + Map-Linked Q&amp;A Layer.</p>
+        <p><strong>Data Pipeline &amp; Spatial Reference Architecture:</strong> Task 1 + Task 2 Validated Repository (85 projects, 205 documents, 450 sources) → Normalized Relational &amp; Spatial Store (<code>21_task2_spatial_database.sqlite</code> / PostGIS-ready schema + <code>dubai_sharjah_gis_bundle.geojson</code> in WGS84 <code>EPSG:4326</code> with geodesic/UTM Zone 40N <code>EPSG:32640</code> distance math) → Deterministic Spatial &amp; Temporal Query Engine → Interactive 11-Layer Geospatial Map + Map-Linked Q&amp;A Layer.</p>
         <p><strong>Strict Epistemic Guardrails (Zero Fabricated Causality &amp; Missing Data vs. Zero Congestion):</strong> Every road capacity separates <code>PUBLISHED_OFFICIAL</code> (RTA statutory corridor capacities) from <code>HCM_7TH_EDITION_ESTIMATE</code>. Whenever a corridor does not have a published observation for a selected time window (e.g., off-peak <code>Midday</code> or <code>Night</code> on peak-only open-data segments), it is rendered in <strong>dashed slate-grey (<code>Data Unavailable for Selected Window</code>)</strong> and never conflated with free-flow/zero congestion (green).</p>
       </div>
     </div>
@@ -1211,8 +1219,8 @@ def main():
 
       setBasemap("dark", document.querySelector(".bm-btn.active"));
 
-      // Add default active layer groups
-      ["communities", "devbounds", "roads", "traffic", "impacts", "intersections", "incidents", "transit", "projects"].forEach(k => {
+      // Add all 11 default active layer groups
+      ["communities", "devbounds", "roads", "traffic", "impacts", "intersections", "incidents", "transit", "facilities", "parking", "projects"].forEach(k => {
         layerGroups[k].addTo(map);
       });
 
@@ -1621,11 +1629,11 @@ def main():
             <div class="kv-row"><div class="kv-lbl">2. Project Category &amp; Current Lifecycle Status</div><div class="kv-val"><strong>${p.lifecycle_status}</strong> (${p.project_category})<br/><span style="color:var(--muted);">${p.status_evidence_and_history}</span></div></div>
             <div class="kv-row"><div class="kv-lbl">3. Construction Timeline &amp; Milestones</div><div class="kv-val">${p.timeline_milestones}</div></div>
             <div class="kv-row"><div class="kv-lbl">4. Site Plot Area, GFA &amp; Building Scale</div><div class="kv-val"><strong>Plot:</strong> ${p.land_plot_area}<br/><strong>GFA:</strong> ${p.gross_floor_area}<br/><strong>Towers/Buildings:</strong> ${p.towers_and_buildings_count} (${p.floors_and_height})<br/><strong>Units:</strong> ${p.apartments_and_villas_count}</div></div>
-            <div class="kv-row"><div class="kv-lbl">5. Nearby Road Connections &amp; Geodesic Distance (Section D2)</div><div class="kv-val">${link ? `<strong>Primary Corridor:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a> (${link.distance_to_primary_road_km} km — ${link.connection_relationship_type})<br/><strong>Nearest Junction:</strong> ${link.nearest_intersection_name} (${link.distance_to_intersection_km} km)` : "Connected to arterial grid"}</div></div>
-            <div class="kv-row"><div class="kv-lbl">6. Observed Traffic &amp; Modelled Construction HGV Load (Section D4)</div><div class="kv-val">${link ? `<strong>Road Condition:</strong> ${link.observed_road_traffic_condition}<br/><strong>Modelled HGV Trips:</strong> ${link.modelled_daily_hgv_concrete_rebar_trips}<br/><strong>HGV Ban Window:</strong> ${link.hgv_routing_and_ban_compliance}` : ""}</div></div>
+            <div class="kv-row"><div class="kv-lbl">5. Nearby Road Connections &amp; Geodesic Distance (Section D2 — Verified &lt; 3.0 km)</div><div class="kv-val">${link ? `<strong>Primary Corridor:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a> (<strong>${link.distance_to_primary_road_km} km</strong> — ${link.connection_relationship_type})<br/><strong>Nearest Junction:</strong> ${link.nearest_intersection_name} (${link.distance_to_intersection_km} km)<br/><span style="color:var(--muted);">${link.impact_radius_justification}</span>` : "Connected to arterial grid"}</div></div>
+            <div class="kv-row"><div class="kv-lbl">6. Observed Traffic &amp; 4-Component Modelled Construction HGV Breakdown (Section D4)</div><div class="kv-val">${link ? `<strong>Road Condition:</strong> ${link.observed_road_traffic_condition}<br/><strong>4-Component HGV Math:</strong> <strong>${link.total_hgv_round_trips_day} HGV round-trips/day (${link.total_hgv_one_way_movements_day} one-way/day)</strong> = ${link.concrete_mixer_loads_day} concrete mixers + ${link.rebar_trailer_loads_day} rebar trailers + ${link.earthworks_tipper_loads_day} earthworks tippers + ${link.mep_fitout_truck_loads_day} MEP/fit-out trucks<br/><span style="color:var(--cyan);">Equation: ${link.modelled_daily_hgv_concrete_rebar_trips}</span><br/><strong>HGV Ban Window:</strong> ${link.hgv_routing_and_ban_compliance}` : ""}</div></div>
             <div class="kv-row"><div class="kv-lbl">7. Main Contractors &amp; Consultants</div><div class="kv-val">${p.main_contractor_and_consultants}</div></div>
             <div class="kv-row"><div class="kv-lbl">8. Supporting Project Documents (${docs.length} Verified)</div><div class="kv-val">${docsHtml}</div></div>
-            <div class="kv-row"><div class="kv-lbl">9. Primary Provenance Source &amp; Last Verified Date</div><div class="kv-val"><a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> (Verified: ${p.last_verified_date})</div></div>
+            <div class="kv-row"><div class="kv-lbl">9. Dual Provenance Trail (Project Source + Corridor Traffic Source)</div><div class="kv-val"><strong>Project Record (${link ? link.project_source_id : p.project_id}):</strong> <a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> (Verified: ${p.last_verified_date})<br/>${link ? `<strong>Corridor Traffic (${link.corridor_traffic_source_id}):</strong> <a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_source_title} ↗</a>` : ""}</div></div>
           </div>
         </div>
       `;
@@ -1667,9 +1675,8 @@ def main():
       map.flyTo([midPt[1], midPt[0]], 13, { duration: 0.7 });
 
       const obsHtml = roadObs.map(o => {
-        const srcObj = DATA.sources[o.source_id];
-        const srcHtml = srcObj && srcObj.url
-          ? `<a href="${srcObj.url}" target="_blank" rel="noopener">${o.source_id} (${srcObj.publisher || 'Official Source'}) ↗</a>`
+        const srcHtml = o.source_url
+          ? `<a href="${o.source_url}" target="_blank" rel="noopener">${o.source_id}: ${o.source_report_title || 'Official Source'} (${o.publication_date || ''}) ↗</a>`
           : o.source_id;
         return `
         <div style="background:#090d16; border:1px solid #334155; padding:7px; border-radius:6px; margin-bottom:6px;">
@@ -1677,10 +1684,12 @@ def main():
             <span>${o.time_period}</span>
             <span style="color:${congestionColor(o.congestion_level)};">${o.average_speed_kmh} km/h (${o.travel_time_min_per_10km} min/10km)</span>
           </div>
-          <div style="font-size:0.71rem; color:#e2e8f0; margin-top:3px;"><strong>Timestamp:</strong> ${o.timestamp} | <strong>Source:</strong> ${srcHtml}</div>
+          <div style="font-size:0.71rem; color:#38bdf8; margin-top:3px;"><strong>Evidence Level:</strong> ${o.evidence_level || o.confidence} | <strong>Period:</strong> ${o.measurement_period || o.timestamp}</div>
+          <div style="font-size:0.71rem; color:#e2e8f0; margin-top:2px;"><strong>Provenance:</strong> ${srcHtml}</div>
           <div style="font-size:0.71rem; color:#cbd5e1; margin-top:2px;"><strong>Geographic Coverage:</strong> ${o.community} — ${o.location}</div>
           <div style="font-size:0.72rem; color:#cbd5e1; margin-top:2px;"><strong>Congestion:</strong> ${o.congestion_level} | <strong>Vol:</strong> ${o.traffic_volume_vph}</div>
           <div style="font-size:0.70rem; color:var(--cyan); margin-top:2px;"><strong>Basis:</strong> ${o.observation_type}</div>
+          <div style="font-size:0.70rem; color:#fcd34d; margin-top:2px;"><strong>Benchmark Scope:</strong> ${o.series_scope_note || 'Representative corridor benchmark snapshot (not a live sensor stream)'}</div>
           <div style="font-size:0.70rem; color:var(--muted); margin-top:2px;"><strong>2024 vs 2026:</strong> ${o.comparison_period}</div>
           <div style="font-size:0.69rem; color:#94a3b8; margin-top:2px;"><em>Limitation: ${o.data_limitations}</em></div>
         </div>`;
@@ -1900,9 +1909,9 @@ def main():
                 </div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">3. Al Khan / Al Mamzar Cross-Border Waterfront (E11)</div>
+                <div class="kv-lbl">3. Al Khan Waterfront, Al Hamriyah North &amp; Khorfakkan East Coast (E11 / S142)</div>
                 <div class="kv-val">
-                  • <strong>Project:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH4')">PRJ-SH4 Maryam Island (18+ Waterfront Buildings)</a> connected to <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-04')">Al Ittihad Rd (E11) &amp; Al Taawun Interchange</a>.
+                  • <strong>Waterfront &amp; Coastal Corridors:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH4')">PRJ-SH4 Maryam Island</a> (0.28 km to <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-04')">RD-SHJ-04 Al Ittihad Rd E11</a>); <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH1')">PRJ-SH1 Sharjah Waterfront City</a> (0.37 km to <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-07')">RD-SHJ-07 Al Ittihad Rd North E11 Al Hamriyah</a>); and <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH11')">PRJ-SH11 Khorfakkan Beach Resort</a> (0.30 km to <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-06')">RD-SHJ-06 Sharjah–Khorfakkan Highway S142 East Coast</a>).
                 </div>
               </div>
             </div>
@@ -1959,7 +1968,7 @@ def main():
                 </div>
               `).join("")}
             </div>
-            <div style="margin-top:8px; font-size:0.70rem; color:var(--muted);"><strong>Sources:</strong> DLD <code>dld_projects-open</code>, RTA AED 689M Hessa St &amp; AED 700M Al Khail Rd Releases (<code>SRC-016</code>, <code>SRC-022</code>, <code>SRC-023</code>).</div>
+            <div style="margin-top:8px; font-size:0.70rem; color:var(--muted);"><strong>Sources:</strong> DLD <code>dld_projects-open</code> (<code>SRC-020</code> JVC Master Community), RTA AED 689M Hessa St D61 Release (<code>SRC-433</code>), and RTA AED 700M Al Khail Rd E44 Release (<code>SRC-434</code>).</div>
           </div>
         `;
       } else if (q.includes("morning") || q.includes("evening") || q.includes("compare") || q.includes("vary") || q.includes("time")) {

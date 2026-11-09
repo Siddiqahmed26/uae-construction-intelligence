@@ -13,7 +13,8 @@
     "forecast_traffic_volumes": "Corridor capacity doubled from 4,000 vph/dir (8,000 total) to 8,000 vph/dir (16,000 total); travel time cut from 30 min to 7 min.",
     "proposed_mitigation_and_logistics": "Widening D61 from 2 to 4 lanes/dir, 4 multi-level directional bridges, 4 new JVC access gates, and 13.5 km cycling/pedestrian track.",
     "supporting_document_url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-433"
   },
   {
     "tis_id": "TIS-DXB-02",
@@ -29,7 +30,8 @@
     "forecast_traffic_volumes": "Increases E44 corridor intake by +19,600 vehicles per hour across 7 sites and reduces travel time by 30%.",
     "proposed_mitigation_and_logistics": "3,300 linear meters of new bridges (including 700m 5-lane Zabeel bridge) + collector-distributor slip lanes.",
     "supporting_document_url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-434"
   },
   {
     "tis_id": "TIS-DXB-03",
@@ -45,7 +47,8 @@
     "forecast_traffic_volumes": "Ras Al Khor main corridor widened to 8,000–10,000 vph/dir; multi-bridge complex rated up to 30,000 vph total; Metro Blue Line adds 320,000 daily transit riders.",
     "proposed_mitigation_and_logistics": "Widening D62 from 3 to 4–6 lanes, 3,000 vph Financial Centre slip bridge, and AED 18B Dubai Metro Blue Line viaduct.",
     "supporting_document_url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-439"
   },
   {
     "tis_id": "TIS-DXB-04",
@@ -61,7 +64,8 @@
     "forecast_traffic_volumes": "Al Mustaqbal St capacity increased 33% from 6,600 to 8,800 vph (both dirs) via 3-to-4 lane widening and tunnels.",
     "proposed_mitigation_and_logistics": "Mandatory night-only (22:00–06:00) RTA Heavy Vehicle Mobility Permits for raft/tower concrete pours on SZR & Business Bay.",
     "supporting_document_url": "https://www.rta.ae/wps/portal/rta/ae/home/services/content/heavy-vehicle-no-objection-certificate",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-438"
   },
   {
     "tis_id": "TIS-DXB-05",
@@ -77,7 +81,8 @@
     "forecast_traffic_volumes": "E611 & E77 provide >11,400 vph/dir capacity, absorbing 6,000+ daily HGV construction trips at LOS B.",
     "proposed_mitigation_and_logistics": "On-site concrete batching plants at DWC & Azizi Venice + direct E611 grade-separated construction interchanges.",
     "supporting_document_url": "https://www.dubaiairports.ae/corporate/media-centre",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-442"
   },
   {
     "tis_id": "TIS-DXB-06",
@@ -93,7 +98,8 @@
     "forecast_traffic_volumes": "D63 capacity expanded to 16,000 vph (8,000 vph/dir) to serve 1M+ corridor population and 34,800 pipeline units.",
     "proposed_mitigation_and_logistics": "Construction HGVs routed via E611 Emirates Rd (24/7 exempt) and D61 East off-peak gates.",
     "supporting_document_url": "https://www.rta.ae/wps/portal/rta/ae/home/news-and-media/all-news",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-440"
   },
   {
     "tis_id": "TIS-SHJ-01",
@@ -109,7 +115,8 @@
     "forecast_traffic_volumes": "E311 operates near 9,650 vph/dir during AM/PM peaks; Aljada & Madar direct bridges segregate internal community trips.",
     "proposed_mitigation_and_logistics": "Grade-separated Aljada/Airport Rd E88 flyovers, University City Rd widening, and SRTA bus feeder integration.",
     "supporting_document_url": "https://www.srta.gov.ae/en/",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-444"
   },
   {
     "tis_id": "TIS-SHJ-02",
@@ -125,6 +132,7 @@
     "forecast_traffic_volumes": "E611 provides 9,500 vph/dir capacity; SRTA Al Dhaid 320m bridge (opening Nov 2026) streamlines Central/Eastern corridor flow.",
     "proposed_mitigation_and_logistics": "Direct E611 collector slip roads for Tilal City & Masaar + dedicated HGV construction access gates.",
     "supporting_document_url": "https://www.srta.gov.ae/en/",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-445"
   }
 ]

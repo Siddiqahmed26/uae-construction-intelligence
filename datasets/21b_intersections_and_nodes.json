@@ -11,7 +11,7 @@
     "served_project_ids": "PRJ-D16, PRJ-D19 + JVC Districts 10–15 High-Rise Cluster",
     "peak_level_of_service": "LOS F (Pre-Upgrade Evening Peak Queue) → Target LOS C post-RTA AED 689M 4-lane flyover completion",
     "rta_upgrade_and_mitigation": "Active RTA AED 689M Hessa St Upgrade & AED 700M Al Khail Rd Bridge expansion adding direct 2-lane collector ramps.",
-    "source_id": "SRC-022",
+    "source_id": "SRC-433",
     "confidence": "Verified"
   },
   {
@@ -26,7 +26,7 @@
     "served_project_ids": "JVC Districts 10, 11, 12, 13 (Binghatti, Ellington, Danube, Samana active sites)",
     "peak_level_of_service": "LOS E/F (07:45–09:15 AM outbound merge & 17:30–19:45 PM inbound queue)",
     "rta_upgrade_and_mitigation": "RTA/Nakheel added 4 new entry/exit access points and signal timing optimization reducing internal JVC exit delay by 25–30%.",
-    "source_id": "SRC-022",
+    "source_id": "SRC-441",
     "confidence": "Verified"
   },
   {
@@ -41,7 +41,7 @@
     "served_project_ids": "JVC Districts 14, 15, 16, 18 active tower construction sites",
     "peak_level_of_service": "LOS D/E (Weaving friction between outbound JVC commuters and E44 main-line flow)",
     "rta_upgrade_and_mitigation": "Upgraded under RTA AED 700M Al Khail Road Improvement Project with dedicated collector bridge.",
-    "source_id": "SRC-023",
+    "source_id": "SRC-434",
     "confidence": "Verified"
   },
   {
@@ -56,7 +56,7 @@
     "served_project_ids": "PRJ-D16 (DAMAC Lagoons), PRJ-D19 (Tilal Al Ghaf & Ghaf Woods), PRJ-D5 (The Oasis)",
     "peak_level_of_service": "LOS E (High HGV concrete/earthworks turning volume during 09:00–13:00 + commuter peak 17:30–20:00)",
     "rta_upgrade_and_mitigation": "Primary construction logistics staging interchange connecting E311 to Tilal Al Ghaf & DAMAC Lagoons.",
-    "source_id": "SRC-022",
+    "source_id": "SRC-433",
     "confidence": "Verified"
   },
   {
@@ -71,7 +71,7 @@
     "served_project_ids": "PRJ-D11 (Burj Binghatti Jacob & Co), PRJ-D20 (DIFC Zabeel), PRJ-D17 (Sobha Hartland II)",
     "peak_level_of_service": "LOS D/E (Improved from LOS F following RTA Zabeel 700m bridge & 3,000 vph slip ramp opening)",
     "rta_upgrade_and_mitigation": "RTA doubled exit lane capacity to 3,000 vph and opened 5-lane Zabeel bridge connecting Financial Centre Rd to Al Khail Rd.",
-    "source_id": "SRC-023",
+    "source_id": "SRC-438",
     "confidence": "Verified"
   },
   {
@@ -86,7 +86,7 @@
     "served_project_ids": "PRJ-D3 (Dubai Creek Harbour & Creek Tower), PRJ-D8 (Dubai Metro Blue Line), PRJ-D17 (Sobha Hartland II)",
     "peak_level_of_service": "LOS D (Active roadwork zone for Ras Al Khor widening & Metro Blue Line viaduct piers)",
     "rta_upgrade_and_mitigation": "RTA widening Ras Al Khor Rd to 6 lanes + constructing dedicated Creek Harbour access bridges (capacity up to 10,000–30,000 vph).",
-    "source_id": "SRC-023",
+    "source_id": "SRC-439",
     "confidence": "Verified"
   },
   {
@@ -101,7 +101,52 @@
     "served_project_ids": "PRJ-D1 (DWC Airport AED 128B), PRJ-D15 (Azizi Venice), PRJ-D18 (Expo City), PRJ-D6 (The Heights)",
     "peak_level_of_service": "LOS B/C (High geometric capacity; handles heavy 24/7 aggregate/concrete/rebar HGV fleets without passenger gridlock)",
     "rta_upgrade_and_mitigation": "Grade-separated 6-lane E611 × E77 interchange engineered for DWC & Expo 2020 logistics.",
-    "source_id": "SRC-021",
+    "source_id": "SRC-442",
+    "confidence": "Verified"
+  },
+  {
+    "intersection_id": "INT-DXB-08",
+    "intersection_name": "Sheikh Zayed Road (E11) × Palm Jebel Ali Causeway & Waterfront Interchange",
+    "emirate": "Dubai",
+    "community": "Dubai Marina, Palm Jumeirah & Palm Jebel Ali Coastal Belt",
+    "intersection_type": "Grade-Separated Coastal Causeway & Marine Logistics Interchange",
+    "latitude": 24.992,
+    "longitude": 55.005,
+    "connected_road_ids": "RD-DXB-02",
+    "served_project_ids": "PRJ-D2 (Palm Jebel Ali Fronds A–G & Marine Infrastructure)",
+    "peak_level_of_service": "LOS B/C (Dedicated marine/causeway construction access ramps off E11 South)",
+    "rta_upgrade_and_mitigation": "RTA / Nakheel AED 270M+ public access road and bridge link connecting Palm Jebel Ali directly to E11.",
+    "source_id": "SRC-435",
+    "confidence": "Verified"
+  },
+  {
+    "intersection_id": "INT-DXB-09",
+    "intersection_name": "King Salman bin Abdulaziz Al Saud St (D94) × Palm Jumeirah Gateway & Marina Interchange",
+    "emirate": "Dubai",
+    "community": "Dubai Marina, Palm Jumeirah & Palm Jebel Ali Coastal Belt",
+    "intersection_type": "Multi-Level Coastal Trumpet Interchange & Monorail/Tram Crossing",
+    "latitude": 25.098,
+    "longitude": 55.151,
+    "connected_road_ids": "RD-DXB-01, RD-DXB-16",
+    "served_project_ids": "PRJ-D12 (Six Senses Marina), PRJ-D13 (Franck Muller Aeternitas), PRJ-D14 (Como Residences Palm)",
+    "peak_level_of_service": "LOS D/E (Evening leisure & residential peak queue; HGV deliveries restricted to 22:00–06:00)",
+    "rta_upgrade_and_mitigation": "RTA directional slip bridges from E11 Interchange 5 to D94 and Palm Jumeirah Trunk.",
+    "source_id": "SRC-443",
+    "confidence": "Verified"
+  },
+  {
+    "intersection_id": "INT-DXB-10",
+    "intersection_name": "Al Khaleej Street (D92 / Infinity Bridge) × Dubai Islands Causeway Interchange",
+    "emirate": "Dubai",
+    "community": "Dubai Islands & Deira Waterfront (Al Shindagha / Infinity Bridge Corridor)",
+    "intersection_type": "Multi-Span Coastal Bridge & Underpass Interchange",
+    "latitude": 25.298,
+    "longitude": 55.312,
+    "connected_road_ids": "RD-DXB-14",
+    "served_project_ids": "PRJ-D4 (Dubai Islands 5-Island Masterplan)",
+    "peak_level_of_service": "LOS C (Relieved by RTA 12-lane Infinity Bridge & new direct Dubai Islands bridge link)",
+    "rta_upgrade_and_mitigation": "RTA AED 431M direct bridge entrance from Bur Dubai / Al Khaleej St to Dubai Islands providing 16,000 vph capacity.",
+    "source_id": "SRC-443",
     "confidence": "Verified"
   },
   {
@@ -116,22 +161,22 @@
     "served_project_ids": "PRJ-SH2 (Aljada), PRJ-SH6 (Al Mamsha), PRJ-SH8 (Olfah), PRJ-SH9 (Al Zahia)",
     "peak_level_of_service": "LOS E/F (Morning southbound commuter wave to Dubai + University City/Aljada local traffic)",
     "rta_upgrade_and_mitigation": "SRTA / Arada upgraded Aljada & Madar access bridges and University City Road collector lanes.",
-    "source_id": "SRC-091",
+    "source_id": "SRC-444",
     "confidence": "Verified"
   },
   {
     "intersection_id": "INT-SHJ-02",
-    "intersection_name": "Emirates Road (E611) × Al Dhaid Road (E88) / Maliha Road (E102) Masaar–Tilal Gate",
+    "intersection_name": "Emirates Road (E611) × Al Dhaid Road (E88) / Al Badiyah Interchange (Masaar–Tilal Gate)",
     "emirate": "Sharjah",
     "community": "Masaar, Tilal City, Sustainable City & KBS City (Sharjah Priority 2)",
     "intersection_type": "Grade-Separated Cloverleaf Highway Interchange",
-    "latitude": 25.298,
-    "longitude": 55.588,
-    "connected_road_ids": "RD-SHJ-02, RD-SHJ-03",
-    "served_project_ids": "PRJ-SH3 (Masaar), PRJ-SH5 (KBS City), PRJ-SH6 (Hayyan), PRJ-SH7 (Tilal City), PRJ-SH10 (Sustainable City), PRJ-SH12",
-    "peak_level_of_service": "LOS C/D (Evening commuter queue returning from Dubai via E611 + HGV material deliveries to 6 masterplans)",
+    "latitude": 25.274,
+    "longitude": 55.576,
+    "connected_road_ids": "RD-SHJ-02, RD-SHJ-03, RD-SHJ-05",
+    "served_project_ids": "PRJ-SH3 (Masaar), PRJ-SH6 (Hayyan), PRJ-SH7 (Tilal City), PRJ-SH10 (Sustainable City)",
+    "peak_level_of_service": "LOS C/D (Evening commuter queue returning from Dubai via E611 + HGV material deliveries)",
     "rta_upgrade_and_mitigation": "SRTA Al Badiyah & E88 bridge upgrades plus dedicated collector slip lanes for Tilal City and Masaar.",
-    "source_id": "SRC-091",
+    "source_id": "SRC-445",
     "confidence": "Verified"
   },
   {
@@ -146,7 +191,52 @@
     "served_project_ids": "PRJ-SH4 (Maryam Island Waterfront Masterplan)",
     "peak_level_of_service": "LOS F (06:30–09:30 AM toward Dubai & 17:00–20:30 PM toward Sharjah)",
     "rta_upgrade_and_mitigation": "SRTA inaugurated new Al Taawun bridge phases and waterfront corniche collector roads serving Maryam Island.",
-    "source_id": "SRC-091",
+    "source_id": "SRC-444",
+    "confidence": "Verified"
+  },
+  {
+    "intersection_id": "INT-SHJ-04",
+    "intersection_name": "Maliha–Khorfakkan Highway (E102 / S142) × Rodhat Al Qrt / Khalid Bin Sultan City Interchange",
+    "emirate": "Sharjah",
+    "community": "Emirates Road (E611) East Sharjah Belt — Masaar, Tilal, Sustainable City & KBS City",
+    "intersection_type": "Grade-Separated Regional Highway Overpass & Collector Access",
+    "latitude": 25.2915,
+    "longitude": 55.654,
+    "connected_road_ids": "RD-SHJ-05, RD-SHJ-02",
+    "served_project_ids": "PRJ-SH5 (Khalid Bin Sultan City), PRJ-SH12 (Jawaher Boston Medical District & BEEAH Healthcare Hub)",
+    "peak_level_of_service": "LOS B/C (High reserve capacity along E102/S142; direct HGV earthworks and concrete access)",
+    "rta_upgrade_and_mitigation": "SRTA / SDPW upgraded S142/E102 interchanges serving BEEAH HQ, Khalid Bin Sultan City, and Jawaher Medical District.",
+    "source_id": "SRC-446",
+    "confidence": "Verified"
+  },
+  {
+    "intersection_id": "INT-SHJ-05",
+    "intersection_name": "Sharjah–Khorfakkan Highway (S142) × Khorfakkan Corniche / Rugaylat Resort Gateway",
+    "emirate": "Sharjah",
+    "community": "Khorfakkan East Coast & Kalba Waterfront (Sharjah Eastern Region)",
+    "intersection_type": "Signalized Coastal Arterial Junction & Resort Access Roundabout",
+    "latitude": 25.3375,
+    "longitude": 56.3535,
+    "connected_road_ids": "RD-SHJ-06",
+    "served_project_ids": "PRJ-SH11 (Khorfakkan Beach Resort, Jabal Resort & Kalba Waterfront Masterplan)",
+    "peak_level_of_service": "LOS B/C (Moderate weekend leisure traffic; weekday construction logistics served via S142/E99)",
+    "rta_upgrade_and_mitigation": "Connected directly to the AED 6B Sharjah–Khorfakkan Highway (S142) and Khorfakkan Corniche waterfront upgrade.",
+    "source_id": "SRC-446",
+    "confidence": "Verified"
+  },
+  {
+    "intersection_id": "INT-SHJ-06",
+    "intersection_name": "Al Ittihad Road North (E11) × Al Hamriyah / Sharjah Waterfront City Interchange",
+    "emirate": "Sharjah",
+    "community": "Al Hamriyah & Northern Sharjah Coastline",
+    "intersection_type": "Grade-Separated Coastal Highway Interchange",
+    "latitude": 25.4925,
+    "longitude": 55.5145,
+    "connected_road_ids": "RD-SHJ-07",
+    "served_project_ids": "PRJ-SH1 (Sharjah Waterfront City — 10-Island Coastal Masterplan)",
+    "peak_level_of_service": "LOS B (Uncongested 3-lane dual carriageway along northern E11 Al Hamriyah corridor)",
+    "rta_upgrade_and_mitigation": "Direct grade-separated bridge access from E11 North into Sharjah Waterfront City islands and Al Hamriyah.",
+    "source_id": "SRC-447",
     "confidence": "Verified"
   }
 ]

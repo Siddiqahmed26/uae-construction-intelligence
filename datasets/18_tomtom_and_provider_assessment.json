@@ -11,7 +11,8 @@
     "commercial_usage_and_retention_terms": "Permits live visualization in commercial/client dashboards; STRICTLY PROHIBITS archiving or banking live API responses to build a standalone historical traffic database.",
     "prototype_recommendation": "RECOMMENDED PRIMARY LIVE API — Best price-to-coverage ratio and 30s update resolution for live Dubai & Sharjah road overlays.",
     "official_url": "https://developer.tomtom.com/traffic-api/documentation/product-information/introduction",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-436"
   },
   {
     "provider_id": "PRV-02",
@@ -25,7 +26,8 @@
     "commercial_usage_and_retention_terms": "Permits exporting derived historical speed/travel-time tables for planning studies, TIS reports, and client decision support.",
     "prototype_recommendation": "RECOMMENDED FOR PHASE 2 HISTORICAL DIGITAL TWIN — Required only when client needs arbitrary historical date-range queries per road segment.",
     "official_url": "https://move.tomtom.com/",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-436"
   },
   {
     "provider_id": "PRV-03",
@@ -39,7 +41,8 @@
     "commercial_usage_and_retention_terms": "Full permission to store, index in PostgreSQL/PostGIS/SQLite, and combine with Task 1 construction records with attribution to RTA / Digital Dubai.",
     "prototype_recommendation": "MANDATORY STATUTORY BASELINE (INTEGRATED NOW) — Provides verified official road capacities, Salik gate counts, HGV bans, and DLD project records.",
     "official_url": "https://www.dubaipulse.gov.ae/organisation/rta",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-450"
   },
   {
     "provider_id": "PRV-04",
@@ -53,7 +56,8 @@
     "commercial_usage_and_retention_terms": "Prohibits persistent storage or offline archiving of live speed feeds; strong support for HGV truck routing attributes (axle weight, height, hazmat).",
     "prototype_recommendation": "STRONG SECONDARY OPTION — Particularly valuable in Phase C (Mobility & Logistics) for HGV construction truck routing.",
     "official_url": "https://www.here.com/platform/traffic",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-450"
   },
   {
     "provider_id": "PRV-05",
@@ -67,7 +71,8 @@
     "commercial_usage_and_retention_terms": "STRICTLY RESTRICTED: Google TOS prohibits caching directions, travel times, or displaying Google traffic data on non-Google basemaps (e.g., MapLibre).",
     "prototype_recommendation": "NOT RECOMMENDED FOR POSTGIS ANALYTICS — High cost and strict TOS prohibition against storing travel times or mixing with MapLibre.",
     "official_url": "https://developers.google.com/maps/documentation/routes",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-450"
   },
   {
     "provider_id": "PRV-06",
@@ -81,6 +86,7 @@
     "commercial_usage_and_retention_terms": "Mapbox live traffic tiles cannot be scraped into a database; MapLibre GL JS + OpenStreetMap/CARTO vector tiles have zero vendor lock-in.",
     "prototype_recommendation": "ADOPTED FOR FRONTEND RENDERING — MapLibre GL JS / Leaflet open-source engine paired with PostGIS/SQLite GeoJSON + TomTom/RTA data layer.",
     "official_url": "https://docs.mapbox.com/Stock/traffic/",
-    "confidence": "Verified"
+    "confidence": "Verified",
+    "source_id": "SRC-450"
   }
 ]

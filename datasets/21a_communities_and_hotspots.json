@@ -38,7 +38,7 @@
     "observed_congestion_severity": "Severe (AM Peak 07:30–09:30 & PM Peak 17:00–20:00 on Hessa St D61 & Al Khail Rd E44 slip ramps)",
     "construction_activity_index_score": "94.5 / 100 (Rank #1 High-Density Mid-Rise/High-Rise Construction Hotspot in Dubai)",
     "activity_index_formula_and_limitations": "Formula: CAI = 0.35*(Active_Units / 30,000) + 0.35*(Active_Structural_GFA_m2 / 4,000,000) + 0.30*(Active_Towers / 70) * 100. Limitation: Reflects spatial concentration of simultaneous multi-developer vertical construction; does not by itself prove causal share of Hessa St commuter congestion.",
-    "source_id": "SRC-016",
+    "source_id": "SRC-020; SRC-433",
     "confidence": "Verified"
   },
   {
@@ -80,7 +80,7 @@
     "observed_congestion_severity": "High to Severe (PM Peak 17:00–20:00 on Financial Centre Rd D71, Al Amal St & Al Khail Rd E44)",
     "construction_activity_index_score": "91.2 / 100 (Rank #1 Supertall & CBD Construction Hotspot)",
     "activity_index_formula_and_limitations": "Formula: Weighted active structural GFA (3.85M m² across supertall towers up to 133 floors) + active tower count. Limitation: CBD congestion is heavily driven by 400k+ daily office/retail commuters; heavy construction trucks are restricted to 22:00–06:00 night windows.",
-    "source_id": "SRC-016",
+    "source_id": "SRC-021; SRC-438",
     "confidence": "Verified"
   },
   {
@@ -122,7 +122,7 @@
     "observed_congestion_severity": "High (AM Peak westbound & PM Peak eastbound on Ras Al Khor Rd D62 & Nad Al Hamar interchange)",
     "construction_activity_index_score": "92.8 / 100 (Major Masterplan & Metro Infrastructure Hotspot)",
     "activity_index_formula_and_limitations": "Combines 4.65M m² active residential/commercial GFA with AED 18B Dubai Metro Blue Line viaduct/tunnel civil works and AED 670M Ras Al Khor Rd widening.",
-    "source_id": "SRC-016",
+    "source_id": "SRC-024; SRC-439",
     "confidence": "Verified"
   },
   {
@@ -164,7 +164,7 @@
     "observed_congestion_severity": "Low to Moderate (High highway reserve capacity on 12-lane E311/E611/E77; localized heavy HGV freight activity)",
     "construction_activity_index_score": "96.0 / 100 (#1 Megaproject Earthworks & Aviation/Residential CapEx Zone in UAE)",
     "activity_index_formula_and_limitations": "Highest active construction GFA (7.85M m²) and HGV concrete/earthworks volume in Dubai, but lowest passenger-car congestion due to direct 24/7 E611/E77 freight access.",
-    "source_id": "SRC-016",
+    "source_id": "SRC-022; SRC-442",
     "confidence": "Verified"
   },
   {
@@ -206,7 +206,7 @@
     "observed_congestion_severity": "Moderate to High (Peak bottleneck at Hessa St D61 / E311 and Umm Suqeim D63 / E311 interchanges)",
     "construction_activity_index_score": "93.4 / 100 (#1 Master-Planned Villa & Lagoon Community Construction Belt)",
     "activity_index_formula_and_limitations": "Reflects 34,800 scheduled villa/townhouse/apartment units across 5 contiguous masterplans between E311 and E611.",
-    "source_id": "SRC-016",
+    "source_id": "SRC-023; SRC-440",
     "confidence": "Verified"
   },
   {
@@ -248,7 +248,7 @@
     "observed_congestion_severity": "High (Evening & weekend leisure/commuter congestion on D94 Marina ring and Palm Jumeirah gateway)",
     "construction_activity_index_score": "82.5 / 100 (Ultra-Luxury Supertall & Coastal Reclamation Zone)",
     "activity_index_formula_and_limitations": "Marina supertalls operate on tight infill plots with strict overnight concrete delivery windows; Palm Jebel Ali marine/bridge works access directly from E11 South.",
-    "source_id": "SRC-016",
+    "source_id": "SRC-025; SRC-443",
     "confidence": "Verified"
   },
   {
@@ -290,7 +290,7 @@
     "observed_congestion_severity": "Moderate (Relieved by RTA 12-lane Infinity Bridge & Al Khaleej Street Tunnel project)",
     "construction_activity_index_score": "79.8 / 100 (Major Coastal Island Masterplan)",
     "activity_index_formula_and_limitations": "Island access is concentrated on Al Khaleej St (D92) bridges; RTA is currently constructing a new direct bridge from Bur Dubai/Al Khaleej St to Dubai Islands.",
-    "source_id": "SRC-016",
+    "source_id": "SRC-025; SRC-443",
     "confidence": "Verified"
   },
   {
@@ -332,7 +332,7 @@
     "observed_congestion_severity": "Severe (AM Peak southbound toward Dubai on E311 & PM Peak northbound + University City/Muwaileh school-commercial traffic)",
     "construction_activity_index_score": "90.6 / 100 (#1 Construction & Commuter Hotspot in Sharjah)",
     "activity_index_formula_and_limitations": "Concentrates >22,000 active units (Aljada, Al Zahia, Al Mamsha, Olfah) directly at the E311 / University City Rd / Airport Rd E88 nexus.",
-    "source_id": "SRC-091",
+    "source_id": "SRC-026; SRC-444",
     "confidence": "Verified"
   },
   {
@@ -370,11 +370,11 @@
     "active_towers_and_buildings": 68,
     "scheduled_units_2025_2029": 18600,
     "active_structural_gfa_sqm": 2950000,
-    "primary_road_corridors": "RD-SHJ-02 (Emirates Rd E611), RD-SHJ-03 (Al Dhaid Rd E88)",
-    "observed_congestion_severity": "Moderate (High capacity on E611; localized evening queues at Al Badiyah / Maliha E102 & Al Dhaid E88 interchanges)",
+    "primary_road_corridors": "RD-SHJ-02 (Emirates Rd E611), RD-SHJ-03 (Al Dhaid Rd E88), RD-SHJ-05 (Maliha–Khorfakkan Rd E102/S142)",
+    "observed_congestion_severity": "Moderate (High capacity on E611/E102; localized evening queues at Al Badiyah / Maliha E102 & Al Dhaid E88 interchanges)",
     "construction_activity_index_score": "86.4 / 100 (#1 Master-Planned Villa & Eco-City Growth Corridor in Sharjah)",
-    "activity_index_formula_and_limitations": "6 major masterplans (Masaar, Tilal, Hayyan, Sustainable City, KBS City, Jawaher Medical) feed directly onto Emirates Rd E611.",
-    "source_id": "SRC-091",
+    "activity_index_formula_and_limitations": "6 major masterplans (Masaar, Tilal, Hayyan, Sustainable City, KBS City, Jawaher Medical) feed directly onto Emirates Rd E611 and Maliha Rd E102.",
+    "source_id": "SRC-027; SRC-445",
     "confidence": "Verified"
   },
   {
@@ -416,7 +416,7 @@
     "observed_congestion_severity": "Severe (Cross-border Sharjah–Dubai AM/PM peak commuter bottleneck at Al Khan / Al Taawun / Al Mamzar E11)",
     "construction_activity_index_score": "76.2 / 100 (High-Friction Cross-Border Waterfront Hotspot)",
     "activity_index_formula_and_limitations": "Even moderate construction truck volume at Maryam Island interacts with extreme baseline E11/Al Taawun commuter congestion.",
-    "source_id": "SRC-091",
+    "source_id": "SRC-116; SRC-444",
     "confidence": "Verified"
   }
 ]
