@@ -402,6 +402,26 @@ def main():
         assert mr["v_corr"] == float(r["average_speed_kmh"]), f"Report sync mismatch on {oid} col11 (v_corr)"
         assert mr["raw_col12_source_pubdate"] == expected_col12, f"Report sync mismatch on {oid} col12: {mr['raw_col12_source_pubdate']} != {expected_col12}"
 
+    # Also parse and verify every row of the Section 2.1 TomTom Baseline Table (7 rows x 3 columns = 21 cells)
+    expected_tomtom_table_cells = {
+        "**City-Wide Average Speed**": ("`average_speed_kmh`", f"**`{city_row['average_speed_kmh']}` km/h**"),
+        "**Travel Time per 10 km**": ("`travel_time_min_per_10km` / `travel_time_formatted`", f"**`{city_row['travel_time_min_per_10km']}` min/10km (`19 min 10 sec`)**"),
+        "**Annual Congestion Level**": ("`tomtom_annual_congestion_pct`", f"**`{city_row['tomtom_annual_congestion_pct']}`**"),
+        "**Overall Rush-Hour Average Speed**": ("`tomtom_rush_hour_avg_speed_kmh`", f"**`{city_row['tomtom_rush_hour_avg_speed_kmh']}`**"),
+        "**Morning Rush-Hour Speed, Time & Congestion**": ("`tomtom_morning_rush_speed_kmh`", f"**`{city_row['tomtom_morning_rush_speed_kmh']}`**"),
+        "**Evening Rush-Hour Speed, Time & Congestion**": ("`tomtom_evening_rush_speed_kmh`", f"**`{city_row['tomtom_evening_rush_speed_kmh']}`**"),
+        "**Free-Flow Speed**": ("`free_flow_speed_kmh`", f"**`{city_row['free_flow_speed_kmh']}`**"),
+    }
+    parsed_tomtom_md = {}
+    for line in report_md.splitlines():
+        if line.startswith("| **City-Wide") or line.startswith("| **Travel Time") or line.startswith("| **Annual Congestion") or line.startswith("| **Overall Rush-Hour") or line.startswith("| **Morning Rush-Hour") or line.startswith("| **Evening Rush-Hour") or line.startswith("| **Free-Flow Speed"):
+            parts = [p.strip() for p in line.strip("|").split("|")]
+            assert len(parts) == 3, f"Expected 3 columns in TomTom Markdown table, got {len(parts)}"
+            parsed_tomtom_md[parts[0]] = (parts[1], parts[2])
+    assert len(parsed_tomtom_md) == 7, f"Expected 7 rows in TomTom Markdown table, got {len(parsed_tomtom_md)}"
+    for k, exp_pair in expected_tomtom_table_cells.items():
+        assert parsed_tomtom_md[k] == exp_pair, f"TomTom table mismatch on {k}: {parsed_tomtom_md[k]} != {exp_pair}"
+
     # Also parse and verify every row of the Section 2.3 RTA Provenance Table (7 rows x 4 columns = 28 cells)
     parsed_prov_md = {}
     for line in report_md.splitlines():
@@ -541,6 +561,7 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
         },
         "report_to_csv_sync_check": {
             "programmatically_generated_from_csv": True,
+            "tomtom_markdown_table_cells_verified": "21/21 (7 rows x 3 columns)",
             "bpr_markdown_table_rows_verified": "21/21",
             "bpr_markdown_table_columns_verified_per_row": "13/13 (obs_id, road_and_window, v0, t0, V, C, vc, t_bpr, v_bpr, d_adj, t_tot, v_corr, source_and_pub_date)",
             "bpr_markdown_table_total_cells_verified": "273/273",

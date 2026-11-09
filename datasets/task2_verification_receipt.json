@@ -371,6 +371,7 @@
   },
   "report_to_csv_sync_check": {
     "programmatically_generated_from_csv": true,
+    "tomtom_markdown_table_cells_verified": "21/21 (7 rows x 3 columns)",
     "bpr_markdown_table_rows_verified": "21/21",
     "bpr_markdown_table_columns_verified_per_row": "13/13 (obs_id, road_and_window, v0, t0, V, C, vc, t_bpr, v_bpr, d_adj, t_tot, v_corr, source_and_pub_date)",
     "bpr_markdown_table_total_cells_verified": "273/273",
