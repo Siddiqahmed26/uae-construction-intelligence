@@ -1827,7 +1827,7 @@
       <select id="emirateSelect" class="emirate-pill-select" onchange="onEmirateChange()" aria-label="Select Emirate">
         <option value="Dubai" selected>Dubai (25 Sites)</option>
         <option value="Sharjah">Sharjah (12 Sites)</option>
-        <option value="ALL">All UAE (37 + 85)</option>
+        <option value="ALL">All UAE (85 National · 32 GIS + 5 JVC)</option>
       </select>
 
       <details class="export-dropdown">
@@ -5799,19 +5799,19 @@
       const commLogistics = DATA.parking.filter(pk => pk.emirate === selComm.emirate);
 
       container.innerHTML = `
-        ${buildWorkspaceStickyHeader("MODULE 02 — CONSTRUCTION INTELLIGENCE", "Construction Activity Dashboard, Published vs. Estimated Investment & Community Explorer", "Strict separation of Published Official Investment (AED 765.9B across 27 projects) from Estimated Masterplan GDV (AED 253.0B across 5 projects) and Modelled Hard Construction Cost (AED 595.8B).")}
+        ${buildWorkspaceStickyHeader("MODULE 02 — CONSTRUCTION INTELLIGENCE", "Construction Activity Dashboard, Published CAPEX/GDV vs. Estimated GDV & Community Explorer", "Strict separation of Combined Published Official Value (AED 765.9B = AED 176.0B Infrastructure/Civil CAPEX across 3 projects + AED 589.9B Real Estate GDV across 24 projects) from Estimated Masterplan GDV (AED 253.0B across 5 projects) and Modelled Hard Construction Cost (AED 595.8B).")}
 
         <!-- 3.1 CONSTRUCTION ACTIVITY OVERVIEW KPIs -->
         <div class="aw-kpi-grid">
           <div class="aw-kpi-card">
             <div class="k-lbl">Total Identified Task 2 Sites</div>
             <div class="k-val">37 Active Entities</div>
-            <div class="k-sub"><strong>20</strong> Dubai Flagships + <strong>5</strong> JVC Multi-Tower Clusters + <strong>12</strong> Sharjah Flagships (Plus 53 Flagships across the other 5 Emirates = 85 Total)</div>
+            <div class="k-sub"><strong>85</strong> National Projects across 7 Emirates, of which <strong>32</strong> (<strong>20</strong> Dubai + <strong>12</strong> Sharjah) have detailed Task 2 GIS coverage (53 in other 5 Emirates have national inventory coverage only), plus <strong>5</strong> JVC sub-clusters = <strong>37</strong> deep-dive spatial entities</div>
           </div>
           <div class="aw-kpi-card">
-            <div class="k-lbl">Published Official Investment (${pubProjs.length}/32)</div>
+            <div class="k-lbl">Combined Published Value (${pubProjs.length}/32)</div>
             <div class="k-val" style="color:#059669;">AED 765.9B</div>
-            <div class="k-sub"><span class="ep-pill-pub">PUBLISHED FACT</span> 16 Dubai Projects (<strong>AED 675.4B</strong>) + 11 Sharjah Projects (<strong>AED 90.5B</strong>) with official DLD/Developer/Gov valuation</div>
+            <div class="k-sub"><span class="ep-pill-pub">PUBLISHED CAPEX + GDV</span> <strong>AED 176.0B</strong> Infrastructure/Civil CAPEX (3 projects) + <strong>AED 589.9B</strong> Published Real Estate GDV (24 projects: 13 Dubai AED 499.4B + 11 Sharjah AED 90.5B)</div>
           </div>
           <div class="aw-kpi-card">
             <div class="k-lbl">Estimated Masterplan GDV (${estProjs.length}/32)</div>
@@ -6393,7 +6393,8 @@
         <div class="aw-panel-card">
           <h3>7.1 Complete 37-Link Project-to-Road Spatial &amp; Epistemic Impact Matrix (Dataset #22)</h3>
           <p style="font-size:0.74rem; color:#475569; margin-bottom:8px;">
-            Every link is classified into our strict Epistemic Impact Hierarchy: <strong>1. Spatial Proximity Only</strong> (WGS84 Haversine distance to nearest vertex), <strong>2. Shared Corridor Exposure</strong> (Tier 2), <strong>3. Modelled Construction Logistics Load</strong> (Tier 3 4-component HGV trips), <strong>4. Observed Roadworks / Bottleneck Interaction</strong> (Tier 4), and <strong>5. Confirmed Direct Traffic Impact</strong> (substantiated by official RTA/SRTA work-zone/corridor filings):
+            Every link is classified into our strict Epistemic Impact Hierarchy: <strong>1. Spatial Proximity Only</strong> (WGS84 Haversine distance to nearest vertex), <strong>2. Shared Corridor Exposure</strong> (Tier 2), <strong>3. Modelled Construction Logistics Load</strong> (Tier 3 4-component HGV trips), <strong>4. Observed Roadworks / Bottleneck Interaction</strong> (Tier 4), and <strong>5. Confirmed Direct Traffic Impact</strong> (substantiated by official RTA/SRTA work-zone/corridor filings).<br/>
+            <strong>Computational Consistency vs. Positional/Causal Qualification:</strong> The <code>37/37</code> nearest-vertex checks establish computational consistency between stored project-road links and referenced OpenStreetMap highway geometries (<code>0.00 km</code> discrepancy). They do not independently establish positional road survey accuracy, verified cadastral plot boundaries, or that the geometrically nearest road is necessarily the sole or primary road affected by construction—making this 5-category spatial-association classification essential:
           </p>
           <div style="max-height:520px; overflow-y:auto;">
             <table class="ev-table">
@@ -6551,7 +6552,7 @@
                 <div class="kv-lbl">Equation 4 — WGS84 Geodesic Nearest-Vertex Distance (Haversine)</div>
                 <div class="kv-val">
                   <code>d = 2R × arcsin(√[sin²(Δφ/2) + cos(φ₁)cos(φ₂)sin²(Δλ/2)])</code>, <code>R = 6,371.0 km</code><br/>
-                  Computed from each project centroid <code>[lat, lon]</code> to the exact nearest vertex along the OpenStreetMap highway polyline (verified to <code>0.00 km</code> tolerance across all 37 links).
+                  Computed from each project centroid <code>[lat, lon]</code> to the exact nearest vertex along the OpenStreetMap highway polyline (verified to <code>0.00 km</code> computational consistency across all 37 links). Note: nearest-vertex computational consistency does not independently establish positional road survey accuracy, verified cadastral plot boundaries, or that the nearest road is necessarily the road affected by construction; therefore each link is governed by the 5-category epistemic spatial-association classification.
                 </div>
               </div>
             </div>
@@ -7368,7 +7369,7 @@
 
           ${spec.arch ? `
           <details class="tech-accordion" style="margin:8px 0 10px;">
-            <summary>🏛️ Full 9-Category Architectural, Floorplan, Elevation &amp; Structural Dossier (${spec.arch.arch_id})</summary>
+            <summary>🏛️ Supporting Plot &amp; Massing Reference (${spec.arch.arch_id} — Task 2 Scope: Construction Geography, Traffic &amp; Logistics)</summary>
             <div class="tech-body" style="font-size:0.71rem; line-height:1.45;">
               <div style="margin-bottom:4px;"><strong>1. Masterplan &amp; Site Layout:</strong> ${spec.arch.cat1_masterplan_and_site_layout}</div>
               <div style="margin-bottom:4px;"><strong>2. Plot Layout &amp; DM Boundaries:</strong> ${spec.arch.cat2_plot_layout_and_boundaries}</div>

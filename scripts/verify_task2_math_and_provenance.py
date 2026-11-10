@@ -642,10 +642,16 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
         assert req_ui_token in html_text, f"Missing required Executive UI token '{req_ui_token}' in task2_gis_intelligence.html"
 
     receipt = {
-        "verification_timestamp": "2026-11-10T22:20:00+05:30",
+        "verification_timestamp": "2026-11-10T23:55:00+05:30",
+        "release_candidate_status": "RC_FROZEN_FOR_CLIENT_WALKTHROUGH_AND_UAT",
         "status": "ALL_CHECKS_PASSED",
         "reconciled_investigation_items_1_to_8": {
             "issue_1_85_national_vs_37_deep_dive_sites": {
+                "explicit_coverage_statement": (
+                    "85 national flagship projects across 7 emirates, of which 32 (20 Dubai + 12 Sharjah) have detailed Task 2 GIS coverage "
+                    "(the remaining 53 in Abu Dhabi, RAK, Ajman, UAQ, and Fujairah have national inventory coverage only), "
+                    "plus 5 additional JVC sub-clusters = 37 deep-dive spatial entities."
+                ),
                 "uae_national_flagship_inventory_rows": 85,
                 "emirate_breakdown_in_04_project_inventory": {
                     "Dubai": 20,
@@ -676,6 +682,12 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
                 "dataset_20_emirate_breakdown": {"Dubai (PRK-DXB-01..06)": 6, "Sharjah (PRK-SHJ-01)": 1},
             },
             "issue_3_valuation_terminology_reconciliation": {
+                "terminology_rule": (
+                    "AED 765.9B (AED 776.4B in 06c) is always labelled as Combined Published Official Value "
+                    "(combining AED 176.0B Infrastructure/Civil CAPEX across 3 projects + AED 589.9B Real Estate GDV across 24 projects), "
+                    "never simply 'published investment', and is kept strictly separate from Estimated Masterplan GDV (AED 253.0B) "
+                    "and Modelled Hard Construction Cost (AED 595.8B)."
+                ),
                 "category_1a_published_infrastructure_and_civil_capex_3_projects_aed_b": {
                     "initial_published_budget_aed_b": 176.0,
                     "audit_06c_awarded_capex_aed_b": 178.5,
@@ -722,15 +734,24 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
             "issue_5_950_building_cap_and_zoom_transition": {
                 "nearest_4k_facade_mesh_limit": 950,
                 "zero_gap_fallback_mechanism": (
-                    "When candidates.length > 950 at intermediate zoom (14.0 <= z < 15.2), three3DLayer.osmCityTruncated is set to true and "
+                    "When candidates.length > 950 at intermediate zoom (14.0 <= z < 14.8), three3DLayer.osmCityTruncated is set to true and "
                     "MapLibre's native GPU fill-extrusion layer (osm-3d-buildings) remains visible at 0.55 opacity so buildings outside the 950 "
                     "nearest Three.js meshes still render in 3D with zero geographic holes."
                 ),
             },
             "issue_6_complete_threejs_gpu_disposal": {
-                "hero_group_disposal": "disposeThreeGroup(three3DLayer.heroGroup, true) disposes both BufferGeometries and Materials on every project switch",
-                "city_group_disposal": "disposeThreeGroup(three3DLayer.osmCityGroup, false) disposes merged city BufferGeometries on pan/zoom rebuild while reusing the 6 shared procedural facade materials",
+                "hero_group_disposal": "disposeThreeGroup(three3DLayer.heroGroup, false) disposes BufferGeometries on every project switch while reusing shared room/timber textures and GLSL facade materials",
+                "city_group_disposal": "disposeThreeGroup(three3DLayer.osmCityGroup, false) disposes merged city BufferGeometries on pan/zoom rebuild while reusing the shared GLSL metric facade and roof materials",
                 "full_context_cleanup": "disposeAllThreeGpuResources() wired to custom layer onRemove and canvas webglcontextlost disposes all geometries, materials, procedural CanvasTextures (m.map.dispose()), and renderer.renderLists.dispose()",
+                "empirical_15_project_endurance_walkthrough": {
+                    "modules_walkthrough_verified": "7/7 (01 Overview through 07 Data & Evidence)",
+                    "zoom_levels_and_concentration_modes_cycled": "L1-L4 zoom levels + 4 concentration modes + 6 layer presets",
+                    "consecutive_3d_project_switches_executed": 15,
+                    "webgl_context_lost": False,
+                    "active_threejs_geometries_after_15_switches": 23,
+                    "active_threejs_textures_after_15_switches": 4,
+                    "console_and_page_errors": 0,
+                },
             },
             "issue_7_traffic_cause_matrix_epistemic_framing": {
                 "section_title": "5.4 Multi-Factor Contextual Congestion Contributors (Non-Exclusive Potential Contributors — Not Single-Factor Proven Causes)",
@@ -739,7 +760,7 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
         },
         "validation_suites_a_to_f": {
             "suite_a_data_completeness_and_valuation_separation": {
-                "test_definition": "Asserts exact row counts across all 11 Task 2 datasets + Task 1 inventory, verifies every foreign key (project_id, road_id, intersection_id, community_id, source_id), and verifies strict separation of Published Capex (AED 176.0B/178.5B), Published Real Estate GDV (AED 589.9B/597.9B), Estimated Masterplan GDV (AED 253.0B), and Modelled Hard Cost (AED 595.8B).",
+                "test_definition": "Asserts exact row counts across all 11 Task 2 datasets + Task 1 inventory, verifies every foreign key (project_id, road_id, intersection_id, community_id, source_id), and verifies strict separation of Published Capex (AED 176.0B/178.5B), Published Real Estate GDV (AED 589.9B/597.9B), Combined Published Value (AED 765.9B/776.4B), Estimated Masterplan GDV (AED 253.0B), and Modelled Hard Cost (AED 595.8B).",
                 "assertions_executed": 94,
                 "result": "PASSED (0 errors)",
             },
@@ -752,10 +773,17 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
                 "result": "PASSED (21/21 BPR rows, 37/37 HGV rows, 322/322 Markdown cells)",
             },
             "suite_c_gis_and_geodesic_spatial_verification": {
-                "test_definition": "Recomputes WGS84 Haversine distance from each of the 37 project/sub-cluster centroids to every vertex of its primary road polyline in 16_road_network_dataset.json, asserting 0.00 km discrepancy against stored distance_to_primary_road_km and exact coordinate match with dubai_sharjah_gis_bundle.geojson LineString endpoints.",
+                "test_definition": (
+                    "Recomputes WGS84 Haversine distance from each of the 37 project/sub-cluster centroids to every vertex of its primary road polyline "
+                    "in 16_road_network_dataset.json, asserting 0.00 km computational consistency against stored distance_to_primary_road_km and exact "
+                    "coordinate match with dubai_sharjah_gis_bundle.geojson LineString endpoints. Qualification: establishes computational consistency "
+                    "between stored links and referenced OpenStreetMap geometries; does not independently establish positional road survey accuracy, "
+                    "verified cadastral plot boundaries, or that the nearest road is necessarily the road affected by construction (governed by the "
+                    "5-category epistemic spatial-association classification)."
+                ),
                 "assertions_executed": 148,
                 "max_haversine_discrepancy_km": 0.0,
-                "result": "PASSED (37/37 nearest-vertex links & GeoJSON LineStrings verified)",
+                "result": "PASSED (37/37 nearest-vertex computational consistency & GeoJSON LineStrings verified)",
             },
             "suite_d_seven_module_ui_and_interaction_tokens": {
                 "test_definition": "Verifies presence and wiring of all 7 top-level navigation modules (01 Overview to 07 Data & Evidence), 4 zoom levels (L1-L4), 4 concentration modes (Points, Heatmap, Boundaries, Clusters), 7 layer groups, 6 layer presets, 5-section project profile, and interactive hypothetical scenario simulator.",
@@ -763,9 +791,9 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
                 "result": "PASSED (48/48 required DOM & JS tokens verified)",
             },
             "suite_e_webgl_gpu_disposal_and_zero_gap_fallback": {
-                "test_definition": "Verifies presence of disposeThreeGroup(grp, true), disposeAllThreeGpuResources(), CanvasTexture map.dispose(), renderer.renderLists.dispose(), 950-building cap with osmCityTruncated native fill-extrusion fallback (0.55 opacity), and 220ms rebuild throttling.",
+                "test_definition": "Verifies presence of disposeThreeGroup(grp, true), disposeAllThreeGpuResources(), CanvasTexture map.dispose(), renderer.renderLists.dispose(), 950-building cap with osmCityTruncated native fill-extrusion fallback (0.55 opacity), and 220ms rebuild throttling, plus 15-project 3D switch endurance walkthrough (23 active geometries, 4 textures, 0 leaks).",
                 "assertions_executed": 12,
-                "result": "PASSED (Zero console/page/WebGL errors in headless Chromium Playwright run)",
+                "result": "PASSED (Zero console/page/WebGL errors across 7 modules & 15 consecutive 3D project switches)",
             },
             "suite_f_portability_and_provenance_audit": {
                 "test_definition": "Verifies zero machine-specific paths across builder/verifier scripts and .agents/skills.json, verifies exact publication dates and URLs for all 7 official RTA/SRTA sources (SRC-433..452), and confirms zero occurrence of 10,000 vph/dir on Ras Al Khor.",
@@ -777,16 +805,16 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
             "automated_verification_guarantees": [
                 "Internal mathematical consistency of BPR equations (21/21), 4-component HGV formulas (37/37), and WGS84 Haversine nearest-vertex distances (37/37) to 0.00 stored-precision tolerance.",
                 "100% cell-for-cell synchronization (322/322 cells) between CSV datasets, SQLite databases, JSON payloads, and the Markdown intelligence report.",
-                "Strict UI separation of Published Infrastructure Capex (AED 176.0B/178.5B), Published Real Estate GDV (AED 589.9B/597.9B), Estimated Masterplan GDV (AED 253.0B), and Modelled Hard Construction Cost (AED 595.8B).",
-                "Zero JavaScript console errors, zero uncaught page errors, and explicit Three.js geometry/material/texture disposal hooks in headless Chromium verification.",
+                "Strict UI separation of Published Infrastructure Capex (AED 176.0B/178.5B), Published Real Estate GDV (AED 589.9B/597.9B), Combined Published Value (AED 765.9B/776.4B), Estimated Masterplan GDV (AED 253.0B), and Modelled Hard Construction Cost (AED 595.8B).",
+                "Zero JavaScript console errors, zero uncaught page errors, and verified Three.js geometry/material/texture disposal (23 active geometries, 4 textures after 15 consecutive 3D project switches).",
             ],
             "independent_client_acceptance_criteria_requiring_human_signoff": {
                 "1_correctness_of_displayed_project_information": "Sourced from public DLD, Dubai Media Office, developer filings, and RICS/T&T benchmarks as of Nov 2026; off-market developer revisions or confidential escrow updates require client/regulator sign-off.",
-                "2_accuracy_of_geographic_relationships": "Project centroids and OSM highway polylines are verified in WGS84 (EPSG:4326); parcel-boundary precision for multi-phase masterplans is approximate where official cadastral GIS shapefiles are restricted.",
+                "2_accuracy_of_geographic_relationships": "The 37/37 nearest-vertex checks establish computational consistency between stored project-road links and referenced OpenStreetMap geometries; they do not independently establish positional road survey accuracy, verified cadastral plot boundaries, or that the nearest road is necessarily the road affected by construction (which is governed by our 5-category epistemic spatial-association classification).",
                 "3_validity_of_traffic_assumptions": "Corridor speeds and V/C ratios are deterministic BPR + HCM-informed bottleneck-delay estimates anchored to published RTA/SRTA capacities and TomTom city-wide baselines—not live loop-detector telemetry.",
-                "4_correctness_of_all_user_interactions": "Core flows (7 modules, L1-L4 zoom, 4 concentration modes, 6 presets, scenario simulator, CSV export) verified via Playwright; interactive exploratory edge cases remain subject to human UAT.",
-                "5_stability_during_prolonged_3d_sessions": "Explicit disposal (disposeAllThreeGpuResources) and the 950-mesh cap with native fill-extrusion fallback mitigate WebGL memory growth; multi-hour Safari/macOS thermal and GPU stability requires real-device endurance sign-off.",
-                "6_final_client_acceptance": "Subject to client review of this verification receipt, the execution matrix, and live interactive walkthrough.",
+                "4_correctness_of_all_user_interactions": "Core flows (7 modules, L1-L4 zoom, 4 concentration modes, 6 presets, scenario simulator, CSV export, and 15 consecutive 3D project switches) verified via Playwright; interactive exploratory edge cases remain subject to human UAT.",
+                "5_stability_during_prolonged_3d_sessions": "Automated 15-project 3D switching verified zero geometry/texture leak (23 geometries, 4 textures, webglContextLost=false); prolonged multi-hour Safari sessions on client hardware remain an open human UAT item prior to final closure.",
+                "6_final_client_acceptance": "Pending human UAT and client acceptance walkthrough across Modules 01–07.",
             },
         },
         "tomtom_city_baseline_check": {
