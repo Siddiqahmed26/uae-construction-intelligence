@@ -2950,13 +2950,16 @@ def main():
       else if (pid === "PRJ-SH2" || pid === "PRJ-D16") palIdx = 3;
       const palette = HAIO_ARCH_PALETTES[palIdx];
 
-      const heightM = Math.min(395, Math.max(38, Math.round(storeys * floorToFloorM)));
+      const pubHeightMatch = fh.match(/(\d{3})\s*m\s*(?:Height|Supertall)/i);
+      const heightM = pubHeightMatch
+        ? parseInt(pubHeightMatch[1], 10)
+        : Math.min(395, Math.max(38, Math.round(storeys * floorToFloorM)));
       const rotDeg = ((seed % 7) - 3) * 14; // Deterministic per-project architectural orientation
 
       const blocks = [];
       for (let b = 1; b <= blocksCount; b++) {
         const bStoreys = b === 1 ? storeys : (b === 2 ? Math.max(10, Math.round(storeys * (typology === "supertall_diamond" ? 0.18 : 0.74))) : Math.max(8, Math.round(storeys * 0.56)));
-        const bHeight = Math.round(bStoreys * floorToFloorM);
+        const bHeight = b === 1 ? heightM : Math.round(bStoreys * floorToFloorM);
         const blkTitle = (typology === "supertall_diamond" && b === 2)
           ? "Block 2 (Sky-Garden Podium)"
           : `Block ${b}`;
@@ -6382,7 +6385,7 @@ def main():
               </div>
               <div class="kv-row">
                 <div class="kv-lbl">5. Active RTA/SRTA Capital Roadworks &amp; Diversion Zones (Capacity Contributor)</div>
-                <div class="kv-val"><span class="ep-pill-pub">NON-EXCLUSIVE CONTRIBUTOR (8 WORK ZONES)</span> 8 active capital work zones in <code>18_Active_Roadworks_Incidents.csv</code> (e.g., <code>INC-DXB-01</code> AED 689M Hessa St flyover works, <code>INC-SHJ-02</code> Etihad Rail University City bridge diversion) temporarily constrain lane geometry during construction before doubling long-term capacity.</div>
+                <div class="kv-val"><span class="ep-pill-pub">NON-EXCLUSIVE CONTRIBUTOR (5 WORK ZONES)</span> 5 active capital work zones in <code>21c_traffic_incidents_and_roadworks.csv</code> (e.g., <code>INC-DXB-01</code> AED 689M Hessa St flyover works, <code>INC-SHJ-02</code> Etihad Rail University City bridge diversion) temporarily constrain lane geometry during construction before doubling long-term capacity.</div>
               </div>
               <div class="kv-row">
                 <div class="kv-lbl">6. Signalized &amp; Weaving Intersection Bottlenecks (16 Nodes)</div>
@@ -6726,18 +6729,19 @@ def main():
     // =========================================================================
     function renderDataAndEvidenceModule(container) {
       const catList = [
-        { id: "13_community_hotspots", name: "Community Construction Hotspots & Polygons", rows: DATA.communities.length, type: "Published + Derived Index", src: "DLD Open Data (SRC-020), DM GIS, SRTA", csv: "13_community_hotspots.csv" },
-        { id: "14_jvc_subdevelopments", name: "JVC Multi-Tower Sub-Development Clusters", rows: DATA.subdevs.length, type: "Published Registry + Modelled HGV", src: "DLD dld_projects-open (SRC-020)", csv: "14_jvc_subdevelopments.csv" },
-        { id: "15_road_network_corridors", name: "Dubai & Sharjah Road Network Corridors (OSM WGS84)", rows: DATA.roads.length, type: "Published Capacity + Verified GIS", src: "RTA (SRC-433, SRC-434), SRTA, OpenStreetMap", csv: "15_road_network_corridors.csv" },
-        { id: "16_road_intersections", name: "Major Road Intersections & Bottleneck Nodes", rows: DATA.intersections.length, type: "Published Upgrades + Modelled LOS", src: "RTA Hessa/Al Khail Releases, SRTA", csv: "16_road_intersections.csv" },
+        { id: "15_transport_open_data_register", name: "UAE & Emirate Transport Open-Data Source Register", rows: DATA.tds.length, type: "Published Official Portals", src: "RTA, Dubai Pulse, DLD, SRTA, FCSC, OSM", csv: "15_transport_open_data_register.csv" },
+        { id: "16_road_network_dataset", name: "Dubai & Sharjah Road Network Corridors (OSM WGS84)", rows: DATA.roads.length, type: "Published Capacity + Verified GIS", src: "RTA (SRC-433, SRC-434), SRTA, OpenStreetMap", csv: "16_road_network_dataset.csv" },
         { id: "17_traffic_congestion_observations", name: "City-Wide Baseline & Corridor BPR Observations", rows: DATA.observations.length, type: "1 Published Baseline + 21 Modelled BPR", src: "TomTom Index (SRC-436), RTA, BPR Model", csv: "17_traffic_congestion_observations.csv" },
-        { id: "18_Active_Roadworks_Incidents", name: "Active RTA/SRTA Capital Roadworks & Diversions", rows: DATA.incidents.length, type: "Published Official Works", src: "RTA Media Releases, SRTA, Etihad Rail", csv: "18_Active_Roadworks_Incidents.csv" },
-        { id: "19_Public_Transport_Lines", name: "Metro Red/Blue Lines & Etihad Rail Corridors", rows: DATA.transit_lines.length, type: "Published Official Transit", src: "RTA Rail Agency, Etihad Rail", csv: "19_Public_Transport_Lines.csv" },
-        { id: "20_Parking_and_Logistics_Facilities", name: "Ready-Mix Batching Plants, Precast Yards & Hubs", rows: DATA.parking.length, type: "Published Industrial + Verified GIS", src: "DM Industrial GIS, RMC Operators, RTA Policy", csv: "20_Parking_and_Logistics_Facilities.csv" },
-        { id: "22_project_road_impact_links", name: "Project-to-Road Spatial & Epistemic Impact Links", rows: DATA.impact_links.length, type: "Derived Geodesic + Modelled HGV", src: "WGS84 Haversine + 4-Component HGV Model", csv: "22_project_road_impact_links.csv" },
-        { id: "23_traffic_impact_studies_tis", name: "Corridor Traffic Impact Studies (TIS) Registry", rows: DATA.tis.length, type: "Published Corridor Studies", src: "RTA TES & Corridor Releases, SRTA", csv: "23_traffic_impact_studies_tis.csv" },
-        { id: "24_traffic_data_providers_evaluation", name: "Traffic Telemetry & GIS Data Provider Audit", rows: DATA.providers.length, type: "Verified Technical Audit", src: "TomTom, Dubai Pulse, HERE, Google, Mapbox", csv: "24_traffic_data_providers_evaluation.csv" }
+        { id: "18_tomtom_and_provider_assessment", name: "Traffic Telemetry & GIS Data Provider Audit", rows: DATA.providers.length, type: "Verified Technical Audit", src: "TomTom, Dubai Pulse, HERE, Google, Mapbox", csv: "18_tomtom_and_provider_assessment.csv" },
+        { id: "19_traffic_impact_studies_and_logistics", name: "Corridor Traffic Impact Studies (TIS) & HGV Logistics", rows: DATA.tis.length, type: "Published Corridor Studies", src: "RTA TES & Corridor Releases, SRTA", csv: "19_traffic_impact_studies_and_logistics.csv" },
+        { id: "20_parking_and_mobility_facilities", name: "Parking (Parkin PJSC), EV & Delivery Staging Hubs", rows: DATA.parking.length, type: "Published Statutory + Verified GIS", src: "Parkin PJSC, RTA, DEWA EV Green Charger", csv: "20_parking_and_mobility_facilities.csv" },
+        { id: "21a_communities_and_hotspots", name: "Community Construction Hotspots & Polygons", rows: DATA.communities.length, type: "Published + Derived Index", src: "DLD Open Data (SRC-020), DM GIS, SRTA", csv: "21a_communities_and_hotspots.csv" },
+        { id: "21b_intersections_and_nodes", name: "Major Road Intersections & Bottleneck Nodes", rows: DATA.intersections.length, type: "Published Upgrades + Modelled LOS", src: "RTA Hessa/Al Khail Releases, SRTA", csv: "21b_intersections_and_nodes.csv" },
+        { id: "21c_traffic_incidents_and_roadworks", name: "Active RTA/SRTA Capital Roadworks & Diversions", rows: DATA.incidents.length, type: "Published Official Works", src: "RTA Media Releases, SRTA, Etihad Rail", csv: "21c_traffic_incidents_and_roadworks.csv" },
+        { id: "21d_jvc_and_community_subdevelopments", name: "JVC Multi-Tower Sub-Development Clusters", rows: DATA.subdevs.length, type: "Published Registry + Modelled HGV", src: "DLD dld_projects-open (SRC-020)", csv: "21d_jvc_and_community_subdevelopments.csv" },
+        { id: "22_project_road_impact_links", name: "Project-to-Road Spatial & Epistemic Impact Links", rows: DATA.impact_links.length, type: "Derived Geodesic + Modelled HGV", src: "WGS84 Haversine + 4-Component HGV Model", csv: "22_project_road_impact_links.csv" }
       ];
+      const totalCatRows = catList.reduce((acc, c) => acc + c.rows, 0);
 
       container.innerHTML = `
         ${buildWorkspaceStickyHeader("MODULE 07 — DATA, METHODOLOGY & EVIDENCE", "Data Catalogue, Worked BPR & HGV Mathematical Equations, Data-Quality Reconciliation & Exports", "100% traceability from published government/regulatory benchmarks (RTA, SRTA, DLD, TomTom, Salik) to derived spatial geometry and modelled BPR/HGV outputs.")}
@@ -6752,7 +6756,7 @@ def main():
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
               <button class="ctrl-btn primary" onclick="exportFilteredProjectsCsv()">📥 Export Filtered Projects CSV</button>
               <button class="ctrl-btn" onclick="window.print()">🖨️ Print Executive Report (PDF)</button>
-              <a class="ctrl-btn" style="text-decoration:none;" href="datasets/dubai_sharjah_gis_bundle.geojson" download="dubai_sharjah_gis_bundle.geojson">🗺️ GeoJSON Bundle (249 Features)</a>
+              <a class="ctrl-btn" style="text-decoration:none;" href="datasets/dubai_sharjah_gis_bundle.geojson" download="dubai_sharjah_gis_bundle.geojson">🗺️ GeoJSON Bundle (123 Features)</a>
               <a class="ctrl-btn" style="text-decoration:none;" href="datasets/21_task2_spatial_database.sqlite" download="21_task2_spatial_database.sqlite">🗄️ Spatial SQLite DB (30 Objects)</a>
             </div>
           </div>
@@ -6842,7 +6846,7 @@ def main():
                 <div class="kv-lbl">Equation 4 — WGS84 Geodesic Nearest-Vertex Distance (Haversine)</div>
                 <div class="kv-val">
                   <code>d = 2R × arcsin(√[sin²(Δφ/2) + cos(φ₁)cos(φ₂)sin²(Δλ/2)])</code>, <code>R = 6,371.0 km</code><br/>
-                  Computed from each project centroid <code>[lat, lon]</code> to the exact nearest vertex along the OpenStreetMap highway polyline (verified to <code>0.00 km</code> computational consistency across all 37 links). Note: nearest-vertex computational consistency does not independently establish positional road survey accuracy, verified cadastral plot boundaries, or that the nearest road is necessarily the road affected by construction; therefore each link is governed by the 5-category epistemic spatial-association classification.
+                  Computed from each project centroid <code>[lat, lon]</code> to the exact nearest vertex along the OpenStreetMap highway polyline (verified to <code>0.00 km</code> computational consistency at stored 2-decimal precision across all 37 links; maximum unrounded floating-point rounding difference is <code>0.00495 km</code> / <code>~4.95 m</code>). Note: nearest-vertex computational consistency does not independently establish positional road survey accuracy, verified cadastral plot boundaries, or that the nearest road is necessarily the road affected by construction; therefore each link is governed by the 5-category epistemic spatial-association classification.
                 </div>
               </div>
             </div>
@@ -6851,7 +6855,7 @@ def main():
 
         <!-- 8.1 DATA CATALOGUE TABLE -->
         <div class="aw-panel-card">
-          <h3>8.1 Complete Task 2 Dataset Catalogue (11 Datasets · 157 Verified Records + Spatial SQLite)</h3>
+          <h3>8.1 Complete Task 2 Dataset Catalogue (${catList.length} Datasets · ${totalCatRows} Verified Records + Spatial SQLite)</h3>
           <div style="overflow-x:auto;">
             <table class="ev-table">
               <thead>
@@ -6872,7 +6876,7 @@ def main():
                     <td><strong>${c.rows} rows</strong></td>
                     <td><span class="ep-pill-pub">${c.type}</span></td>
                     <td>${c.src}</td>
-                    <td><a class="ctrl-btn" style="text-decoration:none;" href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/${c.csv}" target="_blank" rel="noopener">📥 CSV</a></td>
+                    <td><a class="ctrl-btn" style="text-decoration:none;" href="csv/${c.csv}" download="${c.csv}">📥 CSV</a> <a class="ctrl-btn" style="text-decoration:none;" href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/${c.csv}" target="_blank" rel="noopener">Raw ↗</a></td>
                   </tr>
                 `).join("")}
               </tbody>
@@ -7537,7 +7541,7 @@ def main():
       const secRoadLabel = secRoadObj ? `${secRoadObj.road_name.split('(')[0].trim()} (${secRoadObj.road_id})` : (link && link.secondary_road_id ? link.secondary_road_id : '<span class="badge-missing">None</span>');
 
       const docsHtml = docs.map(d =>
-        `<div style="margin-bottom:4px;">• <a href="${d.document_url}" target="_blank" rel="noopener">${d.document_title} ↗</a> <span style="color:#64748b;">(${d.document_type} | ${d.availability_status})</span></div>`
+        `<div style="margin-bottom:4px;">• <a href="${d.source_url || d.document_url || d.secondary_portal_url}" target="_blank" rel="noopener">${d.document_title} ↗</a> <span style="color:#64748b;">(${d.document_type} | ${d.availability_status})</span></div>`
       ).join("") || `<span class="badge-missing">No Standalone Filing Linked</span>`;
 
       const projOptionsHtml = DATA.projects.map(pr => {

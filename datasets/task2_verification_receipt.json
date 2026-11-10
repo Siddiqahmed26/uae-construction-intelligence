@@ -121,15 +121,17 @@
       "result": "PASSED (21/21 BPR rows, 37/37 HGV rows, 322/322 Markdown cells)"
     },
     "suite_c_gis_and_geodesic_spatial_verification": {
-      "test_definition": "Recomputes WGS84 Haversine distance from each of the 37 project/sub-cluster centroids to every vertex of its primary road polyline in 16_road_network_dataset.json, asserting 0.00 km computational consistency against stored distance_to_primary_road_km and exact coordinate match with dubai_sharjah_gis_bundle.geojson LineString endpoints. Qualification: establishes computational consistency between stored links and referenced OpenStreetMap geometries; does not independently establish positional road survey accuracy, verified cadastral plot boundaries, or that the nearest road is necessarily the road affected by construction (governed by the 5-category epistemic spatial-association classification).",
+      "test_definition": "Recomputes WGS84 Haversine distance from each of the 37 project/sub-cluster centroids to every vertex of its primary road polyline in 16_road_network_dataset.json, asserting 0.00 km computational consistency at stored 2-decimal precision (maximum unrounded floating-point difference 0.00495 km / ~4.95 m) against stored distance_to_primary_road_km and exact coordinate match with dubai_sharjah_gis_bundle.geojson (123 features, including 37 LineString endpoints). Qualification: establishes computational consistency between stored links and referenced OpenStreetMap geometries; does not independently establish positional road survey accuracy, verified cadastral plot boundaries, or that the nearest road is necessarily the road affected by construction (governed by the 5-category epistemic spatial-association classification).",
       "assertions_executed": 148,
-      "max_haversine_discrepancy_km": 0.0,
-      "result": "PASSED (37/37 nearest-vertex computational consistency & GeoJSON LineStrings verified)"
+      "max_haversine_discrepancy_at_stored_2dp_km": 0.0,
+      "max_haversine_discrepancy_unrounded_km": 0.00495,
+      "geojson_total_features": 123,
+      "result": "PASSED (37/37 nearest-vertex computational consistency & 123 GeoJSON features verified)"
     },
     "suite_d_seven_module_ui_and_interaction_tokens": {
-      "test_definition": "Verifies presence and wiring of all 7 top-level navigation modules (01 Overview to 07 Data & Evidence), 4 zoom levels (L1-L4), 4 concentration modes (Points, Heatmap, Boundaries, Clusters), 7 layer groups, 6 layer presets, 5-section project profile, and interactive hypothetical scenario simulator.",
-      "assertions_executed": 48,
-      "result": "PASSED (48/48 required DOM & JS tokens verified)"
+      "test_definition": "Verifies presence and wiring of all 7 top-level navigation modules (01 Overview to 07 Data & Evidence), 4 zoom levels (L1-L4), 4 concentration modes (Points, Heatmap, Boundaries, Clusters), 7 layer groups, 6 layer presets, 5-section project profile, 11/11 CSV catalogue links (157 total rows), 123 GeoJSON feature label, valid document source_url links, published supertall tower height parsing (PRJ-D11 = 557m), and interactive hypothetical scenario simulator.",
+      "assertions_executed": 75,
+      "result": "PASSED (75/75 required DOM, CSV catalogue, GeoJSON, document URL & tower height tokens verified)"
     },
     "suite_e_webgl_gpu_disposal_and_zero_gap_fallback": {
       "test_definition": "Verifies presence of disposeThreeGroup(grp, true), disposeAllThreeGpuResources(), CanvasTexture map.dispose(), renderer.renderLists.dispose(), 950-building cap with osmCityTruncated native fill-extrusion fallback (0.55 opacity), and 220ms rebuild throttling, plus 15-project 3D switch endurance walkthrough (23 active geometries, 4 textures, 0 leaks).",
@@ -570,6 +572,9 @@
   },
   "spatial_and_hgv_checks": {
     "nearest_vertex_haversine_37_of_37": true,
+    "max_haversine_discrepancy_at_stored_2dp_km": 0.0,
+    "max_haversine_discrepancy_unrounded_km": 0.00495,
+    "geojson_total_features": 123,
     "geojson_linestring_endpoints_37_of_37": true,
     "hgv_four_component_sum_37_of_37": true
   },

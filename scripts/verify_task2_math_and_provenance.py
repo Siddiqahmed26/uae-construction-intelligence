@@ -468,7 +468,9 @@ def main():
         if "link_id" in f.get("properties", {})
     }
     assert len(links_rows) == 37 and len(impact_features) == 37
+    assert len(geojson_data["features"]) == 123, f"Expected 123 GeoJSON features, got {len(geojson_data['features'])}"
 
+    max_unrounded_haversine_diff = 0.0
     for l in links_rows:
         lid = l["link_id"]
         plat_str, plon_str = [x.strip() for x in l["project_coordinates"].split(",")]
@@ -476,6 +478,10 @@ def main():
         road = roads_by_id[l["primary_road_id"]]
         best_d = min(haversine_km(plat, plon, float(v[1]), float(v[0])) for v in road["geometry_wgs84"])
         assert round(best_d, 2) == l["distance_to_primary_road_km"]
+        max_unrounded_haversine_diff = max(
+            max_unrounded_haversine_diff,
+            abs(best_d - float(l["distance_to_primary_road_km"])),
+        )
         assert l["distance_to_primary_road_km"] < 3.0
 
         coords = impact_features[lid]["geometry"]["coordinates"]
@@ -638,8 +644,58 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
         '@media (max-width: 1024px)',
         '@media (max-width: 768px)',
         'maplibre-gl.js',
+        'GeoJSON Bundle (123 Features)',
+        'd.source_url || d.document_url || d.secondary_portal_url',
+        'const pubHeightMatch = fh.match(/(\\d{3})\\s*m\\s*(?:Height|Supertall)/i);',
+        'const bHeight = b === 1 ? heightM : Math.round(bStoreys * floorToFloorM);',
     ):
         assert req_ui_token in html_text, f"Missing required Executive UI token '{req_ui_token}' in task2_gis_intelligence.html"
+
+    for forbidden_ui_token in (
+        '249 Features',
+        '13_community_hotspots.csv',
+        '14_jvc_subdevelopments.csv',
+        '15_road_network_corridors.csv',
+        '16_road_intersections.csv',
+        '18_Active_Roadworks_Incidents.csv',
+        '19_Public_Transport_Lines.csv',
+        '20_Parking_and_Logistics_Facilities.csv',
+        '23_traffic_impact_studies_tis.csv',
+        '24_traffic_data_providers_evaluation.csv',
+        'href="${d.document_url}"',
+    ):
+        assert forbidden_ui_token not in html_text, f"Found stale/broken UI token '{forbidden_ui_token}' in task2_gis_intelligence.html"
+
+    # Verify all 11 Task 2 CSV catalogue files exist in web/csv/ and sum to 157 rows
+    expected_task2_csv_rows = {
+        "15_transport_open_data_register.csv": 18,
+        "16_road_network_dataset.csv": 23,
+        "17_traffic_congestion_observations.csv": 22,
+        "18_tomtom_and_provider_assessment.csv": 6,
+        "19_traffic_impact_studies_and_logistics.csv": 8,
+        "20_parking_and_mobility_facilities.csv": 7,
+        "21a_communities_and_hotspots.csv": 10,
+        "21b_intersections_and_nodes.csv": 16,
+        "21c_traffic_incidents_and_roadworks.csv": 5,
+        "21d_jvc_and_community_subdevelopments.csv": 5,
+        "22_project_road_impact_links.csv": 37,
+    }
+    total_task2_csv_rows = 0
+    for csv_fname, exp_cnt in expected_task2_csv_rows.items():
+        assert f'csv: "{csv_fname}"' in html_text, f"Missing {csv_fname} in catList of task2_gis_intelligence.html"
+        csv_p = WEB_CSV_DIR / csv_fname
+        assert csv_p.exists(), f"Missing CSV file in web/csv/: {csv_p}"
+        with open(csv_p, "r", encoding="utf-8") as fp:
+            r_cnt = len(list(csv.DictReader(fp)))
+        assert r_cnt == exp_cnt, f"Row count mismatch in {csv_fname}: expected {exp_cnt}, got {r_cnt}"
+        total_task2_csv_rows += r_cnt
+    assert total_task2_csv_rows == 157, f"Expected 157 total Task 2 CSV rows, got {total_task2_csv_rows}"
+
+    # Verify all 205 project documents have valid https:// source_url
+    docs_rows = json.loads((DATASETS_DIR / "05_project_documents.json").read_text(encoding="utf-8"))
+    assert len(docs_rows) == 205
+    for d in docs_rows:
+        assert str(d.get("source_url", "")).startswith("https://"), f"Missing/invalid source_url on {d.get('doc_id')}"
 
     receipt = {
         "verification_timestamp": "2026-11-10T23:55:00+05:30",
@@ -775,20 +831,23 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
             "suite_c_gis_and_geodesic_spatial_verification": {
                 "test_definition": (
                     "Recomputes WGS84 Haversine distance from each of the 37 project/sub-cluster centroids to every vertex of its primary road polyline "
-                    "in 16_road_network_dataset.json, asserting 0.00 km computational consistency against stored distance_to_primary_road_km and exact "
-                    "coordinate match with dubai_sharjah_gis_bundle.geojson LineString endpoints. Qualification: establishes computational consistency "
+                    "in 16_road_network_dataset.json, asserting 0.00 km computational consistency at stored 2-decimal precision (maximum unrounded floating-point "
+                    "difference 0.00495 km / ~4.95 m) against stored distance_to_primary_road_km and exact coordinate match with dubai_sharjah_gis_bundle.geojson "
+                    "(123 features, including 37 LineString endpoints). Qualification: establishes computational consistency "
                     "between stored links and referenced OpenStreetMap geometries; does not independently establish positional road survey accuracy, "
                     "verified cadastral plot boundaries, or that the nearest road is necessarily the road affected by construction (governed by the "
                     "5-category epistemic spatial-association classification)."
                 ),
                 "assertions_executed": 148,
-                "max_haversine_discrepancy_km": 0.0,
-                "result": "PASSED (37/37 nearest-vertex computational consistency & GeoJSON LineStrings verified)",
+                "max_haversine_discrepancy_at_stored_2dp_km": 0.0,
+                "max_haversine_discrepancy_unrounded_km": round(max_unrounded_haversine_diff, 5),
+                "geojson_total_features": len(geojson_data["features"]),
+                "result": "PASSED (37/37 nearest-vertex computational consistency & 123 GeoJSON features verified)",
             },
             "suite_d_seven_module_ui_and_interaction_tokens": {
-                "test_definition": "Verifies presence and wiring of all 7 top-level navigation modules (01 Overview to 07 Data & Evidence), 4 zoom levels (L1-L4), 4 concentration modes (Points, Heatmap, Boundaries, Clusters), 7 layer groups, 6 layer presets, 5-section project profile, and interactive hypothetical scenario simulator.",
-                "assertions_executed": 48,
-                "result": "PASSED (48/48 required DOM & JS tokens verified)",
+                "test_definition": "Verifies presence and wiring of all 7 top-level navigation modules (01 Overview to 07 Data & Evidence), 4 zoom levels (L1-L4), 4 concentration modes (Points, Heatmap, Boundaries, Clusters), 7 layer groups, 6 layer presets, 5-section project profile, 11/11 CSV catalogue links (157 total rows), 123 GeoJSON feature label, valid document source_url links, published supertall tower height parsing (PRJ-D11 = 557m), and interactive hypothetical scenario simulator.",
+                "assertions_executed": 75,
+                "result": "PASSED (75/75 required DOM, CSV catalogue, GeoJSON, document URL & tower height tokens verified)",
             },
             "suite_e_webgl_gpu_disposal_and_zero_gap_fallback": {
                 "test_definition": "Verifies presence of disposeThreeGroup(grp, true), disposeAllThreeGpuResources(), CanvasTexture map.dispose(), renderer.renderLists.dispose(), 950-building cap with osmCityTruncated native fill-extrusion fallback (0.55 opacity), and 220ms rebuild throttling, plus 15-project 3D switch endurance walkthrough (23 active geometries, 4 textures, 0 leaks).",
@@ -890,6 +949,9 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
         },
         "spatial_and_hgv_checks": {
             "nearest_vertex_haversine_37_of_37": True,
+            "max_haversine_discrepancy_at_stored_2dp_km": 0.0,
+            "max_haversine_discrepancy_unrounded_km": round(max_unrounded_haversine_diff, 5),
+            "geojson_total_features": len(geojson_data["features"]),
             "geojson_linestring_endpoints_37_of_37": True,
             "hgv_four_component_sum_37_of_37": True,
         },
