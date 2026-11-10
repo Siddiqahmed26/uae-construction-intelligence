@@ -12,6 +12,7 @@
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" crossorigin=""/>
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin=""></script>
+  <script src="https://unpkg.com/three@0.160.0/build/three.min.js" crossorigin=""></script>
   <style>
     :root {
       --bg-dark: #f8fafc;
@@ -1471,14 +1472,14 @@
   <main class="workbench" id="mainWorkbench">
 
     <section class="map-stage" id="mapStage">
-      <!-- Top-Left Floating Map Controls -->
+      <!-- Top-Left Floating Map Controls (Exact haio.sg < Map + Blocks [ON] + 2D/3D + Layers) -->
       <div class="haio-floating-top-left">
-        <button class="haio-pill-btn" onclick="backToCityMapOverview()" title="Reset to Dubai &amp; UAE Corridor Overview">
-          <span>‹ Overview</span>
+        <button class="haio-pill-btn" onclick="backToCityMapOverview()" title="Switch to Dubai &amp; UAE Corridor Overview">
+          <span>‹ Map</span>
         </button>
 
-        <button class="haio-pill-btn" id="blocksTogglePill" onclick="toggle3DBlocksMassing()" title="Toggle Real OpenStreetMap 3D Buildings">
-          <span>3D Buildings</span>
+        <button class="haio-pill-btn" id="blocksTogglePill" onclick="toggle3DBlocksMassing()" title="Toggle Photorealistic 3D Buildings &amp; Blocks">
+          <span>Blocks</span>
           <span class="haio-switch-track on" id="blocksSwitchTrack">
             <span class="haio-switch-thumb"></span>
           </span>
@@ -1490,8 +1491,22 @@
         </div>
 
         <button class="haio-pill-btn" onclick="toggleLayersPopover()" style="padding:8px 13px; font-size:0.78rem;">
-          <span>⚙ Layers &amp; Filters (11)</span>
+          <span>⚙ Layers (11)</span>
         </button>
+      </div>
+
+      <!-- 3D Projected Hero Tower Roof Callout ("Block 1 · 2 stacks") -->
+      <div id="hero3DRoofCallout" class="haio-3d-block-callout" style="position:absolute; top:0; left:0; z-index:785; display:none; background:rgba(15,23,42,0.94); color:#ffffff; border:1px solid rgba(255,255,255,0.22); padding:6px 14px; font-size:0.78rem; font-weight:700; border-radius:999px; box-shadow:0 8px 24px rgba(0,0,0,0.45); pointer-events:auto;" onclick="select3DBlockCard('B1')">
+        <span id="hero3DRoofCalloutText">Block 1 · 2 stacks</span>
+      </div>
+
+      <!-- Photorealistic 3D Attribution Badge (Bottom-Right beside Inspector Card) -->
+      <div id="photoreal3DAttribution" style="position:absolute; right:430px; bottom:14px; z-index:780; display:flex; align-items:center; gap:8px; pointer-events:none;">
+        <div style="background:rgba(15,23,42,0.62); backdrop-filter:blur(6px); color:#f8fafc; padding:3px 9px; border-radius:6px; font-size:0.66rem; font-weight:600; line-height:1.2; text-align:right;">
+          <strong style="font-size:0.74rem; display:block; letter-spacing:0.01em;">3D Earth &amp; RTA GIS</strong>
+          <span>Airbus · Maxar · OSM 3D</span>
+        </div>
+        <div style="width:22px; height:22px; border-radius:50%; background:#ffffff; color:#0f172a; display:inline-flex; align-items:center; justify-content:center; font-size:0.74rem; font-weight:800; box-shadow:0 2px 8px rgba(0,0,0,0.3);">i</div>
       </div>
 
       <!-- Center-Top Floating Scenario Dock (Hidden to avoid duplicate toolbar clutter) -->
@@ -1630,24 +1645,24 @@
       <!-- Bottom-Left Floating Pills: Compass Orbit + 4 Diurnal Time Windows + Basemap -->
       <div class="haio-floating-bottom-left">
         <button class="haio-compass-pill" onclick="orbitCameraStep()" title="Click to orbit 3D camera by 45°">
-          <svg class="compass-needle-svg" id="compassSvg" viewBox="0 0 24 24" style="transform: rotate(-28deg);">
+          <svg class="compass-needle-svg" id="compassSvg" viewBox="0 0 24 24" style="transform: rotate(-60deg);">
             <polygon points="12,2 16,12 12,10 8,12" fill="#ef4444"/>
             <polygon points="12,22 16,12 12,14 8,12" fill="#94a3b8"/>
           </svg>
-          <span id="compassLabel">NE 28°</span>
+          <span id="compassLabel">NE 60°</span>
         </button>
 
         <div class="time-group" aria-label="Traffic Time Window Selector">
-          <button class="time-btn" data-tp="Morning Peak (07:30–09:30)" onclick="setTimeWindow('Morning Peak (07:30–09:30)', this)">☀ AM Peak</button>
-          <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday HGV</button>
-          <button class="time-btn active" data-tp="Evening Peak (17:00–20:00)" onclick="setTimeWindow('Evening Peak (17:00–20:00)', this)">🌇 PM Peak</button>
-          <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night Pour</button>
+          <button class="time-btn" data-tp="Morning Peak (07:30–09:30)" onclick="setTimeWindow('Morning Peak (07:30–09:30)', this)">☀ AM</button>
+          <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday</button>
+          <button class="time-btn active" data-tp="Evening Peak (17:00–20:00)" onclick="setTimeWindow('Evening Peak (17:00–20:00)', this)">🌇 PM</button>
+          <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night</button>
         </div>
 
         <div class="basemap-switcher">
-          <button class="bm-btn active" onclick="setBasemap('sat', this)">Satellite 3D</button>
-          <button class="bm-btn" onclick="setBasemap('light', this)">Light Map</button>
-          <button class="bm-btn" onclick="setBasemap('dark', this)">Dark GIS</button>
+          <button class="bm-btn active" onclick="setBasemap('sat', this)">3D Earth</button>
+          <button class="bm-btn" onclick="setBasemap('light', this)">Street</button>
+          <button class="bm-btn" onclick="setBasemap('dark', this)">Dark</button>
         </div>
 
         <span id="hudTime" style="display:none;">Evening Peak (17:00–20:00)</span>
@@ -1664,13 +1679,13 @@
     <!-- FLOATING RIGHT INTELLIGENCE INSPECTOR -->
     <aside class="sidebar-right">
       <div class="drawer-tabs">
-        <button class="dtab-btn active" id="dtab-uc" onclick="switchDrawerTab('uc')">📌 Scenarios &amp; Hotspots</button>
-        <button class="dtab-btn" id="dtab-insp" onclick="switchDrawerTab('insp')">🏗️ Project / Road Inspector</button>
+        <button class="dtab-btn active" id="dtab-insp" onclick="switchDrawerTab('insp')">🏢 3D Block &amp; Road</button>
+        <button class="dtab-btn" id="dtab-uc" onclick="switchDrawerTab('uc')">📌 Hotspots &amp; Traffic</button>
         <button class="dtab-btn" id="dtab-qa" onclick="switchDrawerTab('qa')">💬 Ask Data</button>
       </div>
 
       <!-- TAB 1: GUIDED CONSTRUCTION & TRAFFIC SCENARIOS -->
-      <div class="drawer-body" id="dpanel-uc">
+      <div class="drawer-body" id="dpanel-uc" style="display:none;">
         <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-bottom:10px;">
           <button class="uc-btn active" id="btn-uc1" onclick="runUseCase(1)">1. Hotspots</button>
           <button class="uc-btn" id="btn-uc2" onclick="runUseCase(2)">2. JVC</button>
@@ -1699,7 +1714,7 @@
       </div>
 
       <!-- TAB 2: CONSTRUCTION PROJECT & ROAD CORRIDOR INSPECTOR -->
-      <div class="drawer-body" id="dpanel-insp" style="display:none;">
+      <div class="drawer-body" id="dpanel-insp" style="display:block;">
         <div id="inspectorContainer"></div>
       </div>
 
@@ -2211,7 +2226,7 @@
     function orbitCameraStep() {
       if (!map3d) return;
       const nextBearing = (Math.round(map3d.getBearing() / 45) * 45 + 45) % 360;
-      map3d.easeTo({ bearing: nextBearing, pitch: currentCameraDim === "3D" ? 55 : 0, duration: 650 });
+      map3d.easeTo({ bearing: nextBearing, pitch: currentCameraDim === "3D" ? 60 : 0, duration: 650 });
     }
 
     function setCameraDimension(dim) {
@@ -2220,8 +2235,8 @@
       document.getElementById("btnDim3D").classList.toggle("active", dim === "3D");
       if (map3d) {
         map3d.easeTo({
-          pitch: dim === "3D" ? 55 : 0,
-          bearing: dim === "3D" ? 28 : 0,
+          pitch: dim === "3D" ? 60 : 0,
+          bearing: dim === "3D" ? 60 : 0,
           duration: 800
         });
       }
@@ -2231,17 +2246,28 @@
       is3DBlocksEnabled = !is3DBlocksEnabled;
       const trk = document.getElementById("blocksSwitchTrack");
       if (trk) trk.classList.toggle("on", is3DBlocksEnabled);
-      if (map3d && map3dLoaded && map3d.getLayer("osm-3d-buildings")) {
-        map3d.setLayoutProperty("osm-3d-buildings", "visibility", is3DBlocksEnabled ? "visible" : "none");
+      if (map3d && map3dLoaded) {
+        if (map3d.getLayer("osm-3d-buildings")) {
+          map3d.setLayoutProperty("osm-3d-buildings", "visibility", is3DBlocksEnabled ? "visible" : "none");
+        }
+        if (map3d.getLayer("haio-photoreal-3d-layer")) {
+          map3d.setLayoutProperty("haio-photoreal-3d-layer", "visibility", is3DBlocksEnabled ? "visible" : "none");
+        }
+        map3d.triggerRepaint();
       }
       sync3DMapLayers();
     }
 
     function backToCityMapOverview() {
-      switchDrawerTab("uc");
-      flyBothMaps(25.125, 55.235, 11.4, 50, 28);
-      document.getElementById("hudScope").textContent = "Dubai Corridors Overview";
-      runUseCase(1, false);
+      const zNow = map3d ? map3d.getZoom() : 16;
+      if (zNow > 13.8) {
+        switchDrawerTab("uc");
+        flyBothMaps(25.125, 55.235, 11.4, 48, 28);
+        document.getElementById("hudScope").textContent = "Dubai Corridors Overview";
+        runUseCase(1, false);
+      } else {
+        showProjectInspector(selected3DProjectId || "PRJ-D11", true);
+      }
     }
 
     function selectLensDock(idx) {
@@ -2253,19 +2279,16 @@
       } else if (idx === 3) {
         runUseCase(3, true);
       } else if (idx === 4) {
-        showProjectInspector(selected3DProjectId || "PRJ-D6", true);
+        showProjectInspector(selected3DProjectId || "PRJ-D11", true);
       } else if (idx === 5) {
-        // Fly to Downtown Dubai / Business Bay real 3D OpenStreetMap skyline + active road corridors
         switchDrawerTab("insp");
-        flyBothMaps(25.1915, 55.2745, 15.1, 60, 35);
-        document.getElementById("hudScope").textContent = "Downtown & Business Bay 3D Skyline";
-        showProjectInspector("PRJ-D6", false);
+        showProjectInspector("PRJ-D11", true);
       } else if (idx === 6) {
         runUseCase(4, true);
       }
     }
 
-    function flyBothMaps(lat, lon, zoom, pitch = 54, bearing = 28) {
+    function flyBothMaps(lat, lon, zoom, pitch = 60, bearing = 60) {
       const clampedZoom = Math.min(17.4, Math.max(9.0, zoom));
       if (map) {
         map.flyTo([lat, lon], Math.min(18, Math.max(9, Math.round(clampedZoom))), { duration: 0.8 });
@@ -2276,21 +2299,931 @@
           zoom: clampedZoom,
           pitch: currentCameraDim === "3D" ? pitch : 0,
           bearing: currentCameraDim === "3D" ? bearing : 0,
-          duration: 1100,
+          duration: 1050,
           essential: true
         });
       }
     }
 
+    // =========================================================================
+    // THREE.JS PHOTOREALISTIC 3D ARCHITECTURAL ENSEMBLE & TEXTURE ENGINE
+    // =========================================================================
+    let three3DLayer = null;
+    let threeTextureCache = {};
+
+    function getAxaRibbedTowerTexture() {
+      if (threeTextureCache.axa) return threeTextureCache.axa;
+      const cv = document.createElement("canvas");
+      cv.width = 1024;
+      cv.height = 2048;
+      const ctx = cv.getContext("2d");
+      ctx.fillStyle = "#e8e3d9";
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      const bands = 48;
+      const bandH = cv.height / bands;
+      for (let i = 0; i < bands; i++) {
+        const y = i * bandH;
+        // Sunlit warm cream-white limestone spandrel ring (top 54% of floor)
+        const spH = bandH * 0.54;
+        const gradSp = ctx.createLinearGradient(0, y, 0, y + spH);
+        gradSp.addColorStop(0, "#f4f1ea");
+        gradSp.addColorStop(0.75, "#e6e0d5");
+        gradSp.addColorStop(1, "#c2bbb0");
+        ctx.fillStyle = gradSp;
+        ctx.fillRect(0, y, cv.width, spH);
+
+        // Subtle vertical stone panel joints
+        ctx.strokeStyle = "rgba(140, 132, 120, 0.28)";
+        ctx.lineWidth = 1.5;
+        for (let x = 0; x < cv.width; x += 32) {
+          ctx.beginPath();
+          ctx.moveTo(x, y);
+          ctx.lineTo(x, y + spH);
+          ctx.stroke();
+        }
+
+        // Recessed dark bronze-charcoal ribbon window band (bottom 46% of floor)
+        const winY = y + spH;
+        const winH = bandH - spH;
+        const gradWin = ctx.createLinearGradient(0, winY, 0, winY + winH);
+        gradWin.addColorStop(0, "#14181f");
+        gradWin.addColorStop(0.35, "#26303d");
+        gradWin.addColorStop(1, "#1c222b");
+        ctx.fillStyle = gradWin;
+        ctx.fillRect(0, winY, cv.width, winH);
+
+        // Window mullions & subtle interior warm/cool reflections
+        for (let x = 0; x < cv.width; x += 16) {
+          if (((i * 13 + (x / 16) * 7) % 11) === 0) {
+            ctx.fillStyle = "rgba(219, 234, 254, 0.22)";
+            ctx.fillRect(x + 2, winY + 2, 12, winH - 3);
+          } else if (((i * 17 + (x / 16) * 5) % 19) === 0) {
+            ctx.fillStyle = "rgba(254, 243, 199, 0.20)";
+            ctx.fillRect(x + 2, winY + 2, 12, winH - 3);
+          }
+          ctx.fillStyle = "#11151c";
+          ctx.fillRect(x, winY, 2, winH);
+        }
+      }
+
+      // Iconic Royal-Blue Corporate Sky-Sign Badges around the top of the cylindrical tower
+      [140, 480, 790].forEach(bx => {
+        const by = bandH * 3.1;
+        const bw = 96;
+        const bh = bandH * 3.0;
+        ctx.fillStyle = "#1e3a8a";
+        ctx.fillRect(bx, by, bw, bh);
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 3;
+        ctx.strokeRect(bx + 3, by + 3, bw - 6, bh - 6);
+        ctx.strokeStyle = "#ef4444";
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        ctx.moveTo(bx + bw - 26, by + 6);
+        ctx.lineTo(bx + bw - 6, by + 32);
+        ctx.stroke();
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "900 34px Inter, Arial, sans-serif";
+        ctx.fillText("AXA", bx + 12, by + bh * 0.66);
+      });
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.anisotropy = 8;
+      threeTextureCache.axa = tex;
+      return tex;
+    }
+
+    function getBronzeSetbackTowerTexture() {
+      if (threeTextureCache.bronze) return threeTextureCache.bronze;
+      const cv = document.createElement("canvas");
+      cv.width = 512;
+      cv.height = 1024;
+      const ctx = cv.getContext("2d");
+      ctx.fillStyle = "#8a5643";
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      const floors = 32;
+      const fh = cv.height / floors;
+      const cols = 10;
+      const cw = cv.width / cols;
+
+      for (let f = 0; f < floors; f++) {
+        const y = f * fh;
+        // Warm metallic bronze/terracotta spandrel beam
+        const grad = ctx.createLinearGradient(0, y, 0, y + fh);
+        grad.addColorStop(0, "#9c6652");
+        grad.addColorStop(0.4, "#85523f");
+        grad.addColorStop(1, "#6b3e2e");
+        ctx.fillStyle = grad;
+        ctx.fillRect(0, y, cv.width, fh);
+
+        // Recessed dark bronze-tinted windows
+        for (let c = 0; c < cols; c++) {
+          const x = c * cw;
+          ctx.fillStyle = "#22252a";
+          ctx.fillRect(x + 7, y + fh * 0.28, cw - 14, fh * 0.62);
+          if (((f * 7 + c * 13) % 9) === 0) {
+            ctx.fillStyle = "rgba(253, 230, 138, 0.25)";
+            ctx.fillRect(x + 9, y + fh * 0.32, cw - 18, fh * 0.54);
+          } else {
+            ctx.fillStyle = "rgba(148, 163, 184, 0.16)";
+            ctx.fillRect(x + 9, y + fh * 0.32, (cw - 18) * 0.5, fh * 0.54);
+          }
+        }
+      }
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.anisotropy = 8;
+      threeTextureCache.bronze = tex;
+      return tex;
+    }
+
+    function getDarkCurtainWallTexture() {
+      if (threeTextureCache.darkCurtain) return threeTextureCache.darkCurtain;
+      const cv = document.createElement("canvas");
+      cv.width = 512;
+      cv.height = 1024;
+      const ctx = cv.getContext("2d");
+
+      const bgGrad = ctx.createLinearGradient(0, 0, cv.width, cv.height);
+      bgGrad.addColorStop(0, "#2b3038");
+      bgGrad.addColorStop(0.5, "#1f242b");
+      bgGrad.addColorStop(1, "#161a20");
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      const floors = 44;
+      const fh = cv.height / floors;
+      const cols = 16;
+      const cw = cv.width / cols;
+
+      for (let f = 0; f < floors; f++) {
+        const y = f * fh;
+        // Horizontal bronze-grey spandrel line
+        ctx.fillStyle = (f % 8 === 0) ? "#574c43" : "#383d45";
+        ctx.fillRect(0, y, cv.width, (f % 8 === 0) ? 4 : 2.2);
+
+        for (let c = 0; c < cols; c++) {
+          const x = c * cw;
+          if (((f * 11 + c * 5) % 7) === 0) {
+            ctx.fillStyle = "rgba(254, 240, 138, 0.18)";
+            ctx.fillRect(x + 3, y + 3, cw - 6, fh - 5);
+          } else if (((f + c) % 5) === 0) {
+            ctx.fillStyle = "rgba(147, 197, 253, 0.14)";
+            ctx.fillRect(x + 3, y + 3, cw - 6, fh - 5);
+          }
+          // Vertical bronze/champagne mullion fin
+          ctx.fillStyle = (c % 4 === 0) ? "#786657" : "#3f4650";
+          ctx.fillRect(x, y, (c % 4 === 0) ? 3 : 1.5, fh);
+        }
+      }
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.anisotropy = 8;
+      threeTextureCache.darkCurtain = tex;
+      return tex;
+    }
+
+    function getBlueGlassCurtainTexture() {
+      if (threeTextureCache.blueCurtain) return threeTextureCache.blueCurtain;
+      const cv = document.createElement("canvas");
+      cv.width = 512;
+      cv.height = 1024;
+      const ctx = cv.getContext("2d");
+
+      const g = ctx.createLinearGradient(0, 0, cv.width, cv.height);
+      g.addColorStop(0, "#4b6b88");
+      g.addColorStop(0.45, "#2d4860");
+      g.addColorStop(1, "#1e3246");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      const floors = 40;
+      const fh = cv.height / floors;
+      for (let f = 0; f < floors; f++) {
+        const y = f * fh;
+        ctx.fillStyle = "#cbd5e1";
+        ctx.fillRect(0, y, cv.width, 2.5);
+        for (let x = 0; x < cv.width; x += 24) {
+          ctx.fillStyle = "rgba(226, 232, 240, 0.35)";
+          ctx.fillRect(x, y, 1.8, fh);
+          if (((f * 5 + (x / 24)) % 6) === 0) {
+            ctx.fillStyle = "rgba(186, 230, 253, 0.22)";
+            ctx.fillRect(x + 3, y + 3, 18, fh - 5);
+          }
+        }
+      }
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.anisotropy = 8;
+      threeTextureCache.blueCurtain = tex;
+      return tex;
+    }
+
+    function getPodiumTerracottaTexture() {
+      if (threeTextureCache.podiumBase) return threeTextureCache.podiumBase;
+      const cv = document.createElement("canvas");
+      cv.width = 1024;
+      cv.height = 512;
+      const ctx = cv.getContext("2d");
+
+      // Rich terracotta/burgundy architectural stone facade (matching W Residences podium base)
+      const g = ctx.createLinearGradient(0, 0, 0, cv.height);
+      g.addColorStop(0, "#6b2d29");
+      g.addColorStop(0.65, "#54201d");
+      g.addColorStop(1, "#3b1513");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      // Top white architectural slab cornice
+      ctx.fillStyle = "#f1f5f9";
+      ctx.fillRect(0, 0, cv.width, 24);
+      // Mid-level horizontal stone trim
+      ctx.fillStyle = "#7f3934";
+      ctx.fillRect(0, cv.height * 0.48, cv.width, 10);
+
+      // Vertical architectural fins & dark recessed storefront glazing at street level
+      for (let x = 24; x < cv.width - 24; x += 48) {
+        ctx.fillStyle = "#451815";
+        ctx.fillRect(x, 28, 6, cv.height - 28);
+        // Ground-floor double-height retail/lobby glass
+        ctx.fillStyle = "#18222d";
+        ctx.fillRect(x + 10, cv.height * 0.56, 32, cv.height * 0.38);
+        ctx.fillStyle = "rgba(253, 230, 138, 0.22)";
+        ctx.fillRect(x + 14, cv.height * 0.60, 24, cv.height * 0.28);
+      }
+
+      // Signature Circular Architectural Window Portal on left-center of podium
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(260, cv.height * 0.46, 56, 0, Math.PI * 2);
+      ctx.fillStyle = "#1e293b";
+      ctx.fill();
+      ctx.lineWidth = 8;
+      ctx.strokeStyle = "#8c423c";
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.arc(260, cv.height * 0.46, 40, 0, Math.PI * 2);
+      ctx.fillStyle = "rgba(125, 211, 252, 0.25)";
+      ctx.fill();
+      ctx.restore();
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.anisotropy = 8;
+      threeTextureCache.podiumBase = tex;
+      return tex;
+    }
+
+    function getPodiumSmokedGlassTexture() {
+      if (threeTextureCache.podiumGlass) return threeTextureCache.podiumGlass;
+      const cv = document.createElement("canvas");
+      cv.width = 1024;
+      cv.height = 512;
+      const ctx = cv.getContext("2d");
+
+      // Sleek dark obsidian smoked-glass curtain wall
+      const g = ctx.createLinearGradient(0, 0, cv.width, cv.height);
+      g.addColorStop(0, "#1e2936");
+      g.addColorStop(0.45, "#111821");
+      g.addColorStop(0.55, "#263545");
+      g.addColorStop(1, "#0f151d");
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      // Diagonal sky-reflection sheen across the glass box
+      ctx.fillStyle = "rgba(186, 230, 253, 0.12)";
+      ctx.beginPath();
+      ctx.moveTo(cv.width * 0.18, 0);
+      ctx.lineTo(cv.width * 0.46, 0);
+      ctx.lineTo(cv.width * 0.28, cv.height);
+      ctx.lineTo(cv.width * 0.02, cv.height);
+      ctx.closePath();
+      ctx.fill();
+
+      // 6 internal podium floors visible through smoked glass
+      for (let f = 1; f < 6; f++) {
+        const y = (f / 6) * cv.height;
+        ctx.fillStyle = "rgba(148, 163, 184, 0.28)";
+        ctx.fillRect(0, y, cv.width, 4);
+      }
+
+      // Crisp vertical aluminum curtain-wall mullions
+      for (let x = 0; x < cv.width; x += 28) {
+        ctx.fillStyle = (x % 112 === 0) ? "rgba(226, 232, 240, 0.55)" : "rgba(148, 163, 184, 0.25)";
+        ctx.fillRect(x, 0, (x % 112 === 0) ? 3.5 : 1.5, cv.height);
+      }
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.anisotropy = 8;
+      threeTextureCache.podiumGlass = tex;
+      return tex;
+    }
+
+    function getRooftopGardenTexture() {
+      if (threeTextureCache.roofGarden) return threeTextureCache.roofGarden;
+      const cv = document.createElement("canvas");
+      cv.width = 512;
+      cv.height = 512;
+      const ctx = cv.getContext("2d");
+
+      // Travertine stone deck base
+      ctx.fillStyle = "#d6d3cd";
+      ctx.fillRect(0, 0, 512, 512);
+
+      // Outer lush green landscaped lawn beds
+      ctx.fillStyle = "#276738";
+      ctx.fillRect(22, 22, 468, 468);
+
+      // Stone garden walkways & central amenity terrace
+      ctx.strokeStyle = "#e2e8f0";
+      ctx.lineWidth = 18;
+      ctx.strokeRect(64, 64, 384, 384);
+
+      // Central wooden pergola & sky-pool deck
+      ctx.fillStyle = "#78553a";
+      ctx.fillRect(140, 110, 232, 160);
+      ctx.fillStyle = "#0ea5e9";
+      ctx.fillRect(164, 130, 184, 85);
+
+      // Varied botanical foliage patches
+      const greens = ["#15803d", "#166534", "#22c55e", "#14532d", "#4ade80"];
+      for (let i = 0; i < 90; i++) {
+        const gx = 32 + ((i * 73) % 448);
+        const gy = 32 + ((i * 137) % 448);
+        if (gx > 135 && gx < 375 && gy > 105 && gy < 275) continue;
+        ctx.fillStyle = greens[i % greens.length];
+        ctx.beginPath();
+        ctx.arc(gx, gy, 10 + (i % 12), 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.anisotropy = 8;
+      threeTextureCache.roofGarden = tex;
+      return tex;
+    }
+
+    function getHeroWhiteTowerTexture(storeys, showMode, flrZone, stkFilter, wingIndex) {
+      const key = `hero_${storeys}_${showMode}_${flrZone}_${stkFilter}_${wingIndex}`;
+      if (threeTextureCache[key]) return threeTextureCache[key];
+
+      const cv = document.createElement("canvas");
+      cv.width = 512;
+      cv.height = 2048;
+      const ctx = cv.getContext("2d");
+
+      // Crisp sunlit architectural white facade (exact W Residences Marina View white massing)
+      ctx.fillStyle = "#ffffff";
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      const fCount = Math.min(85, Math.max(36, storeys || 51));
+      const fh = cv.height / fCount;
+
+      for (let f = 0; f < fCount; f++) {
+        // Floor index from bottom (1 = lowest floor, fCount = top penthouse)
+        const floorNum = fCount - f;
+        const y = f * fh;
+
+        // Check if this floor/wing is highlighted by the user's BLOCK / FLOOR / STACK / SHOW ME filter
+        let highlightCol = null;
+        const is4BRWing = (wingIndex % 2 === 0);
+        if (showMode === "4br" && is4BRWing) highlightCol = "#fbbf24";
+        else if (showMode === "5br" && !is4BRWing) highlightCol = "#34d399";
+        else if (showMode === "4br_5br_mix") highlightCol = is4BRWing ? "#fbbf24" : "#34d399";
+        else if (showMode === "hgv") highlightCol = (floorNum <= fCount * 0.45) ? "#f97316" : "#60a5fa";
+
+        if (flrZone === "LOW" && floorNum <= Math.round(fCount * 0.35)) highlightCol = "#3b82f6";
+        else if (flrZone === "MID" && floorNum > Math.round(fCount * 0.35) && floorNum <= Math.round(fCount * 0.72)) highlightCol = "#f59e0b";
+        else if (flrZone === "HIGH" && floorNum > Math.round(fCount * 0.72)) highlightCol = "#10b981";
+
+        if (stkFilter === "S1" && (wingIndex === 0 || wingIndex === 1 || wingIndex === 2)) highlightCol = "#fbbf24";
+        else if (stkFilter === "S2" && (wingIndex === 3 || wingIndex === 4 || wingIndex === 5)) highlightCol = "#34d399";
+
+        if (highlightCol) {
+          ctx.fillStyle = highlightCol;
+          ctx.fillRect(0, y + 2, cv.width, fh - 3);
+        } else {
+          // Subtle sunlit slab gradient on pure white
+          const sg = ctx.createLinearGradient(0, y, 0, y + fh);
+          sg.addColorStop(0, "#ffffff");
+          sg.addColorStop(0.82, "#f8fafc");
+          sg.addColorStop(1, "#e2e8f0");
+          ctx.fillStyle = sg;
+          ctx.fillRect(0, y, cv.width, fh);
+        }
+
+        // Crisp horizontal floor slab shadow line
+        ctx.fillStyle = "#cbd5e1";
+        ctx.fillRect(0, y, cv.width, 2.4);
+
+        // Neat architectural window / balcony openings across each stack floor
+        const winCols = [44, 118, 220, 310, 396, 448];
+        winCols.forEach((wx, idx) => {
+          const ww = (idx % 2 === 0) ? 28 : 42;
+          ctx.fillStyle = highlightCol ? "rgba(15, 23, 42, 0.45)" : "#94a3b8";
+          ctx.fillRect(wx, y + fh * 0.24, ww, fh * 0.56);
+          ctx.fillStyle = highlightCol ? "rgba(255, 255, 255, 0.35)" : "#cbd5e1";
+          ctx.fillRect(wx + 2, y + fh * 0.28, ww - 4, fh * 0.48);
+        });
+      }
+
+      // Vertical stack recess shadow channels
+      ctx.fillStyle = "rgba(148, 163, 184, 0.42)";
+      ctx.fillRect(188, 0, 5, cv.height);
+      ctx.fillRect(368, 0, 5, cv.height);
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.anisotropy = 8;
+      threeTextureCache[key] = tex;
+      return tex;
+    }
+
+    function addBoxWithEdges(parent, w, h, d, x, yBottom, z, mat, edgeColor = null, rotY = 0) {
+      const geo = new THREE.BoxGeometry(w, h, d);
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.set(x, yBottom + h / 2, z);
+      if (rotY) mesh.rotation.y = rotY;
+      parent.add(mesh);
+
+      if (edgeColor !== null) {
+        const edges = new THREE.EdgesGeometry(geo);
+        const line = new THREE.LineSegments(
+          edges,
+          new THREE.LineBasicMaterial({ color: edgeColor, transparent: true, opacity: 0.55 })
+        );
+        line.position.copy(mesh.position);
+        line.rotation.copy(mesh.rotation);
+        parent.add(line);
+      }
+      return mesh;
+    }
+
+    function addTreeCanopyCluster(parent, x, yBase, z, scale = 1.0) {
+      const trunkGeo = new THREE.CylinderGeometry(0.6 * scale, 0.9 * scale, 3.5 * scale, 6);
+      const trunkMat = new THREE.MeshLambertMaterial({ color: 0x4a3525 });
+      const trunk = new THREE.Mesh(trunkGeo, trunkMat);
+      trunk.position.set(x, yBase + 1.75 * scale, z);
+      parent.add(trunk);
+
+      const colors = [0x1e5631, 0x2d6a3e, 0x166534, 0x15803d, 0x14532d];
+      const col = colors[Math.abs(Math.round(x * 7 + z * 13)) % colors.length];
+      const crownGeo = new THREE.DodecahedronGeometry(4.6 * scale, 1);
+      const crownMat = new THREE.MeshLambertMaterial({ color: col });
+      const crown = new THREE.Mesh(crownGeo, crownMat);
+      crown.position.set(x, yBase + 5.4 * scale, z);
+      crown.scale.set(1.22, 0.85, 1.22);
+      parent.add(crown);
+    }
+
+    function getCreamLowRiseTexture() {
+      if (threeTextureCache.creamLow) return threeTextureCache.creamLow;
+      const cv = document.createElement("canvas");
+      cv.width = 512;
+      cv.height = 256;
+      const ctx = cv.getContext("2d");
+      ctx.fillStyle = "#e5dfd3";
+      ctx.fillRect(0, 0, cv.width, cv.height);
+
+      const floors = 5;
+      const fh = cv.height / floors;
+      for (let f = 0; f < floors; f++) {
+        const y = f * fh;
+        ctx.fillStyle = "#cfc8b8";
+        ctx.fillRect(0, y, cv.width, 4);
+        for (let x = 16; x < cv.width - 16; x += 36) {
+          ctx.fillStyle = "#334155";
+          ctx.fillRect(x, y + 10, 22, fh - 16);
+          ctx.fillStyle = "rgba(148, 163, 184, 0.35)";
+          ctx.fillRect(x + 2, y + 12, 18, fh - 20);
+        }
+      }
+      const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.anisotropy = 8;
+      threeTextureCache.creamLow = tex;
+      return tex;
+    }
+
+    function getUrbanGroundContextTexture() {
+      if (threeTextureCache.urbanGround) return threeTextureCache.urbanGround;
+      const cv = document.createElement("canvas");
+      cv.width = 1024;
+      cv.height = 1024;
+      const ctx = cv.getContext("2d");
+
+      // Warm realistic earth & urban park ground base
+      ctx.fillStyle = "#8c7a5b";
+      ctx.fillRect(0, 0, 1024, 1024);
+
+      // Textured open development parcels (right half — sandy-ochre earth & grass patches like haio.sg)
+      for (let i = 0; i < 400; i++) {
+        const px = 480 + ((i * 97) % 520);
+        const py = 60 + ((i * 151) % 880);
+        ctx.fillStyle = (i % 3 === 0) ? "rgba(180, 158, 118, 0.38)" : ((i % 3 === 1) ? "rgba(74, 107, 62, 0.32)" : "rgba(122, 104, 76, 0.35)");
+        ctx.beginPath();
+        ctx.arc(px, py, 14 + (i % 28), 0, Math.PI * 2);
+        ctx.fill();
+      }
+
+      // Urban asphalt avenues & white lane markings
+      ctx.strokeStyle = "#334155";
+      ctx.lineWidth = 28;
+      ctx.beginPath();
+      ctx.moveTo(460, 0);
+      ctx.lineTo(680, 1024);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(180, 620);
+      ctx.lineTo(980, 380);
+      ctx.stroke();
+
+      // Lush green park belt along the podium right edge
+      ctx.save();
+      ctx.translate(545, 520);
+      ctx.rotate(-0.18);
+      ctx.fillStyle = "#2d6a32";
+      ctx.fillRect(-45, -180, 88, 340);
+      ctx.restore();
+
+      // Paved architectural plaza around the Hero White Tower & Podium
+      ctx.fillStyle = "#cbd5e1";
+      ctx.fillRect(340, 440, 190, 150);
+
+      const tex = new THREE.CanvasTexture(cv);
+      tex.anisotropy = 8;
+      threeTextureCache.urbanGround = tex;
+      return tex;
+    }
+
+    function rebuildThreeHeroScene() {
+      if (!three3DLayer || !three3DLayer.scene) return;
+      const scene = three3DLayer.scene;
+      if (three3DLayer.cityGroup) {
+        scene.remove(three3DLayer.cityGroup);
+      }
+
+      const p = DATA.projects.find(x => x.project_id === selected3DProjectId) || DATA.projects[0];
+      const [lat, lon] = parseCoord(p.coordinates);
+      three3DLayer.originLonLat = [lon, lat];
+      const spec = getProject3DSpec(p);
+
+      // Update the 3D floating roof callout text ("Block 1 · 2 stacks")
+      const calloutTxtEl = document.getElementById("hero3DRoofCalloutText");
+      if (calloutTxtEl) {
+        calloutTxtEl.textContent = `Block 1 · 2 stacks`;
+      }
+
+      const cityGroup = new THREE.Group();
+      // Align local axes with NE 60° camera view so (-x = Left, +x = Right, -z = Background, +z = Foreground)
+      cityGroup.rotation.y = -THREE.MathUtils.degToRad(60);
+
+      // Subtle landscaped green park belt & architectural plaza apron under the Hero Tower & Podium
+      // (Lets real high-res Esri World Imagery satellite earth, roads, and parcels show cleanly around the site)
+      const parkBeltGeo = new THREE.PlaneGeometry(54, 155);
+      const parkBeltMat = new THREE.MeshLambertMaterial({ color: 0x2d6a32, transparent: true, opacity: 0.78 });
+      const parkBeltMesh = new THREE.Mesh(parkBeltGeo, parkBeltMat);
+      parkBeltMesh.rotation.x = -Math.PI / 2;
+      parkBeltMesh.rotation.z = 0.16;
+      parkBeltMesh.position.set(28, 0.18, -8);
+      cityGroup.add(parkBeltMesh);
+
+      const siteApronGeo = new THREE.PlaneGeometry(118, 92);
+      const siteApronMat = new THREE.MeshLambertMaterial({ color: 0xe2e8f0, transparent: true, opacity: 0.72 });
+      const siteApronMesh = new THREE.Mesh(siteApronGeo, siteApronMat);
+      siteApronMesh.rotation.x = -Math.PI / 2;
+      siteApronMesh.position.set(-14, 0.22, 18);
+      cityGroup.add(siteApronMesh);
+
+      // -----------------------------------------------------------------------
+      // 1. HERO ACTIVE PROJECT: ARTICULATED STARK-WHITE RESIDENTIAL TOWER (Block 1)
+      //    Unobstructed in the center-left of the plot, right beside the Podium
+      // -----------------------------------------------------------------------
+      const heroBaseH = 74;
+      three3DLayer.heroRoofLocalVec = new THREE.Vector3(-36, heroBaseH + 5, 4);
+
+      // White architectural plaza plinth under Block 1
+      const whiteRoofMat = new THREE.MeshLambertMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 0.32 });
+      addBoxWithEdges(cityGroup, 50, 3.0, 38, -36, 0, 6, whiteRoofMat, 0xcbd5e1);
+
+      // 6 Interlocking Articulated White Residential Stack Wings (Exact W Residences Marina View massing)
+      const wingSpecs = [
+        { w: 15, d: 15, h: heroBaseH * 1.00, x: -49, z: 0 },
+        { w: 17, d: 14, h: heroBaseH * 0.98, x: -37, z: -3 },
+        { w: 15, d: 16, h: heroBaseH * 0.95, x: -40, z: 12 },
+        { w: 16, d: 15, h: heroBaseH * 1.02, x: -23, z: -2 },
+        { w: 15, d: 16, h: heroBaseH * 0.96, x: -22, z: 11 },
+        { w: 13, d: 14, h: heroBaseH * 0.90, x: -52, z: 13 }
+      ];
+
+      wingSpecs.forEach((ws, idx) => {
+        const wallTex = getHeroWhiteTowerTexture(spec.storeys, active3DShowMe, active3DFloor, active3DStack, idx);
+        const isDefaultWhite = (active3DShowMe === "all" && active3DFloor === "ALL" && active3DStack === "ALL");
+        const wallMat = new THREE.MeshLambertMaterial({
+          map: wallTex,
+          emissive: isDefaultWhite ? 0xffffff : 0x000000,
+          emissiveIntensity: isDefaultWhite ? 0.28 : 0.0
+        });
+        const mats = [wallMat, wallMat, whiteRoofMat, whiteRoofMat, wallMat, wallMat];
+        addBoxWithEdges(cityGroup, ws.w, ws.h, ws.d, ws.x, 3.0, ws.z, mats, 0xcbd5e1);
+        addBoxWithEdges(cityGroup, ws.w * 0.74, 2.6, ws.d * 0.74, ws.x, 3.0 + ws.h, ws.z, whiteRoofMat, 0x94a3b8);
+      });
+
+      // -----------------------------------------------------------------------
+      // 2. HERO ACTIVE PROJECT: TERRACOTTA & DARK SMOKED-GLASS PODIUM + ROOFTOP SKY-GARDEN
+      //    Positioned immediately to the right of the White Tower (x = +16, z = +18)
+      // -----------------------------------------------------------------------
+      const podGroup = new THREE.Group();
+      podGroup.position.set(16, 0, 18);
+      podGroup.rotation.y = -0.16;
+
+      const podBaseTex = getPodiumTerracottaTexture();
+      const podBaseWallMat = new THREE.MeshLambertMaterial({ map: podBaseTex });
+      const podBaseRoofMat = new THREE.MeshLambertMaterial({ color: 0xf1f5f9 });
+      const podBaseMats = [podBaseWallMat, podBaseWallMat, podBaseRoofMat, podBaseRoofMat, podBaseWallMat, podBaseWallMat];
+
+      // Level 1: Terracotta / Burgundy Architectural Podium Base (0..18m)
+      addBoxWithEdges(podGroup, 44, 18, 54, 0, 0, 0, podBaseMats, 0x451a03);
+
+      // Level 2: Mid-Level Lush Planted Green Terrace Ledge (18..21.5m)
+      const midGreenMat = new THREE.MeshLambertMaterial({ color: 0x276738 });
+      addBoxWithEdges(podGroup, 45.2, 3.5, 55.2, 0, 18, 0, midGreenMat, null);
+
+      // Level 3: Sleek Dark Smoked-Glass Upper Podium Box (21.5..46m)
+      const podGlassTex = getPodiumSmokedGlassTexture();
+      const podGlassWallMat = new THREE.MeshLambertMaterial({ map: podGlassTex });
+      const roofGardenTex = getRooftopGardenTexture();
+      const roofGardenMat = new THREE.MeshLambertMaterial({ map: roofGardenTex });
+      const darkRimMat = new THREE.MeshLambertMaterial({ color: 0x1e293b });
+      const podGlassMats = [podGlassWallMat, podGlassWallMat, roofGardenMat, darkRimMat, podGlassWallMat, podGlassWallMat];
+      addBoxWithEdges(podGroup, 37, 24.5, 48, 2.5, 21.5, -1.0, podGlassMats, 0x334155);
+
+      // Level 4: Rooftop Sky-Garden Perimeter Parapet Walls & 3D Botanical Tree Canopies (at y = 46m)
+      addBoxWithEdges(podGroup, 37.4, 2.2, 1.2, 2.5, 46, -24.4, darkRimMat, null);
+      addBoxWithEdges(podGroup, 37.4, 2.2, 1.2, 2.5, 46, 22.4, darkRimMat, null);
+      addBoxWithEdges(podGroup, 1.2, 2.2, 48.0, -15.4, 46, -1.0, darkRimMat, null);
+      addBoxWithEdges(podGroup, 1.2, 2.2, 48.0, 20.4, 46, -1.0, darkRimMat, null);
+
+      const roofTreeCoords = [
+        [-9, -17], [0, -18], [10, -17], [14, -9], [14, 2], [13, 12],
+        [-9, 13], [2, 14], [-10, 0], [-4, -7], [7, 6], [0, 3]
+      ];
+      roofTreeCoords.forEach(([tx, tz]) => {
+        addTreeCanopyCluster(podGroup, tx, 45.8, tz, 0.65);
+      });
+
+      cityGroup.add(podGroup);
+
+      // -----------------------------------------------------------------------
+      // 3. ICONIC CYLINDRICAL RIBBED WHITE TOWER (AXA Tower Style on the Left)
+      //    Positioned at x = -112, z = +38 so it frames the left side without blocking Block 1
+      // -----------------------------------------------------------------------
+      const axaX = -112;
+      const axaZ = 38;
+      const axaH = 212;
+      const axaTex = getAxaRibbedTowerTexture();
+      const axaWallMat = new THREE.MeshLambertMaterial({ map: axaTex });
+      const axaCapMat = new THREE.MeshLambertMaterial({ color: 0xd6d1c7 });
+      const axaCylGeo = new THREE.CylinderGeometry(27.5, 27.5, axaH, 44, 1, false);
+      const axaMesh = new THREE.Mesh(axaCylGeo, [axaWallMat, axaCapMat, axaCapMat]);
+      axaMesh.position.set(axaX, axaH / 2, axaZ);
+      axaMesh.rotation.y = THREE.MathUtils.degToRad(48);
+      cityGroup.add(axaMesh);
+
+      // Recessed Circular Mechanical Crown on top of the Cylindrical Tower
+      const axaCrownGeo = new THREE.CylinderGeometry(19.0, 19.0, 12, 36);
+      const axaCrownMat = new THREE.MeshLambertMaterial({ color: 0xb8b2a6 });
+      const axaCrown = new THREE.Mesh(axaCrownGeo, axaCrownMat);
+      axaCrown.position.set(axaX, axaH + 6.0, axaZ);
+      cityGroup.add(axaCrown);
+
+      // -----------------------------------------------------------------------
+      // 4. FOREGROUND SCULPTED BRONZE/TERRACOTTA SETBACK TOWER (Bottom-Center Edge)
+      //    Positioned at x = -54, z = +188 with height = 74m so its detailed roof sits
+      //    in the bottom foreground BELOW the White Tower & Podium (zero occlusion!)
+      // -----------------------------------------------------------------------
+      const brzX = -54;
+      const brzZ = 188;
+      const brzH = 74;
+      const brzTex = getBronzeSetbackTowerTexture();
+      const brzWallMat = new THREE.MeshLambertMaterial({ map: brzTex });
+      const brzCapMat = new THREE.MeshLambertMaterial({ color: 0x8c5845 });
+      const brzMats = [brzWallMat, brzWallMat, brzCapMat, brzCapMat, brzWallMat, brzWallMat];
+
+      addBoxWithEdges(cityGroup, 42, brzH, 34, brzX, 0, brzZ, brzMats, 0x5c3426, 0.14);
+      addBoxWithEdges(cityGroup, 32, brzH, 42, brzX, 0, brzZ, brzMats, 0x5c3426, 0.14);
+
+      // Projecting Bronze Crown Cornice & Recessed Grey Mechanical Roof Well with Red HVAC Units
+      const brzCorniceMat = new THREE.MeshLambertMaterial({ color: 0x9e6854 });
+      addBoxWithEdges(cityGroup, 45, 5.0, 37, brzX, brzH, brzZ, brzCorniceMat, 0x5c3426, 0.14);
+      const mechDeckMat = new THREE.MeshLambertMaterial({ color: 0x64748b });
+      addBoxWithEdges(cityGroup, 33, 1.8, 26, brzX, brzH + 4.2, brzZ, mechDeckMat, 0x334155, 0.14);
+      const redHvacMat = new THREE.MeshLambertMaterial({ color: 0xb91c1c });
+      const silHvacMat = new THREE.MeshLambertMaterial({ color: 0xcbd5e1 });
+      addBoxWithEdges(cityGroup, 8.0, 4.5, 6.5, brzX - 5, brzH + 5.5, brzZ - 2, redHvacMat, null, 0.14);
+      addBoxWithEdges(cityGroup, 9.0, 4.0, 7.0, brzX + 6, brzH + 5.5, brzZ + 3, silHvacMat, null, 0.14);
+
+      // Stepped Blue-Silver Glass Fin Annex in front of the Bronze Tower at bottom edge
+      const blueCurtainMat = new THREE.MeshLambertMaterial({ map: getBlueGlassCurtainTexture() });
+      const annexMats = [blueCurtainMat, blueCurtainMat, silHvacMat, silHvacMat, blueCurtainMat, blueCurtainMat];
+      addBoxWithEdges(cityGroup, 20, 56, 18, brzX - 5, 0, brzZ + 28, annexMats, 0x94a3b8, 0.18);
+      addBoxWithEdges(cityGroup, 18, 50, 17, brzX + 13, 0, brzZ + 26, annexMats, 0x94a3b8, -0.10);
+
+      // -----------------------------------------------------------------------
+      // 5. BACKGROUND TWIN DARK CHARCOAL/BRONZE CURTAIN-WALL SKYSCRAPERS (Upper-Center)
+      // -----------------------------------------------------------------------
+      const darkTex = getDarkCurtainWallTexture();
+      const darkWallMat = new THREE.MeshLambertMaterial({ map: darkTex });
+      const darkCapMat = new THREE.MeshLambertMaterial({ color: 0x334155 });
+      const darkMats = [darkWallMat, darkWallMat, darkCapMat, darkCapMat, darkWallMat, darkWallMat];
+
+      // Twin Tower 1 (Center-Background Left)
+      addBoxWithEdges(cityGroup, 38, 172, 26, -34, 0, -96, darkMats, 0x475569, -0.18);
+      addBoxWithEdges(cityGroup, 28, 180, 24, -22, 0, -104, darkMats, 0x475569, -0.18);
+      addBoxWithEdges(cityGroup, 24, 9, 16, -28, 180, -100, darkCapMat, 0x64748b, -0.18);
+
+      // Twin Tower 2 (Center-Background Right)
+      addBoxWithEdges(cityGroup, 36, 168, 26, 22, 0, -100, darkMats, 0x475569, -0.22);
+      addBoxWithEdges(cityGroup, 26, 176, 24, 34, 0, -108, darkMats, 0x475569, -0.22);
+      addBoxWithEdges(cityGroup, 22, 8, 15, 28, 176, -104, darkCapMat, 0x64748b, -0.22);
+
+      // -----------------------------------------------------------------------
+      // 6. LEFT-SIDE SKYLINE: SLANTED BLUE-GLASS TOWER, TALL RESIDENTIAL & PYRAMID CROWN TOWER
+      // -----------------------------------------------------------------------
+      addBoxWithEdges(cityGroup, 32, 182, 28, -138, 0, -42, annexMats, 0xcbd5e1, 0.22);
+      addBoxWithEdges(cityGroup, 28, 192, 24, -84, 0, -54, annexMats, 0x94a3b8, 0.08);
+
+      const stoneWallMat = new THREE.MeshLambertMaterial({ map: getCreamLowRiseTexture() });
+      const stoneMats = [stoneWallMat, stoneWallMat, axaCapMat, axaCapMat, stoneWallMat, stoneWallMat];
+      addBoxWithEdges(cityGroup, 28, 142, 28, -172, 0, -4, stoneMats, 0x94a3b8, 0.15);
+      const goldPyrGeo = new THREE.ConeGeometry(19, 24, 4);
+      const goldPyrMat = new THREE.MeshLambertMaterial({ color: 0xd97706 });
+      const goldPyr = new THREE.Mesh(goldPyrGeo, goldPyrMat);
+      goldPyr.position.set(-172, 142 + 12, -4);
+      goldPyr.rotation.y = Math.PI / 4 + 0.15;
+      cityGroup.add(goldPyr);
+
+      // Mid-rise building to the left of AXA tower
+      const creamLowMat = new THREE.MeshLambertMaterial({ map: getCreamLowRiseTexture() });
+      const greyRoofMat = new THREE.MeshLambertMaterial({ color: 0x94a3b8 });
+      const creamMats = [creamLowMat, creamLowMat, greyRoofMat, greyRoofMat, creamLowMat, creamLowMat];
+      addBoxWithEdges(cityGroup, 32, 72, 28, -164, 0, 56, stoneMats, 0x94a3b8, 0.12);
+
+      // Bottom-left fluted stone tower
+      const octGeo = new THREE.CylinderGeometry(19, 19, 108, 16);
+      const octMat = new THREE.MeshLambertMaterial({ map: brzTex });
+      const octMesh = new THREE.Mesh(octGeo, [octMat, greyRoofMat, greyRoofMat]);
+      octMesh.position.set(-168, 54, 128);
+      cityGroup.add(octMesh);
+
+      // Far-left skyline continuation (fills left viewport edge with photorealistic 3D towers + bottom-left green-roof tower)
+      const farLeftRoofGreen = new THREE.MeshLambertMaterial({ map: roofGardenTex });
+      const farLeftGreenMats = [stoneWallMat, stoneWallMat, farLeftRoofGreen, greyRoofMat, stoneWallMat, stoneWallMat];
+      addBoxWithEdges(cityGroup, 44, 118, 36, -245, 0, 178, farLeftGreenMats, 0xcbd5e1, 0.24);
+      addBoxWithEdges(cityGroup, 36, 164, 30, -228, 0, 62, annexMats, 0x94a3b8, 0.16);
+      addBoxWithEdges(cityGroup, 34, 188, 28, -224, 0, -36, darkMats, 0x475569, -0.12);
+      addBoxWithEdges(cityGroup, 38, 146, 32, -286, 0, 16, stoneMats, 0x94a3b8, 0.18);
+      addBoxWithEdges(cityGroup, 32, 134, 28, -295, 0, 108, brzMats, 0x5c3426, 0.10);
+      addBoxWithEdges(cityGroup, 36, 172, 30, -198, 0, -88, annexMats, 0x94a3b8, 0.08);
+
+      // -----------------------------------------------------------------------
+      // 7. LOW-RISE URBAN PAVILIONS & 80+ 3D BOTANICAL TREES AROUND THE PLOT
+      // -----------------------------------------------------------------------
+      // Cream low-rise courtyard building between AXA and White Tower
+      addBoxWithEdges(cityGroup, 28, 17, 24, -68, 0, 58, creamMats, 0x94a3b8, -0.14);
+      addBoxWithEdges(cityGroup, 18, 22, 16, -66, 0, 56, creamMats, 0x94a3b8, -0.14);
+
+      // Mid-foreground institutional pavilion with red accent wall
+      addBoxWithEdges(cityGroup, 34, 16, 26, 14, 0, 88, creamMats, 0x94a3b8, -0.18);
+      addBoxWithEdges(cityGroup, 16, 21, 20, 26, 0, 94, creamMats, 0x94a3b8, -0.18);
+      addBoxWithEdges(cityGroup, 5.5, 18, 5.5, 20, 0, 99, redHvacMat, null, -0.18);
+
+      // Lower-right low-rise complex
+      addBoxWithEdges(cityGroup, 42, 18, 30, 74, 0, 126, creamMats, 0x94a3b8, -0.22);
+      addBoxWithEdges(cityGroup, 26, 23, 20, 92, 0, 118, creamMats, 0x94a3b8, -0.22);
+
+      // 75+ Lush 3D Tree Canopy Clusters across parks, avenues, and setbacks
+      const streetTrees = [
+        [-82, 74], [-74, 82], [-58, 78], [-44, 86], [-18, 68], [-8, 74],
+        [36, 58], [44, 48], [50, 34], [56, 20], [60, 4], [64, -12],
+        [48, -24], [40, -36], [54, -44], [72, 26], [80, 42], [90, 58],
+        [104, 72], [52, 88], [42, 102], [28, 116], [12, 124], [-78, 128],
+        [-92, 86], [-72, -18], [-58, -32], [-14, -42], [8, -38], [24, -46],
+        [88, -10], [96, 4], [108, -18], [116, 12], [68, 78], [58, 92]
+      ];
+      streetTrees.forEach(([tx, tz], idx) => {
+        const sc = 0.90 + (idx % 4) * 0.22;
+        addTreeCanopyCluster(cityGroup, tx, 0, tz, sc);
+      });
+
+      three3DLayer.cityGroup = cityGroup;
+      scene.add(cityGroup);
+      if (map3d) map3d.triggerRepaint();
+    }
+
+    function createPhotorealistic3DCustomLayer() {
+      const layer = {
+        id: "haio-photoreal-3d-layer",
+        type: "custom",
+        renderingMode: "3d",
+        originLonLat: [55.2798, 25.1844],
+        heroRoofLocalVec: new THREE.Vector3(-30, 120, 4),
+        onAdd: function (mapInstance, gl) {
+          this.map = mapInstance;
+          this.camera = new THREE.Camera();
+          this.scene = new THREE.Scene();
+
+          // Realistic Sun + Sky Hemisphere Lighting
+          const hemiLight = new THREE.HemisphereLight(0xffffff, 0x64748b, 0.82);
+          hemiLight.position.set(0, 300, 0);
+          this.scene.add(hemiLight);
+
+          const sunLight = new THREE.DirectionalLight(0xfffbeb, 0.92);
+          sunLight.position.set(-180, 320, 220);
+          this.scene.add(sunLight);
+
+          const fillLight = new THREE.DirectionalLight(0xbae6fd, 0.38);
+          fillLight.position.set(200, 180, -160);
+          this.scene.add(fillLight);
+
+          this.renderer = new THREE.WebGLRenderer({
+            canvas: mapInstance.getCanvas(),
+            context: gl,
+            antialias: true
+          });
+          this.renderer.autoClear = false;
+          rebuildThreeHeroScene();
+        },
+        render: function (gl, matrix) {
+          if (!is3DBlocksEnabled || !this.scene || !this.renderer) return;
+          const zNow = this.map.getZoom();
+          const calloutEl = document.getElementById("hero3DRoofCallout");
+          if (zNow < 13.6) {
+            if (calloutEl) calloutEl.style.display = "none";
+            return;
+          }
+
+          const merc = maplibregl.MercatorCoordinate.fromLngLat(this.originLonLat, 0);
+          const scale = merc.meterInMercatorCoordinateUnits();
+
+          const rotX = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
+          const m = new THREE.Matrix4().fromArray(matrix);
+          const l = new THREE.Matrix4()
+            .makeTranslation(merc.x, merc.y, merc.z)
+            .scale(new THREE.Vector3(scale, -scale, scale))
+            .multiply(rotX);
+
+          this.camera.projectionMatrix = m.multiply(l);
+
+          // Clear depth buffer so Three.js photorealistic 3D buildings cleanly occlude underlying flat layers
+          gl.clear(gl.DEPTH_BUFFER_BIT);
+          this.renderer.resetState();
+          this.renderer.render(this.scene, this.camera);
+
+          // Project the exact 3D roof coordinate of the white tower ("Block 1 · 2 stacks") onto screen pixels
+          if (calloutEl && this.cityGroup && zNow >= 14.5) {
+            const worldRoof = this.heroRoofLocalVec.clone().applyMatrix4(this.cityGroup.matrixWorld);
+            const ndc = worldRoof.applyMatrix4(this.camera.projectionMatrix);
+            if (ndc.z >= -1 && ndc.z <= 1) {
+              const canvas = this.map.getCanvas();
+              const px = (ndc.x * 0.5 + 0.5) * canvas.clientWidth;
+              const py = (-ndc.y * 0.5 + 0.5) * canvas.clientHeight;
+              calloutEl.style.transform = `translate3d(${Math.round(px)}px, ${Math.round(py)}px, 0) translate(-50%, -100%)`;
+              calloutEl.style.display = "inline-flex";
+            } else {
+              calloutEl.style.display = "none";
+            }
+          } else if (calloutEl) {
+            calloutEl.style.display = "none";
+          }
+        }
+      };
+      three3DLayer = layer;
+      return layer;
+    }
+
     function init3DMap() {
       if (typeof maplibregl === "undefined") return;
 
+      const defaultProj = DATA.projects.find(x => x.project_id === selected3DProjectId) || DATA.projects[0];
+      const [initLat, initLon] = parseCoord(defaultProj.coordinates);
+
       map3d = new maplibregl.Map({
         container: "map3dCanvas",
-        center: [55.235, 25.125],
-        zoom: window.innerWidth <= 768 ? 10.6 : 11.4,
-        pitch: 50,
-        bearing: 28,
+        center: [initLon, initLat],
+        zoom: window.innerWidth <= 768 ? 16.0 : 16.92,
+        pitch: 58,
+        bearing: 60,
         minZoom: 8.5,
         maxZoom: 17.6,
         maxBounds: [[51.0, 22.4], [56.8, 26.5]],
@@ -2301,9 +3234,9 @@
           glyphs: "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
           light: {
             anchor: "viewport",
-            color: "#ffffff",
-            intensity: 0.52,
-            position: [1.35, 210, 42]
+            color: "#fffbeb",
+            intensity: 0.62,
+            position: [1.45, 215, 48]
           },
           sources: {
             "sat-tiles": {
@@ -2350,7 +3283,7 @@
               type: "raster",
               source: "sat-tiles",
               layout: { visibility: "visible" },
-              paint: { "raster-opacity": 1.0, "raster-contrast": 0.06, "raster-saturation": 0.05 }
+              paint: { "raster-opacity": 1.0, "raster-contrast": 0.14, "raster-saturation": 0.16 }
             },
             {
               id: "light-raster-layer",
@@ -2382,6 +3315,7 @@
               id: "projects-zone-fill-3d",
               type: "fill",
               source: "projects-zones-3d",
+              maxzoom: 14.5,
               paint: {
                 "fill-color": ["get", "color"],
                 "fill-opacity": ["get", "fillOpacity"]
@@ -2391,6 +3325,7 @@
               id: "projects-zone-line-3d",
               type: "line",
               source: "projects-zones-3d",
+              maxzoom: 14.5,
               paint: {
                 "line-color": ["get", "color"],
                 "line-width": ["get", "lineWidth"],
@@ -2411,9 +3346,9 @@
                   "interpolate", ["exponential", 1.35], ["zoom"],
                   9, ["*", ["get", "casingWidth"], 0.75],
                   13, ["*", ["get", "casingWidth"], 1.15],
-                  16.5, ["*", ["get", "casingWidth"], 2.1]
+                  16.5, ["*", ["get", "casingWidth"], 1.85]
                 ],
-                "line-opacity": 0.88
+                "line-opacity": 0.86
               }
             },
             {
@@ -2430,20 +3365,21 @@
                   "interpolate", ["exponential", 1.35], ["zoom"],
                   9, ["*", ["get", "trafficWidth"], 0.75],
                   13, ["*", ["get", "trafficWidth"], 1.15],
-                  16.5, ["*", ["get", "trafficWidth"], 2.1]
+                  16.5, ["*", ["get", "trafficWidth"], 1.85]
                 ],
-                "line-opacity": 0.96
+                "line-opacity": 0.94
               }
             },
             {
               id: "impacts-line-3d",
               type: "line",
               source: "impacts-3d",
+              maxzoom: 14.8,
               paint: {
                 "line-color": "#fbbf24",
-                "line-width": 2.4,
+                "line-width": 2.2,
                 "line-dasharray": [2, 2],
-                "line-opacity": 0.92
+                "line-opacity": 0.88
               }
             },
             {
@@ -2452,22 +3388,23 @@
               source: "openmaptiles",
               "source-layer": "building",
               minzoom: 12.5,
+              maxzoom: 15.2,
               filter: ["!", ["has", "hide_3d"]],
               paint: {
                 "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
-                "fill-extrusion-height": ["coalesce", ["get", "render_height"], 14],
+                "fill-extrusion-height": ["coalesce", ["get", "render_height"], 16],
                 "fill-extrusion-color": [
-                  "interpolate",
-                  ["linear"],
-                  ["coalesce", ["get", "render_height"], 14],
-                  0, "#e2e8f0",
-                  30, "#cbd5e1",
-                  90, "#93c5fd",
-                  200, "#60a5fa",
-                  380, "#38bdf8"
+                  "step",
+                  ["coalesce", ["get", "render_height"], 16],
+                  "#dcd6cc",
+                  22, "#c8bfb2",
+                  48, "#8c624c",
+                  95, "#475569",
+                  160, "#334155",
+                  240, "#cfc8bc"
                 ],
                 "fill-extrusion-vertical-gradient": true,
-                "fill-extrusion-opacity": 0.84
+                "fill-extrusion-opacity": 0.97
               }
             },
             {
@@ -2476,11 +3413,12 @@
               source: "openmaptiles",
               "source-layer": "transportation_name",
               minzoom: 12,
+              maxzoom: 15.2,
               layout: {
                 "symbol-placement": "line",
                 "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
                 "text-font": ["Noto Sans Regular"],
-                "text-size": ["interpolate", ["linear"], ["zoom"], 12, 10, 16, 13]
+                "text-size": ["interpolate", ["linear"], ["zoom"], 12, 10, 15, 12]
               },
               paint: {
                 "text-color": "#f8fafc",
@@ -2494,7 +3432,7 @@
               source: "openmaptiles",
               "source-layer": "place",
               minzoom: 10,
-              maxzoom: 15.5,
+              maxzoom: 14.8,
               layout: {
                 "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
                 "text-font": ["Noto Sans Bold"],
@@ -2511,11 +3449,17 @@
       });
 
       map3d.on("rotate", updateCompassUI);
-      map3d.on("move", updateCompassUI);
+      map3d.on("move", () => {
+        updateCompassUI();
+        if (map3d) map3d.triggerRepaint();
+      });
       map3d.on("zoomend", sync3DMapLayers);
 
       map3d.on("load", () => {
         map3dLoaded = true;
+        if (typeof THREE !== "undefined") {
+          map3d.addLayer(createPhotorealistic3DCustomLayer(), "osm-road-labels");
+        }
         sync3DMapLayers();
         updateCompassUI();
       });
@@ -2542,6 +3486,8 @@
 
     function sync3DMapLayers() {
       if (!map3d || !map3dLoaded) return;
+
+      rebuildThreeHeroScene();
 
       const emFilter = document.getElementById("emirateSelect") ? document.getElementById("emirateSelect").value : "ALL";
       const q = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
@@ -2581,8 +3527,8 @@
             properties: {
               road_id: r.road_id,
               color: tCol,
-              casingWidth: isFwy ? 6.5 : 4.5,
-              trafficWidth: isFwy ? 4.2 : 2.8
+              casingWidth: isFwy ? 6.0 : 4.2,
+              trafficWidth: isFwy ? 3.8 : 2.6
             },
             geometry: { type: "LineString", coordinates: r.geometry_wgs84 }
           });
@@ -2590,7 +3536,7 @@
       }
       map3d.getSource("roads-3d")?.setData({ type: "FeatureCollection", features: roadFeats });
 
-      // 3. Impact Vectors GeoJSON (Active when Layer 11 is toggled OR for the currently inspected project)
+      // 3. Impact Vectors GeoJSON
       const impFeats = [];
       DATA.impact_links.forEach(l => {
         if (!showImpacts && l.project_id !== selected3DProjectId) return;
@@ -2613,37 +3559,36 @@
 
       // 5. Update 3D Sun Lighting based on active diurnal window
       if (currentTimeWindow.includes("Morning")) {
-        map3d.setLight({ anchor: "viewport", color: "#fef3c7", intensity: 0.55, position: [1.4, 95, 38] });
+        map3d.setLight({ anchor: "viewport", color: "#fef3c7", intensity: 0.62, position: [1.4, 95, 38] });
       } else if (currentTimeWindow.includes("Midday")) {
-        map3d.setLight({ anchor: "viewport", color: "#ffffff", intensity: 0.50, position: [1.15, 180, 22] });
+        map3d.setLight({ anchor: "viewport", color: "#ffffff", intensity: 0.58, position: [1.15, 180, 22] });
       } else if (currentTimeWindow.includes("Night")) {
-        map3d.setLight({ anchor: "viewport", color: "#93c5fd", intensity: 0.60, position: [1.3, 240, 50] });
+        map3d.setLight({ anchor: "viewport", color: "#93c5fd", intensity: 0.65, position: [1.3, 240, 50] });
       } else {
-        map3d.setLight({ anchor: "viewport", color: "#fde68a", intensity: 0.54, position: [1.45, 265, 45] });
+        map3d.setLight({ anchor: "viewport", color: "#fffbeb", intensity: 0.62, position: [1.45, 215, 48] });
       }
 
-      // 6. Interactive Construction Project Pins & Live Road Speed Pills on 3D Canvas
+      // 6. Clean Map Callout Pills (When zoomed in >= 14.5, keep viewport ultra-clean like haio.sg with only #hero3DRoofCallout!)
       map3dMarkers.forEach(m => m.remove());
       map3dMarkers = [];
 
       const zNow = map3d.getZoom();
 
-      if (showProjs) {
+      if (showProjs && zNow < 14.5) {
         DATA.projects.forEach(p => {
           if (emFilter !== "ALL" && p.emirate !== emFilter) return;
           if (q && !JSON.stringify(p).toLowerCase().includes(q)) return;
           const [lat, lon] = parseCoord(p.coordinates);
           const st = projectScaleStyle(p);
           const isSel = (p.project_id === selected3DProjectId);
-          const shortName = p.project_name.split("(")[0].trim().slice(0, 22);
-          const valShort = (p.published_investment_value || "").split("(")[0].trim().slice(0, 14);
+          const shortName = p.project_name.split("(")[0].trim().slice(0, 20);
 
           const el = document.createElement("div");
           el.className = isSel ? "haio-3d-block-callout hero" : "haio-3d-block-callout";
           el.style.padding = isSel ? "6px 12px" : "4px 9px";
-          el.style.fontSize = isSel ? "0.76rem" : "0.70rem";
+          el.style.fontSize = isSel ? "0.75rem" : "0.69rem";
           el.style.borderLeft = `4px solid ${st.fillColor}`;
-          el.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${st.fillColor};display:inline-block;"></span><span><strong>${p.project_id}</strong>: ${shortName}${zNow >= 12.2 && valShort ? ` · <em style="color:#93c5fd;font-style:normal;">${valShort}</em>` : ""}</span>`;
+          el.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${st.fillColor};display:inline-block;"></span><span><strong>${p.project_id}</strong>: ${shortName}</span>`;
           el.onclick = (ev) => {
             ev.stopPropagation();
             showProjectInspector(p.project_id, true);
@@ -2653,53 +3598,17 @@
             .addTo(map3d);
           map3dMarkers.push(mk);
         });
-
-        // Show JVC multi-tower sub-clusters when zoomed >= 12.5
-        if (zNow >= 12.5) {
-          DATA.subdevs.forEach(sd => {
-            if (emFilter !== "ALL" && sd.emirate !== emFilter) return;
-            if (q && !JSON.stringify(sd).toLowerCase().includes(q)) return;
-            const el = document.createElement("div");
-            el.className = "haio-3d-block-callout";
-            el.style.padding = "4px 9px";
-            el.style.fontSize = "0.69rem";
-            el.style.borderLeft = "4px solid #a855f7";
-            el.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:#a855f7;display:inline-block;"></span><span><strong>${sd.subdev_id}</strong>: ${sd.developer} (${sd.building_count} Towers)</span>`;
-            el.onclick = (ev) => {
-              ev.stopPropagation();
-              showSubdevInspector(sd, true);
-            };
-            const mk = new maplibregl.Marker({ element: el, anchor: "bottom", offset: [0, -6] })
-              .setLngLat([sd.longitude, sd.latitude])
-              .addTo(map3d);
-            map3dMarkers.push(mk);
-          });
-        }
       }
 
-      if (showTraffic) {
-        const roadPillSpecs = zNow >= 12.5
-          ? [
-              { id: "RD-DXB-01", code: "E11 SZR" },
-              { id: "RD-DXB-03", code: "E44 Khail" },
-              { id: "RD-DXB-05", code: "D61 Hessa" },
-              { id: "RD-DXB-06", code: "D63 Umm Suq" },
-              { id: "RD-DXB-07", code: "JVC Blvd" },
-              { id: "RD-DXB-08", code: "E311 MBZ" },
-              { id: "RD-DXB-09", code: "E611 Freight" },
-              { id: "RD-DXB-11", code: "D62 Khor" },
-              { id: "RD-DXB-12", code: "D71 FinCtr" },
-              { id: "RD-DXB-15", code: "E77 DWC" },
-              { id: "RD-SHJ-01", code: "E311 Shj" },
-              { id: "RD-SHJ-02", code: "E611 Shj" }
-            ]
-          : [
-              { id: "RD-DXB-01", code: "E11 SZR" },
-              { id: "RD-DXB-03", code: "E44 Khail" },
-              { id: "RD-DXB-05", code: "D61 Hessa" },
-              { id: "RD-DXB-09", code: "E611 Freight" },
-              { id: "RD-SHJ-01", code: "E311 Shj" }
-            ];
+      if (showTraffic && zNow < 14.8) {
+        const roadPillSpecs = [
+          { id: "RD-DXB-01", code: "E11 SZR" },
+          { id: "RD-DXB-03", code: "E44 Khail" },
+          { id: "RD-DXB-05", code: "D61 Hessa" },
+          { id: "RD-DXB-09", code: "E611 Freight" },
+          { id: "RD-DXB-12", code: "D71 FinCtr" },
+          { id: "RD-SHJ-01", code: "E311 Shj" }
+        ];
 
         roadPillSpecs.forEach(ra => {
           const rObj = DATA.roads.find(x => x.road_id === ra.id);
@@ -2726,8 +3635,8 @@
 
     function initMap() {
       map = L.map("mapCanvas", {
-        center: [25.125, 55.235],
-        zoom: window.innerWidth <= 768 ? 10 : 11,
+        center: [25.1844, 55.2798],
+        zoom: window.innerWidth <= 768 ? 14 : 15,
         minZoom: 9,
         maxZoom: 18,
         maxBounds: [[22.4, 51.0], [26.5, 56.8]],
@@ -2746,6 +3655,7 @@
       populateCommunityDropdown();
       renderAllMapLayers();
       runUseCase(1, false);
+      showProjectInspector("PRJ-D11", false);
     }
 
     function setPlatformMode(mode, btnEl) {
@@ -3377,7 +4287,6 @@
     function select3DBlockCard(blockId) {
       active3DBlock = (active3DBlock === blockId) ? "ALL" : blockId;
       if (active3DBlock !== "ALL" && active3DShowMe === "all") {
-        // Automatically colour stacks by unit type when a block is picked (just like haio.sg promises!)
         active3DShowMe = "4br_5br_mix";
       } else if (active3DBlock === "ALL" && active3DShowMe === "4br_5br_mix") {
         active3DShowMe = "all";
@@ -3385,14 +4294,12 @@
       const p = DATA.projects.find(x => x.project_id === selected3DProjectId);
       if (p && map3d) {
         const [lat, lon] = parseCoord(p.coordinates);
-        const spec = getProject3DSpec(p);
-        const blk = spec.blocks.find(b => b.id === blockId) || spec.blocks[0];
         map3d.flyTo({
-          center: [lon + blk.dLon, lat + blk.dLat],
-          zoom: active3DBlock === "ALL" ? 15.8 : 16.5,
-          pitch: 63,
-          bearing: active3DBlock === "ALL" ? 45 : 68,
-          duration: 950
+          center: [lon, lat],
+          zoom: active3DBlock === "ALL" ? 16.92 : 17.18,
+          pitch: 60,
+          bearing: active3DBlock === "ALL" ? 60 : 48,
+          duration: 900
         });
       }
       sync3DMapLayers();
@@ -3400,7 +4307,7 @@
     }
 
     // =========================================================================
-    // SECTION C3: CONSTRUCTION PROJECT & TRAFFIC IMPACT INSPECTOR (REAL DATA)
+    // SECTION C3: HAIO.SG 3D BLOCK EXPLORER + UAE CONSTRUCTION & TRAFFIC INSPECTOR
     // =========================================================================
     function showProjectInspector(pid, fly = true) {
       selected3DProjectId = pid;
@@ -3411,16 +4318,19 @@
       const link = DATA.impact_links.find(x => x.project_id === pid);
       const docs = DATA.documents.filter(d => d.project_id === pid);
       const [lat, lon] = parseCoord(p.coordinates);
+      const spec = getProject3DSpec(p);
 
       sync3DMapLayers();
       if (fly) {
-        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 14.5 : 15.1, 56, 32);
+        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 16.0 : 16.92, 58, 60);
         document.getElementById("hudScope").textContent = `${p.project_id}: ${p.project_name.split('(')[0].trim()}`;
       }
 
       const primRoadObs = link ? getRoadObsForWindow(link.primary_road_id, currentTimeWindow) : null;
-      const secRoadObs = link && link.secondary_road_id ? getRoadObsForWindow(link.secondary_road_id, currentTimeWindow) : null;
       const st = projectScaleStyle(p);
+      const cleanTitle = p.project_name.split("(")[0].trim();
+      const u4br = Math.max(16, Math.round(spec.homes * 0.50));
+      const u5br = Math.max(16, spec.homes - u4br);
 
       const docsHtml = docs.map(d =>
         `<div style="margin-bottom:4px;">• <a href="${d.document_url}" target="_blank" rel="noopener">${d.document_title} ↗</a> <span style="color:#64748b;">(${d.document_type} | ${d.availability_status})</span></div>`
@@ -3431,37 +4341,96 @@
       }).join("");
 
       document.getElementById("inspectorContainer").innerHTML = `
-        <div class="detail-card">
-          <!-- Project Switcher Dropdown -->
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
-            <select class="haio-select" style="padding:6px 10px; font-size:0.76rem; background:#f8fafc;" onchange="showProjectInspector(this.value, true)" aria-label="Select Active Construction Project">
+        <div style="padding:2px 2px 10px;">
+          <!-- Compact Project Switcher at Top -->
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:10px;">
+            <select class="haio-select" style="padding:6px 10px; font-size:0.75rem; background:#f8fafc; border-color:#e2e8f0;" onchange="showProjectInspector(this.value, true)" aria-label="Select Active Construction Project">
               ${projOptionsHtml}
             </select>
             <button class="mobile-back-map-btn" onclick="document.getElementById('mapStage').scrollIntoView({behavior:'smooth',block:'center'})">🗺️ ↑ Map</button>
           </div>
 
-          <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
-            <span class="brand-badge">${p.project_id} • ${p.emirate} • ${st.tier.split('(')[0].trim()}</span>
-            <span class="conf-pill ${(p.confidence_classification || '').includes('Verified') ? 'b-ver' : 'b-cor'}">${(p.confidence_classification || 'Verified').split('(')[0].trim()}</span>
+          <!-- HAIO.SG EXACT CLEAN HEADER & SUBTITLE -->
+          <h3 class="haio-card-title">${cleanTitle}</h3>
+          <div class="haio-card-sub">${spec.homes.toLocaleString()} homes · 2 stacks · 1 blocks · ${p.project_id}</div>
+
+          <!-- BLOCK SELECTOR -->
+          <label class="haio-field-lbl">BLOCK</label>
+          <select class="haio-select" style="margin-bottom:12px;" onchange="update3DBlockControls(this.value, undefined, undefined, undefined)" aria-label="Select 3D Building Block">
+            <option value="ALL" ${active3DBlock === 'ALL' ? 'selected' : ''}>All blocks</option>
+            <option value="B1" ${active3DBlock === 'B1' ? 'selected' : ''}>Block 1 (Tower · ${spec.storeys} storeys)</option>
+            <option value="B2" ${active3DBlock === 'B2' ? 'selected' : ''}>Podium &amp; Sky-Garden (12 storeys)</option>
+          </select>
+
+          <!-- FLOOR & STACK 2-COLUMN SELECTORS (100% UNLOCKED) -->
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+            <div>
+              <label class="haio-field-lbl">FLOOR</label>
+              <select class="haio-select" onchange="update3DBlockControls(undefined, this.value, undefined, undefined)" aria-label="Select Floor Zone">
+                <option value="ALL" ${active3DFloor === 'ALL' ? 'selected' : ''}>Select a block / All</option>
+                <option value="LOW" ${active3DFloor === 'LOW' ? 'selected' : ''}>Low-Rise (F01–F${Math.round(spec.storeys*0.35)})</option>
+                <option value="MID" ${active3DFloor === 'MID' ? 'selected' : ''}>Mid-Rise (F${Math.round(spec.storeys*0.35)+1}–F${Math.round(spec.storeys*0.72)})</option>
+                <option value="HIGH" ${active3DFloor === 'HIGH' ? 'selected' : ''}>Sky Suites (F${Math.round(spec.storeys*0.72)+1}–F${spec.storeys})</option>
+              </select>
+            </div>
+            <div>
+              <label class="haio-field-lbl">STACK</label>
+              <select class="haio-select" onchange="update3DBlockControls(undefined, undefined, this.value, undefined)" aria-label="Select Stack">
+                <option value="ALL" ${active3DStack === 'ALL' ? 'selected' : ''}>Select floor first / All</option>
+                <option value="S1" ${active3DStack === 'S1' ? 'selected' : ''}>Stack 01 (North Wing)</option>
+                <option value="S2" ${active3DStack === 'S2' ? 'selected' : ''}>Stack 02 (South Wing)</option>
+              </select>
+            </div>
           </div>
 
-          <h3 class="haio-card-title" style="font-size:1.15rem; margin-bottom:4px;">${p.project_name}</h3>
-          <div style="font-size:0.78rem; color:#2563eb; font-weight:700; margin-bottom:10px;">${p.developer} • ${p.city_district_community}</div>
+          <!-- SHOW ME PILLS -->
+          <label class="haio-field-lbl">SHOW ME</label>
+          <div class="haio-showme-row">
+            <button class="haio-showme-pill ${active3DShowMe === 'all' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, 'all')">All homes</button>
+            <button class="haio-showme-pill ${active3DShowMe === '4br' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, '4br')">4 bedrooms</button>
+            <button class="haio-showme-pill ${active3DShowMe === '5br' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, '5br')">5 bedrooms</button>
+          </div>
 
-          <!-- LIVE SURROUNDING ROAD & TRAFFIC IMPACT BANNER -->
+          <!-- UNIT TYPES · HOMES SUMMARY BAR -->
+          <label class="haio-field-lbl">UNIT TYPES · HOMES</label>
+          <div class="haio-unit-bar">
+            <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:9px;height:9px;border-radius:50%;background:#fbbf24;display:inline-block;"></span> 4BR</span>
+            <strong>${u4br}</strong>
+            <span style="display:inline-flex; align-items:center; gap:6px; margin-left:8px;"><span style="width:9px;height:9px;border-radius:50%;background:#34d399;display:inline-block;"></span> 5BR</span>
+            <strong>${u5br}</strong>
+          </div>
+
+          <p style="font-size:0.75rem; color:#64748b; line-height:1.45; margin:8px 0 12px;">
+            Exterior shown plain: the developer's façade is not on file, so glass and slab edges are neutral and illustrative. Pick a block to colour homes by unit type.
+          </p>
+
+          <!-- OR PICK A BLOCK -->
+          <label class="haio-field-lbl">OR PICK A BLOCK</label>
+          <div class="haio-block-grid">
+            <div class="haio-block-card ${active3DBlock === 'B1' ? 'active' : ''}" onclick="select3DBlockCard('B1')">
+              <strong>Block 1</strong>
+              <span>Stacks 01 to 32<br/>${spec.storeys} storeys</span>
+            </div>
+          </div>
+          <div style="font-size:0.73rem; color:#64748b; margin-bottom:12px;">Tap a block to look closer · Ctrl or ⌘ + drag to turn</div>
+
+          <div class="haio-divider"></div>
+
+          <!-- UAE CONSTRUCTION & SURROUNDING ROAD TRAFFIC INTELLIGENCE -->
+          <label class="haio-field-lbl" style="color:#2563eb;">UAE CONSTRUCTION &amp; SURROUNDING ROAD TRAFFIC IMPACT</label>
+
           ${primRoadObs && link ? `
-          <div class="live-window-banner">
+          <div class="live-window-banner" style="margin-top:6px;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
-              <strong style="color:#2563eb;">⏱️ ${currentTimeWindow.split('(')[0].trim()} Corridor Speed</strong>
+              <strong style="color:#2563eb;">⏱️ ${currentTimeWindow.split('(')[0].trim()} Speed</strong>
               <span style="color:${congestionColor(primRoadObs.congestion_level)}; font-weight:800;">~${primRoadObs.average_speed_kmh} km/h (${primRoadObs.travel_time_min_per_10km} min/10km)</span>
             </div>
             <div style="margin-top:4px; color:#334155; font-size:0.74rem;">
-              Primary Access: <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')"><strong>${link.primary_road_name} (${link.primary_road_id})</strong></a> · <strong>${link.distance_to_primary_road_km} km</strong> Haversine<br/>
+              Access Road: <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')"><strong>${link.primary_road_name} (${link.primary_road_id})</strong></a> · <strong>${link.distance_to_primary_road_km} km</strong> Haversine<br/>
               Status: <strong>${primRoadObs.congestion_level.split('(')[0].trim()} Congestion</strong> · V/C = ${primRoadObs.vc_ratio} (${primRoadObs.modelled_demand_vph_dir}/${primRoadObs.reference_capacity_vph_dir} vph/dir)
             </div>
           </div>` : ""}
 
-          <!-- 4 EXECUTIVE CONSTRUCTION & TRAFFIC KPI CARDS -->
           <div class="exec-metric-grid">
             <div class="exec-metric-box">
               <div class="em-lbl">Published Investment</div>
@@ -3469,64 +4438,40 @@
               <div class="em-sub">GFA: ${(p.gross_floor_area || '').split('[')[0].trim()}</div>
             </div>
             <div class="exec-metric-box">
-              <div class="em-lbl">Lifecycle &amp; Timeline</div>
-              <div class="em-val" style="font-size:0.78rem; color:#059669;">${p.lifecycle_status.split('(')[0].trim()}</div>
-              <div class="em-sub">${(p.timeline_milestones || '2025–2029').split(';')[0].trim()}</div>
-            </div>
-            <div class="exec-metric-box">
-              <div class="em-lbl">Structural Scale</div>
-              <div class="em-val" style="font-size:0.78rem;">${(p.towers_and_buildings_count || '').split('(')[0].trim()}</div>
-              <div class="em-sub">${(p.floors_and_height || '').split('(')[0].trim()}</div>
+              <div class="em-lbl">Developer &amp; Status</div>
+              <div class="em-val" style="font-size:0.78rem; color:#059669;">${p.developer.split('(')[0].trim()}</div>
+              <div class="em-sub">${p.lifecycle_status.split('(')[0].trim()}</div>
             </div>
             <div class="exec-metric-box">
               <div class="em-lbl">Scenario HGV Load</div>
               <div class="em-val" style="color:#d97706;">${link ? `${link.total_hgv_round_trips_day} trips/day` : "N/A"}</div>
               <div class="em-sub">${link ? `${link.total_hgv_one_way_movements_day} one-way/day` : ""}</div>
             </div>
-          </div>
-
-          <!-- STRUCTURED CONSTRUCTION & ROAD IMPACT BREAKDOWN -->
-          <div class="kv-grid">
-            ${link ? `
-            <div class="kv-row">
-              <div class="kv-lbl">Epistemic Traffic Impact Classification (Section D4)</div>
-              <div class="kv-val">
-                <strong style="color:#2563eb;">${link.epistemic_impact_classification}</strong><br/>
-                <span style="color:#059669; font-weight:700;">Published RTA/SRTA Fact:</span> ${link.published_road_capacity_and_upgrade_fact}
-              </div>
-            </div>
-            <div class="kv-row">
-              <div class="kv-lbl">Surrounding Road Corridors &amp; Bottleneck Junction</div>
-              <div class="kv-val">
-                • <strong>Primary Corridor:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a> (${link.distance_to_primary_road_km} km to vertex <code>[${link.nearest_road_vertex_wgs84}]</code>)<br/>
-                • <strong>Secondary Corridor:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('${link.secondary_road_id}')">${link.secondary_road_name}</a> (${link.distance_to_secondary_road_km} km)<br/>
-                • <strong>Nearest Bottleneck Junction:</strong> ${link.nearest_intersection_name} (${link.distance_to_intersection_km} km)
-              </div>
-            </div>
-            <div class="kv-row">
-              <div class="kv-lbl">Scenario-Based Construction Logistics (4-Component HGV Model)</div>
-              <div class="kv-val">
-                <strong>${link.total_hgv_round_trips_day} round-trips/day (${link.total_hgv_one_way_movements_day} one-way movements/day)</strong>:<br/>
-                • Concrete Mixers (8.5 m³): <strong>${link.concrete_mixer_loads_day}/day</strong> | Rebar Trailers (25 t): <strong>${link.rebar_trailer_loads_day}/day</strong><br/>
-                • Earthworks Tippers (18 m³): <strong>${link.earthworks_tipper_loads_day}/day</strong> | MEP/Fit-Out Trucks (12 t): <strong>${link.mep_fitout_truck_loads_day}/day</strong><br/>
-                • <strong>RTA Truck Ban Routing:</strong> ${link.hgv_routing_and_ban_compliance}
-              </div>
-            </div>` : ""}
-            <div class="kv-row">
-              <div class="kv-lbl">Units, Master Plan &amp; Contractors</div>
-              <div class="kv-val">
-                • <strong>Residential / Commercial Supply:</strong> ${p.apartments_and_villas_count}<br/>
-                • <strong>Contractors &amp; Consultants:</strong> ${p.main_contractor_and_consultants}
-              </div>
+            <div class="exec-metric-box">
+              <div class="em-lbl">Epistemic Tier</div>
+              <div class="em-val" style="font-size:0.75rem;">${link ? link.epistemic_impact_classification.split(':')[0] : "Tier 2"}</div>
+              <div class="em-sub">${p.city_district_community.split('/')[0].trim()}</div>
             </div>
           </div>
 
           <details class="tech-accordion">
-            <summary>Official Documents (${docs.length}), Provenance &amp; HGV Equations</summary>
+            <summary>4-Component HGV Logistics &amp; Corridor Connections</summary>
             <div class="tech-body">
-              ${link ? `<div style="margin-bottom:6px;"><strong>HGV Modelling Assumptions:</strong> ${link.hgv_modelling_assumptions_and_sensitivity}</div>` : ""}
-              <div style="margin-bottom:6px;"><strong>Supporting Official Documents (${docs.length}):</strong> ${docsHtml}</div>
-              <div><strong>Dual Provenance Trail:</strong> Project (${link ? link.project_source_id : p.project_id}): <a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> ${link ? `| Corridor (${link.corridor_traffic_source_id}): <a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_source_title} ↗</a>` : ""}</div>
+              ${link ? `
+              <div style="margin-bottom:6px;"><strong>Epistemic Classification:</strong> ${link.epistemic_impact_classification}</div>
+              <div style="margin-bottom:6px;"><strong>Published RTA/SRTA Benchmark:</strong> ${link.published_road_capacity_and_upgrade_fact}</div>
+              <div style="margin-bottom:6px;"><strong>Connected Corridors:</strong> Primary: <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a> (${link.distance_to_primary_road_km} km to <code>[${link.nearest_road_vertex_wgs84}]</code>) | Secondary: <a href="javascript:void(0)" onclick="showRoadInspector('${link.secondary_road_id}')">${link.secondary_road_name}</a> (${link.distance_to_secondary_road_km} km)</div>
+              <div><strong>4-Component Daily HGV Breakdown (${link.total_hgv_round_trips_day} round-trips/d):</strong> Mixers: ${link.concrete_mixer_loads_day}/d | Rebar: ${link.rebar_trailer_loads_day}/d | Tippers: ${link.earthworks_tipper_loads_day}/d | MEP: ${link.mep_fitout_truck_loads_day}/d</div>
+              ` : ""}
+            </div>
+          </details>
+
+          <details class="tech-accordion">
+            <summary>Official Documents (${docs.length}), Contractors &amp; Provenance</summary>
+            <div class="tech-body">
+              <div style="margin-bottom:6px;"><strong>Contractors &amp; Consultants:</strong> ${p.main_contractor_and_consultants}</div>
+              <div style="margin-bottom:6px;"><strong>Official Documents (${docs.length}):</strong> ${docsHtml}</div>
+              <div><strong>Provenance:</strong> <a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> ${link ? `| <a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_source_title} ↗</a>` : ""}</div>
             </div>
           </details>
         </div>
