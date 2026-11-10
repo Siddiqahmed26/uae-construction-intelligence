@@ -2437,7 +2437,7 @@
 
       const tex = new THREE.CanvasTexture(cv);
       tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
       tex.anisotropy = 8;
       threeTextureCache.bronze = tex;
       return tex;
@@ -2485,7 +2485,7 @@
 
       const tex = new THREE.CanvasTexture(cv);
       tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
       tex.anisotropy = 8;
       threeTextureCache.darkCurtain = tex;
       return tex;
@@ -2523,9 +2523,44 @@
 
       const tex = new THREE.CanvasTexture(cv);
       tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
       tex.anisotropy = 8;
       threeTextureCache.blueCurtain = tex;
+      return tex;
+    }
+
+    function getRibbedLimestoneTowerTexture() {
+      if (threeTextureCache.ribbedLimestone) return threeTextureCache.ribbedLimestone;
+      const cv = document.createElement("canvas");
+      cv.width = 512;
+      cv.height = 1024;
+      const ctx = cv.getContext("2d");
+      ctx.fillStyle = "#e5e0d5";
+      ctx.fillRect(0, 0, 512, 1024);
+      const floors = 16;
+      const bh = 1024 / floors;
+      for (let i = 0; i < floors; i++) {
+        const y = i * bh;
+        ctx.fillStyle = "#f1ede4";
+        ctx.fillRect(0, y, 512, bh * 0.46);
+        ctx.fillStyle = "#cfc8b8";
+        ctx.fillRect(0, y + bh * 0.42, 512, bh * 0.06);
+        ctx.fillStyle = "#1e293b";
+        ctx.fillRect(0, y + bh * 0.48, 512, bh * 0.52);
+        for (let x = 0; x < 512; x += 24) {
+          ctx.fillStyle = "#cbd5e1";
+          ctx.fillRect(x, y + bh * 0.48, 3, bh * 0.52);
+          if ((i * 7 + x) % 5 === 0) {
+            ctx.fillStyle = "rgba(186, 230, 253, 0.28)";
+            ctx.fillRect(x + 4, y + bh * 0.52, 16, bh * 0.42);
+          }
+        }
+      }
+      const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
+      tex.anisotropy = 8;
+      threeTextureCache.ribbedLimestone = tex;
       return tex;
     }
 
@@ -2667,6 +2702,8 @@
       }
 
       const tex = new THREE.CanvasTexture(cv);
+      tex.wrapS = THREE.RepeatWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
       tex.anisotropy = 8;
       threeTextureCache.roofGarden = tex;
       return tex;
@@ -2808,7 +2845,7 @@
       }
       const tex = new THREE.CanvasTexture(cv);
       tex.wrapS = THREE.RepeatWrapping;
-      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.wrapT = THREE.RepeatWrapping;
       tex.anisotropy = 8;
       threeTextureCache.creamLow = tex;
       return tex;
@@ -3086,8 +3123,9 @@
       octMesh.position.set(-168, 54, 128);
       cityGroup.add(octMesh);
 
-      // Far-left skyline continuation (fills left viewport edge with photorealistic 3D towers + bottom-left green-roof tower)
+      // Far-left skyline continuation & Business Bay Canal-Front Towers
       const farLeftRoofGreen = new THREE.MeshLambertMaterial({ map: roofGardenTex });
+      const limWallMat = new THREE.MeshLambertMaterial({ map: getRibbedLimestoneTowerTexture(), emissive: 0x334155, emissiveIntensity: 0.18 });
       const farLeftGreenMats = [stoneWallMat, stoneWallMat, farLeftRoofGreen, greyRoofMat, stoneWallMat, stoneWallMat];
       addBoxWithEdges(cityGroup, 44, 118, 36, -245, 0, 178, farLeftGreenMats, 0xcbd5e1, 0.24);
       addBoxWithEdges(cityGroup, 36, 164, 30, -228, 0, 62, annexMats, 0x94a3b8, 0.16);
@@ -3096,23 +3134,36 @@
       addBoxWithEdges(cityGroup, 32, 134, 28, -295, 0, 108, brzMats, 0x5c3426, 0.10);
       addBoxWithEdges(cityGroup, 36, 172, 30, -198, 0, -88, annexMats, 0x94a3b8, 0.08);
 
+      // Additional canal-front and waterfront high-rise towers around the bridge
+      const extraCanalTowers = [
+        { w: 38, h: 145, d: 32, x: -165, z: 215, mat: blueCurtainMat, rMat: greyRoofMat, rot: 0.22 },
+        { w: 42, h: 162, d: 34, x: -215, z: 265, mat: limWallMat, rMat: farLeftRoofGreen, rot: 0.18 },
+        { w: 36, h: 138, d: 30, x: -125, z: 275, mat: darkWallMat, rMat: greyRoofMat, rot: -0.15 },
+        { w: 40, h: 154, d: 32, x: -185, z: 335, mat: brzWallMat, rMat: greyRoofMat, rot: 0.12 },
+        { w: 36, h: 128, d: 30, x: -265, z: 195, mat: darkWallMat, rMat: farLeftRoofGreen, rot: 0.25 },
+        { w: 38, h: 148, d: 32, x: -315, z: 255, mat: blueCurtainMat, rMat: greyRoofMat, rot: 0.15 },
+        { w: 34, h: 118, d: 28, x: 95, z: 45, mat: limWallMat, rMat: greyRoofMat, rot: -0.20 },
+        { w: 38, h: 132, d: 30, x: 135, z: -25, mat: blueCurtainMat, rMat: farLeftRoofGreen, rot: -0.18 },
+        { w: 36, h: 142, d: 30, x: 115, z: -95, mat: darkWallMat, rMat: greyRoofMat, rot: -0.12 }
+      ];
+      extraCanalTowers.forEach(t => {
+        const mats = [t.mat, t.mat, t.rMat, greyRoofMat, t.mat, t.mat];
+        addBoxWithEdges(cityGroup, t.w, t.h, t.d, t.x, 0, t.z, mats, 0xcbd5e1, t.rot);
+      });
+
       // -----------------------------------------------------------------------
       // 7. LOW-RISE URBAN PAVILIONS & 80+ 3D BOTANICAL TREES AROUND THE PLOT
       // -----------------------------------------------------------------------
-      // Cream low-rise courtyard building between AXA and White Tower
       addBoxWithEdges(cityGroup, 28, 17, 24, -68, 0, 58, creamMats, 0x94a3b8, -0.14);
       addBoxWithEdges(cityGroup, 18, 22, 16, -66, 0, 56, creamMats, 0x94a3b8, -0.14);
 
-      // Mid-foreground institutional pavilion with red accent wall
       addBoxWithEdges(cityGroup, 34, 16, 26, 14, 0, 88, creamMats, 0x94a3b8, -0.18);
       addBoxWithEdges(cityGroup, 16, 21, 20, 26, 0, 94, creamMats, 0x94a3b8, -0.18);
       addBoxWithEdges(cityGroup, 5.5, 18, 5.5, 20, 0, 99, redHvacMat, null, -0.18);
 
-      // Lower-right low-rise complex
       addBoxWithEdges(cityGroup, 42, 18, 30, 74, 0, 126, creamMats, 0x94a3b8, -0.22);
       addBoxWithEdges(cityGroup, 26, 23, 20, 92, 0, 118, creamMats, 0x94a3b8, -0.22);
 
-      // 75+ Lush 3D Tree Canopy Clusters across parks, avenues, and setbacks
       const streetTrees = [
         [-82, 74], [-74, 82], [-58, 78], [-44, 86], [-18, 68], [-8, 74],
         [36, 58], [44, 48], [50, 34], [56, 20], [60, 4], [64, -12],
@@ -3128,7 +3179,234 @@
 
       three3DLayer.cityGroup = cityGroup;
       scene.add(cityGroup);
+
+      // Also build 3D clusters at all other active UAE projects + extrude all OSM buildings across the entire map!
+      rebuildAllProjectsAndOsmCity3D();
       if (map3d) map3d.triggerRepaint();
+    }
+
+    let osmRebuildTimer = null;
+    function scheduleOsmCityRebuild() {
+      if (osmRebuildTimer) clearTimeout(osmRebuildTimer);
+      osmRebuildTimer = setTimeout(() => {
+        rebuildAllProjectsAndOsmCity3D();
+      }, 140);
+    }
+
+    // Extrudes ALL real OpenStreetMap building footprints across the entire visible map into textured 3D Three.js buildings
+    // PLUS generates 3D textured tower clusters at all 37 active UAE Construction Projects & Sub-Clusters
+    function rebuildAllProjectsAndOsmCity3D() {
+      if (!three3DLayer || !three3DLayer.scene || !map3d || !map3dLoaded) return;
+      if (typeof THREE.ShapeUtils === "undefined") return;
+
+      const darkTex = getDarkCurtainWallTexture();
+      const blueTex = getBlueGlassCurtainTexture();
+      const limTex = getRibbedLimestoneTowerTexture();
+      const brzTex = getBronzeSetbackTowerTexture();
+      const creamTex = getCreamLowRiseTexture();
+      const roofGardenTex = getRooftopGardenTexture();
+
+      const wallMats = [
+        new THREE.MeshLambertMaterial({ map: darkTex, emissive: 0x1e293b, emissiveIntensity: 0.22, side: THREE.DoubleSide }),
+        new THREE.MeshLambertMaterial({ map: blueTex, emissive: 0x1e3a5f, emissiveIntensity: 0.20, side: THREE.DoubleSide }),
+        new THREE.MeshLambertMaterial({ map: limTex, emissive: 0x334155, emissiveIntensity: 0.18, side: THREE.DoubleSide }),
+        new THREE.MeshLambertMaterial({ map: brzTex, emissive: 0x451a03, emissiveIntensity: 0.18, side: THREE.DoubleSide }),
+        new THREE.MeshLambertMaterial({ map: creamTex, emissive: 0x334155, emissiveIntensity: 0.18, side: THREE.DoubleSide })
+      ];
+
+      const roofMats = [
+        new THREE.MeshLambertMaterial({ color: 0x94a3b8, side: THREE.DoubleSide }),
+        new THREE.MeshLambertMaterial({ color: 0xcbd5e1, side: THREE.DoubleSide }),
+        new THREE.MeshLambertMaterial({ color: 0xd6d3cd, side: THREE.DoubleSide }),
+        new THREE.MeshLambertMaterial({ color: 0x8c5845, side: THREE.DoubleSide }),
+        new THREE.MeshLambertMaterial({ map: roofGardenTex, side: THREE.DoubleSide })
+      ];
+
+      const originLonLat = three3DLayer.originLonLat;
+      const originMerc = maplibregl.MercatorCoordinate.fromLngLat(originLonLat, 0);
+      const scale = originMerc.meterInMercatorCoordinateUnits();
+
+      let feats = [];
+      try {
+        feats = map3d.querySourceFeatures("openmaptiles", { sourceLayer: "building" }) || [];
+      } catch (err) {
+        feats = [];
+      }
+
+      const buckets = wallMats.map(() => ({ pos: [], norm: [], uv: [] }));
+      const roofBuckets = roofMats.map(() => ({ pos: [], norm: [], uv: [] }));
+      const edgePos = [];
+      const seen = new Set();
+
+      for (const f of feats) {
+        if (!f.geometry) continue;
+        const rawH = Number(f.properties?.render_height) || 20;
+        const minH = Math.max(0, Number(f.properties?.render_min_height) || 0);
+        if (rawH <= minH + 1) continue;
+
+        const polys = f.geometry.type === "Polygon" ? [f.geometry.coordinates] :
+                      (f.geometry.type === "MultiPolygon" ? f.geometry.coordinates : []);
+
+        for (const poly of polys) {
+          const ring = poly[0];
+          if (!ring || ring.length < 4) continue;
+
+          const pts = [];
+          let cx = 0, cz = 0;
+          let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
+          for (let i = 0; i < ring.length - 1; i++) {
+            const m = maplibregl.MercatorCoordinate.fromLngLat(ring[i], 0);
+            const vx = (m.x - originMerc.x) / scale;
+            const vz = (m.y - originMerc.y) / scale;
+            pts.push({ x: vx, z: vz });
+            cx += vx;
+            cz += vz;
+            if (vx < minX) minX = vx;
+            if (vx > maxX) maxX = vx;
+            if (vz < minZ) minZ = vz;
+            if (vz > maxZ) maxZ = vz;
+          }
+          if (pts.length < 3) continue;
+          cx /= pts.length;
+          cz /= pts.length;
+
+          // Clear 215m radius around active Hero Site so Hero White Tower, Podium, AXA, and Foreground Bronze Tower stand cleanly
+          if (Math.hypot(cx, cz) < 215) continue;
+
+          const key = `${Math.round(cx * 0.25)}_${Math.round(cz * 0.25)}_${Math.round(rawH)}_${Math.round(minH)}`;
+          if (seen.has(key)) continue;
+          seen.add(key);
+
+          const spanX = maxX - minX;
+          const spanZ = maxZ - minZ;
+          if ((spanX > 220 || spanZ > 220) && rawH < 14) continue;
+
+          const hash = Math.abs(Math.round(cx * 1.37 + cz * 2.19));
+          let h = rawH;
+          if (h <= 12 && minH === 0 && spanX > 12 && spanZ > 12 && spanX < 95 && spanZ < 95) {
+            h = 32 + (hash % 75);
+          } else if (h < 28 && minH === 0 && spanX > 18 && spanZ > 18 && (hash % 3 !== 0)) {
+            h = h * 1.65;
+          }
+
+          const styleIdx = (h < 22) ? 4 : (hash % 4);
+          const roofIdx = (h >= 28 && hash % 5 === 0) ? 4 : (hash % 4);
+          const b = buckets[styleIdx];
+          const rb = roofBuckets[roofIdx];
+
+          let uDist = 0;
+          const uScale = 34.0;
+          const vScale = 52.0;
+          const v0 = minH / vScale;
+          const v1 = h / vScale;
+
+          for (let i = 0; i < pts.length; i++) {
+            const p0 = pts[i];
+            const p1 = pts[(i + 1) % pts.length];
+            const dx = p1.x - p0.x;
+            const dz = p1.z - p0.z;
+            const segLen = Math.hypot(dx, dz);
+            if (segLen < 0.3) continue;
+
+            let nx = dz / segLen;
+            let nz = -dx / segLen;
+            const midX = (p0.x + p1.x) * 0.5 - cx;
+            const midZ = (p0.z + p1.z) * 0.5 - cz;
+            if (nx * midX + nz * midZ < 0) {
+              nx = -nx;
+              nz = -nz;
+            }
+
+            const u0 = uDist / uScale;
+            const u1 = (uDist + segLen) / uScale;
+            uDist += segLen;
+
+            b.pos.push(p0.x, minH, p0.z,  p1.x, minH, p1.z,  p1.x, h, p1.z);
+            b.norm.push(nx, 0, nz,  nx, 0, nz,  nx, 0, nz);
+            b.uv.push(u0, v0,  u1, v0,  u1, v1);
+
+            b.pos.push(p0.x, minH, p0.z,  p1.x, h, p1.z,  p0.x, h, p0.z);
+            b.norm.push(nx, 0, nz,  nx, 0, nz,  nx, 0, nz);
+            b.uv.push(u0, v0,  u1, v1,  u0, v1);
+
+            edgePos.push(p0.x, h, p0.z,  p1.x, h, p1.z);
+          }
+
+          const contour = pts.map(p => new THREE.Vector2(p.x, p.z));
+          const tris = THREE.ShapeUtils.triangulateShape(contour, []);
+          for (const t of tris) {
+            const a = pts[t[0]], bPt = pts[t[1]], c = pts[t[2]];
+            rb.pos.push(a.x, h, a.z,  bPt.x, h, bPt.z,  c.x, h, c.z);
+            rb.norm.push(0, 1, 0,  0, 1, 0,  0, 1, 0);
+            rb.uv.push(
+              (a.x - minX) / Math.max(10, spanX), (a.z - minZ) / Math.max(10, spanZ),
+              (bPt.x - minX) / Math.max(10, spanX), (bPt.z - minZ) / Math.max(10, spanZ),
+              (c.x - minX) / Math.max(10, spanX), (c.z - minZ) / Math.max(10, spanZ)
+            );
+          }
+        }
+      }
+
+      if (three3DLayer.osmCityGroup) {
+        three3DLayer.scene.remove(three3DLayer.osmCityGroup);
+      }
+      const osmGroup = new THREE.Group();
+
+      buckets.forEach((b, idx) => {
+        if (!b.pos.length) return;
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute("position", new THREE.Float32BufferAttribute(b.pos, 3));
+        geo.setAttribute("normal", new THREE.Float32BufferAttribute(b.norm, 3));
+        geo.setAttribute("uv", new THREE.Float32BufferAttribute(b.uv, 2));
+        osmGroup.add(new THREE.Mesh(geo, wallMats[idx]));
+      });
+
+      roofBuckets.forEach((rb, idx) => {
+        if (!rb.pos.length) return;
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute("position", new THREE.Float32BufferAttribute(rb.pos, 3));
+        geo.setAttribute("normal", new THREE.Float32BufferAttribute(rb.norm, 3));
+        geo.setAttribute("uv", new THREE.Float32BufferAttribute(rb.uv, 2));
+        osmGroup.add(new THREE.Mesh(geo, roofMats[idx]));
+      });
+
+      if (edgePos.length) {
+        const edgeGeo = new THREE.BufferGeometry();
+        edgeGeo.setAttribute("position", new THREE.Float32BufferAttribute(edgePos, 3));
+        osmGroup.add(new THREE.LineSegments(edgeGeo, new THREE.LineBasicMaterial({ color: 0xcbd5e1, transparent: true, opacity: 0.45 })));
+      }
+
+      // Also place 3D textured tower clusters at all other 36 active UAE Construction Projects & Sub-Clusters
+      const whiteWallMat = new THREE.MeshLambertMaterial({ map: getHeroWhiteTowerTexture(48, "all", "ALL", "ALL", 0), emissive: 0xffffff, emissiveIntensity: 0.25 });
+      const whiteRoof = new THREE.MeshLambertMaterial({ color: 0xffffff });
+      const podMat = new THREE.MeshLambertMaterial({ map: getPodiumSmokedGlassTexture() });
+      const allSites = [
+        ...DATA.projects.map(p => ({ id: p.project_id, coords: parseCoord(p.coordinates), h: 85 })),
+        ...DATA.subdevs.map(s => ({ id: s.subdev_id, coords: [s.latitude, s.longitude], h: 72 }))
+      ];
+      allSites.forEach((site, sIdx) => {
+        if (site.id === selected3DProjectId) return;
+        const [sLat, sLon] = site.coords;
+        const sm = maplibregl.MercatorCoordinate.fromLngLat([sLon, sLat], 0);
+        const sx = (sm.x - originMerc.x) / scale;
+        const sz = (sm.y - originMerc.y) / scale;
+        if (Math.hypot(sx, sz) > 35000 || Math.hypot(sx, sz) < 220) return;
+
+        // Main white project tower + podium + 3 context towers at each project site
+        const wMats = [whiteWallMat, whiteWallMat, whiteRoof, whiteRoof, whiteWallMat, whiteWallMat];
+        addBoxWithEdges(osmGroup, 26, site.h, 22, sx - 14, 0, sz, wMats, 0xcbd5e1, 0.15);
+        addBoxWithEdges(osmGroup, 22, site.h * 0.92, 20, sx + 4, 0, sz - 8, wMats, 0xcbd5e1, 0.15);
+        const pMats = [podMat, podMat, roofMats[4], roofMats[0], podMat, podMat];
+        addBoxWithEdges(osmGroup, 36, 28, 42, sx + 28, 0, sz + 12, pMats, 0x334155, -0.12);
+        const cMat1 = wallMats[sIdx % 4];
+        const cMat2 = wallMats[(sIdx + 1) % 4];
+        addBoxWithEdges(osmGroup, 32, site.h * 1.35, 28, sx - 58, 0, sz - 42, [cMat1, cMat1, roofMats[0], roofMats[0], cMat1, cMat1], 0x94a3b8, 0.22);
+        addBoxWithEdges(osmGroup, 34, site.h * 1.20, 28, sx + 64, 0, sz - 48, [cMat2, cMat2, roofMats[1], roofMats[1], cMat2, cMat2], 0x94a3b8, -0.18);
+      });
+
+      three3DLayer.osmCityGroup = osmGroup;
+      three3DLayer.scene.add(osmGroup);
+      map3d.triggerRepaint();
     }
 
     function createPhotorealistic3DCustomLayer() {
@@ -3168,7 +3446,7 @@
           if (!is3DBlocksEnabled || !this.scene || !this.renderer) return;
           const zNow = this.map.getZoom();
           const calloutEl = document.getElementById("hero3DRoofCallout");
-          if (zNow < 13.6) {
+          if (zNow < 11.2) {
             if (calloutEl) calloutEl.style.display = "none";
             return;
           }
@@ -3221,7 +3499,7 @@
       map3d = new maplibregl.Map({
         container: "map3dCanvas",
         center: [initLon, initLat],
-        zoom: window.innerWidth <= 768 ? 16.0 : 16.92,
+        zoom: window.innerWidth <= 768 ? 15.6 : 16.25,
         pitch: 58,
         bearing: 60,
         minZoom: 8.5,
@@ -3387,8 +3665,7 @@
               type: "fill-extrusion",
               source: "openmaptiles",
               "source-layer": "building",
-              minzoom: 12.5,
-              maxzoom: 15.2,
+              minzoom: 12.0,
               filter: ["!", ["has", "hide_3d"]],
               paint: {
                 "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
@@ -3404,7 +3681,11 @@
                   240, "#cfc8bc"
                 ],
                 "fill-extrusion-vertical-gradient": true,
-                "fill-extrusion-opacity": 0.97
+                "fill-extrusion-opacity": [
+                  "interpolate", ["linear"], ["zoom"],
+                  12.0, 0.88,
+                  13.5, 0.005
+                ]
               }
             },
             {
@@ -3453,6 +3734,13 @@
         updateCompassUI();
         if (map3d) map3d.triggerRepaint();
       });
+      map3d.on("moveend", scheduleOsmCityRebuild);
+      map3d.on("idle", scheduleOsmCityRebuild);
+      map3d.on("sourcedata", (e) => {
+        if (e.sourceId === "openmaptiles" && e.isSourceLoaded) {
+          scheduleOsmCityRebuild();
+        }
+      });
       map3d.on("zoomend", sync3DMapLayers);
 
       map3d.on("load", () => {
@@ -3461,6 +3749,9 @@
           map3d.addLayer(createPhotorealistic3DCustomLayer(), "osm-road-labels");
         }
         sync3DMapLayers();
+        scheduleOsmCityRebuild();
+        setTimeout(scheduleOsmCityRebuild, 900);
+        setTimeout(scheduleOsmCityRebuild, 2200);
         updateCompassUI();
       });
 
@@ -4296,7 +4587,7 @@
         const [lat, lon] = parseCoord(p.coordinates);
         map3d.flyTo({
           center: [lon, lat],
-          zoom: active3DBlock === "ALL" ? 16.92 : 17.18,
+          zoom: active3DBlock === "ALL" ? 16.25 : 16.85,
           pitch: 60,
           bearing: active3DBlock === "ALL" ? 60 : 48,
           duration: 900
@@ -4322,7 +4613,7 @@
 
       sync3DMapLayers();
       if (fly) {
-        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 16.0 : 16.92, 58, 60);
+        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 15.6 : 16.25, 58, 60);
         document.getElementById("hudScope").textContent = `${p.project_id}: ${p.project_name.split('(')[0].trim()}`;
       }
 
