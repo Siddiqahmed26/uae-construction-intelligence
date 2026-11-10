@@ -3345,7 +3345,7 @@ def main():
       });
     }
 
-    // Phase 12: Explicit WebGL GPU Buffer & Material Disposal to Prevent Safari Memory Warnings
+    // Phase 12: Complete WebGL GPU Resource Cleanup (Geometries, Materials, Procedural CanvasTextures & RenderLists)
     function disposeThreeGroup(grp, disposeMaterials = false) {
       if (!grp) return;
       grp.traverse((obj) => {
@@ -3353,13 +3353,43 @@ def main():
           obj.geometry.dispose();
         }
         if (disposeMaterials && obj.material) {
-          if (Array.isArray(obj.material)) {
-            obj.material.forEach(m => m && typeof m.dispose === "function" && m.dispose());
-          } else if (typeof obj.material.dispose === "function") {
-            obj.material.dispose();
-          }
+          const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+          mats.forEach(m => {
+            if (!m) return;
+            if (m.map && typeof m.map.dispose === "function") m.map.dispose();
+            if (typeof m.dispose === "function") m.dispose();
+          });
         }
       });
+    }
+
+    function disposeAllThreeGpuResources() {
+      if (!three3DLayer) return;
+      if (three3DLayer.heroGroup) {
+        disposeThreeGroup(three3DLayer.heroGroup, true);
+        if (three3DLayer.scene) three3DLayer.scene.remove(three3DLayer.heroGroup);
+        three3DLayer.heroGroup = null;
+      }
+      if (three3DLayer.osmCityGroup) {
+        disposeThreeGroup(three3DLayer.osmCityGroup, false);
+        if (three3DLayer.scene) three3DLayer.scene.remove(three3DLayer.osmCityGroup);
+        three3DLayer.osmCityGroup = null;
+      }
+      if (Array.isArray(three3DLayer.cityFacadeMats)) {
+        three3DLayer.cityFacadeMats.forEach(m => {
+          if (!m) return;
+          if (m.map && typeof m.map.dispose === "function") m.map.dispose();
+          if (typeof m.dispose === "function") m.dispose();
+        });
+        three3DLayer.cityFacadeMats = null;
+      }
+      if (three3DLayer.cityRoofMat && typeof three3DLayer.cityRoofMat.dispose === "function") {
+        three3DLayer.cityRoofMat.dispose();
+        three3DLayer.cityRoofMat = null;
+      }
+      if (three3DLayer.renderer && three3DLayer.renderer.renderLists && typeof three3DLayer.renderer.renderLists.dispose === "function") {
+        three3DLayer.renderer.renderLists.dispose();
+      }
     }
 
     // Rebuilds the Unique 3D Architectural Complex for the Selected UAE Project (32 Flagship + 5 JVC Sub-Clusters)
@@ -3870,10 +3900,16 @@ def main():
         }
       }
 
-      // Sort by distance from project/camera center so 100% of viewport buildings in all directions are rendered within safe WebGL memory budget
+      // Sort by distance from project/camera center so nearest 950 buildings get 4K procedural facades while any outer buildings retain MapLibre native 3D fill-extrusion fallback (zero geographic gaps!)
       candidates.sort((a, b) => a.distFromOrigin - b.distFromOrigin);
       const maxBuildings = Math.min(950, candidates.length);
-      if (maxBuildings === 0) return;
+      three3DLayer.osmCityTruncated = (candidates.length > 950);
+      if (maxBuildings === 0) {
+        three3DLayer.osmCityBuildingCount = 0;
+        three3DLayer.osmCityTruncated = false;
+        syncPhotorealistic3DVisibility();
+        return;
+      }
 
       const parapetPalette = [
         [0.52, 0.58, 0.64],
@@ -3979,6 +4015,7 @@ def main():
         originLonLat: [55.2650, 25.1850],
         heroExcludeRadiusM: 48.0,
         osmCityBuildingCount: 0,
+        osmCityTruncated: false,
         heroRoofLocalVec: new THREE.Vector3(0, 0, 68.0),
         onAdd: function (mapInstance, gl) {
           this.map = mapInstance;
@@ -3994,8 +4031,15 @@ def main():
           });
           this.renderer.autoClear = false;
 
+          mapInstance.getCanvas().addEventListener("webglcontextlost", () => {
+            disposeAllThreeGpuResources();
+          }, { passive: true });
+
           rebuildThreeHeroScene();
           scheduleOsmCityRebuild(180);
+        },
+        onRemove: function () {
+          disposeAllThreeGpuResources();
         },
         render: function (gl, matrix) {
           if (!is3DBlocksEnabled || !this.renderer || !this.scene) return;
@@ -4389,11 +4433,14 @@ def main():
       }
       if (map3d.getLayer("osm-3d-buildings")) {
         const hasThreeCity = (three3DLayer && three3DLayer.osmCityBuildingCount > 0 && zNow >= 14.0);
-        // Keep fill-extrusion layer active at 0.002 opacity when Three.js 4K facades are active so MapLibre continues decoding openmaptiles building tiles
+        // If candidates.length > 950 at intermediate zoom, keep MapLibre native fill-extrusion visible at 0.55 opacity so outer buildings beyond the 950 nearest Three.js meshes still render in 3D with zero geographic gaps!
+        const fillExtOpacity = !is3DBlocksEnabled
+          ? 0.0
+          : (hasThreeCity ? (three3DLayer.osmCityTruncated ? 0.55 : 0.002) : 0.82);
         map3d.setPaintProperty(
           "osm-3d-buildings",
           "fill-extrusion-opacity",
-          !is3DBlocksEnabled ? 0.0 : (hasThreeCity ? 0.002 : 0.82)
+          fillExtOpacity
         );
       }
     }
@@ -4889,29 +4936,29 @@ def main():
 
         <div class="aw-kpi-grid">
           <div class="aw-kpi-card">
-            <div class="k-lbl">UAE National Flagship Inventory</div>
-            <div class="k-val">85 Projects</div>
-            <div class="k-sub">Across all 7 UAE Emirates (<code>04_project_inventory.csv</code>) · <strong>32</strong> in Dubai &amp; Sharjah Task 2 GIS + <strong>5</strong> JVC Sub-Clusters (37 Spatial Entities)</div>
+            <div class="k-lbl">UAE National vs. Task 2 GIS Scope</div>
+            <div class="k-val">85 National → 37 Deep GIS</div>
+            <div class="k-sub"><strong>85</strong> UAE Flagships across 7 Emirates (<code>04_project_inventory.csv</code>) · <strong>37</strong> Deep-Dive Task 2 Entities (<strong>20</strong> Dubai + <strong>12</strong> Sharjah Flagships = <strong>32</strong> + <strong>5</strong> JVC Sub-Clusters; <strong>53</strong> other-emirate flagships have national inventory coverage only)</div>
           </div>
           <div class="aw-kpi-card">
-            <div class="k-lbl">Published Official Investment (27/32)</div>
-            <div class="k-val" style="color:#059669;">AED 765.9B</div>
-            <div class="k-sub"><span class="ep-pill-pub">PUBLISHED</span> Dubai: <strong>AED 675.4B</strong> (16 projects) · Sharjah: <strong>AED 90.5B</strong> (11 projects) — Strictly separated from Estimated GDV</div>
+            <div class="k-lbl">Published Official Value (27/32)</div>
+            <div class="k-val" style="color:#059669;">AED 765.9B / 776.4B</div>
+            <div class="k-sub"><span class="ep-pill-pub">PUBLISHED</span> <strong>3</strong> Civil Infrastructure Capex Awards (<strong>AED 176.0B</strong> initial / <strong>178.5B</strong> in <code>06c</code>) + <strong>24</strong> Published Real Estate GDV (<strong>AED 589.9B</strong> initial / <strong>597.9B</strong> in <code>06c</code>) — Never mixed with Estimated GDV</div>
           </div>
           <div class="aw-kpi-card">
             <div class="k-lbl">Estimated Masterplan GDV (5/32)</div>
             <div class="k-val" style="color:#b45309;">AED 253.0B</div>
-            <div class="k-sub"><span class="badge-missing">ESTIMATED GDV</span> 5 Masterplans with partial contract awards (<code>PRJ-D2</code>, <code>PRJ-D4</code>, <code>PRJ-D11</code>, <code>PRJ-D16</code>, <code>PRJ-SH5</code>) · Hard Construction Cost: <strong>AED 595.8B</strong></div>
+            <div class="k-sub"><span class="badge-missing">ESTIMATED GDV</span> 5 Masterplans with partial contract awards (<code>PRJ-D2</code>, <code>PRJ-D4</code>, <code>PRJ-D11</code>, <code>PRJ-D16</code>, <code>PRJ-SH5</code>) · Modelled Hard Construction Cost (32/32): <strong>AED 595.8B</strong></div>
           </div>
           <div class="aw-kpi-card">
-            <div class="k-lbl">Mapped Transport &amp; Traffic Network</div>
-            <div class="k-val" style="color:#2563eb;">23 Corridors</div>
-            <div class="k-sub"><strong>16</strong> Dubai + <strong>7</strong> Sharjah OSM Highway Geometries · <strong>16</strong> Bottleneck Intersections · <strong>8</strong> Logistics Hubs · <strong>8</strong> Active Roadworks</div>
+            <div class="k-lbl">Transport &amp; Logistics Network</div>
+            <div class="k-val" style="color:#2563eb;">23 Corridors · 37 Hubs</div>
+            <div class="k-sub"><strong>16</strong> Dubai + <strong>7</strong> Sharjah OSM Corridors · <strong>16</strong> Intersections · <strong>30</strong> Urban/Industrial Facilities in <code>09b</code> (incl. <strong>5</strong> Major Industrial/Logistics Zones) + <strong>7</strong> Mobility/Staging Hubs in <code>20</code></div>
           </div>
           <div class="aw-kpi-card">
             <div class="k-lbl">City Baseline vs. Corridor BPR Speed</div>
             <div class="k-val" style="color:#dc2626;">31.3 km/h</div>
-            <div class="k-sub"><span class="ep-pill-pub">TomTom City Index</span> 42.7% annual congestion (47.5% YoY comparison) · Hessa St D61 AM Peak: <strong>29.0 km/h (V/C=1.04)</strong></div>
+            <div class="k-sub"><span class="ep-pill-pub">TomTom SRC-436</span> <strong>42.7%</strong> 24/7 annual metro congestion in <code>OBS-DXB-CITY-00</code> (42.3% AM / 94.4% PM; vs. 47.5% daytime urban-core narrative note) · Hessa St AM: <strong>29.0 km/h (V/C=1.04)</strong></div>
           </div>
         </div>
 
@@ -4946,7 +4993,7 @@ def main():
               </div>
               <div class="kv-row" style="cursor:pointer;" onclick="setPlatformMode('impact')">
                 <div class="kv-lbl">05 — Construction Impact &amp; Logistics</div>
-                <div class="kv-val">8 Logistics Facilities, 4-Component HGV Trip Breakdown, 37-Link 5-Category Epistemic Matrix, Impact Rankings, and <strong>Interactive Hypothetical Scenario Simulator</strong>.</div>
+                <div class="kv-val"><strong>30</strong> Dubai/Sharjah Urban &amp; Industrial Facilities in <code>09b</code> (incl. <strong>5</strong> Industrial/Logistics Zones) + <strong>7</strong> Mobility/Staging Hubs in <code>20</code>, 4-Component HGV Model, 37-Link Epistemic Matrix, and <strong>Interactive Scenario Simulator</strong>.</div>
               </div>
               <div class="kv-row" style="cursor:pointer;" onclick="setPlatformMode('project')">
                 <div class="kv-lbl">06 — Project Explorer (5-Section Profile + 3D)</div>
@@ -5090,31 +5137,38 @@ def main():
         <div class="aw-grid-2">
           <!-- PUBLISHED VS ESTIMATED INVESTMENT & MISSING DATA REGISTER -->
           <div class="aw-panel-card">
-            <h3>3.1A Published vs. Estimated Investment &amp; Missing-Data Register</h3>
+            <h3>3.1A Valuation Basis Separation (Published Capex vs. Published GDV vs. Estimated GDV) &amp; Missing-Data Register</h3>
             <div class="kv-grid">
               <div class="kv-row">
-                <div class="kv-lbl"><span class="ep-pill-pub">CATEGORY 1 — PUBLISHED INVESTMENT</span> 27 Flagship Projects (AED 765.9B)</div>
+                <div class="kv-lbl"><span class="ep-pill-pub">CATEGORY 1A — PUBLISHED INFRASTRUCTURE &amp; CIVIL CAPEX</span> 3 Flagship Projects (AED 176.0B Initial / AED 178.5B Awarded in <code>06c</code>)</div>
                 <div class="kv-val">
-                  Direct government or developer disclosures: e.g., <code>PRJ-D1</code> Al Maktoum Int'l Airport (AED 128.0B, Dubai Media Office), <code>PRJ-D3</code> Palm Jebel Ali (AED 150.0B, Nakheel), <code>PRJ-D5</code> Dubai Creek Harbour (AED 75.0B, Emaar), <code>PRJ-SH2</code> Aljada (AED 35.0B, Arada), <code>PRJ-SH1</code> Sharjah Waterfront City (AED 25.0B).
+                  Direct government capital expenditure &amp; contract awards (not real estate GDV): <code>PRJ-D1</code> Al Maktoum Int'l Airport Phase 1 (<strong>AED 128.0B</strong> civil aviation capex, Dubai Media Office), <code>PRJ-D8</code> Dubai Metro Blue Line (<strong>AED 18.0B</strong> initial budget / <strong>AED 20.5B</strong> awarded turnkey contract), and <code>PRJ-D9</code> Tasreef Strategic Sewer Tunnel (<strong>AED 30.0B</strong> municipal drainage capex).
+                </div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl"><span class="ep-pill-pub">CATEGORY 1B — PUBLISHED REAL ESTATE DEVELOPMENT GDV / INVESTMENT</span> 24 Flagship Projects (AED 589.9B Initial / AED 597.9B in <code>06c</code>)</div>
+                <div class="kv-val">
+                  Official developer/DLD published gross development value across <strong>13 Dubai real estate flagships</strong> (<strong>AED 499.4B</strong> initial / <strong>AED 507.4B</strong> in <code>06c</code> with <code>PRJ-D3</code> Palm Jebel Ali at AED 150B–158B, <code>PRJ-D5</code> Dubai Creek Harbour AED 75.0B) and <strong>11 Sharjah real estate flagships</strong> (<strong>AED 90.5B</strong>: e.g., <code>PRJ-SH2</code> Aljada AED 35.0B, <code>PRJ-SH1</code> Sharjah Waterfront City AED 25.0B).<br/>
+                  • <strong>Combined Published Official Value (27/32 Flagships = 1A + 1B):</strong> <strong>AED 765.9B</strong> (Initial Baseline) / <strong>AED 776.4B</strong> (<code>06c_pipeline_and_calculation_audit.csv</code> Upper Audit Baseline).
                 </div>
               </div>
               <div class="kv-row">
                 <div class="kv-lbl"><span class="badge-missing">CATEGORY 2 — ESTIMATED MASTERPLAN GDV</span> 5 Flagship Projects (AED 253.0B)</div>
                 <div class="kv-val">
-                  Masterplans where total GDV is estimated from partial contract awards and phased launches (never merged into Published Investment without disclosure):<br/>
-                  • <code>PRJ-D2</code> Dubai Islands (Est. AED 100.0B+ Masterplan GDV; AED 7.0B+ published awards)<br/>
+                  Masterplans where total GDV is estimated from partial contract awards and phased launches (strictly separated from Category 1A/1B Published Value):<br/>
+                  • <code>PRJ-D2</code> Dubai Islands (Est. AED 100.0B+ Masterplan GDV; AED 8.5B+ published villa/hotel awards)<br/>
                   • <code>PRJ-D4</code> Dubai South Residential &amp; Logistics (Est. AED 90.0B+ Multi-Developer GDV; AED 4.0B+ published awards)<br/>
                   • <code>PRJ-D16</code> DAMAC Lagoons (Est. AED 55.0B+ Masterplan GDV; AED 7.0B+ main works package)<br/>
                   • <code>PRJ-SH5</code> Khalid Bin Sultan City (Est. AED 5.0B+ Masterplan GDV; Zaha Hadid masterplan)<br/>
-                  • <code>PRJ-D11</code> Burj Binghatti Jacob &amp; Co (Est. AED 3.0B+ GDV)
+                  • <code>PRJ-D11</code> Burj Binghatti Jacob &amp; Co (Est. AED 3.0B+ GDV; AED 876M DLD baseline)
                 </div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl"><span class="badge-missing">CATEGORY 3 — MISSING / RESTRICTED DATA</span> Explicit Non-Invented Fields</div>
+                <div class="kv-lbl"><span class="badge-missing">CATEGORY 3 — MODELLED HARD COST &amp; MISSING / RESTRICTED DATA</span></div>
                 <div class="kv-val">
+                  • <strong>Modelled Hard Construction Cost (32/32 Flagships = AED 595.8B):</strong> Derived via RICS / Turner &amp; Townsend GFA unit-cost benchmarks in <code>06c_pipeline_and_calculation_audit.csv</code> (excludes land &amp; developer margin).<br/>
                   • <strong>5 JVC Sub-Clusters (<code>SUB-JVC-01..05</code>):</strong> Multi-parcel developer clusters do not publish a single consolidated GDV; tracked strictly via verified DLD active tower counts (29 towers), total units (9,330), and active structural GFA (1.20M m²).<br/>
-                  • <strong>Plot-Level Consultant TIS Reports:</strong> Confidential in RTA's TES portal; platform uses published RTA/SRTA corridor capacity studies (<code>TIS-001..008</code>).<br/>
-                  • <strong>Architectural CAD/BIM Facades:</strong> Not publicly filed; 3D viewer renders storey-proportional procedural massing with explicit attribution.
+                  • <strong>Plot-Level Consultant TIS Reports:</strong> Confidential in RTA's TES portal; platform uses published RTA/SRTA corridor capacity studies (<code>TIS-001..008</code>).
                 </div>
               </div>
             </div>
@@ -5301,42 +5355,42 @@ def main():
         <div class="aw-grid-2">
           <!-- 5.4 MULTI-FACTOR TRAFFIC CAUSE ANALYSIS MATRIX -->
           <div class="aw-panel-card">
-            <h3>5.4 Multi-Factor Congestion Cause Analysis (Preventing False Single-Cause Attribution)</h3>
+            <h3>5.4 Multi-Factor Contextual Congestion Contributors (Non-Exclusive Potential Contributors — Not Single-Factor Proven Causes)</h3>
             <p style="font-size:0.75rem; color:#475569; margin-bottom:8px;">
-              <strong>Analytical Guardrail:</strong> Traffic congestion on corridors near construction hotspots is driven by 8 interacting urban factors — never solely by construction trucks (especially during 06:30–08:30 AM and 17:30–20:00 PM when HGVs are legally banned on E11, E44, and D61):
+              <strong>Epistemic &amp; Causal Guardrail:</strong> Isolating exact percentage causal attribution on any road segment requires continuous loop-detector and Origin-Destination (O-D) telemetry. The 8 factors below are presented strictly as <strong>co-existing, non-exclusive contextual contributors</strong> — never as proven single-factor causes — explaining why congestion persists even during 06:30–08:30 AM and 17:30–20:00 PM when HGVs are legally banned on E11, E44, and D61:
             </p>
             <div class="kv-grid">
               <div class="kv-row">
-                <div class="kv-lbl">1. Commuter Demand &amp; Cross-Border Flows (Primary AM/PM Driver)</div>
-                <div class="kv-val"><span class="ep-pill-pub">PUBLISHED</span> Morning &amp; evening rush-hour queues on <code>RD-DXB-05</code> (Hessa St), <code>RD-DXB-01</code> (E11), and <code>RD-SHJ-01</code> (Sharjah E311 National Paints) are dominated by resident commuter flows when HGVs are banned.</div>
+                <div class="kv-lbl">1. Commuter Demand &amp; Cross-Border Flows (Contextual AM/PM Contributor)</div>
+                <div class="kv-val"><span class="ep-pill-pub">NON-EXCLUSIVE CONTRIBUTOR (PUBLISHED CONTEXT)</span> Morning &amp; evening rush-hour queues on <code>RD-DXB-05</code> (Hessa St), <code>RD-DXB-01</code> (E11), and <code>RD-SHJ-01</code> (Sharjah E311 National Paints) coincide with peak resident commuter flows when HGVs are banned.</div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">2. Rapid Population &amp; Handover Growth (Structural Demand)</div>
-                <div class="kv-val"><span class="ep-pill-pub">PUBLISHED</span> Completed residential towers in JVC (28,500 scheduled units), Business Bay (19,400 units), and Aljada (25,000 units) add permanent commuter vehicles to collector grids.</div>
+                <div class="kv-lbl">2. Rapid Population &amp; Handover Growth (Background Demand Contributor)</div>
+                <div class="kv-val"><span class="ep-pill-pub">NON-EXCLUSIVE CONTRIBUTOR (PUBLISHED CONTEXT)</span> Completed residential handovers in JVC (28,500 scheduled units), Business Bay (19,400 units), and Aljada (25,000 units) contribute background resident vehicles to collector grids.</div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">3. School Zones &amp; Hospital Peak Trips (07:15–08:15 &amp; 14:30–15:30)</div>
-                <div class="kv-val"><span class="ep-pill-pub">VERIFIED GIS LAYER 9</span> 10 mapped schools &amp; hospitals (e.g., GEMS Founders School Al Barsha South 0.35 km from Hessa St, Kids World JVC, University City Sharjah) create localized morning/afternoon drop-off queues.</div>
+                <div class="kv-lbl">3. School Zones &amp; Hospital Peak Trips (07:15–08:15 &amp; 14:30–15:30 Contributor)</div>
+                <div class="kv-val"><span class="ep-pill-pub">NON-EXCLUSIVE CONTRIBUTOR (GIS LAYER 9: 10 CLUSTERS)</span> 10 mapped education &amp; healthcare facility clusters in <code>09b_nearby_facilities_dataset.csv</code> (5 Education + 5 Healthcare clusters in Dubai &amp; Sharjah, e.g., GEMS/Al Barsha South 0.35 km from Hessa St, University City Sharjah) contribute localized drop-off/pick-up demand.</div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">4. Commercial Attractions &amp; Malls (Evening &amp; Weekend Peaks)</div>
-                <div class="kv-val"><span class="ep-pill-pub">VERIFIED GIS LAYER 9</span> Dubai Mall (<code>FAC-DXB-02</code>, >105M annual visitors), Circle Mall JVC (<code>FAC-DXB-01</code>), and Mall of the Emirates drive evening V/C ratios above 0.90 on Financial Centre Rd (D71) and Umm Suqeim St (D63).</div>
+                <div class="kv-lbl">4. Commercial Attractions, Malls &amp; Parks (Evening &amp; Weekend Contributor)</div>
+                <div class="kv-val"><span class="ep-pill-pub">NON-EXCLUSIVE CONTRIBUTOR (GIS LAYER 9: 15 CLUSTERS)</span> 15 mapped retail, park, and commercial districts in <code>09b</code> (e.g., Dubai Mall <code>FAC-DXB-07</code>, Circle Mall JVC <code>FAC-DXB-06</code>, Mall of the Emirates <code>FAC-DXB-08</code>) contribute evening and weekend visitor traffic on D71 and D63.</div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">5. Active RTA/SRTA Capital Roadworks &amp; Diversion Zones</div>
-                <div class="kv-val"><span class="ep-pill-pub">TIER 4 CAUSAL</span> 8 active capital work zones (e.g., <code>INC-DXB-01</code> AED 689M Hessa St flyover works, <code>INC-SHJ-02</code> Etihad Rail University City bridge diversion) temporarily narrow lane geometry before doubling long-term capacity.</div>
+                <div class="kv-lbl">5. Active RTA/SRTA Capital Roadworks &amp; Diversion Zones (Capacity Contributor)</div>
+                <div class="kv-val"><span class="ep-pill-pub">NON-EXCLUSIVE CONTRIBUTOR (8 WORK ZONES)</span> 8 active capital work zones in <code>18_Active_Roadworks_Incidents.csv</code> (e.g., <code>INC-DXB-01</code> AED 689M Hessa St flyover works, <code>INC-SHJ-02</code> Etihad Rail University City bridge diversion) temporarily constrain lane geometry during construction before doubling long-term capacity.</div>
               </div>
               <div class="kv-row">
                 <div class="kv-lbl">6. Signalized &amp; Weaving Intersection Bottlenecks (16 Nodes)</div>
-                <div class="kv-val"><span class="ep-pill-mod">MODELLED + PUBLISHED</span> Ramp-weaving and signal delay (<code>+d_adj</code> up to +14.85 min/10km at <code>INT-DXB-01</code> Hessa × Al Khail and <code>INT-SHJ-01</code> National Paints) govern corridor travel time more than mid-block link capacity.</div>
+                <div class="kv-val"><span class="ep-pill-mod">NON-EXCLUSIVE CONTRIBUTOR (MODELLED + PUBLISHED)</span> Ramp-weaving and signal delay (modelled <code>+d_adj</code> up to +14.85 min/10km at <code>INT-DXB-01</code> Hessa × Al Khail and <code>INT-SHJ-01</code> National Paints) contribute intersection queuing beyond mid-block link V/C.</div>
               </div>
               <div class="kv-row">
                 <div class="kv-lbl">7. Dynamic Salik Toll Pricing &amp; Route Redistribution</div>
-                <div class="kv-val"><span class="ep-pill-pub">PUBLISHED (SRC-435)</span> Variable Salik pricing (AED 6 Peak / AED 4 Off-Peak from Jan 31, 2025) + Al Safa South &amp; Business Bay gates shift ~9–12% of toll-avoiding commuters onto toll-free Al Khail Rd (E44) and E311.</div>
+                <div class="kv-val"><span class="ep-pill-pub">NON-EXCLUSIVE CONTRIBUTOR (PUBLISHED SRC-435)</span> Variable Salik pricing (AED 6 Peak / AED 4 Off-Peak from Jan 31, 2025) + Al Safa South &amp; Business Bay gates incentivize toll-sensitive drivers to use alternative corridors such as Al Khail Rd (E44) and E311.</div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">8. Construction HGV Logistics (Midday 08:30–13:00 &amp; Night 20:30–05:00)</div>
-                <div class="kv-val"><span class="ep-pill-mod">TIER 3 SCENARIO</span> Concrete mixers (8.5 m³) and rebar trailers (25 t) concentrate on local collector boulevards (<code>RD-DXB-07</code> JVC Circle Blvd, <code>RD-DXB-13</code> Marasi Dr) during permitted Midday and Night windows.</div>
+                <div class="kv-lbl">8. Construction HGV &amp; Industrial Supply Logistics (Midday &amp; Night Contributor)</div>
+                <div class="kv-val"><span class="ep-pill-mod">NON-EXCLUSIVE CONTRIBUTOR (TIER 3 SCENARIO)</span> Concrete mixers (8.5 m³) and rebar trailers (25 t) from the 5 Industrial/Logistics zones in <code>09b</code> and 7 Mobility/Staging hubs in <code>20</code> operate primarily on local collector boulevards (<code>RD-DXB-07</code>, <code>RD-DXB-13</code>) and freight corridors during permitted Midday and Night windows.</div>
               </div>
             </div>
           </div>
@@ -5548,9 +5602,9 @@ def main():
         <div class="aw-grid-2">
           <!-- 6.1 & 6.3 LOGISTICS FACILITIES & CORRIDOR NETWORK -->
           <div class="aw-panel-card">
-            <h3>6.1 &amp; 6.3 Construction Logistics Hubs &amp; Supply Chain Network (8 Facilities)</h3>
+            <h3>6.1 &amp; 6.3 Industrial Logistics Zones (5 in Dataset #09b) &amp; Mobility/Delivery Staging Hubs (7 in Dataset #20)</h3>
             <p style="font-size:0.74rem; color:#475569; margin-bottom:8px;">
-              Tracing <strong>Logistics Facility → Primary Freight Corridor → Bottleneck Intersection → Served Construction Projects</strong> (Dataset #20):
+              <strong>Exact Two-Tier Facility Reconciliation:</strong> Dataset <code>09b_nearby_facilities_dataset.csv</code> maps <strong>30 Dubai &amp; Sharjah Urban/Industrial Facility Clusters</strong> (18 Dubai + 12 Sharjah across 6 categories, including <strong>5 Major Industrial, Port &amp; Construction Supply Zones</strong>: <code>FAC-DXB-16</code> JAFZA/NIP, <code>FAC-DXB-17</code> Dubai South Logistics/DWC, <code>FAC-DXB-18</code> Al Quoz/Ras Al Khor/Warsan Industrial, <code>FAC-SHJ-11</code> SAIF/Hamriyah Port, <code>FAC-SHJ-12</code> Sajaa &amp; Sharjah Industrial 1–18), while Dataset <code>20_parking_and_mobility_facilities.csv</code> below maps <strong>7 Dedicated Parking, EV &amp; Last-Mile Delivery Staging Hubs</strong> (6 Dubai + 1 Sharjah):
             </p>
             <div style="overflow-x:auto;">
               <table class="ev-table">
@@ -5701,40 +5755,41 @@ def main():
 
         <!-- 8.3 DATA QUALITY & RECONCILIATION DASHBOARD -->
         <div class="aw-panel-card">
-          <h3>8.3 Data-Quality, Epistemic Separation &amp; Reconciliation Dashboard</h3>
+          <h3>8.3 Data-Quality, Epistemic Separation &amp; Reconciliation Dashboard (All 8 Audit Items Reconciled)</h3>
           <div class="aw-grid-2">
             <div class="kv-grid">
               <div class="kv-row">
-                <div class="kv-lbl">1. TomTom Dubai Traffic Index Reconciliation (42.7% vs. 47.5%)</div>
+                <div class="kv-lbl">1. TomTom Dubai Traffic Index Reconciliation (42.7% Stored Baseline vs. 47.5% Narrative Note)</div>
                 <div class="kv-val">
-                  • <strong>Stored Primary Baseline (<code>OBS-DXB-CITY-00</code> / <code>SRC-436</code>):</strong> Records <strong>42.7%</strong> annual city-wide congestion level, <strong>31.3 km/h</strong> city-wide average speed (<strong>19 min 10 sec</strong> per 10 km), <strong>42.3%</strong> AM peak congestion (32.1 km/h), and <strong>94.4%</strong> PM peak congestion (22.6 km/h).<br/>
-                  • <strong>Subsequent YoY Edition Comparison:</strong> Records <strong>47.5%</strong> congestion (+4.8 percentage points YoY increase as Dubai registered vehicles surpassed 3.5M).<br/>
-                  • <strong>Strict Epistemic Rule:</strong> Both figures are city-wide aggregates and are <em>never</em> disaggregated to individual road segments.
+                  • <strong>Authoritative Stored Baseline (<code>OBS-DXB-CITY-00</code> in <code>17_traffic_congestion_observations.csv</code> / <code>SRC-436</code>):</strong> Records <strong>42.7%</strong> full-year 24/7 metropolitan congestion level (% additional travel time above free-flow), <strong>31.3 km/h</strong> average speed (<strong>19 min 10 sec</strong> per 10 km), <strong>42.3%</strong> AM rush congestion (32.1 km/h, 18m 41s / 10km), and <strong>94.4%</strong> PM rush congestion (22.6 km/h, 26m 33s / 10km).<br/>
+                  • <strong>Why 47.5% Appeared in Earlier Narrative Notes:</strong> Referenced an urban-core / daytime edition comparison (+4.8 pp variance between city-center boundary vs. wider metropolitan bounding box and YoY vehicle growth). <code>47.5%</code> is <em>not</em> stored in any Task 2 CSV table.<br/>
+                  • <strong>Strict Epistemic Rule:</strong> City-wide aggregates are never disaggregated to individual road segments.
                 </div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">2. Investment Valuation Reconciliation (Published vs. Estimated vs. Hard Cost)</div>
+                <div class="kv-lbl">2. Valuation Terminology Reconciliation (Published Capex vs. Published GDV vs. Estimated GDV)</div>
                 <div class="kv-val">
-                  • <strong>Published Official Investment (27/32 Flagships):</strong> <strong>AED 765.9B</strong> (Dubai: AED 675.4B across 16 projects; Sharjah: AED 90.5B across 11 projects).<br/>
-                  • <strong>Estimated Masterplan GDV (5/32 Flagships):</strong> <strong>AED 253.0B</strong> across 5 masterplans with partial contract awards (<code>PRJ-D2</code>, <code>PRJ-D4</code>, <code>PRJ-D11</code>, <code>PRJ-D16</code>, <code>PRJ-SH5</code>).<br/>
-                  • <strong>Modelled Hard Construction Cost (32/32 Flagships):</strong> <strong>AED 595.8B</strong> derived via RICS/T&amp;T unit-cost benchmarks (<code>06c_pipeline_and_calculation_audit.csv</code>).
+                  • <strong>Category 1A — Published Infrastructure &amp; Civil Capex (3/32 Flagships):</strong> <strong>AED 176.0B</strong> initial budget / <strong>AED 178.5B</strong> contract award in <code>06c</code> (<code>PRJ-D1</code> AED 128.0B, <code>PRJ-D8</code> AED 18.0B–20.5B, <code>PRJ-D9</code> AED 30.0B).<br/>
+                  • <strong>Category 1B — Published Real Estate Development GDV / Investment (24/32 Flagships):</strong> <strong>AED 589.9B</strong> initial baseline / <strong>AED 597.9B</strong> in <code>06c</code> (13 Dubai real estate projects = AED 499.4B–507.4B; 11 Sharjah real estate projects = AED 90.5B).<br/>
+                  • <strong>Combined Published Official Value (27/32 = 1A + 1B):</strong> <strong>AED 765.9B</strong> (Initial Baseline) / <strong>AED 776.4B</strong> (<code>06c</code> Audit Total).<br/>
+                  • <strong>Category 2 — Estimated Masterplan GDV (5/32 Flagships):</strong> <strong>AED 253.0B</strong> across 5 masterplans with partial contract awards (<code>PRJ-D2</code>, <code>PRJ-D4</code>, <code>PRJ-D11</code>, <code>PRJ-D16</code>, <code>PRJ-SH5</code>).<br/>
+                  • <strong>Category 3 — Modelled Hard Construction Cost (32/32 Flagships):</strong> <strong>AED 595.8B</strong> via RICS/T&amp;T unit-cost benchmarks (<code>06c_pipeline_and_calculation_audit.csv</code>).
                 </div>
               </div>
             </div>
             <div class="kv-grid">
               <div class="kv-row">
-                <div class="kv-lbl">3. Missing, Unavailable &amp; Restricted Information Disclosure</div>
+                <div class="kv-lbl">3. Scope &amp; Facility Grouping Reconciliation (85 vs. 37 Sites; 30 Facilities vs. 7 Hubs)</div>
                 <div class="kv-val">
-                  • <strong>JVC Sub-Clusters (<code>SUB-JVC-01..05</code>):</strong> Multi-plot developer clusters lack standalone published GDV; tracked by verified DLD tower count (29 towers), units (9,330), and active structural GFA (1.20M m²).<br/>
-                  • <strong>Plot-Level Consultant TIS Filings:</strong> Restricted commercial submissions in RTA's TES portal; platform uses published RTA/SRTA corridor studies (<code>TIS-001..008</code>).<br/>
-                  • <strong>Live Loop-Detector Telemetry:</strong> RTA does not expose public per-link loop-detector feeds without an enterprise agreement; segment speeds are explicitly labelled <strong>Modelled Corridor Estimates</strong>.
+                  • <strong>85 National Projects vs. 37 Deep-Dive Entities:</strong> <code>04_project_inventory.csv</code> contains <strong>85</strong> flagship projects across all 7 Emirates. Task 2 performs deep spatial &amp; BPR/HGV corridor modelling on <strong>37</strong> entities in Dubai &amp; Sharjah (<strong>20</strong> Dubai flagships + <strong>12</strong> Sharjah flagships = <strong>32</strong> flagships, plus <strong>5</strong> JVC multi-tower sub-clusters <code>SUB-JVC-01..05</code>). The remaining <strong>53</strong> flagships (Abu Dhabi 15, RAK 12, Ajman 10, UAQ 8, Fujairah 8) have national inventory/GFA/cost/coordinate coverage only.<br/>
+                  • <strong>30 Urban/Industrial Facilities (<code>09b</code>) vs. 7 Mobility/Staging Hubs (<code>20</code>):</strong> Layer 9 (<code>09b_nearby_facilities_dataset.csv</code>) maps <strong>30</strong> Dubai &amp; Sharjah facility clusters (out of 80 UAE-wide), including <strong>5</strong> Major Industrial/Port/Logistics Zones (<code>FAC-DXB-16..18</code>, <code>FAC-SHJ-11..12</code>) and <strong>25</strong> Schools, Hospitals, Malls, Parks &amp; Commercial Centres. Layer 10 (<code>20_parking_and_mobility_facilities.csv</code>) maps <strong>7</strong> dedicated Parking, EV &amp; Delivery Staging Hubs (<code>PRK-DXB-01..06</code>, <code>PRK-SHJ-01</code>).
                 </div>
               </div>
               <div class="kv-row">
-                <div class="kv-lbl">4. Procedural 3D Massing vs. Sourced Footprints Disclosure</div>
+                <div class="kv-lbl">4. 3D Building Coverage (950 Cap Fallback) &amp; Complete WebGL GPU Disposal</div>
                 <div class="kv-val">
-                  • <strong>Surrounding City Context:</strong> Extruded from OpenMapTiles / OpenStreetMap building footprints (capped at 950 nearest meshes with GPU geometry disposal).<br/>
-                  • <strong>Selected Project Tower:</strong> Rendered as storey-proportional procedural massing because developer architectural CAD/BIM façade files are not publicly filed.
+                  • <strong>Zero Geographic Gaps Across Zoom Levels:</strong> At zoom ≥ 14.0, the nearest <strong>950</strong> OpenMapTiles building footprints render as Three.js meshes with procedural 4K façades. Whenever <code>candidates.length &gt; 950</code> (`osmCityTruncated = true`), MapLibre's native GPU <code>osm-3d-buildings</code> <code>fill-extrusion</code> layer automatically remains visible at <code>0.55</code> opacity so buildings beyond the 950 cap still render in 3D with zero geographic holes.<br/>
+                  • <strong>Full GPU Resource Cleanup:</strong> <code>disposeThreeGroup(grp, true)</code> and <code>disposeAllThreeGpuResources()</code> explicitly dispose buffer geometries, materials, procedural <code>CanvasTexture</code> maps, and <code>renderer.renderLists</code>.
                 </div>
               </div>
             </div>
