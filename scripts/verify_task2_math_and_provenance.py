@@ -10,6 +10,7 @@ Enforces the `provenance-and-report-sync-auditor` skill:
 """
 
 import csv
+from datetime import datetime, timedelta, timezone
 import json
 import math
 import os
@@ -663,6 +664,7 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
         '23_traffic_impact_studies_tis.csv',
         '24_traffic_data_providers_evaluation.csv',
         'href="${d.document_url}"',
+        'burj-binghatti-jacob-co-residences',
     ):
         assert forbidden_ui_token not in html_text, f"Found stale/broken UI token '{forbidden_ui_token}' in task2_gis_intelligence.html"
 
@@ -691,14 +693,25 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
         total_task2_csv_rows += r_cnt
     assert total_task2_csv_rows == 157, f"Expected 157 total Task 2 CSV rows, got {total_task2_csv_rows}"
 
-    # Verify all 205 project documents have valid https:// source_url
+    # Verify all 205 project documents have non-empty https:// source_url syntax (prevents /undefined hrefs; does not claim live external HTTP reachability across WAF-protected third-party portals)
+    # Also verify DOC-D11-03 and SRC-195 point to the verified live Property Finder route
+    expected_d11_pf_url = "https://www.propertyfinder.ae/en/new-projects/binghatti-developers-fze/burj-binghatti-jacob-and-co"
     docs_rows = json.loads((DATASETS_DIR / "05_project_documents.json").read_text(encoding="utf-8"))
     assert len(docs_rows) == 205
     for d in docs_rows:
-        assert str(d.get("source_url", "")).startswith("https://"), f"Missing/invalid source_url on {d.get('doc_id')}"
+        assert str(d.get("source_url", "")).startswith("https://"), f"Missing/invalid https:// source_url syntax on {d.get('doc_id')}"
+    doc_d11_03 = next(d for d in docs_rows if d["doc_id"] == "DOC-D11-03")
+    assert doc_d11_03["source_url"] == expected_d11_pf_url, f"Stale DOC-D11-03 URL: {doc_d11_03['source_url']}"
+    assert prov_by_id["SRC-195"]["original_url"] == expected_d11_pf_url, f"Stale SRC-195 URL: {prov_by_id['SRC-195']['original_url']}"
 
+    now_ist = datetime.now(timezone(timedelta(hours=5, minutes=30))).isoformat(timespec="seconds")
     receipt = {
-        "verification_timestamp": "2026-11-10T23:55:00+05:30",
+        "verification_timestamp": now_ist,
+        "verification_evidence_stage": (
+            "PRE_COMMIT_BUILD_AND_LOCAL_HTTP_VERIFICATION "
+            "(generated dynamically at verification runtime immediately prior to git commit; "
+            "live post-deploy CDN checks and client Safari/macOS hardware UAT are separate post-push steps)"
+        ),
         "release_candidate_status": "RC_FROZEN_FOR_CLIENT_WALKTHROUGH_AND_UAT",
         "status": "ALL_CHECKS_PASSED",
         "reconciled_investigation_items_1_to_8": {
@@ -845,9 +858,16 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
                 "result": "PASSED (37/37 nearest-vertex computational consistency & 123 GeoJSON features verified)",
             },
             "suite_d_seven_module_ui_and_interaction_tokens": {
-                "test_definition": "Verifies presence and wiring of all 7 top-level navigation modules (01 Overview to 07 Data & Evidence), 4 zoom levels (L1-L4), 4 concentration modes (Points, Heatmap, Boundaries, Clusters), 7 layer groups, 6 layer presets, 5-section project profile, 11/11 CSV catalogue links (157 total rows), 123 GeoJSON feature label, valid document source_url links, published supertall tower height parsing (PRJ-D11 = 557m), and interactive hypothetical scenario simulator.",
-                "assertions_executed": 75,
-                "result": "PASSED (75/75 required DOM, CSV catalogue, GeoJSON, document URL & tower height tokens verified)",
+                "test_definition": (
+                    "Verifies presence and wiring of all 7 top-level navigation modules (01 Overview to 07 Data & Evidence), "
+                    "4 zoom levels (L1-L4), 4 concentration modes (Points, Heatmap, Boundaries, Clusters), 7 layer groups, 6 layer presets, "
+                    "5-section project profile, 11/11 CSV catalogue links (157 total rows), 123 GeoJSON feature label, "
+                    "non-empty https:// document source_url syntax & template binding across all 205 records (establishes zero /undefined hrefs, "
+                    "not live external HTTP reachability across third-party WAF-protected domains; also asserts live Property Finder route on DOC-D11-03 / SRC-195), "
+                    "published supertall tower height parsing (PRJ-D11 = 557m), and interactive hypothetical scenario simulator."
+                ),
+                "assertions_executed": 78,
+                "result": "PASSED (78/78 required DOM, CSV catalogue, GeoJSON, document URL syntax/DOC-D11-03 & tower height tokens verified)",
             },
             "suite_e_webgl_gpu_disposal_and_zero_gap_fallback": {
                 "test_definition": "Verifies presence of disposeThreeGroup(grp, true), disposeAllThreeGpuResources(), CanvasTexture map.dispose(), renderer.renderLists.dispose(), 950-building cap with osmCityTruncated native fill-extrusion fallback (0.55 opacity), and 220ms rebuild throttling, plus 15-project 3D switch endurance walkthrough (23 active geometries, 4 textures, 0 leaks).",
