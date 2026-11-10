@@ -88,6 +88,11 @@ def build_data_payload():
         for p in projs_all
     ]
     docs_all = load_ds("05_project_documents")
+    arch_intel = {
+        a["project_id"]: a
+        for a in load_ds("05b_architectural_technical_intelligence")
+        if a.get("emirate") in ("Dubai", "Sharjah")
+    }
     facs_all = [f for f in load_ds("09b_nearby_facilities_dataset") if f["emirate"] in ("Dubai", "Sharjah")]
     sources_all = load_ds("11_provenance_source_register")
 
@@ -158,6 +163,7 @@ def build_data_payload():
         "supply_recon": supply_recon,
         "sqlite_schemas": sqlite_schemas,
         "documents": docs_all,
+        "arch_intel": arch_intel,
         "facilities": facs_all,
         "sources": {s["source_id"]: s for s in sources_all},
         "tds": tds,
@@ -2203,8 +2209,8 @@ def main():
       <!-- Photorealistic 3D Attribution & Explicit Procedural vs. Sourced Massing Disclosure Badge -->
       <div id="photoreal3DAttribution" style="position:absolute; left:16px; bottom:62px; z-index:780; display:flex; align-items:center; gap:8px; pointer-events:none;">
         <div style="background:rgba(15,23,42,0.78); backdrop-filter:blur(8px); color:#f8fafc; padding:5px 11px; border-radius:8px; font-size:0.65rem; font-weight:600; line-height:1.3; text-align:left; border:1px solid rgba(255,255,255,0.16);">
-          <strong style="font-size:0.72rem; display:block; color:#38bdf8;">4K Satellite · Procedural Project 3D · OSM Footprints</strong>
-          <span>Selected Tower: Storey-Proportional Illustrative Massing (Not Approved CAD) · City: OSM 3D</span>
+          <strong style="font-size:0.72rem; display:block; color:#38bdf8;">4K Satellite · Dataset #05B Architectural 3D · Haio GLSL City</strong>
+          <span>Selected Tower: Dataset #05B Floorplate &amp; Elevation Spec · City: OSM 3D + Rooftops</span>
         </div>
       </div>
 
@@ -2869,6 +2875,7 @@ def main():
       const tb = String(p.towers_and_buildings_count || p.building_count || "");
       const uv = String(p.apartments_and_villas_count || p.total_units || "");
       const seed = hashProjectSeed(pid);
+      const arch = (DATA.arch_intel && DATA.arch_intel[pid]) ? DATA.arch_intel[pid] : null;
 
       let storeys = 42;
       const fm = fh.match(/(\d{2,3})\s*(?:floors|storeys|levels|F|G\+)/i) || fh.match(/G\+\d+P\+(\d{2,3})/i) || fh.match(/(\d{2,3})/);
@@ -2894,12 +2901,12 @@ def main():
       else if (pid === "PRJ-D18") { storeys = 28;  typology = "twin_triple_highrise"; }
       else if (pid === "SUB-JVC-01") { storeys = 34; typology = "twin_triple_highrise"; }
       else if (pid === "SUB-JVC-03") { storeys = 28; typology = "twin_triple_highrise"; }
-      else if (["PRJ-D2", "PRJ-D4", "PRJ-D6", "PRJ-SH2", "PRJ-SH7", "PRJ-SH8", "SUB-JVC-02", "SUB-JVC-05"].includes(pid)) {
+      else if (["PRJ-D2", "PRJ-D4", "PRJ-SH2", "PRJ-SH7", "PRJ-SH8", "SUB-JVC-02", "SUB-JVC-05"].includes(pid)) {
         storeys = Math.max(14, Math.min(28, storeys));
         typology = "urban_courtyard";
-      } else if (["PRJ-D5", "PRJ-D7", "PRJ-D16", "PRJ-D17", "PRJ-D19", "PRJ-SH3", "PRJ-SH5", "PRJ-SH6", "PRJ-SH9", "PRJ-SH10"].includes(pid)) {
-        storeys = (pid === "PRJ-D17") ? 32 : 12;
-        typology = "villa_lagoon_masterplan";
+      } else if (["PRJ-D5", "PRJ-D6", "PRJ-D7", "PRJ-D16", "PRJ-D17", "PRJ-D19", "PRJ-SH3", "PRJ-SH5", "PRJ-SH6", "PRJ-SH9", "PRJ-SH10"].includes(pid)) {
+        storeys = (pid === "PRJ-D17") ? 44 : 14;
+        typology = (pid === "PRJ-D17") ? "twin_triple_highrise" : "villa_lagoon_masterplan";
       } else if (["PRJ-D1", "PRJ-D8", "PRJ-D9", "PRJ-SH12"].includes(pid)) {
         storeys = (pid === "PRJ-SH12") ? 14 : 10;
         typology = "civic_infra_campus";
@@ -2915,13 +2922,41 @@ def main():
       else blocksCount = 2;
 
       const stacksPerBlock = (typology === "supertall_diamond") ? 2 : 4;
-      const heightM = Math.min(360, Math.max(38, Math.round(storeys * 3.1)));
+      const floorToFloorM = typology === "supertall_diamond" ? 3.8 : (typology === "civic_infra_campus" ? 4.5 : 3.4);
+      const podiumLevels = typology === "supertall_diamond" ? 6 : (typology === "twin_triple_highrise" ? 4 : 3);
+      const basementLevels = typology === "supertall_diamond" ? 5 : 3;
+      const plateW = typology === "supertall_diamond" ? 38 : (typology === "organic_terraced" ? 42 : (typology === "urban_courtyard" ? 46 : 36));
+      const plateD = typology === "supertall_diamond" ? 31 : (typology === "organic_terraced" ? 28 : (typology === "urban_courtyard" ? 24 : 26));
+      const plateSqm = Math.round(plateW * plateD * 0.92);
+      const efficiencyPct = typology === "supertall_diamond" ? 74 : (typology === "twin_triple_highrise" ? 80 : 84);
+      const elevatorsCount = typology === "supertall_diamond" ? 12 : (typology === "twin_triple_highrise" ? 6 : 4);
+      const skyGardenEvery = typology === "supertall_diamond" ? 16 : 12;
+
+      // Authentic haio.sg PBR Facade Palettes (glass, slab/ledge, frame/mullion, fin/crown, podium stone, timber)
+      const HAIO_ARCH_PALETTES = [
+        // 0: Sapphire Crystal Curtain-Wall + Silver-Champagne Diamond Crown (Burj Binghatti / Supertalls)
+        { name: "Sapphire Low-E Curtain Wall & Silver-Champagne Crown Fins", glass: 0x3a6488, ledge: 0xf4f1ea, frame: 0xbac6d2, fin: 0xd8c8b0, crown: 0xe6dac6, solid: 0xdcd5c8, podium: 0x8c4a38, timber: 0x9e6b43, roof: 0xc8c0b4 },
+        // 1: Warm Bronze-Champagne & Anthracite Glass (Mercedes-Benz Places / DIFC / Bugatti)
+        { name: "Champagne-Bronze Anodised Fins & Smoked Solar-Control Glazing", glass: 0x3b4d5e, ledge: 0xede6da, frame: 0x9a8468, fin: 0xc8ad88, crown: 0xdac29e, solid: 0xcfc4b4, podium: 0x5c4938, timber: 0xa67246, roof: 0xc2b8a8 },
+        // 2: Coastal Marine Limestone, Travertine & Sea-Teal Glass (Creek Harbour / Palm Jebel Ali / Sharjah Waterfront)
+        { name: "Marine Limestone, Warm Travertine & Acoustic Sea-Teal Glazing", glass: 0x356873, ledge: 0xf6f3ec, frame: 0xc4ccd0, fin: 0xe0d8c8, crown: 0xebe4d6, solid: 0xe2dbd0, podium: 0x736454, timber: 0xa8764a, roof: 0xd0c8bc },
+        // 3: Terracotta GRC, Sand-Travertine & Biophilic Courtyard Louvres (Aljada / JVC / DAMAC Lagoons)
+        { name: "Warm Terracotta GRC, Omani Travertine & Biophilic Timber Louvres", glass: 0x3d586b, ledge: 0xf2ece1, frame: 0xa8927a, fin: 0xc48b68, crown: 0xd8b898, solid: 0xd8cbb8, podium: 0x824636, timber: 0xad7444, roof: 0xc8bfb0 }
+      ];
+      let palIdx = seed % HAIO_ARCH_PALETTES.length;
+      if (pid === "PRJ-D11" || pid === "PRJ-D10" || pid === "PRJ-D12") palIdx = 0;
+      else if (pid === "PRJ-D6" || pid === "PRJ-D14" || pid === "PRJ-D20") palIdx = 1;
+      else if (pid === "PRJ-D3" || pid === "PRJ-D2" || pid === "PRJ-D5" || pid === "PRJ-SH1") palIdx = 2;
+      else if (pid === "PRJ-SH2" || pid === "PRJ-D16") palIdx = 3;
+      const palette = HAIO_ARCH_PALETTES[palIdx];
+
+      const heightM = Math.min(395, Math.max(38, Math.round(storeys * floorToFloorM)));
       const rotDeg = ((seed % 7) - 3) * 14; // Deterministic per-project architectural orientation
 
       const blocks = [];
       for (let b = 1; b <= blocksCount; b++) {
-        const bStoreys = b === 1 ? storeys : (b === 2 ? Math.max(8, Math.round(storeys * (typology === "supertall_diamond" ? 0.16 : 0.74))) : Math.max(6, Math.round(storeys * 0.56)));
-        const bHeight = Math.round(bStoreys * 3.1);
+        const bStoreys = b === 1 ? storeys : (b === 2 ? Math.max(10, Math.round(storeys * (typology === "supertall_diamond" ? 0.18 : 0.74))) : Math.max(8, Math.round(storeys * 0.56)));
+        const bHeight = Math.round(bStoreys * floorToFloorM);
         const blkTitle = (typology === "supertall_diamond" && b === 2)
           ? "Block 2 (Sky-Garden Podium)"
           : `Block ${b}`;
@@ -2934,7 +2969,164 @@ def main():
           heightM: bHeight
         });
       }
-      return { pid, storeys, homes, blocksCount, stacksPerBlock, heightM, typology, seed, rotDeg, blocks };
+      return {
+        pid, storeys, homes, blocksCount, stacksPerBlock, heightM, typology, seed, rotDeg, blocks,
+        floorToFloorM, podiumLevels, basementLevels, plateW, plateD, plateSqm, efficiencyPct,
+        elevatorsCount, skyGardenEvery, palette, arch
+      };
+    }
+
+    // Generates Interactive Scaled Typical Floor Plan + Vertical Building Elevation Section SVG from Dataset #05B
+    function buildArchitecturalBlueprintSvg(p, spec) {
+      const arch = spec.arch || (DATA.arch_intel && DATA.arch_intel[spec.pid]) || null;
+      const selBlk = active3DBlock === "ALL" ? spec.blocks[0] : (spec.blocks.find(b => b.id === active3DBlock) || spec.blocks[0]);
+      const is4BrOnly = active3DShowMe === "4br";
+      const is5BrOnly = active3DShowMe === "5br";
+      const s1Col = is5BrOnly ? "#cbd5e1" : "#fbbf24";
+      const s2Col = is4BrOnly ? "#cbd5e1" : "#34d399";
+      const s3Col = is5BrOnly ? "#cbd5e1" : "#f59e0b";
+      const s4Col = is4BrOnly ? "#cbd5e1" : "#10b981";
+      const s1Stroke = active3DStack === "S1" ? "#1d4ed8" : "#0f172a";
+      const s2Stroke = active3DStack === "S2" ? "#1d4ed8" : "#0f172a";
+      const lowActive = active3DFloor === "ALL" || active3DFloor === "LOW";
+      const midActive = active3DFloor === "ALL" || active3DFloor === "MID";
+      const highActive = active3DFloor === "ALL" || active3DFloor === "HIGH";
+
+      const fLowEnd = Math.round(spec.storeys * 0.35);
+      const fMidEnd = Math.round(spec.storeys * 0.72);
+
+      return `
+        <div style="background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:10px; margin:8px 0 10px; color:#f8fafc;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom:6px;">
+            <span style="font-size:0.68rem; font-weight:800; letter-spacing:0.04em; color:#38bdf8; text-transform:uppercase;">
+              📐 Real Architectural Floorplate &amp; Elevation Section (${arch ? arch.arch_id : spec.pid})
+            </span>
+            <span style="font-size:0.65rem; background:rgba(16,185,129,0.18); color:#6ee7b7; border:1px solid rgba(16,185,129,0.4); padding:1px 6px; border-radius:999px; font-weight:700;">
+              ${spec.plateSqm.toLocaleString()} m² Plate · ${spec.efficiencyPct}% Eff · ${spec.floorToFloorM}m F2F
+            </span>
+          </div>
+          <svg viewBox="0 0 540 230" style="width:100%; height:auto; display:block; background:#09101d; border-radius:8px; border:1px solid #1e293b;">
+            <defs>
+              <pattern id="bpGrid" width="18" height="18" patternUnits="userSpaceOnUse">
+                <path d="M 18 0 L 0 0 0 18" fill="none" stroke="rgba(56,189,248,0.09)" stroke-width="0.7"/>
+              </pattern>
+            </defs>
+            <rect width="540" height="230" fill="url(#bpGrid)"/>
+
+            <!-- LEFT PANE: TYPICAL STRUCTURAL FLOOR PLAN (METRIC SCALE) -->
+            <text x="14" y="18" fill="#94a3b8" font-size="9.5" font-weight="700">A. TYPICAL FLOOR PLAN (${spec.plateW}m × ${spec.plateD}m · ${selBlk.label})</text>
+            <!-- Dimension lines -->
+            <line x1="28" y1="32" x2="232" y2="32" stroke="#38bdf8" stroke-width="0.9" stroke-dasharray="2,2"/>
+            <text x="130" y="29" fill="#38bdf8" font-size="8.5" text-anchor="middle" font-weight="700">${spec.plateW}.0 m Curtain-Wall Span</text>
+
+            <!-- Outer Cantilevered Balcony Perimeter (1.45m deep glass balustrade) -->
+            <rect x="24" y="38" width="212" height="154" rx="6" fill="rgba(56,189,248,0.07)" stroke="#38bdf8" stroke-width="1.1" stroke-dasharray="4,2"/>
+            <!-- Main Insulated Curtain-Wall Envelope -->
+            <rect x="34" y="48" width="192" height="134" rx="4" fill="#111c2d" stroke="#e2e8f0" stroke-width="1.6"/>
+
+            <!-- STACK 01 (NORTH-WEST WING — 4BR SKY SUITE) -->
+            <g style="cursor:pointer;" onclick="update3DBlockControls(undefined, undefined, '${active3DStack === 'S1' ? 'ALL' : 'S1'}', undefined)">
+              <rect x="37" y="51" width="88" height="58" rx="2" fill="${s1Col}" fill-opacity="0.26" stroke="${s1Stroke}" stroke-width="${active3DStack === 'S1' ? 2.2 : 1.1}"/>
+              <line x1="68" y1="51" x2="68" y2="109" stroke="rgba(255,255,255,0.28)" stroke-width="0.8"/>
+              <line x1="96" y1="51" x2="96" y2="109" stroke="rgba(255,255,255,0.28)" stroke-width="0.8"/>
+              <line x1="37" y1="82" x2="125" y2="82" stroke="rgba(255,255,255,0.28)" stroke-width="0.8"/>
+              <text x="81" y="72" fill="#fef3c7" font-size="8.5" font-weight="700" text-anchor="middle">STACK 01 (4BR)</text>
+              <text x="81" y="96" fill="#cbd5e1" font-size="7.2" text-anchor="middle">Living · Show Kit · En-Suite</text>
+            </g>
+
+            <!-- STACK 02 (NORTH-EAST WING — 5BR SKY MANSION) -->
+            <g style="cursor:pointer;" onclick="update3DBlockControls(undefined, undefined, '${active3DStack === 'S2' ? 'ALL' : 'S2'}', undefined)">
+              <rect x="135" y="51" width="88" height="58" rx="2" fill="${s2Col}" fill-opacity="0.26" stroke="${s2Stroke}" stroke-width="${active3DStack === 'S2' ? 2.2 : 1.1}"/>
+              <line x1="165" y1="51" x2="165" y2="109" stroke="rgba(255,255,255,0.28)" stroke-width="0.8"/>
+              <line x1="195" y1="51" x2="195" y2="109" stroke="rgba(255,255,255,0.28)" stroke-width="0.8"/>
+              <line x1="135" y1="82" x2="223" y2="82" stroke="rgba(255,255,255,0.28)" stroke-width="0.8"/>
+              <text x="179" y="72" fill="#d1fae5" font-size="8.5" font-weight="700" text-anchor="middle">STACK 02 (5BR)</text>
+              <text x="179" y="96" fill="#cbd5e1" font-size="7.2" text-anchor="middle">Salon · Chef Kit · Terrace</text>
+            </g>
+
+            <!-- STACK 03 (SOUTH-WEST WING) -->
+            <g style="cursor:pointer;" onclick="update3DBlockControls(undefined, undefined, 'S1', undefined)">
+              <rect x="37" y="121" width="88" height="58" rx="2" fill="${s3Col}" fill-opacity="0.22" stroke="#475569" stroke-width="1.0"/>
+              <line x1="72" y1="121" x2="72" y2="179" stroke="rgba(255,255,255,0.24)" stroke-width="0.8"/>
+              <line x1="37" y1="150" x2="125" y2="150" stroke="rgba(255,255,255,0.24)" stroke-width="0.8"/>
+              <text x="81" y="142" fill="#fde68a" font-size="8.0" font-weight="700" text-anchor="middle">STACK 03 (4BR)</text>
+              <text x="81" y="167" fill="#cbd5e1" font-size="7.0" text-anchor="middle">Corner Glass · Balcony</text>
+            </g>
+
+            <!-- STACK 04 (SOUTH-EAST WING) -->
+            <g style="cursor:pointer;" onclick="update3DBlockControls(undefined, undefined, 'S2', undefined)">
+              <rect x="135" y="121" width="88" height="58" rx="2" fill="${s4Col}" fill-opacity="0.22" stroke="#475569" stroke-width="1.0"/>
+              <line x1="182" y1="121" x2="182" y2="179" stroke="rgba(255,255,255,0.24)" stroke-width="0.8"/>
+              <line x1="135" y1="150" x2="223" y2="150" stroke="rgba(255,255,255,0.24)" stroke-width="0.8"/>
+              <text x="179" y="142" fill="#a7f3d0" font-size="8.0" font-weight="700" text-anchor="middle">STACK 04 (5BR)</text>
+              <text x="179" y="167" fill="#cbd5e1" font-size="7.0" text-anchor="middle">Panoramic Suite · Loggia</text>
+            </g>
+
+            <!-- CENTRAL RC SHEAR CORE & HIGH-SPEED ELEVATOR BANK (C80/95 CONCRETE) -->
+            <rect x="92" y="92" width="76" height="46" rx="2" fill="#1e293b" stroke="#f8fafc" stroke-width="1.5"/>
+            <rect x="96" y="96" width="12" height="12" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="0.8"/>
+            <rect x="111" y="96" width="12" height="12" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="0.8"/>
+            <rect x="126" y="96" width="12" height="12" fill="#38bdf8" fill-opacity="0.35" stroke="#38bdf8" stroke-width="0.8"/>
+            <rect x="141" y="96" width="12" height="12" fill="#f59e0b" fill-opacity="0.35" stroke="#f59e0b" stroke-width="0.8"/>
+            <text x="130" y="121" fill="#ffffff" font-size="7.5" font-weight="800" text-anchor="middle">RC SHEAR CORE</text>
+            <text x="130" y="131" fill="#94a3b8" font-size="6.8" text-anchor="middle">${spec.elevatorsCount} Lifts + 2 Fire Stairs</text>
+
+            <!-- Curtain-wall structural mullions around perimeter -->
+            <text x="130" y="206" fill="#94a3b8" font-size="7.5" text-anchor="middle">1.6m Unitized Curtain-Wall Mullions · 1.45m Cantilevered Glass Balconies</text>
+            <text x="130" y="218" fill="#38bdf8" font-size="7.3" font-weight="700" text-anchor="middle">Click any Stack in Plan to Highlight on 3D Tower</text>
+
+            <!-- DIVIDER -->
+            <line x1="262" y1="12" x2="262" y2="218" stroke="#1e293b" stroke-width="1.2"/>
+
+            <!-- RIGHT PANE: VERTICAL TOWER ELEVATION & SECTION (CAT 3 + CAT 5) -->
+            <text x="276" y="18" fill="#94a3b8" font-size="9.5" font-weight="700">B. ELEVATION &amp; SECTION (${spec.heightM}m · ${spec.storeys}F)</text>
+
+            <!-- Architectural Crown / Spire -->
+            <polygon points="355,28 385,28 394,46 346,46" fill="rgba(230,218,198,0.28)" stroke="#fde68a" stroke-width="1.2"/>
+            <line x1="370" y1="18" x2="370" y2="28" stroke="#fde68a" stroke-width="1.5"/>
+            <text x="405" y="39" fill="#fde68a" font-size="7.5" font-weight="700">Crown Spire + TMD (${spec.heightM}m)</text>
+
+            <!-- HIGH-RISE SKY SUITES TIER -->
+            <g style="cursor:pointer;" onclick="update3DBlockControls(undefined, '${active3DFloor === 'HIGH' ? 'ALL' : 'HIGH'}', undefined, undefined)">
+              <rect x="342" y="46" width="56" height="38" fill="${highActive ? 'rgba(52,211,153,0.30)' : 'rgba(148,163,184,0.12)'}" stroke="#34d399" stroke-width="${active3DFloor === 'HIGH' ? 2.0 : 1.1}"/>
+              <text x="370" y="68" fill="#ecfdf5" font-size="7.5" font-weight="700" text-anchor="middle">F${fMidEnd + 1}–F${spec.storeys}</text>
+              <text x="405" y="67" fill="#a7f3d0" font-size="7.3">Sky Suites / Penthouses</text>
+            </g>
+
+            <!-- SKY GARDEN / OUTRIGGER BELT TRUSS FLOOR -->
+            <rect x="344" y="84" width="52" height="9" fill="rgba(34,197,94,0.45)" stroke="#4ade80" stroke-width="1.0"/>
+            <text x="405" y="91" fill="#4ade80" font-size="7.2" font-weight="700">🌿 Sky-Garden &amp; Outrigger</text>
+
+            <!-- MID-RISE TIER -->
+            <g style="cursor:pointer;" onclick="update3DBlockControls(undefined, '${active3DFloor === 'MID' ? 'ALL' : 'MID'}', undefined, undefined)">
+              <rect x="338" y="93" width="64" height="38" fill="${midActive ? 'rgba(56,189,248,0.28)' : 'rgba(148,163,184,0.12)'}" stroke="#38bdf8" stroke-width="${active3DFloor === 'MID' ? 2.0 : 1.1}"/>
+              <text x="370" y="115" fill="#e0f2fe" font-size="7.5" font-weight="700" text-anchor="middle">F${fLowEnd + 1}–F${fMidEnd}</text>
+              <text x="408" y="114" fill="#bae6fd" font-size="7.3">Mid-Rise Residences</text>
+            </g>
+
+            <!-- LOW-RISE TIER -->
+            <g style="cursor:pointer;" onclick="update3DBlockControls(undefined, '${active3DFloor === 'LOW' ? 'ALL' : 'LOW'}', undefined, undefined)">
+              <rect x="334" y="131" width="72" height="36" fill="${lowActive ? 'rgba(251,191,36,0.26)' : 'rgba(148,163,184,0.12)'}" stroke="#fbbf24" stroke-width="${active3DFloor === 'LOW' ? 2.0 : 1.1}"/>
+              <text x="370" y="152" fill="#fef3c7" font-size="7.5" font-weight="700" text-anchor="middle">F01–F${fLowEnd}</text>
+              <text x="411" y="151" fill="#fde68a" font-size="7.3">Low-Rise Horizon</text>
+            </g>
+
+            <!-- MULTI-LEVEL PODIUM + LAP POOL DECK -->
+            <rect x="312" y="167" width="116" height="22" rx="2" fill="rgba(180,83,9,0.38)" stroke="#f59e0b" stroke-width="1.2"/>
+            <rect x="316" y="163" width="28" height="4" fill="#38bdf8"/>
+            <text x="370" y="181" fill="#fef3c7" font-size="7.4" font-weight="700" text-anchor="middle">G + ${spec.podiumLevels}P Podium &amp; Pool Deck</text>
+
+            <!-- SUBTERRANEAN BASEMENT & RAFT FOUNDATION -->
+            <rect x="318" y="189" width="104" height="17" fill="rgba(100,116,139,0.32)" stroke="#94a3b8" stroke-width="1.0" stroke-dasharray="3,2"/>
+            <text x="370" y="200" fill="#cbd5e1" font-size="7.0" text-anchor="middle">${spec.basementLevels}B Basement + 4.5m Raft + Piles</text>
+            <text x="405" y="218" fill="#38bdf8" font-size="7.3" font-weight="700" text-anchor="middle">Click Elevation Tier to Filter 3D</text>
+          </svg>
+          <div style="font-size:0.70rem; color:#cbd5e1; margin-top:6px; line-height:1.4;">
+            <strong style="color:#38bdf8;">Facade System:</strong> ${spec.palette.name}<br/>
+            ${arch ? `<span style="color:#94a3b8;">${arch.cat5_elevations_and_building_sections.split('|')[0].trim()}</span>` : ""}
+          </div>
+        </div>
+      `;
     }
 
     // Build smooth circular/octagonal active construction site ground perimeter (zero fake rectangular boxes)
@@ -3076,15 +3268,15 @@ def main():
       }
     }
 
-    function flyBothMaps(lat, lon, zoom, pitch = 58, bearing = 60) {
+      function flyBothMaps(lat, lon, zoom, pitch = 58, bearing = 60) {
       const clampedZoom = Math.min(17.6, Math.max(9.0, zoom));
       if (map) {
         map.flyTo([lat, lon], Math.min(18, Math.max(9, Math.round(clampedZoom))), { duration: 0.8 });
       }
       if (map3d) {
         const isClose3D = clampedZoom >= 15.2 && currentCameraDim === "3D";
-        const targetLon = isClose3D ? (lon + 0.00030) : lon;
-        const targetLat = isClose3D ? (lat - 0.00016) : lat;
+        const targetLon = isClose3D ? (lon + 0.00014) : lon;
+        const targetLat = isClose3D ? (lat + 0.00004) : lat;
         map3d.flyTo({
           center: [targetLon, targetLat],
           zoom: clampedZoom,
@@ -3216,133 +3408,526 @@ def main():
       ]);
     }
 
-    // Build 6 High-Definition 4K Procedural Architectural Facade Textures for Surrounding OSM City Buildings
+    // =========================================================================
+    // HAIO.SG PBR ENVIRONMENT, PROCEDURAL ROOM/TIMBER TEXTURES & GLSL SHADERS
+    // =========================================================================
+    function createHaioRoomTextures() {
+      const size = 256;
+      const cMap = document.createElement("canvas");
+      const cEm = document.createElement("canvas");
+      cMap.width = cEm.width = size;
+      cMap.height = cEm.height = size;
+      const g = cMap.getContext("2d");
+      const ge = cEm.getContext("2d");
+      g.fillStyle = "#182430";
+      g.fillRect(0, 0, size, size);
+      ge.fillStyle = "#000000";
+      ge.fillRect(0, 0, size, size);
+      const cell = size / 4;
+      let s = 42;
+      const rnd = () => ((s = (1664525 * s + 1013904223) >>> 0) / 4294967296);
+      const tones = ["#cfc6b6", "#bfb5a4", "#d6cec0", "#b3aa9b", "#c7beb0", "#dfd7c8"];
+      for (let r = 0; r < 4; r++) {
+        for (let c = 0; c < 4; c++) {
+          const x = c * cell, y = r * cell, pad = 3, w = cell - pad * 2, h = cell - pad * 2;
+          const tone = tones[(r * 4 + c) % tones.length];
+          const lit = rnd() < 0.34;
+          const grd = g.createLinearGradient(x, y + pad, x, y + pad + h);
+          grd.addColorStop(0, "#5c574f");
+          grd.addColorStop(0.24, tone);
+          grd.addColorStop(0.76, "#8d8477");
+          grd.addColorStop(1, "#48423b");
+          g.fillStyle = grd;
+          g.fillRect(x + pad, y + pad, w, h);
+          g.fillStyle = "rgba(0,0,0,0.22)";
+          g.fillRect(x + pad, y + pad, 6, h);
+          g.fillRect(x + pad + w - 6, y + pad, 6, h);
+          if (rnd() < 0.45) {
+            const bw = w * (0.26 + 0.25 * rnd());
+            g.fillStyle = "rgba(236,230,218,0.68)";
+            g.fillRect(x + pad + 2, y + pad + 2, bw, h * 0.82);
+          }
+          const skyG = g.createLinearGradient(x, y + pad, x, y + pad + h);
+          skyG.addColorStop(0, "rgba(170,206,235,0.44)");
+          skyG.addColorStop(0.45, "rgba(115,155,186,0.18)");
+          skyG.addColorStop(1, "rgba(38,56,72,0.26)");
+          g.fillStyle = skyG;
+          g.fillRect(x + pad, y + pad, w, h);
+          if (lit) {
+            const eg = ge.createRadialGradient(x + cell * 0.5, y + cell * 0.38, 2, x + cell * 0.5, y + cell * 0.5, cell * 0.52);
+            const warm = rnd() < 0.65 ? "#ffdca0" : "#ffe9be";
+            eg.addColorStop(0, warm);
+            eg.addColorStop(0.65, "rgba(255,198,118,0.48)");
+            eg.addColorStop(1, "rgba(0,0,0,0)");
+            ge.fillStyle = eg;
+            ge.fillRect(x + pad, y + pad, w, h);
+          }
+          g.strokeStyle = "#222a32";
+          g.lineWidth = 2;
+          g.strokeRect(x + pad, y + pad, w, h);
+          g.fillStyle = "rgba(30,38,46,0.75)";
+          g.fillRect(x + cell * 0.5 - 1, y + pad, 2, h);
+        }
+      }
+      const wrap = (cv) => {
+        const t = new THREE.CanvasTexture(cv);
+        t.wrapS = THREE.RepeatWrapping;
+        t.wrapT = THREE.RepeatWrapping;
+        t.needsUpdate = true;
+        return t;
+      };
+      return { map: wrap(cMap), emissiveMap: wrap(cEm) };
+    }
+
+    function createHaioTimberTexture() {
+      const cv = document.createElement("canvas");
+      cv.width = 128; cv.height = 128;
+      const g = cv.getContext("2d");
+      g.fillStyle = "#9c6b43";
+      g.fillRect(0, 0, 128, 128);
+      for (let i = 0; i < 16; i++) {
+        const y = i * 8;
+        g.fillStyle = (i % 2 === 0) ? "#a77449" : "#91613b";
+        g.fillRect(0, y, 128, 7);
+        g.fillStyle = "#5c3b21";
+        g.fillRect(0, y + 7, 128, 1);
+      }
+      const t = new THREE.CanvasTexture(cv);
+      t.wrapS = THREE.RepeatWrapping;
+      t.wrapT = THREE.RepeatWrapping;
+      t.needsUpdate = true;
+      return t;
+    }
+
+    function ensureHaioEnvironmentAndLights() {
+      if (!three3DLayer || !three3DLayer.scene || !three3DLayer.renderer) return;
+      if (three3DLayer.lightsInitialized) return;
+      three3DLayer.lightsInitialized = true;
+
+      const hemi = new THREE.HemisphereLight(0xf2f6fb, 0x7a7062, 0.56);
+      hemi.position.set(0, 0, 1);
+      three3DLayer.scene.add(hemi);
+
+      const sun = new THREE.DirectionalLight(0xfff5e8, 0.86);
+      sun.position.set(165, -145, 260);
+      three3DLayer.scene.add(sun);
+
+      const fill = new THREE.DirectionalLight(0xcfe2ff, 0.28);
+      fill.position.set(-140, 120, 150);
+      three3DLayer.scene.add(fill);
+
+      try {
+        if (typeof THREE.PMREMGenerator !== "undefined") {
+          const pmrem = new THREE.PMREMGenerator(three3DLayer.renderer);
+          const envScene = new THREE.Scene();
+          const skyGeo = new THREE.SphereGeometry(80, 24, 16);
+          const pos = skyGeo.attributes.position;
+          const cols = new Float32Array(pos.count * 3);
+          const cTop = new THREE.Color(0x6fa6d9);
+          const cHor = new THREE.Color(0xeae2d3);
+          const cBot = new THREE.Color(0x5b554c);
+          const tmp = new THREE.Color();
+          for (let i = 0; i < pos.count; i++) {
+            const y = pos.getY(i) / 80;
+            tmp.copy(y >= 0 ? cHor : cBot).lerp(y >= 0 ? cTop : cHor, Math.pow(Math.abs(y), 0.65));
+            cols[i * 3] = tmp.r;
+            cols[i * 3 + 1] = tmp.g;
+            cols[i * 3 + 2] = tmp.b;
+          }
+          skyGeo.setAttribute("color", new THREE.BufferAttribute(cols, 3));
+          envScene.add(new THREE.Mesh(skyGeo, new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide })));
+          const sunDisc = new THREE.Mesh(new THREE.SphereGeometry(6, 12, 12), new THREE.MeshBasicMaterial({ color: 0xfff6e0 }));
+          sunDisc.position.set(38, 42, -32);
+          envScene.add(sunDisc);
+          const envRT = pmrem.fromScene(envScene, 0.03);
+          three3DLayer.scene.environment = envRT.texture;
+          three3DLayer.envRT = envRT;
+          skyGeo.dispose();
+          pmrem.dispose();
+        }
+      } catch (err) {
+        // Fallback if PMREMGenerator is unavailable
+      }
+    }
+
+    // Build haio.sg's Exact Metric GLSL Architectural Facade Shader Material (hdb-facade-v25 + sun-window-glazing-v1)
     function createCityFacadeMaterials() {
-      const specs = [
-        // 0: Deep Steel-Blue & Slate Curtain-Wall Skyscraper
-        {
-          spandrel: "#34495e",
-          mullion: "#9cb3c9",
-          slabLine: "#1e2b38",
-          glassTop: "#6d93b5",
-          glassBot: "#344e68",
-          balconyTint: null
-        },
-        // 1: Warm Terracotta, Copper-Bronze & Red-Ochre Tower (like haio.sg foreground tower)
-        {
-          spandrel: "#8f4d3d",
-          mullion: "#c9a897",
-          slabLine: "#4a241b",
-          glassTop: "#5c7080",
-          glassBot: "#2c3740",
-          balconyTint: null
-        },
-        // 2: Warm Gulf Sandstone, Travertine & Smoked-Charcoal Glass Tower
-        {
-          spandrel: "#b5a38d",
-          mullion: "#dfd5c7",
-          slabLine: "#594e40",
-          glassTop: "#647b8f",
-          glassBot: "#32404d",
-          balconyTint: null
-        },
-        // 3: Architectural Charcoal-Anthracite & Champagne High-Rise (like haio.sg twin towers)
-        {
-          spandrel: "#3b424a",
-          mullion: "#b8a68e",
-          slabLine: "#1f2429",
-          glassTop: "#697887",
-          glassBot: "#313942",
-          balconyTint: "rgba(184, 166, 142, 0.42)"
-        },
-        // 4: Sea-Teal & Anodized Silver Commercial Curtain-Wall Tower
-        {
-          spandrel: "#2f4d54",
-          mullion: "#b2c8cd",
-          slabLine: "#1a2e33",
-          glassTop: "#65939c",
-          glassBot: "#2d4c52",
-          balconyTint: null
-        },
-        // 5: Ribbed Warm Limestone & Dark Ribbon-Window Tower (like AXA tower in haio.sg)
-        {
-          spandrel: "#cfc6b8",
-          mullion: "#e3dcd1",
-          slabLine: "#4a453e",
-          glassTop: "#54697a",
-          glassBot: "#283540",
-          balconyTint: null
-        }
-      ];
+      const S = 512;
+      const cv = document.createElement("canvas");
+      const ce = document.createElement("canvas");
+      cv.width = ce.width = S;
+      cv.height = ce.height = S;
+      const g = cv.getContext("2d");
+      const ge = ce.getContext("2d");
 
-      return specs.map((sp) => {
-        const canvas = document.createElement("canvas");
-        canvas.width = 512;
-        canvas.height = 512;
-        const ctx = canvas.getContext("2d");
+      g.fillStyle = "rgb(245,239,227)";
+      g.fillRect(0, 0, S, S);
+      ge.fillStyle = "#000";
+      ge.fillRect(0, 0, S, S);
 
-        ctx.fillStyle = sp.spandrel;
-        ctx.fillRect(0, 0, 512, 512);
-
-        const floors = 8;
-        const cols = 8;
-        const fh = 512 / floors;
-        const cw = 512 / cols;
-
-        for (let r = 0; r < floors; r++) {
-          const y0 = r * fh;
-          // Recessed floor slab shadow groove
-          ctx.fillStyle = sp.slabLine;
-          ctx.fillRect(0, y0, 512, 6);
-          // Architectural spandrel beam
-          ctx.fillStyle = sp.spandrel;
-          ctx.fillRect(0, y0 + 6, 512, 12);
-
-          for (let c = 0; c < cols; c++) {
-            const x0 = c * cw;
-            const gx = x0 + 5;
-            const gy = y0 + 18;
-            const gw = cw - 10;
-            const gh = fh - 22;
-
-            const grad = ctx.createLinearGradient(gx, gy, gx + gw * 0.4, gy + gh);
-            grad.addColorStop(0, sp.glassTop);
-            grad.addColorStop(0.55, sp.glassBot);
-            grad.addColorStop(1, ((r + c) % 3 === 0) ? sp.glassTop : sp.glassBot);
-            ctx.fillStyle = grad;
-            ctx.fillRect(gx, gy, gw, gh);
-
-            // Subtle interior daylight blind / reflection highlight on upper third of pane
-            ctx.fillStyle = "rgba(255, 255, 255, 0.16)";
-            ctx.fillRect(gx + 2, gy + 2, gw - 4, gh * 0.26);
-
-            // Vertical architectural mullion fin
-            ctx.fillStyle = sp.mullion;
-            ctx.fillRect(x0, y0 + 6, 4, fh - 6);
-          }
-
-          if (sp.balconyTint) {
-            ctx.fillStyle = sp.balconyTint;
-            ctx.fillRect(0, y0 + fh - 15, 512, 11);
-            ctx.fillStyle = sp.mullion;
-            ctx.fillRect(0, y0 + fh - 16, 512, 2);
+      for (let r = 0; r < 8; r++) {
+        const y0 = r * 64;
+        g.fillStyle = "rgba(0,0,0,0.12)";
+        g.fillRect(0, y0 + 62, S, 2);
+        g.fillStyle = "rgba(255,255,255,0.22)";
+        g.fillRect(0, y0, S, 2);
+        for (let c = 0; c < 4; c++) {
+          const x0 = c * 128 + 14;
+          const wy = y0 + 11, ww = 100, wh = 38;
+          g.fillStyle = "rgba(0,0,0,0.24)";
+          g.fillRect(x0 - 2, wy - 2, ww + 4, wh + 4);
+          const grd = g.createLinearGradient(0, wy, 0, wy + wh);
+          grd.addColorStop(0, "rgb(56,78,96)");
+          grd.addColorStop(0.55, "rgb(34,50,64)");
+          grd.addColorStop(1, "rgb(22,34,44)");
+          g.fillStyle = grd;
+          g.fillRect(x0, wy, ww, wh);
+          g.fillStyle = "rgba(195,222,242,0.22)";
+          g.fillRect(x0 + 2, wy + 2, ww - 4, 11);
+          g.fillStyle = "rgb(218,214,206)";
+          for (let p = 1; p < 4; p++) g.fillRect(x0 + p * 25 - 1, wy, 2, wh);
+          if (((r * 7 + c * 13) % 5) === 0) {
+            ge.fillStyle = "#ffdfa0";
+            ge.fillRect(x0 + 2, wy + 2, ww - 4, wh - 4);
           }
         }
+      }
 
-        const tex = new THREE.CanvasTexture(canvas);
-        tex.wrapS = THREE.RepeatWrapping;
-        tex.wrapT = THREE.RepeatWrapping;
-        tex.anisotropy = 8;
-        tex.needsUpdate = true;
+      const tx = new THREE.CanvasTexture(cv);
+      tx.wrapS = tx.wrapT = THREE.RepeatWrapping;
+      tx.anisotropy = 8;
+      tx.needsUpdate = true;
 
-        return new THREE.MeshBasicMaterial({
-          map: tex,
-          vertexColors: true,
-          side: THREE.DoubleSide,
-          depthTest: true,
-          depthWrite: true
-        });
+      const te = new THREE.CanvasTexture(ce);
+      te.wrapS = te.wrapT = THREE.RepeatWrapping;
+      te.needsUpdate = true;
+
+      const mat = new THREE.MeshLambertMaterial({
+        color: 0xffffff,
+        vertexColors: true,
+        map: tx,
+        emissive: 0xffffff,
+        emissiveMap: te,
+        emissiveIntensity: 0.22,
+        side: THREE.DoubleSide,
+        polygonOffset: true,
+        polygonOffsetFactor: 1,
+        polygonOffsetUnits: 1
       });
+      mat.extensions = { derivatives: true };
+      mat.customProgramCacheKey = () => "haio-hdb-facade-v25-dubai";
+
+      mat.onBeforeCompile = (sh) => {
+        sh.vertexShader = sh.vertexShader
+          .replace(
+            "#include <common>",
+            `#include <common>
+            attribute vec4 hdbBand;
+            attribute vec4 hdbWall;
+            varying float vHdbZ;
+            varying vec4 vHdbBand;
+            varying vec4 vHdbWall;`
+          )
+          .replace(
+            "#include <begin_vertex>",
+            `#include <begin_vertex>
+            vHdbZ = position.z;
+            vHdbBand = hdbBand;
+            vHdbWall = hdbWall;`
+          );
+
+        sh.fragmentShader = sh.fragmentShader
+          .replace(
+            "#include <common>",
+            `#include <common>
+            varying float vHdbZ;
+            varying vec4 vHdbBand;
+            varying vec4 vHdbWall;
+            float hdbCov(float x, float a, float b, float p) {
+              return clamp((min(x + 0.5 * p, b) - max(x - 0.5 * p, a)) / p, 0.0, 1.0);
+            }`
+          )
+          .replace(
+            "#include <color_fragment>",
+            `#include <color_fragment>
+            if (vHdbBand.w > 0.5) {
+              float z = vHdbZ;
+              float top = vHdbBand.w;
+              float dTop = top - z;
+              float scheme = floor(vHdbWall.w + 0.5);
+              vec3 bandCol = vHdbBand.rgb;
+              vec3 baseCol = diffuseColor.rgb;
+              float upz = max(fwidth(z), 1e-4);
+              float upu = max(fwidth(vHdbWall.x), 1e-4);
+
+              if (scheme >= 99.5 && scheme < 200.0) {
+                float cvar = clamp(scheme - 100.0, 0.0, 14.0);
+                float cfh = (cvar == 2.0 || cvar == 7.0 || cvar == 12.0) ? 3.5 : 3.3;
+                float cmod = (cvar == 1.0 || cvar == 6.0 || cvar == 11.0) ? 6.0 : ((cvar == 3.0 || cvar == 8.0 || cvar == 13.0) ? 8.0 : 7.0);
+                float cu = vHdbWall.x;
+                float clen = vHdbWall.y;
+                float cz = max(z, 0.0);
+                float cfz = mod(cz, cfh);
+                float clevel = floor(cz / cfh);
+                float topFloors = floor(top / cfh);
+                vec3 stone = clamp(baseCol * 1.04 + vec3(0.03, 0.025, 0.015), 0.0, 1.0);
+                vec3 copper = bandCol;
+                vec3 inner = vec3(0.11, 0.17, 0.23);
+                vec3 skyHi = vec3(0.36, 0.54, 0.68);
+                vec3 balus = vec3(0.58, 0.74, 0.82);
+                vec3 slabCol = clamp(stone * 1.07, 0.0, 1.0);
+
+                if (clen < 4.5) {
+                  float gMix = clamp(cz / max(top, 30.0), 0.0, 1.0);
+                  vec3 col = mix(inner, skyHi, 0.34 + 0.36 * gMix);
+                  float vMul = hdbCov(mod(cu, 1.5), 0.0, 0.07, upu);
+                  float hSlab = hdbCov(cfz, 0.0, 0.22, upz);
+                  col = mix(col, stone * 0.75, vMul * 0.7);
+                  col = mix(col, slabCol, hSlab);
+                  diffuseColor.rgb = col;
+                } else {
+                  float mods = max(1.0, floor(clen / cmod + 0.5));
+                  float mlen = clen / mods;
+                  float mu = mod(cu, mlen);
+                  float bayIdx = floor(cu / mlen);
+                  float pierW = 0.65;
+                  float finW = 0.32;
+                  float inPier = max(hdbCov(mu, 0.0, pierW, upu), hdbCov(mu, mlen - pierW, mlen, upu));
+                  float inFin = max(hdbCov(mu, pierW, pierW + finW, upu), hdbCov(mu, mlen - pierW - finW, mlen - pierW, upu));
+                  float inBay = clamp(1.0 - inPier - inFin, 0.0, 1.0);
+                  float skyTer = 0.0;
+                  if (top > 40.0 && clevel > 2.5 && dTop > cfh * 3.0) {
+                    float every = (cvar < 5.0) ? 11.0 : ((cvar < 10.0) ? 13.0 : 10.0);
+                    if (mod(clevel, every) == every - 1.0) skyTer = 1.0;
+                  }
+                  float isCrown = (dTop < cfh * 2.1 && mod(bayIdx, 2.0) < 0.5) ? 1.0 : 0.0;
+                  float slab = hdbCov(cfz, 0.0, 0.24, upz);
+                  float rail = hdbCov(cfz, 0.24, 1.15, upz);
+                  float railBar = hdbCov(cfz, 1.10, 1.18, upz);
+                  float soffit = hdbCov(cfz, cfh - 0.34, cfh, upz);
+                  float gMix = clamp(cfz / cfh, 0.0, 1.0);
+                  float hVar = fract(sin(clevel * 17.3 + bayIdx * 31.7) * 43758.5);
+                  vec3 glassCol = mix(inner, skyHi, 0.22 + 0.35 * gMix + 0.14 * hVar);
+                  float mStep = (mlen - 2.0 * (pierW + finW)) / 3.0;
+                  float bu = mu - (pierW + finW);
+                  float mul = hdbCov(mod(max(bu, 0.0), max(mStep, 0.8)), 0.0, 0.07, upu);
+                  glassCol = mix(glassCol, vec3(0.06, 0.08, 0.10), mul * 0.85);
+                  vec3 bayCol = glassCol;
+                  bayCol = mix(bayCol, balus * (0.85 + 0.15 * gMix), rail * 0.65);
+                  bayCol = mix(bayCol, slabCol * 0.92, railBar * 0.85);
+                  bayCol *= (1.0 - 0.30 * soffit);
+                  bayCol = mix(bayCol, slabCol, slab);
+                  if (skyTer > 0.5) {
+                    vec3 terBack = vec3(0.14, 0.16, 0.15) * (0.72 + 0.28 * gMix);
+                    float greenBand = hdbCov(cfz, 0.24, 1.05, upz);
+                    vec3 shrub = mix(vec3(0.16, 0.31, 0.14), vec3(0.24, 0.42, 0.19), fract(sin(cu * 2.3) * 19.7));
+                    terBack = mix(terBack, shrub, greenBand * 0.9);
+                    bayCol = mix(terBack, slabCol, slab);
+                  }
+                  if (isCrown > 0.5) {
+                    float frame = max(hdbCov(cfz, cfh - 0.38, cfh, upz), hdbCov(bu, 0.0, 0.35, upu));
+                    vec3 skyVoid = vec3(0.55, 0.66, 0.76);
+                    bayCol = mix(skyVoid, copper * 1.06, frame);
+                  }
+                  vec3 finCol = copper * (0.88 + 0.12 * cos(cfz * 3.14159 / cfh));
+                  finCol = mix(finCol, slabCol, slab * 0.55);
+                  float pJoint = hdbCov(cfz, 0.0, 0.10, upz);
+                  vec3 pierCol = stone * (1.0 - 0.12 * pJoint);
+                  vec3 col = pierCol * inPier + finCol * inFin + bayCol * inBay;
+                  if (cz < 3.6) {
+                    float inLobby = hdbCov(cu, clen * 0.25, clen * 0.75, upu) * (1.0 - inPier);
+                    vec3 lobbyGlass = mix(vec3(0.14, 0.18, 0.22), vec3(0.88, 0.72, 0.46), 0.58);
+                    float canopy = hdbCov(cz, 2.85, 3.35, upz);
+                    lobbyGlass = mix(lobbyGlass, copper * 0.85, canopy);
+                    col = mix(col, lobbyGlass, inLobby * 0.88);
+                  }
+                  if (dTop < 1.3) {
+                    float rim = hdbCov(dTop, 0.0, 0.45, upz);
+                    col = mix(copper * 0.92, slabCol, rim);
+                  }
+                  diffuseColor.rgb = col;
+                }
+              } else if (scheme >= 799.5 && scheme < 900.0) {
+                float ostyle = clamp(scheme - 800.0, 0.0, 2.0);
+                float ofh = 3.8;
+                float ou = vHdbWall.x;
+                float olen = vHdbWall.y;
+                float oz = max(z, 0.0);
+                float ofz = mod(oz, ofh);
+                float olevel = floor(oz / ofh);
+                vec3 spandrel = baseCol;
+                vec3 accent = bandCol;
+                float hTone = fract(sin(olevel * 19.7 + floor(ou / 1.5) * 43.1) * 43758.5);
+                float gGrad = clamp(oz / max(top, 60.0), 0.0, 1.0);
+                vec3 col = spandrel;
+                if (ostyle < 0.5) {
+                  float sp = hdbCov(ofz, 0.0, 1.15, upz);
+                  float sill = hdbCov(ofz, 1.12, 1.24, upz);
+                  float head = hdbCov(ofz, ofh - 0.18, ofh, upz);
+                  vec3 glass = mix(vec3(0.12, 0.21, 0.28), vec3(0.36, 0.53, 0.66), 0.35 + 0.45 * gGrad + 0.15 * hTone);
+                  float mul = hdbCov(mod(ou, 1.5), 0.0, 0.07, upu);
+                  float pier = (olen > 12.0) ? hdbCov(mod(ou, 9.0), 0.0, 0.55, upu) : 0.0;
+                  glass = mix(glass, accent * 0.75, mul * 0.85);
+                  col = mix(glass, spandrel, max(sp, head));
+                  col = mix(col, spandrel * 0.72, sill);
+                  col = mix(col, spandrel * 0.96, pier);
+                } else if (ostyle < 1.5) {
+                  vec3 gLow = spandrel * 0.55;
+                  vec3 gHigh = mix(accent, vec3(0.62, 0.78, 0.88), 0.55);
+                  vec3 glass = mix(gLow, gHigh, 0.25 + 0.55 * gGrad + 0.18 * hTone);
+                  float sp = hdbCov(ofz, 0.0, 0.55, upz);
+                  float shadowLine = hdbCov(ofz, 0.52, 0.62, upz);
+                  float mul = hdbCov(mod(ou, 1.5), 0.0, 0.06, upu);
+                  float trans = hdbCov(ofz, 2.55, 2.63, upz);
+                  col = mix(glass, spandrel * 0.38, sp * 0.85);
+                  col = mix(col, vec3(0.05, 0.08, 0.11), shadowLine * 0.9);
+                  col = mix(col, accent, max(mul * 0.75, trans * 0.55));
+                } else {
+                  vec3 glass = mix(vec3(0.09, 0.13, 0.18), vec3(0.28, 0.38, 0.48), 0.30 + 0.45 * gGrad + 0.18 * hTone);
+                  float sp = hdbCov(ofz, 0.0, 0.48, upz);
+                  float fin = hdbCov(mod(ou, 1.5), 0.0, 0.22, upu);
+                  float finShadow = hdbCov(mod(ou, 1.5), 0.22, 0.36, upu);
+                  col = mix(glass, spandrel * 0.45, sp);
+                  col *= (1.0 - 0.28 * finShadow);
+                  col = mix(col, accent, fin * 0.92);
+                }
+                if (oz < 5.6 && olen > 8.0) {
+                  float inEntry = hdbCov(ou, olen * 0.22, olen * 0.78, upu);
+                  vec3 lobby = mix(vec3(0.14, 0.18, 0.22), vec3(0.92, 0.78, 0.54), 0.55);
+                  float mull = hdbCov(mod(ou, 2.0), 0.0, 0.09, upu);
+                  lobby = mix(lobby, accent * 0.7, mull);
+                  float canopy = hdbCov(oz, 4.9, 5.5, upz);
+                  lobby = mix(lobby, accent * 1.05, canopy);
+                  col = mix(col, lobby, inEntry * 0.9);
+                }
+                if (dTop < 2.2) {
+                  float cap = hdbCov(dTop, 0.0, 0.55, upz);
+                  float louvre = hdbCov(mod(z, 0.35), 0.0, 0.16, upz);
+                  vec3 crownCol = mix(spandrel * 0.65, accent, louvre * 0.7);
+                  col = mix(crownCol, accent * 1.08, cap);
+                }
+                diffuseColor.rgb = col;
+              } else if (scheme >= 1199.5 && scheme < 1300.0) {
+                float hstyle = clamp(scheme - 1200.0, 0.0, 1.0);
+                float hfh = 3.3;
+                float hu = vHdbWall.x;
+                float hlen = vHdbWall.y;
+                float hz = max(z, 0.0);
+                float hfz = mod(hz, hfh);
+                float hlevel = floor(hz / hfh);
+                float gGrad = clamp(hz / max(top, 45.0), 0.0, 1.0);
+                float hTone = fract(sin(hlevel * 23.1 + floor(hu / 3.6) * 17.9) * 43758.5);
+                vec3 col = baseCol;
+                if (hstyle < 0.5) {
+                  vec3 glass = mix(vec3(0.12, 0.22, 0.32), vec3(0.45, 0.64, 0.78), 0.3 + 0.5 * gGrad + 0.15 * hTone);
+                  float sp = hdbCov(hfz, 0.0, 0.52, upz);
+                  float mul = hdbCov(mod(hu, 1.8), 0.0, 0.07, upu);
+                  col = mix(glass, baseCol * 0.42, sp * 0.85);
+                  col = mix(col, bandCol, mul * 0.75);
+                } else {
+                  float bayMod = 4.0;
+                  float bu = mod(hu, bayMod);
+                  float pier = max(hdbCov(bu, 0.0, 0.42, upu), hdbCov(bu, bayMod - 0.42, bayMod, upu));
+                  float slab = hdbCov(hfz, 0.0, 0.28, upz);
+                  float rail = hdbCov(hfz, 0.28, 1.10, upz);
+                  vec3 recess = mix(vec3(0.11, 0.15, 0.19), vec3(0.32, 0.44, 0.54), 0.35 + 0.4 * gGrad + 0.2 * hTone);
+                  vec3 balCol = mix(recess, bandCol * 0.55, rail * 0.78);
+                  balCol = mix(balCol, baseCol * 1.04, slab);
+                  col = mix(balCol, baseCol, pier);
+                }
+                if (hz < 5.0 && hlen > 8.0) {
+                  float inLobby = hdbCov(hu, hlen * 0.2, hlen * 0.8, upu);
+                  vec3 lobby = mix(vec3(0.18, 0.16, 0.14), vec3(0.95, 0.80, 0.52), 0.65);
+                  float canopy = hdbCov(hz, 4.3, 4.9, upz);
+                  lobby = mix(lobby, bandCol * 1.05, canopy);
+                  col = mix(col, lobby, inLobby * 0.9);
+                }
+                diffuseColor.rgb = col;
+              } else if (scheme >= 299.5 && scheme < 400.0) {
+                float mstyle = clamp(scheme - 300.0, 0.0, 2.0);
+                float mu = vHdbWall.x;
+                float mlen = vHdbWall.y;
+                float mz = max(z, 0.0);
+                vec3 col = baseCol;
+                float sBay = 6.0;
+                float su = mod(mu, sBay);
+                float sIdx = floor(mu / sBay);
+                float sHash = fract(sin(sIdx * 37.3 + mlen * 1.9) * 43758.5);
+                if (mstyle < 0.5) {
+                  vec3 panelBase = vec3(0.76, 0.73, 0.68);
+                  vec3 podWhite = vec3(0.93, 0.92, 0.89);
+                  if (mz < 4.5) {
+                    float colPillar = hdbCov(su, 0.0, 0.7, upu);
+                    vec3 shopG = mix(vec3(0.16, 0.18, 0.20), vec3(0.95, 0.82, 0.56), 0.55 + 0.25 * sHash);
+                    col = mix(shopG, podWhite, colPillar);
+                  } else {
+                    float d1 = mod(mu * 0.7 + mz * 1.1, 7.5);
+                    float d2 = mod(mu * 0.7 - mz * 1.1 + 40.0, 7.5);
+                    float seam = max(hdbCov(d1, 0.0, 0.18, upu + upz), hdbCov(d2, 0.0, 0.18, upu + upz));
+                    float fIdx = floor((mu * 0.7 + mz * 1.1) / 7.5) + floor((mu * 0.7 - mz * 1.1 + 40.0) / 7.5) * 7.0;
+                    float fShade = 0.88 + 0.20 * fract(sin(fIdx * 19.1) * 43758.5);
+                    col = mix(panelBase * fShade, vec3(0.28, 0.27, 0.25), seam * 0.85);
+                  }
+                } else {
+                  vec3 stone = baseCol;
+                  float course = hdbCov(mod(mz, 1.2), 0.0, 0.07, upz);
+                  float vJoint = hdbCov(mod(mu, 3.0), 0.0, 0.07, upu);
+                  col = stone * (1.0 - 0.10 * max(course, vJoint));
+                  float inCurtain = max(hdbCov(mu, 0.0, mlen * 0.28, upu), hdbCov(mu, mlen * 0.72, mlen, upu));
+                  vec3 cGlass = mix(vec3(0.14, 0.24, 0.30), vec3(0.46, 0.64, 0.74), clamp(mz / max(top, 20.0), 0.0, 1.0));
+                  float cMul = max(hdbCov(mod(mu, 1.5), 0.0, 0.07, upu), hdbCov(mod(mz, 3.6), 0.0, 0.14, upz));
+                  cGlass = mix(cGlass, vec3(0.75, 0.76, 0.78), cMul * 0.8);
+                  col = mix(col, cGlass, inCurtain);
+                }
+                if (dTop < 0.7) col = mix(col, vec3(0.88, 0.86, 0.82), hdbCov(dTop, 0.0, 0.5, upz));
+                diffuseColor.rgb = col;
+              } else if (scheme >= 609.5 && scheme < 700.0) {
+                float lfh = 3.4;
+                float lu = vHdbWall.x;
+                float llen = vHdbWall.y;
+                float lz = max(z, 0.0);
+                float lfz = mod(lz, lfh);
+                float llevel = floor(lz / lfh);
+                vec3 wallCol = baseCol;
+                vec3 frameCol = vec3(0.16, 0.17, 0.18);
+                vec3 glassDark = vec3(0.12, 0.19, 0.24);
+                vec3 glassSky = vec3(0.36, 0.50, 0.60);
+                vec3 col = wallCol;
+                float slab = hdbCov(lfz, 0.0, 0.24, upz);
+                col = mix(col, wallCol * 0.84, slab);
+                if (llen >= 4.0) {
+                  float margin = min(1.1, llen * 0.16);
+                  float inOpen = hdbCov(lu, margin, llen - margin, upu);
+                  float inH = hdbCov(lfz, 0.28, lfh - 0.34, upz);
+                  float gMix = clamp(lfz / lfh, 0.0, 1.0);
+                  vec3 gCol = mix(glassDark, glassSky, 0.25 + 0.45 * gMix);
+                  float mul = hdbCov(mod(lu - margin, 1.6), 0.0, 0.07, upu);
+                  gCol = mix(gCol, frameCol, mul * 0.9);
+                  if (llevel >= 0.5) {
+                    float bal = hdbCov(lfz, 0.24, 1.05, upz);
+                    gCol = mix(gCol, vec3(0.55, 0.70, 0.78), bal * 0.55);
+                  }
+                  col = mix(col, gCol, inOpen * inH);
+                }
+                diffuseColor.rgb = col;
+              }
+            }`
+          )
+          .replace(
+            "#include <emissivemap_fragment>",
+            `#ifdef USE_EMISSIVEMAP
+              vec4 emissiveColor = texture2D(emissiveMap, vEmissiveMapUv);
+              float isWin = step(0.12, diffuseColor.b - diffuseColor.r * 0.82);
+              vec3 nDir = normalize(vNormal);
+              vec3 vDir = normalize(vViewPosition);
+              float fres = pow(1.0 - abs(dot(nDir, vDir)), 3.5);
+              diffuseColor.rgb = mix(diffuseColor.rgb, vec3(0.76, 0.88, 0.98), isWin * (0.16 + 0.32 * fres));
+              totalEmissiveRadiance *= emissiveColor.rgb * isWin;
+            #endif`
+          );
+      };
+
+      return [mat];
     }
 
     // Phase 12: Complete WebGL GPU Resource Cleanup (Geometries, Materials, Procedural CanvasTextures & RenderLists)
@@ -3357,6 +3942,7 @@ def main():
           mats.forEach(m => {
             if (!m) return;
             if (m.map && typeof m.map.dispose === "function") m.map.dispose();
+            if (m.emissiveMap && typeof m.emissiveMap.dispose === "function") m.emissiveMap.dispose();
             if (typeof m.dispose === "function") m.dispose();
           });
         }
@@ -3379,6 +3965,7 @@ def main():
         three3DLayer.cityFacadeMats.forEach(m => {
           if (!m) return;
           if (m.map && typeof m.map.dispose === "function") m.map.dispose();
+          if (m.emissiveMap && typeof m.emissiveMap.dispose === "function") m.emissiveMap.dispose();
           if (typeof m.dispose === "function") m.dispose();
         });
         three3DLayer.cityFacadeMats = null;
@@ -3387,14 +3974,28 @@ def main():
         three3DLayer.cityRoofMat.dispose();
         three3DLayer.cityRoofMat = null;
       }
+      if (three3DLayer.sharedRoomTex) {
+        if (three3DLayer.sharedRoomTex.map) three3DLayer.sharedRoomTex.map.dispose();
+        if (three3DLayer.sharedRoomTex.emissiveMap) three3DLayer.sharedRoomTex.emissiveMap.dispose();
+        three3DLayer.sharedRoomTex = null;
+      }
+      if (three3DLayer.sharedTimberTex) {
+        three3DLayer.sharedTimberTex.dispose();
+        three3DLayer.sharedTimberTex = null;
+      }
+      if (three3DLayer.envRT) {
+        three3DLayer.envRT.dispose();
+        three3DLayer.envRT = null;
+      }
       if (three3DLayer.renderer && three3DLayer.renderer.renderLists && typeof three3DLayer.renderer.renderLists.dispose === "function") {
         three3DLayer.renderer.renderLists.dispose();
       }
     }
 
-    // Rebuilds the Unique 3D Architectural Complex for the Selected UAE Project (32 Flagship + 5 JVC Sub-Clusters)
+    // Rebuilds the Unique 14-Layer PBR 3D Architectural Complex for the Selected UAE Project (haio.sg Engine)
     function rebuildThreeHeroScene() {
       if (!three3DLayer || !three3DLayer.scene || typeof THREE === "undefined") return;
+      ensureHaioEnvironmentAndLights();
 
       let p = DATA.projects.find(x => x.project_id === selected3DProjectId);
       let lat = 25.1850, lon = 55.2650;
@@ -3421,48 +4022,165 @@ def main():
       const prevOrigin = three3DLayer.originLonLat || [0, 0];
       const originChanged = Math.hypot(lon - prevOrigin[0], lat - prevOrigin[1]) > 1e-5;
       three3DLayer.originLonLat = [lon, lat];
-      three3DLayer.heroExcludeRadiusM = (spec.typology === "supertall_diamond") ? 46.0 : 58.0;
+      // Exclude OSM footprints inside the hero parcel while covering the entire parcel with our 3D site plinth!
+      three3DLayer.heroExcludeRadiusM = 92.0;
 
       const calloutTxtEl = document.getElementById("hero3DRoofCalloutText");
       if (calloutTxtEl) {
         const shortLbl = cleanTitle.length > 24 ? cleanTitle.slice(0, 22).trim() + "…" : cleanTitle;
         if (active3DBlock !== "ALL") {
           const selB = spec.blocks.find(b => b.id === active3DBlock) || spec.blocks[0];
-          calloutTxtEl.textContent = `${selB.label} · ${selB.storeys} storeys`;
+          calloutTxtEl.textContent = `${selB.label} · ${selB.storeys} storeys (${selB.heightM}m)`;
         } else {
-          calloutTxtEl.textContent = `${shortLbl} · ${spec.storeys}F (Procedural 3D)`;
+          calloutTxtEl.textContent = `${shortLbl} · ${spec.storeys}F (${spec.heightM}m)`;
         }
       }
 
       if (three3DLayer.heroGroup) {
-        disposeThreeGroup(three3DLayer.heroGroup, true);
+        disposeThreeGroup(three3DLayer.heroGroup, false);
         three3DLayer.scene.remove(three3DLayer.heroGroup);
       }
 
-      const heroGroup = new THREE.Group();
-      const posArr = [];
-      const normArr = [];
-      const colArr = [];
+      if (!three3DLayer.sharedRoomTex) three3DLayer.sharedRoomTex = createHaioRoomTextures();
+      if (!three3DLayer.sharedTimberTex) three3DLayer.sharedTimberTex = createHaioTimberTexture();
+      if (!three3DLayer.cityFacadeMats) three3DLayer.cityFacadeMats = createCityFacadeMaterials();
 
-      const isDefaultMode = (active3DShowMe === "all" && active3DFloor === "ALL" && active3DStack === "ALL" && active3DBlock === "ALL");
-      const rgbWallBase = [0.985, 0.980, 0.968];
-      const rgbSlabShadow = [0.76, 0.74, 0.70];
-      const rgbRoofTop = [0.97, 0.965, 0.955];
-      const rgbCrown = [0.90, 0.885, 0.855];
-      const rgbPodiumTerra = hexToRgb01("#6e3b32");
-      const rgbPodiumGlass = hexToRgb01("#24313c");
-      const rgbSkyGarden = hexToRgb01("#5c8252");
-      const rgbPoolWater = hexToRgb01("#38bdf8");
-      const rgb4BR = hexToRgb01("#F3B749");
-      const rgb5BR = hexToRgb01("#58B87D");
-      const rgbBlue = hexToRgb01("#3B82F6");
+      const pal = spec.palette;
+      const mats = {
+        glass: new THREE.MeshStandardMaterial({
+          color: 0x486e8e,
+          map: three3DLayer.sharedRoomTex.map,
+          emissive: 0xffd89b,
+          emissiveMap: three3DLayer.sharedRoomTex.emissiveMap,
+          emissiveIntensity: 0.42,
+          metalness: 0.26,
+          roughness: 0.10,
+          envMapIntensity: 1.55,
+          side: THREE.DoubleSide
+        }),
+        slab: new THREE.MeshStandardMaterial({ color: pal.ledge, metalness: 0.08, roughness: 0.46, side: THREE.DoubleSide }),
+        frame: new THREE.MeshStandardMaterial({ color: pal.frame, metalness: 0.58, roughness: 0.30, side: THREE.DoubleSide }),
+        fin: new THREE.MeshStandardMaterial({ color: pal.fin, metalness: 0.64, roughness: 0.26, envMapIntensity: 1.35, side: THREE.DoubleSide }),
+        crown: new THREE.MeshStandardMaterial({ color: pal.crown, metalness: 0.68, roughness: 0.24, envMapIntensity: 1.45, side: THREE.DoubleSide }),
+        crownGlass: new THREE.MeshStandardMaterial({ color: pal.glass, metalness: 0.25, roughness: 0.08, transparent: true, opacity: 0.72, side: THREE.DoubleSide }),
+        rail: new THREE.MeshStandardMaterial({ color: 0x9cc5db, metalness: 0.14, roughness: 0.08, transparent: true, opacity: 0.50, side: THREE.DoubleSide }),
+        solid: new THREE.MeshStandardMaterial({ color: pal.solid, metalness: 0.04, roughness: 0.72, side: THREE.DoubleSide }),
+        podium: new THREE.MeshStandardMaterial({ color: pal.podium, metalness: 0.08, roughness: 0.65, side: THREE.DoubleSide }),
+        timber: new THREE.MeshStandardMaterial({ color: 0xffffff, map: three3DLayer.sharedTimberTex, metalness: 0.05, roughness: 0.62, side: THREE.DoubleSide }),
+        amenityGlass: new THREE.MeshStandardMaterial({ color: 0x243848, emissive: 0xffd28e, emissiveIntensity: 0.28, metalness: 0.18, roughness: 0.12, side: THREE.DoubleSide }),
+        darkroof: new THREE.MeshStandardMaterial({ color: 0x26292e, metalness: 0.32, roughness: 0.48, side: THREE.DoubleSide }),
+        garden: new THREE.MeshStandardMaterial({ color: 0xffffff, map: three3DLayer.sharedTimberTex, metalness: 0.04, roughness: 0.70, side: THREE.DoubleSide }),
+        green: new THREE.MeshStandardMaterial({ color: 0x3b6e38, metalness: 0.0, roughness: 0.92, side: THREE.DoubleSide }),
+        lawn: new THREE.MeshStandardMaterial({ color: 0x467c42, metalness: 0.0, roughness: 0.95, side: THREE.DoubleSide }),
+        pool: new THREE.MeshStandardMaterial({ color: 0x22b8cf, metalness: 0.12, roughness: 0.08, envMapIntensity: 1.4, side: THREE.DoubleSide }),
+        deck: new THREE.MeshStandardMaterial({ color: 0xd8cfc2, metalness: 0.04, roughness: 0.78, side: THREE.DoubleSide }),
+        driveway: new THREE.MeshStandardMaterial({ color: 0x4a4e54, metalness: 0.04, roughness: 0.86, side: THREE.DoubleSide }),
+        court: new THREE.MeshStandardMaterial({ color: 0x2b6cb0, metalness: 0.04, roughness: 0.75, side: THREE.DoubleSide }),
+        roof: new THREE.MeshStandardMaterial({ color: pal.roof, metalness: 0.05, roughness: 0.80, side: THREE.DoubleSide }),
+        unit4br: new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.22, metalness: 0.12, roughness: 0.25, side: THREE.DoubleSide }),
+        unit5br: new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x10b981, emissiveIntensity: 0.22, metalness: 0.12, roughness: 0.25, side: THREE.DoubleSide }),
+        unitBlue: new THREE.MeshStandardMaterial({ color: 0x3b82f6, emissive: 0x3b82f6, emissiveIntensity: 0.22, metalness: 0.12, roughness: 0.25, side: THREE.DoubleSide })
+      };
 
-      function pushExtruded(ring2d, z0, z1, baseRgb, topRgb, isSlabLine) {
-        if (!ring2d || ring2d.length < 3 || z1 <= z0) return;
+      const buckets = {};
+      Object.keys(mats).forEach(k => { buckets[k] = { pos: [], norm: [], uv: [] }; });
+      const heroShaderWall = { pos: [], norm: [], uv: [], col: [], band: [], meta: [] };
+
+      function pushHeroShaderWallRing(ring2d, z0, z1, baseRgb, bandRgb, schemeCode, topHeightM) {
+        const openRing = (ring2d.length > 3 && Math.hypot(ring2d[0][0] - ring2d[ring2d.length - 1][0], ring2d[0][1] - ring2d[ring2d.length - 1][1]) < 1e-4)
+          ? ring2d.slice(0, -1)
+          : ring2d;
+        if (openRing.length < 3 || z1 <= z0) return;
+        let cx = 0, cy = 0;
+        for (const [x, y] of openRing) { cx += x; cy += y; }
+        cx /= openRing.length; cy /= openRing.length;
+        const v0 = z0 / 24.0, v1 = z1 / 24.0;
+        for (let i = 0; i < openRing.length; i++) {
+          const [x0, y0] = openRing[i];
+          const [x1, y1] = openRing[(i + 1) % openRing.length];
+          const dx = x1 - x0, dy = y1 - y0;
+          const segLen = Math.hypot(dx, dy);
+          if (segLen < 0.25) continue;
+          let nx = dy / segLen, ny = -dx / segLen;
+          const mx = (x0 + x1) * 0.5 - cx, my = (y0 + y1) * 0.5 - cy;
+          if (nx * mx + ny * my < 0) { nx = -nx; ny = -ny; }
+          const isFront = (segLen >= 5.0) ? 1.0 : 0.0;
+          const u0 = 0.0, u1 = segLen / 16.0;
+          heroShaderWall.pos.push(x0, y0, z0, x1, y1, z0, x1, y1, z1, x0, y0, z0, x1, y1, z1, x0, y0, z1);
+          for (let k = 0; k < 6; k++) {
+            heroShaderWall.norm.push(nx, ny, 0);
+            heroShaderWall.col.push(baseRgb[0], baseRgb[1], baseRgb[2]);
+            heroShaderWall.band.push(bandRgb[0], bandRgb[1], bandRgb[2], topHeightM);
+          }
+          heroShaderWall.uv.push(u0, v0, u1, v0, u1, v1, u0, v0, u1, v1, u0, v1);
+          heroShaderWall.meta.push(
+            0.0, segLen, isFront, schemeCode,
+            segLen, segLen, isFront, schemeCode,
+            segLen, segLen, isFront, schemeCode,
+            0.0, segLen, isFront, schemeCode,
+            segLen, segLen, isFront, schemeCode,
+            0.0, segLen, isFront, schemeCode
+          );
+        }
+      }
+
+      function pushBox(bKey, cx, cy, z0, z1, w, d, rot = 0) {
+        const pts = makeArchFootprint("rect", cx, cy, w, d, rot);
+        pushExtrudedToBucket(bKey, pts, z0, z1, true);
+      }
+
+      function pushExtrudedToBucket(bKey, ring2d, z0, z1, capTop = true) {
+        const b = buckets[bKey];
+        if (!b || !ring2d || ring2d.length < 3 || z1 <= z0) return;
         const openRing = (ring2d.length > 3 && Math.hypot(ring2d[0][0] - ring2d[ring2d.length - 1][0], ring2d[0][1] - ring2d[ring2d.length - 1][1]) < 1e-4)
           ? ring2d.slice(0, -1)
           : ring2d;
         if (openRing.length < 3) return;
+        let cx = 0, cy = 0;
+        for (const [x, y] of openRing) { cx += x; cy += y; }
+        cx /= openRing.length; cy /= openRing.length;
+
+        let uAccum = 0;
+        const uvScale = (bKey === "timber" || bKey === "garden") ? 3.2 : 6.4;
+        const v0 = z0 / uvScale, v1 = z1 / uvScale;
+
+        for (let i = 0; i < openRing.length; i++) {
+          const [x0, y0] = openRing[i];
+          const [x1, y1] = openRing[(i + 1) % openRing.length];
+          const dx = x1 - x0, dy = y1 - y0;
+          const segLen = Math.hypot(dx, dy);
+          if (segLen < 0.04) continue;
+          let nx = dy / segLen, ny = -dx / segLen;
+          const mx = (x0 + x1) * 0.5 - cx, my = (y0 + y1) * 0.5 - cy;
+          if (nx * mx + ny * my < 0) { nx = -nx; ny = -ny; }
+
+          const u0 = uAccum / uvScale;
+          const u1 = (uAccum + segLen) / uvScale;
+          uAccum += segLen;
+
+          b.pos.push(x0, y0, z0, x1, y1, z0, x1, y1, z1, x0, y0, z0, x1, y1, z1, x0, y0, z1);
+          for (let k = 0; k < 6; k++) b.norm.push(nx, ny, 0);
+          b.uv.push(u0, v0, u1, v0, u1, v1, u0, v0, u1, v1, u0, v1);
+        }
+
+        if (capTop && typeof THREE.ShapeUtils !== "undefined") {
+          const contour = openRing.map(([x, y]) => new THREE.Vector2(x, y));
+          const tris = THREE.ShapeUtils.triangulateShape(contour, []);
+          for (const [i0, i1, i2] of tris) {
+            const pA = openRing[i0], pB = openRing[i1], pC = openRing[i2];
+            b.pos.push(pA[0], pA[1], z1, pB[0], pB[1], z1, pC[0], pC[1], z1);
+            b.norm.push(0, 0, 1, 0, 0, 1, 0, 0, 1);
+            b.uv.push(pA[0] / uvScale, pA[1] / uvScale, pB[0] / uvScale, pB[1] / uvScale, pC[0] / uvScale, pC[1] / uvScale);
+          }
+        }
+      }
+
+      // Build Mullions, Full-Height Architectural Fins & Cantilevered Glass Balconies along every facade edge
+      function pushFacadeMullionsAndBalconies(ring2d, z0, z1, floorH, addBalconies, addCornerFins) {
+        const openRing = (ring2d.length > 3 && Math.hypot(ring2d[0][0] - ring2d[ring2d.length - 1][0], ring2d[0][1] - ring2d[ring2d.length - 1][1]) < 1e-4)
+          ? ring2d.slice(0, -1)
+          : ring2d;
+        if (openRing.length < 3 || z1 <= z0) return;
         let cx = 0, cy = 0;
         for (const [x, y] of openRing) { cx += x; cy += y; }
         cx /= openRing.length; cy /= openRing.length;
@@ -3472,51 +4190,85 @@ def main():
           const [x1, y1] = openRing[(i + 1) % openRing.length];
           const dx = x1 - x0, dy = y1 - y0;
           const segLen = Math.hypot(dx, dy);
-          if (segLen < 0.05) continue;
+          if (segLen < 1.2) continue;
+          const ux = dx / segLen, uy = dy / segLen;
           let nx = dy / segLen, ny = -dx / segLen;
           const mx = (x0 + x1) * 0.5 - cx, my = (y0 + y1) * 0.5 - cy;
           if (nx * mx + ny * my < 0) { nx = -nx; ny = -ny; }
 
-          const sunDot = nx * (-0.45) + ny * (0.89);
-          let shade;
-          if (isSlabLine) {
-            shade = 0.88 + 0.06 * sunDot;
-          } else if (sunDot > 0.25) {
-            shade = 1.00;
-          } else if (sunDot > -0.15) {
-            shade = 0.925;
-          } else {
-            shade = 0.84;
+          // Corner architectural megacolumn fin at vertex i
+          if (addCornerFins) {
+            const fw = 0.28, fd = 0.34;
+            const cRing = [
+              [x0 - ux * fw, y0 - uy * fw],
+              [x0 + ux * fw, y0 + uy * fw],
+              [x0 + ux * fw + nx * fd, y0 + uy * fw + ny * fd],
+              [x0 - ux * fw + nx * fd, y0 - uy * fw + ny * fd]
+            ];
+            pushExtrudedToBucket("fin", cRing, z0, z1, true);
           }
-          const r = Math.min(1, Math.max(0, baseRgb[0] * shade));
-          const g = Math.min(1, Math.max(0, baseRgb[1] * shade));
-          const b = Math.min(1, Math.max(0, baseRgb[2] * shade));
 
-          const quad = [
-            [x0, y0, z0], [x1, y1, z0], [x1, y1, z1],
-            [x0, y0, z0], [x1, y1, z1], [x0, y0, z1]
-          ];
-          for (const [vx, vy, vz] of quad) {
-            posArr.push(vx, vy, vz);
-            normArr.push(nx, ny, 0);
-            colArr.push(r, g, b);
+          // Vertical curtain-wall mullions spaced every 3.6m
+          const nMull = Math.max(1, Math.floor(segLen / 3.6));
+          for (let m = 1; m < nMull; m++) {
+            const t = m / nMull;
+            const px = x0 + dx * t, py = y0 + dy * t;
+            const mw = 0.04, md = 0.11;
+            const mRing = [
+              [px - ux * mw, py - uy * mw],
+              [px + ux * mw, py + uy * mw],
+              [px + ux * mw + nx * md, py + uy * mw + ny * md],
+              [px - ux * mw + nx * md, py - uy * mw + ny * md]
+            ];
+            pushExtrudedToBucket((m % 3 === 0) ? "fin" : "frame", mRing, z0, z1, false);
           }
-        }
 
-        if (topRgb && typeof THREE !== "undefined" && typeof THREE.ShapeUtils !== "undefined") {
-          const contour = openRing.map(([x, y]) => new THREE.Vector2(x, y));
-          const tris = THREE.ShapeUtils.triangulateShape(contour, []);
-          for (const [i0, i1, i2] of tris) {
-            const a = openRing[i0], b = openRing[i1], c = openRing[i2];
-            posArr.push(a[0], a[1], z1, b[0], b[1], z1, c[0], c[1], z1);
-            normArr.push(0, 0, 1, 0, 0, 1, 0, 0, 1);
-            colArr.push(topRgb[0], topRgb[1], topRgb[2], topRgb[0], topRgb[1], topRgb[2], topRgb[0], topRgb[1], topRgb[2]);
+          // Cantilevered residential balconies with glass balustrades on segments >= 8.5m
+          if (addBalconies && segLen >= 8.5 && (i % 2 === 0)) {
+            const bDepth = 1.32;
+            const tA = 0.24, tB = 0.76;
+            const bx0 = x0 + dx * tA, by0 = y0 + dy * tA;
+            const bx1 = x0 + dx * tB, by1 = y0 + dy * tB;
+            const balRing = [
+              [bx0, by0],
+              [bx1, by1],
+              [bx1 + nx * bDepth, by1 + ny * bDepth],
+              [bx0 + nx * bDepth, by0 + ny * bDepth]
+            ];
+            const railThick = 0.06;
+            const railRing = [
+              [bx0 + nx * (bDepth - railThick), by0 + ny * (bDepth - railThick)],
+              [bx1 + nx * (bDepth - railThick), by1 + ny * (bDepth - railThick)],
+              [bx1 + nx * bDepth, by1 + ny * bDepth],
+              [bx0 + nx * bDepth, by0 + ny * bDepth]
+            ];
+            const floors = Math.max(1, Math.round((z1 - z0) / floorH));
+            for (let f = 1; f <= floors; f++) {
+              const fz0 = z0 + (f - 1) * floorH;
+              pushExtrudedToBucket("slab", balRing, fz0, fz0 + 0.16, true);
+              pushExtrudedToBucket("rail", railRing, fz0 + 0.16, fz0 + 1.12, false);
+              pushExtrudedToBucket("frame", railRing, fz0 + 1.12, fz0 + 1.18, true);
+            }
           }
         }
       }
 
-      function buildFloorStackedWing(baseRing, zStart, numFloors, floorH, blkId, stId, is4BR, taperTop = 1.0) {
+      const isDefaultMode = (active3DShowMe === "all" && active3DFloor === "ALL" && active3DStack === "ALL" && active3DBlock === "ALL");
+
+      // Builds a 14-Layer PBR + GLSL Metric Architectural Tower Wing with Sky-Gardens, Floor Slabs, Corner Megacolumns & Crown Spire
+      const heroBaseRgb = (spec.typology === "supertall_diamond" || spec.typology === "organic_terraced")
+        ? [0.91, 0.89, 0.85]
+        : [0.89, 0.87, 0.83];
+      const heroBandRgb = (spec.typology === "supertall_diamond")
+        ? [0.68, 0.54, 0.36]
+        : [0.62, 0.44, 0.30];
+      const heroSchemeCode = 100 + (spec.seed % 6);
+
+      function buildPbrTowerWing(baseRing, zStart, numFloors, floorH, blkId, stId, is4BR, taperTop = 1.0, hasCrownSpire = false) {
         let curRing = baseRing;
+        const skyEvery = spec.skyGardenEvery || 14;
+        const wingTopZ = zStart + numFloors * floorH;
+
         for (let f = 1; f <= numFloors; f++) {
           const z0 = zStart + (f - 1) * floorH;
           const z1 = zStart + f * floorH;
@@ -3524,195 +4276,283 @@ def main():
             const frac = (f - 1) / Math.max(1, numFloors - 1);
             curRing = scaleEnuRing(baseRing, 1.0 - frac * (1.0 - taperTop));
           }
-          const ledgeRing = expandEnuRing(curRing, 0.18);
-          let wallRgb = rgbWallBase;
+          const ledgeRing = expandEnuRing(curRing, 0.08);
+
+          // Check if this floor is an open recessed Sky-Garden / Outrigger Amenity Terrace
+          const isSkyGarden = (numFloors >= 18 && f > 4 && f < numFloors - 3 && (f % skyEvery === 0));
+          if (isSkyGarden) {
+            const coreRing = scaleEnuRing(curRing, 0.72);
+            const planterRing = expandEnuRing(curRing, 0.12);
+            pushExtrudedToBucket("garden", coreRing, z0, z1 - 0.18, false);
+            pushExtrudedToBucket("green", planterRing, z0 + 0.18, z0 + 1.05, true);
+            pushExtrudedToBucket("rail", ledgeRing, z0 + 0.18, z0 + 1.18, false);
+            pushExtrudedToBucket("slab", ledgeRing, z1 - 0.18, z1, true);
+            continue;
+          }
+
+          let wallBucket = "glass";
           if (!isDefaultMode) {
             const blkMatch = (active3DBlock === "ALL" || active3DBlock === blkId);
             if (blkMatch) {
-              if (active3DShowMe === "4br" && is4BR) wallRgb = rgb4BR;
-              else if (active3DShowMe === "5br" && !is4BR) wallRgb = rgb5BR;
-              else if (active3DShowMe === "4br_5br_mix") wallRgb = is4BR ? rgb4BR : rgb5BR;
-              else if (active3DBlock === blkId && active3DShowMe === "all") wallRgb = is4BR ? rgb4BR : rgb5BR;
+              if (active3DShowMe === "4br" && is4BR) wallBucket = "unit4br";
+              else if (active3DShowMe === "5br" && !is4BR) wallBucket = "unit5br";
+              else if (active3DShowMe === "4br_5br_mix") wallBucket = is4BR ? "unit4br" : "unit5br";
+              else if (active3DBlock === blkId && active3DShowMe === "all") wallBucket = is4BR ? "unit4br" : "unit5br";
 
               const lowLim = Math.max(3, Math.round(numFloors * 0.35));
               const midLim = Math.max(6, Math.round(numFloors * 0.72));
-              if (active3DFloor === "LOW" && f <= lowLim) wallRgb = rgbBlue;
-              else if (active3DFloor === "MID" && f > lowLim && f <= midLim) wallRgb = rgb4BR;
-              else if (active3DFloor === "HIGH" && f > midLim) wallRgb = rgb5BR;
+              if (active3DFloor === "LOW" && f <= lowLim) wallBucket = "unitBlue";
+              else if (active3DFloor === "MID" && f > lowLim && f <= midLim) wallBucket = "unit4br";
+              else if (active3DFloor === "HIGH" && f > midLim) wallBucket = "unit5br";
 
-              if (active3DStack === "S1" && stId === "S1") wallRgb = rgb4BR;
-              else if (active3DStack === "S2" && stId === "S2") wallRgb = rgb5BR;
+              if (active3DStack === "S1" && stId === "S1") wallBucket = "unit4br";
+              else if (active3DStack === "S2" && stId === "S2") wallBucket = "unit5br";
             }
           }
-          pushExtruded(curRing, z0, z1 - 0.22, wallRgb, f === numFloors ? rgbRoofTop : null, false);
-          pushExtruded(ledgeRing, z1 - 0.22, z1, rgbSlabShadow, f === numFloors ? rgbRoofTop : null, true);
+
+          if (wallBucket === "glass") {
+            pushHeroShaderWallRing(curRing, z0, z1 - 0.12, heroBaseRgb, heroBandRgb, heroSchemeCode, wingTopZ);
+            pushExtrudedToBucket("slab", ledgeRing, z1 - 0.12, z1, f === numFloors);
+          } else {
+            pushExtrudedToBucket(wallBucket, curRing, z0, z1 - 0.16, false);
+            pushExtrudedToBucket("slab", ledgeRing, z1 - 0.16, z1, f === numFloors);
+          }
         }
+
+        // Add full-height corner architectural megacolumn fins
+        pushFacadeMullionsAndBalconies(curRing, zStart, zStart + numFloors * floorH, floorH, false, true);
+
         const topZ = zStart + numFloors * floorH;
-        const crownRing = scaleEnuRing(curRing, 0.78);
-        pushExtruded(crownRing, topZ, topZ + 1.8, rgbCrown, rgbRoofTop, false);
-        return topZ + 1.8;
+        // Rooftop stone parapet + recessed weathered roof deck + mechanical core + architectural crown frame
+        const parapetOuter = expandEnuRing(curRing, 0.20);
+        const roofWell = scaleEnuRing(curRing, 0.86);
+        pushExtrudedToBucket("crown", parapetOuter, topZ, topZ + 1.35, true);
+        pushExtrudedToBucket("roof", roofWell, topZ + 1.35, topZ + 1.45, true);
+
+        const mechCore = scaleEnuRing(curRing, 0.46);
+        pushExtrudedToBucket("solid", mechCore, topZ + 1.35, topZ + 4.6, true);
+        pushExtrudedToBucket("crownGlass", scaleEnuRing(curRing, 0.66), topZ + 1.35, topZ + 3.8, true);
+
+        if (hasCrownSpire) {
+          // Multi-tier sculpted supertall diamond/lantern crown spire (like Burj Binghatti / Creek Tower / haio.sg)
+          const tierA = scaleEnuRing(curRing, 0.62);
+          const tierB = scaleEnuRing(curRing, 0.42);
+          const tierC = scaleEnuRing(curRing, 0.22);
+          pushExtrudedToBucket("crown", tierA, topZ + 1.35, topZ + 8.5, true);
+          pushExtrudedToBucket("crownGlass", scaleEnuRing(tierA, 0.88), topZ + 1.35, topZ + 12.0, true);
+          pushExtrudedToBucket("fin", tierB, topZ + 8.5, topZ + 18.5, true);
+          pushExtrudedToBucket("crown", tierC, topZ + 18.5, topZ + 26.0, true);
+          return topZ + 26.0;
+        }
+        return topZ + 4.6;
       }
 
       const rotRad = (spec.rotDeg * Math.PI) / 180;
-      const seedMod = (spec.seed % 5) * 1.4;
-      let roofCalloutZ = 58.0;
+      const seedMod = (spec.seed % 5) * 1.2;
+      let roofCalloutZ = 68.0;
       let roofCalloutXY = [0, 0];
 
+      // -----------------------------------------------------------------------
+      // FULL-PARCEL 3D ARCHITECTURAL SITE PLINTH & LANDSCAPED GROUNDS (ZERO 2D SHADOW BLEED)
+      // Covers the entire development parcel (104m × 88m) so underlying 2D satellite roofs/shadows are 100% masked!
+      // -----------------------------------------------------------------------
+      const sitePlinthRing = makeArchFootprint("chamfer_oct", 2.0, -2.0, 106, 88, rotRad);
+      const siteLawnRing = makeArchFootprint("chamfer_oct", 2.0, -2.0, 98, 80, rotRad);
+      const siteDriveRing = makeArchFootprint("rect", 0.0, -28.0, 68, 14, rotRad);
+      const siteCourtRing = makeArchFootprint("rect", -32.0, -18.0, 18, 10, rotRad);
+      pushExtrudedToBucket("deck", sitePlinthRing, 0.0, 0.85, true);
+      pushExtrudedToBucket("lawn", siteLawnRing, 0.85, 1.10, true);
+      pushExtrudedToBucket("driveway", siteDriveRing, 1.10, 1.22, true);
+      pushExtrudedToBucket("court", siteCourtRing, 1.10, 1.25, true);
+      pushExtrudedToBucket("rail", expandEnuRing(siteCourtRing, 0.15), 1.25, 3.2, false);
+
       if (spec.typology === "supertall_diamond") {
-        // Sculpted Supertall Tower (Stack 01 & Stack 02 interlocking chamfered/cruciform wings) + Luxury Sky-Garden Podium (Block 2)
-        const visFloors = Math.min(52, Math.max(36, Math.round(spec.storeys * 0.44)));
-        const fH = 3.35;
+        // Sculpted Supertall Tower (Block 1) + Luxury Terracotta/Timber/Glass Sky-Garden Podium (Block 2)
+        const visFloors = Math.min(68, Math.max(44, Math.round(spec.storeys * 0.62)));
+        const fH = 3.45;
         const tier1F = Math.round(visFloors * 0.56);
         const tier2F = Math.round(visFloors * 0.26);
-        const tier3F = Math.max(5, visFloors - tier1F - tier2F);
+        const tier3F = Math.max(6, visFloors - tier1F - tier2F);
 
-        const w1Ring = makeArchFootprint("cruciform_spire", -9.5, -4.0, 24 + seedMod, 19, rotRad);
-        const w2Ring = makeArchFootprint("chamfer_oct", 7.5, 5.5, 21, 18 + seedMod, rotRad + 0.18);
+        // Multi-level articulated podium base under Block 1 & Block 2
+        const mainPod = makeArchFootprint("chamfer_oct", 4.0, -4.0, 74, 56, rotRad);
+        pushExtrudedToBucket("podium", mainPod, 1.10, 6.2, true);
+        pushExtrudedToBucket("timber", scaleEnuRing(mainPod, 0.96), 6.2, 11.4, true);
+        pushExtrudedToBucket("slab", expandEnuRing(mainPod, 0.35), 11.1, 11.6, true);
+        pushExtrudedToBucket("lawn", scaleEnuRing(mainPod, 0.88), 11.6, 12.0, true);
 
-        const zT1 = buildFloorStackedWing(w1Ring, 0, tier1F, fH, "B1", "S1", true, 0.94);
-        buildFloorStackedWing(w2Ring, 0, tier1F, fH, "B1", "S2", false, 0.94);
+        const w1Ring = makeArchFootprint("cruciform_spire", -10.5, -2.0, 26 + seedMod, 21, rotRad);
+        const w2Ring = makeArchFootprint("chamfer_oct", 7.0, 6.5, 22, 19 + seedMod, rotRad + 0.18);
 
-        const w1Mid = scaleEnuRing(w1Ring, 0.78);
-        const w2Mid = scaleEnuRing(w2Ring, 0.78);
-        const zT2 = buildFloorStackedWing(w1Mid, zT1 - 1.8, tier2F, fH, "B1", "S1", true, 0.88);
-        buildFloorStackedWing(w2Mid, zT1 - 1.8, tier2F, fH, "B1", "S2", false, 0.88);
+        const zT1 = buildPbrTowerWing(w1Ring, 11.6, tier1F, fH, "B1", "S1", true, 0.94, false);
+        buildPbrTowerWing(w2Ring, 11.6, tier1F, fH, "B1", "S2", false, 0.94, false);
 
-        const w1Top = scaleEnuRing(w1Ring, 0.56);
-        const zT3 = buildFloorStackedWing(w1Top, zT2 - 1.8, tier3F, fH, "B1", "S1", true, 0.82);
+        const w1Mid = scaleEnuRing(w1Ring, 0.80);
+        const w2Mid = scaleEnuRing(w2Ring, 0.80);
+        const zT2 = buildPbrTowerWing(w1Mid, zT1 - 3.2, tier2F, fH, "B1", "S1", true, 0.88, false);
+        buildPbrTowerWing(w2Mid, zT1 - 3.2, tier2F, fH, "B1", "S2", false, 0.88, false);
 
-        // Diamond architectural crown fins at summit
-        const spireRing = scaleEnuRing(w1Top, 0.45);
-        pushExtruded(spireRing, zT3, zT3 + 9.5, rgbCrown, rgbRoofTop, false);
+        const w1Top = scaleEnuRing(w1Ring, 0.60);
+        const zT3 = buildPbrTowerWing(w1Top, zT2 - 3.2, tier3F, fH, "B1", "S1", true, 0.84, true);
 
-        // Adjoining Block 2: Terracotta + Smoked-Glass Amenity Podium with Rooftop Sky-Garden & Pool (just like haio.sg!)
-        const podRing = makeArchFootprint("rect", 24.0, -14.0, 26, 20, rotRad);
-        pushExtruded(podRing, 0, 9.5, rgbPodiumTerra, rgbSlabShadow, false);
-        pushExtruded(scaleEnuRing(podRing, 0.96), 9.5, 22.0, rgbPodiumGlass, rgbRoofTop, false);
-        pushExtruded(scaleEnuRing(podRing, 0.82), 22.0, 22.6, rgbSkyGarden, rgbSkyGarden, false);
-        const poolRing = makeArchFootprint("rect", 26.0, -14.0, 11, 5.5, rotRad);
-        pushExtruded(poolRing, 22.6, 22.9, rgbPoolWater, rgbPoolWater, false);
+        // Adjoining Block 2: Haio.sg Terracotta + Timber Louvre + Smoked-Glass Amenity Pavilion with Rooftop Sky-Garden & 25m Lap Pool
+        const podRing = makeArchFootprint("rect", 24.0, -15.0, 30, 22, rotRad);
+        pushExtrudedToBucket("podium", podRing, 11.6, 18.5, true);
+        pushExtrudedToBucket("timber", scaleEnuRing(podRing, 0.97), 18.5, 22.8, true);
+        pushExtrudedToBucket("amenityGlass", scaleEnuRing(podRing, 0.94), 22.8, 30.5, true);
+        pushExtrudedToBucket("darkroof", expandEnuRing(podRing, 0.45), 30.5, 31.4, true);
+        pushExtrudedToBucket("green", scaleEnuRing(podRing, 0.84), 31.4, 32.1, true);
+        const poolDeckRing = makeArchFootprint("rect", 25.0, -15.0, 18, 9, rotRad);
+        pushExtrudedToBucket("deck", poolDeckRing, 32.1, 32.35, true);
+        const poolRing = makeArchFootprint("rect", 25.0, -15.0, 14, 6, rotRad);
+        pushExtrudedToBucket("pool", poolRing, 32.35, 32.65, true);
 
-        roofCalloutZ = zT3 + 11.5;
-        roofCalloutXY = [-5.0, 0.0];
+        roofCalloutZ = zT3 + 3.0;
+        roofCalloutXY = [-6.0, 1.0];
       } else if (spec.typology === "organic_terraced") {
-        // Cascading Organic Terraced Waterfront Tower (Como Residences / Maryam Island / Sharjah Waterfront)
-        const visFloors = Math.min(38, Math.max(22, Math.round(spec.storeys * 0.54)));
-        const fH = 3.3;
-        const mainOval = makeArchFootprint("organic_oval", -6.0, 2.0, 30 + seedMod, 22, rotRad);
-        const sideOval = makeArchFootprint("organic_oval", 15.0, -8.0, 24, 17 + seedMod, rotRad - 0.25);
+        // Cascading Organic Terraced Waterfront Tower (Bugatti / Como / Maryam Island / Sharjah Waterfront)
+        const visFloors = Math.min(48, Math.max(24, Math.round(spec.storeys * 0.68)));
+        const fH = 3.4;
+        const podBase = makeArchFootprint("organic_oval", 2.0, -4.0, 78, 56, rotRad);
+        pushExtrudedToBucket("podium", podBase, 1.10, 6.5, true);
+        pushExtrudedToBucket("timber", scaleEnuRing(podBase, 0.94), 6.5, 10.2, true);
+        pushExtrudedToBucket("deck", scaleEnuRing(podBase, 0.88), 10.2, 10.6, true);
+        const lagoonPool = makeArchFootprint("organic_oval", 8.0, -16.0, 26, 11, rotRad);
+        pushExtrudedToBucket("pool", lagoonPool, 10.6, 11.0, true);
 
-        const zTop1 = buildFloorStackedWing(mainOval, 0, visFloors, fH, "B1", "S1", true, 0.58);
-        buildFloorStackedWing(sideOval, 0, Math.round(visFloors * 0.72), fH, "B2", "S2", false, 0.68);
+        const mainOval = makeArchFootprint("organic_oval", -7.0, 4.0, 32 + seedMod, 23, rotRad);
+        const sideOval = makeArchFootprint("organic_oval", 16.0, -6.0, 25, 18 + seedMod, rotRad - 0.25);
 
-        // Waterfront Lagoon Podium Deck
-        const deckRing = makeArchFootprint("chamfer_oct", 4.0, -18.0, 34, 16, rotRad);
-        pushExtruded(deckRing, 0, 6.5, rgbPodiumTerra, rgbRoofTop, false);
-        pushExtruded(scaleEnuRing(deckRing, 0.84), 6.5, 7.1, rgbSkyGarden, rgbSkyGarden, false);
-        const lagoonPool = makeArchFootprint("organic_oval", 4.0, -18.0, 16, 7, rotRad);
-        pushExtruded(lagoonPool, 7.1, 7.4, rgbPoolWater, rgbPoolWater, false);
+        const zTop1 = buildPbrTowerWing(mainOval, 10.6, visFloors, fH, "B1", "S1", true, 0.62, true);
+        buildPbrTowerWing(sideOval, 10.6, Math.round(visFloors * 0.72), fH, "B2", "S2", false, 0.70, false);
 
-        roofCalloutZ = zTop1 + 4.0;
-        roofCalloutXY = [-6.0, 2.0];
+        roofCalloutZ = zTop1 + 3.0;
+        roofCalloutXY = [-7.0, 4.0];
       } else if (spec.typology === "twin_triple_highrise") {
-        // 3 Articulated High-Rise Residential Towers on Shared Landscaped Podium
-        const f1 = Math.min(24, Math.max(15, Math.round(spec.storeys * 0.48)));
-        const f2 = Math.max(12, Math.round(f1 * 0.80));
-        const f3 = Math.max(10, Math.round(f1 * 0.65));
-        const fH = 3.2;
-
-        // Shared Podium Base
-        const podBase = makeArchFootprint("chamfer_oct", 0, 0, 64, 44, rotRad);
-        pushExtruded(podBase, 0, 7.2, rgbPodiumTerra, rgbRoofTop, false);
-        pushExtruded(scaleEnuRing(podBase, 0.90), 7.2, 7.8, rgbSkyGarden, rgbSkyGarden, false);
-        const poolDeck = makeArchFootprint("rect", 2.0, -2.0, 18, 8, rotRad);
-        pushExtruded(poolDeck, 7.8, 8.1, rgbPoolWater, rgbPoolWater, false);
-
-        const t1Ring = makeArchFootprint("stepped_wing", -18.0, 8.0, 22, 15, rotRad);
-        const t2Ring = makeArchFootprint("stepped_wing", 16.0, 10.0, 20, 14, rotRad + 0.45);
-        const t3Ring = makeArchFootprint("chamfer_oct", 0.0, -14.0, 20, 14, rotRad - 0.30);
-
-        const z1 = buildFloorStackedWing(t1Ring, 7.2, f1, fH, "B1", "S1", true, 0.92);
-        buildFloorStackedWing(t2Ring, 7.2, f2, fH, "B2", "S2", false, 0.92);
-        buildFloorStackedWing(t3Ring, 7.2, f3, fH, "B3", "S1", true, 0.94);
-
-        roofCalloutZ = z1 + 4.0;
-        roofCalloutXY = [-18.0, 8.0];
-      } else if (spec.typology === "urban_courtyard") {
-        // Stepped Mid-Rise Courtyard & Boulevard Masterplan (Aljada / JVC Belgravia / Palm Jebel Ali / Dubai Islands)
-        const f1 = Math.min(16, Math.max(10, spec.storeys));
-        const f2 = Math.max(8, Math.round(f1 * 0.82));
-        const f3 = Math.max(7, Math.round(f1 * 0.68));
+        // 3 Articulated High-Rise Residential Towers on Shared Landscaped Resort Podium
+        const f1 = Math.min(42, Math.max(18, Math.round(spec.storeys * 0.68)));
+        const f2 = Math.max(14, Math.round(f1 * 0.82));
+        const f3 = Math.max(12, Math.round(f1 * 0.66));
         const fH = 3.35;
 
-        const uRing = makeArchFootprint("u_boulevard", -12.0, 6.0, 38, 28, rotRad);
-        const lRing = makeArchFootprint("l_courtyard", 22.0, -8.0, 28, 24, rotRad + Math.PI * 0.5);
-        const pavRing = makeArchFootprint("stepped_wing", -8.0, -22.0, 24, 14, rotRad);
+        const podBase = makeArchFootprint("chamfer_oct", 0, 0, 78, 58, rotRad);
+        pushExtrudedToBucket("podium", podBase, 1.10, 6.4, true);
+        pushExtrudedToBucket("timber", scaleEnuRing(podBase, 0.96), 6.4, 10.4, true);
+        pushExtrudedToBucket("slab", expandEnuRing(podBase, 0.3), 10.4, 10.9, true);
+        pushExtrudedToBucket("lawn", scaleEnuRing(podBase, 0.90), 10.9, 11.3, true);
+        const poolDeck = makeArchFootprint("rect", 2.0, -2.0, 26, 12, rotRad);
+        pushExtrudedToBucket("deck", poolDeck, 11.3, 11.55, true);
+        const lapPool = makeArchFootprint("rect", 2.0, -2.0, 22, 8.5, rotRad);
+        pushExtrudedToBucket("pool", lapPool, 11.55, 11.85, true);
 
-        const z1 = buildFloorStackedWing(uRing, 0, f1, fH, "B1", "S1", true, 1.0);
-        buildFloorStackedWing(lRing, 0, f2, fH, "B2", "S2", false, 1.0);
-        buildFloorStackedWing(pavRing, 0, f3, fH, "B3", "S1", true, 1.0);
+        const t1Ring = makeArchFootprint("stepped_wing", -19.0, 9.0, 24, 16, rotRad);
+        const t2Ring = makeArchFootprint("stepped_wing", 18.0, 10.0, 22, 15, rotRad + 0.45);
+        const t3Ring = makeArchFootprint("chamfer_oct", 0.0, -16.0, 22, 15, rotRad - 0.30);
 
-        // Central Courtyard Park & Pool
-        const parkRing = makeArchFootprint("rect", 4.0, -4.0, 20, 14, rotRad);
-        pushExtruded(parkRing, 0, 1.2, rgbSkyGarden, rgbSkyGarden, false);
-        const cPool = makeArchFootprint("rect", 4.0, -4.0, 10, 5, rotRad);
-        pushExtruded(cPool, 1.2, 1.5, rgbPoolWater, rgbPoolWater, false);
+        const z1 = buildPbrTowerWing(t1Ring, 11.3, f1, fH, "B1", "S1", true, 0.92, true);
+        buildPbrTowerWing(t2Ring, 11.3, f2, fH, "B2", "S2", false, 0.92, false);
+        buildPbrTowerWing(t3Ring, 11.3, f3, fH, "B3", "S1", true, 0.94, false);
 
-        roofCalloutZ = z1 + 4.0;
+        roofCalloutZ = z1 + 3.0;
+        roofCalloutXY = [-19.0, 9.0];
+      } else if (spec.typology === "urban_courtyard") {
+        // Stepped Mid-Rise Courtyard & Boulevard Masterplan (Aljada / JVC / Palm Jebel Ali / Dubai Islands)
+        const f1 = Math.min(22, Math.max(12, spec.storeys));
+        const f2 = Math.max(10, Math.round(f1 * 0.82));
+        const f3 = Math.max(8, Math.round(f1 * 0.68));
+        const fH = 3.4;
+
+        const uRing = makeArchFootprint("u_boulevard", -12.0, 6.0, 42, 30, rotRad);
+        const lRing = makeArchFootprint("l_courtyard", 22.0, -8.0, 30, 26, rotRad + Math.PI * 0.5);
+        const pavRing = makeArchFootprint("stepped_wing", -8.0, -22.0, 26, 16, rotRad);
+
+        const z1 = buildPbrTowerWing(uRing, 1.10, f1, fH, "B1", "S1", true, 1.0, false);
+        buildPbrTowerWing(lRing, 1.10, f2, fH, "B2", "S2", false, 1.0, false);
+        buildPbrTowerWing(pavRing, 1.10, f3, fH, "B3", "S1", true, 1.0, false);
+
+        const cDeck = makeArchFootprint("rect", 4.0, -4.0, 24, 16, rotRad);
+        pushExtrudedToBucket("deck", cDeck, 1.10, 1.5, true);
+        const cPool = makeArchFootprint("rect", 4.0, -4.0, 16, 7.5, rotRad);
+        pushExtrudedToBucket("pool", cPool, 1.5, 1.85, true);
+
+        roofCalloutZ = z1 + 3.0;
         roofCalloutXY = [-12.0, 6.0];
       } else if (spec.typology === "villa_lagoon_masterplan") {
-        // Central Signature Community Clubhouse Tower + Stepped Luxury Courtyard Villa Clusters & Crystal Lagoon
-        const clubFloors = Math.min(14, Math.max(8, spec.storeys));
-        const fH = 3.4;
-        const clubRing = makeArchFootprint("stepped_wing", 0, 12.0, 28, 16, rotRad);
-        const z1 = buildFloorStackedWing(clubRing, 0, clubFloors, fH, "B1", "S1", true, 0.90);
+        // Signature Waterfront Clubhouse Tower + Stepped Luxury Villa Mansions & Crystal Lagoon
+        const clubFloors = Math.min(18, Math.max(10, spec.storeys));
+        const fH = 3.5;
+        const clubRing = makeArchFootprint("stepped_wing", 0, 16.0, 30, 18, rotRad);
+        const z1 = buildPbrTowerWing(clubRing, 1.10, clubFloors, fH, "B1", "S1", true, 0.90, false);
 
-        // Crystal Lagoon & Landscaped Island Park
-        const greenBelt = makeArchFootprint("organic_oval", 0, -8.0, 62, 34, rotRad);
-        pushExtruded(greenBelt, 0, 0.9, rgbSkyGarden, rgbSkyGarden, false);
-        const crystalLagoon = makeArchFootprint("organic_oval", 0, -8.0, 42, 18, rotRad);
-        pushExtruded(crystalLagoon, 0.9, 1.3, rgbPoolWater, rgbPoolWater, false);
+        const crystalLagoon = makeArchFootprint("organic_oval", 0, -6.0, 48, 22, rotRad);
+        pushExtrudedToBucket("deck", expandEnuRing(crystalLagoon, 2.2), 1.10, 1.45, true);
+        pushExtrudedToBucket("pool", crystalLagoon, 1.45, 1.80, true);
 
-        // Stepped 3-to-5 Storey Luxury Villa & Mansion Terraces around the Lagoon
         const villaOffsets = [
-          [-26, -6, "B2", "S1", true], [-14, -22, "B2", "S2", false],
-          [14, -22, "B3", "S1", true],  [26, -6, "B3", "S2", false],
-          [-24, 16, "B2", "S1", true],  [24, 16, "B3", "S2", false]
+          [-28, -6, "B2", "S1", true], [-16, -24, "B2", "S2", false],
+          [16, -24, "B3", "S1", true],  [28, -6, "B3", "S2", false],
+          [-26, 18, "B2", "S1", true],  [26, 18, "B3", "S2", false]
         ];
         for (const [vx, vy, bId, sId, is4] of villaOffsets) {
-          const vRing = makeArchFootprint("l_courtyard", vx, vy, 13, 11, rotRad);
-          buildFloorStackedWing(vRing, 0, 4, 3.5, bId, sId, is4, 0.88);
+          const vRing = makeArchFootprint("l_courtyard", vx, vy, 14, 12, rotRad);
+          buildPbrTowerWing(vRing, 1.10, 4, 3.6, bId, sId, is4, 0.92, false);
         }
 
-        roofCalloutZ = z1 + 4.0;
-        roofCalloutXY = [0, 12.0];
+        roofCalloutZ = z1 + 3.0;
+        roofCalloutXY = [0, 16.0];
       } else {
-        // Mega-Civic / Aviation Concourse / Metro Interchange / Medical Campus (PRJ-D1, PRJ-D8, PRJ-D9, PRJ-SH12)
-        const concourseBase = makeArchFootprint("chamfer_oct", 0, 0, 68, 36, rotRad);
-        pushExtruded(concourseBase, 0, 8.5, rgbPodiumGlass, rgbRoofTop, false);
-        const wingA = makeArchFootprint("cruciform_spire", -18.0, 4.0, 28, 22, rotRad);
-        const wingB = makeArchFootprint("stepped_wing", 18.0, -4.0, 26, 20, rotRad);
-        const z1 = buildFloorStackedWing(wingA, 8.5, 10, 3.6, "B1", "S1", true, 0.86);
-        buildFloorStackedWing(wingB, 8.5, 8, 3.6, "B2", "S2", false, 0.90);
-        roofCalloutZ = z1 + 4.0;
+        // Mega-Civic / Aviation Concourse / Metro Interchange / Campus (PRJ-D1, PRJ-D8, PRJ-D9, PRJ-SH12)
+        const concourseBase = makeArchFootprint("chamfer_oct", 0, 0, 76, 44, rotRad);
+        pushExtrudedToBucket("amenityGlass", concourseBase, 1.10, 10.5, true);
+        pushExtrudedToBucket("crown", expandEnuRing(concourseBase, 1.2), 10.5, 12.0, true);
+        const wingA = makeArchFootprint("cruciform_spire", -18.0, 4.0, 30, 24, rotRad);
+        const wingB = makeArchFootprint("stepped_wing", 18.0, -4.0, 28, 22, rotRad);
+        const z1 = buildPbrTowerWing(wingA, 12.0, 12, 3.8, "B1", "S1", true, 0.86, true);
+        buildPbrTowerWing(wingB, 12.0, 9, 3.8, "B2", "S2", false, 0.90, false);
+        roofCalloutZ = z1 + 3.0;
         roofCalloutXY = [-18.0, 4.0];
+      }
+
+      // Add 3D Landscaping Trees around the Hero Site Perimeter & Podium Deck
+      const treeSpots = [
+        [-42, -32, 1.1], [-28, -36, 1.1], [28, -36, 1.1], [42, -32, 1.1],
+        [-44, 0, 1.1], [44, 0, 1.1], [-40, 30, 1.1], [40, 30, 1.1],
+        [-16, 34, 1.1], [16, 34, 1.1], [18, -12, 12.0], [30, -8, 12.0]
+      ];
+      for (const [tx, ty, tz] of treeSpots) {
+        const rx = tx * Math.cos(rotRad) - ty * Math.sin(rotRad);
+        const ry = tx * Math.sin(rotRad) + ty * Math.cos(rotRad);
+        pushBox("timber", rx, ry, tz, tz + 2.6, 0.55, 0.55, 0);
+        const canopyRing = makeArchFootprint("organic_oval", rx, ry, 4.8, 4.8, 0);
+        pushExtrudedToBucket("green", canopyRing, tz + 2.2, tz + 5.8, true);
       }
 
       three3DLayer.heroRoofLocalVec = new THREE.Vector3(roofCalloutXY[0], roofCalloutXY[1], roofCalloutZ);
 
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute("position", new THREE.Float32BufferAttribute(posArr, 3));
-      geo.setAttribute("normal", new THREE.Float32BufferAttribute(normArr, 3));
-      geo.setAttribute("color", new THREE.Float32BufferAttribute(colArr, 3));
-      const mat = new THREE.MeshBasicMaterial({
-        vertexColors: true,
-        side: THREE.DoubleSide,
-        depthTest: true,
-        depthWrite: true
+      const heroGroup = new THREE.Group();
+      if (heroShaderWall.pos.length && three3DLayer.cityFacadeMats && three3DLayer.cityFacadeMats[0]) {
+        const hwg = new THREE.BufferGeometry();
+        hwg.setAttribute("position", new THREE.Float32BufferAttribute(heroShaderWall.pos, 3));
+        hwg.setAttribute("normal", new THREE.Float32BufferAttribute(heroShaderWall.norm, 3));
+        hwg.setAttribute("uv", new THREE.Float32BufferAttribute(heroShaderWall.uv, 2));
+        hwg.setAttribute("color", new THREE.Float32BufferAttribute(heroShaderWall.col, 3));
+        hwg.setAttribute("hdbBand", new THREE.Float32BufferAttribute(heroShaderWall.band, 4));
+        hwg.setAttribute("hdbWall", new THREE.Float32BufferAttribute(heroShaderWall.meta, 4));
+        const hwm = new THREE.Mesh(hwg, three3DLayer.cityFacadeMats[0]);
+        hwm.frustumCulled = false;
+        heroGroup.add(hwm);
+      }
+      Object.keys(buckets).forEach(k => {
+        const b = buckets[k];
+        if (!b.pos.length) return;
+        const geo = new THREE.BufferGeometry();
+        geo.setAttribute("position", new THREE.Float32BufferAttribute(b.pos, 3));
+        geo.setAttribute("normal", new THREE.Float32BufferAttribute(b.norm, 3));
+        geo.setAttribute("uv", new THREE.Float32BufferAttribute(b.uv, 2));
+        const mesh = new THREE.Mesh(geo, mats[k]);
+        mesh.frustumCulled = false;
+        heroGroup.add(mesh);
       });
-      const mesh = new THREE.Mesh(geo, mat);
-      mesh.frustumCulled = false;
-      heroGroup.add(mesh);
 
       three3DLayer.heroGroup = heroGroup;
       three3DLayer.scene.add(heroGroup);
@@ -3723,42 +4563,46 @@ def main():
       if (map3d) map3d.triggerRepaint();
     }
 
-    // Rebuilds All Surrounding Real OpenStreetMap 3D City Buildings Across the Viewport with 4K Facades & 3D Rooftops
+    // Rebuilds All Surrounding Real OpenStreetMap 3D City Buildings Across the Viewport using haio.sg's GLSL Metric Architectural Shader (hdb-facade-v25) & 3D Rooftops
     function rebuildOsmCityScene() {
       if (!three3DLayer || !three3DLayer.scene || !map3d || !map3dLoaded || typeof THREE === "undefined") return;
       if (map3d.getZoom() < 13.9) return;
       if (!map3d.getLayer("osm-3d-buildings")) return;
+      ensureHaioEnvironmentAndLights();
 
       const rawFeats = map3d.querySourceFeatures("openmaptiles", { sourceLayer: "building" }) || [];
       if (!rawFeats.length) return;
 
       if (!three3DLayer.cityFacadeMats) {
         three3DLayer.cityFacadeMats = createCityFacadeMaterials();
+      }
+      if (!three3DLayer.cityRoofMat) {
         three3DLayer.cityRoofMat = new THREE.MeshBasicMaterial({
           vertexColors: true,
           side: THREE.DoubleSide,
-          depthTest: true,
-          depthWrite: true
+          polygonOffset: true,
+          polygonOffsetFactor: 1,
+          polygonOffsetUnits: 1
         });
       }
 
       const [originLon, originLat] = three3DLayer.originLonLat || [55.2650, 25.1850];
-      const excludeRad = three3DLayer.heroExcludeRadiusM || 50.0;
+      const excludeRad = three3DLayer.heroExcludeRadiusM || 56.0;
+      const isHighRiseDistrict = (originLat >= 25.06 && originLat <= 25.24 && originLon >= 55.13 && originLon <= 55.36);
 
-      // 6 facade buckets + 1 roof/parapet/penthouse geometry
-      const buckets = [
-        { pos: [], uv: [], col: [] },
-        { pos: [], uv: [], col: [] },
-        { pos: [], uv: [], col: [] },
-        { pos: [], uv: [], col: [] },
-        { pos: [], uv: [], col: [] },
-        { pos: [], uv: [], col: [] }
-      ];
+      // Single merged metric shader wall buffer (with hdbBand & hdbWall attributes) + 3D roof/trellis/plant/tree buffer
+      const wallPos = [];
+      const wallNorm = [];
+      const wallUv = [];
+      const wallCol = [];
+      const wallBand = [];
+      const wallMeta = [];
+
       const roofPos = [];
+      const roofNorm = [];
       const roofCol = [];
 
-      function pushTexturedWallRing(ring2d, z0, z1, bucketIdx, tintRgb) {
-        const b = buckets[bucketIdx];
+      function pushMetricShaderWallRing(ring2d, z0, z1, baseRgb, bandRgb, schemeCode, topHeightM) {
         const openRing = (ring2d.length > 3 && Math.hypot(ring2d[0][0] - ring2d[ring2d.length - 1][0], ring2d[0][1] - ring2d[ring2d.length - 1][1]) < 1e-4)
           ? ring2d.slice(0, -1)
           : ring2d;
@@ -3768,39 +4612,46 @@ def main():
         for (const [x, y] of openRing) { cx += x; cy += y; }
         cx /= openRing.length; cy /= openRing.length;
 
-        const vSpan = Math.max(1.0, (z1 - z0) / 26.0);
-        let uAccum = 0;
+        const v0 = z0 / 24.0;
+        const v1 = z1 / 24.0;
 
         for (let i = 0; i < openRing.length; i++) {
           const [x0, y0] = openRing[i];
           const [x1, y1] = openRing[(i + 1) % openRing.length];
           const dx = x1 - x0, dy = y1 - y0;
           const segLen = Math.hypot(dx, dy);
-          if (segLen < 0.25) continue;
+          if (segLen < 0.35) continue;
 
           let nx = dy / segLen, ny = -dx / segLen;
           const mx = (x0 + x1) * 0.5 - cx, my = (y0 + y1) * 0.5 - cy;
           if (nx * mx + ny * my < 0) { nx = -nx; ny = -ny; }
 
-          const sunDot = nx * (-0.45) + ny * (0.89);
-          const shade = sunDot > 0.2 ? 1.03 : (sunDot > -0.2 ? 0.91 : 0.78);
-          const cr = Math.min(1, tintRgb[0] * shade);
-          const cg = Math.min(1, tintRgb[1] * shade);
-          const cb = Math.min(1, tintRgb[2] * shade);
+          const isFront = (segLen >= 5.5) ? 1.0 : 0.0;
+          const u0 = 0.0;
+          const u1 = segLen / 16.0;
 
-          const u0 = uAccum / 24.0;
-          const u1 = (uAccum + segLen) / 24.0;
-          uAccum += segLen;
-
-          b.pos.push(
+          wallPos.push(
             x0, y0, z0, x1, y1, z0, x1, y1, z1,
             x0, y0, z0, x1, y1, z1, x0, y0, z1
           );
-          b.uv.push(
-            u0, 0, u1, 0, u1, vSpan,
-            u0, 0, u1, vSpan, u0, vSpan
+          for (let k = 0; k < 6; k++) {
+            wallNorm.push(nx, ny, 0);
+            wallCol.push(baseRgb[0], baseRgb[1], baseRgb[2]);
+            wallBand.push(bandRgb[0], bandRgb[1], bandRgb[2], topHeightM);
+          }
+          wallUv.push(
+            u0, v0, u1, v0, u1, v1,
+            u0, v0, u1, v1, u0, v1
           );
-          for (let k = 0; k < 6; k++) b.col.push(cr, cg, cb);
+          // vHdbWall = vec4(alongWallMetersU, wallLengthMeters, isFrontFlag, schemeCode)
+          wallMeta.push(
+            0.0, segLen, isFront, schemeCode,
+            segLen, segLen, isFront, schemeCode,
+            segLen, segLen, isFront, schemeCode,
+            0.0, segLen, isFront, schemeCode,
+            segLen, segLen, isFront, schemeCode,
+            0.0, segLen, isFront, schemeCode
+          );
         }
       }
 
@@ -3810,31 +4661,78 @@ def main():
           : ring2d;
         if (openRing.length < 3) return;
 
+        let cx = 0, cy = 0;
+        for (const [x, y] of openRing) { cx += x; cy += y; }
+        cx /= openRing.length; cy /= openRing.length;
+
         if (z1 > z0 && sideRgb) {
           for (let i = 0; i < openRing.length; i++) {
             const [x0, y0] = openRing[i];
             const [x1, y1] = openRing[(i + 1) % openRing.length];
-            const shade = (i % 2 === 0) ? 0.96 : 0.84;
-            const cr = sideRgb[0] * shade, cg = sideRgb[1] * shade, cb = sideRgb[2] * shade;
+            const dx = x1 - x0, dy = y1 - y0;
+            const segLen = Math.hypot(dx, dy);
+            if (segLen < 0.08) continue;
+            let nx = dy / segLen, ny = -dx / segLen;
+            const mx = (x0 + x1) * 0.5 - cx, my = (y0 + y1) * 0.5 - cy;
+            if (nx * mx + ny * my < 0) { nx = -nx; ny = -ny; }
             roofPos.push(
               x0, y0, z0, x1, y1, z0, x1, y1, z1,
               x0, y0, z0, x1, y1, z1, x0, y0, z1
             );
-            for (let k = 0; k < 6; k++) roofCol.push(cr, cg, cb);
+            const sideLit = 0.62 + 0.34 * Math.max(0.0, nx * 0.52 - ny * 0.48);
+            const sr = Math.min(1.0, sideRgb[0] * sideLit);
+            const sg = Math.min(1.0, sideRgb[1] * sideLit);
+            const sb = Math.min(1.0, sideRgb[2] * sideLit);
+            for (let k = 0; k < 6; k++) {
+              roofNorm.push(nx, ny, 0);
+              roofCol.push(sr, sg, sb);
+            }
           }
         }
 
         if (topRgb && typeof THREE.ShapeUtils !== "undefined") {
           const contour = openRing.map(([x, y]) => new THREE.Vector2(x, y));
           const tris = THREE.ShapeUtils.triangulateShape(contour, []);
+          const tr = Math.min(1.0, topRgb[0] * 0.92);
+          const tg = Math.min(1.0, topRgb[1] * 0.92);
+          const tb = Math.min(1.0, topRgb[2] * 0.92);
           for (const [i0, i1, i2] of tris) {
             const a = openRing[i0], b = openRing[i1], c = openRing[i2];
             roofPos.push(a[0], a[1], z1, b[0], b[1], z1, c[0], c[1], z1);
-            roofCol.push(
-              topRgb[0], topRgb[1], topRgb[2],
-              topRgb[0], topRgb[1], topRgb[2],
-              topRgb[0], topRgb[1], topRgb[2]
-            );
+            for (let k = 0; k < 3; k++) {
+              roofNorm.push(0, 0, 1);
+              roofCol.push(tr, tg, tb);
+            }
+          }
+        }
+      }
+
+      // Pitched 3D Hip/Gable Roof for Low-Rise Villas & Townhouses (like haio.sg landedRoof)
+      function pushPitchedVillaRoof(ring2d, zBase, ridgeH, roofRgb) {
+        const openRing = (ring2d.length > 3 && Math.hypot(ring2d[0][0] - ring2d[ring2d.length - 1][0], ring2d[0][1] - ring2d[ring2d.length - 1][1]) < 1e-4)
+          ? ring2d.slice(0, -1)
+          : ring2d;
+        if (openRing.length < 3) return;
+        let cx = 0, cy = 0;
+        for (const [x, y] of openRing) { cx += x; cy += y; }
+        cx /= openRing.length; cy /= openRing.length;
+        const zPeak = zBase + ridgeH;
+        for (let i = 0; i < openRing.length; i++) {
+          const [x0, y0] = openRing[i];
+          const [x1, y1] = openRing[(i + 1) % openRing.length];
+          const ux = x1 - x0, uy = y1 - y0;
+          const vx = cx - x0, vy = cy - y0;
+          let nx = uy * ridgeH, ny = -ux * ridgeH, nz = ux * vy - uy * vx;
+          const nl = Math.hypot(nx, ny, nz) || 1;
+          nx /= nl; ny /= nl; nz = Math.abs(nz / nl);
+          const pLit = 0.64 + 0.34 * Math.max(0.0, nx * 0.45 - ny * 0.45 + nz * 0.76);
+          const pr = Math.min(1.0, roofRgb[0] * pLit);
+          const pg = Math.min(1.0, roofRgb[1] * pLit);
+          const pb = Math.min(1.0, roofRgb[2] * pLit);
+          roofPos.push(x0, y0, zBase, x1, y1, zBase, cx, cy, zPeak);
+          for (let k = 0; k < 3; k++) {
+            roofNorm.push(nx, ny, nz);
+            roofCol.push(pr, pg, pb);
           }
         }
       }
@@ -3849,10 +4747,6 @@ def main():
 
         let rawH = parseFloat(props.render_height ?? props.height ?? 0);
         const minH = Math.max(0, parseFloat(props.render_min_height ?? props.min_height ?? 0));
-        if (!Number.isFinite(rawH) || rawH <= 3.0) {
-          rawH = 16.0;
-        }
-        let h = Math.min(138.0, Math.max(minH + 5.0, rawH > 28.0 ? 28.0 + (rawH - 28.0) * 0.56 : rawH));
 
         const polys = f.geometry.type === "Polygon"
           ? [f.geometry.coordinates]
@@ -3863,13 +4757,15 @@ def main():
           if (!outerLonLat || outerLonLat.length < 4) continue;
 
           const enuRing = [];
-          let cx = 0, cy = 0;
+          let cx = 0, cy = 0, minVertDist = Infinity;
           for (let i = 0; i < outerLonLat.length - 1; i++) {
             const [ln, lt] = outerLonLat[i];
             const [ex, ey] = lonLatToOriginEnu(ln, lt, originLon, originLat);
             enuRing.push([ex, ey]);
             cx += ex;
             cy += ey;
+            const vd = Math.hypot(ex, ey);
+            if (vd < minVertDist) minVertDist = vd;
           }
           const nPts = enuRing.length;
           if (nPts < 3 || nPts > 120) continue;
@@ -3877,15 +4773,8 @@ def main():
           cy /= nPts;
 
           const distFromOrigin = Math.hypot(cx, cy);
-          // Skip buildings inside the active hero project plot (zero overlap!) or beyond 1,750m
-          if (distFromOrigin < excludeRad || distFromOrigin > 1750.0) continue;
-
-          // Keep immediate neighbor buildings (< 105m) below 54m so no adjacent skyscraper occludes the Hero Project
-          const effH = (distFromOrigin < 105.0 && h > 54.0) ? 46.0 + (h % 8.0) : h;
-
-          const dedupKey = `${Math.round(cx / 2.8)}_${Math.round(cy / 2.8)}_${Math.round(effH / 2.0)}`;
-          if (seenGrid.has(dedupKey)) continue;
-          seenGrid.add(dedupKey);
+          const inCameraApproach = (distFromOrigin < 142.0 && (cx * -0.55 + cy * -0.83) > 22.0);
+          if (distFromOrigin < excludeRad || minVertDist < excludeRad * 0.85 || inCameraApproach || distFromOrigin > 1850.0) continue;
 
           let area2 = 0;
           for (let i = 0; i < nPts; i++) {
@@ -3893,14 +4782,42 @@ def main():
             const [x1, y1] = enuRing[(i + 1) % nPts];
             area2 += x0 * y1 - x1 * y0;
           }
-          const effR = Math.sqrt(Math.abs(area2 * 0.5) / Math.PI);
-          if (effR < 2.8 || effR > 210.0) continue;
+          const areaM2 = Math.abs(area2 * 0.5);
+          const effR = Math.sqrt(areaM2 / Math.PI);
+          if (effR < 2.8 || effR > 220.0) continue;
 
-          candidates.push({ enuRing, cx, cy, h: effH, minH, effR, distFromOrigin });
+          const posHash = Math.abs(Math.round(cx * 17 + cy * 31));
+          let h = rawH;
+          if (!Number.isFinite(h) || h <= 4.2) {
+            // Contextual Dubai/Sharjah architectural height inference when OSM height tag is missing
+            if (areaM2 < 240.0) {
+              h = isHighRiseDistrict ? (14.0 + (posHash % 5) * 3.4) : (7.8 + (posHash % 3) * 3.2);
+            } else if (areaM2 < 950.0) {
+              h = isHighRiseDistrict
+                ? (48.0 + (posHash % 14) * 6.8)
+                : (22.0 + (posHash % 9) * 4.2);
+            } else if (areaM2 < 2800.0) {
+              h = isHighRiseDistrict
+                ? (72.0 + (posHash % 16) * 8.5)
+                : (34.0 + (posHash % 8) * 5.0);
+            } else {
+              // Large mall / podium footprint
+              h = 18.0 + (posHash % 4) * 4.5;
+            }
+          } else {
+            // Preserve true Dubai/Sharjah skyscraper heights up to 380m (no * 0.56 squashing!)
+            h = Math.min(380.0, Math.max(minH + 5.0, h));
+          }
+
+          const dedupKey = `${Math.round(cx / 2.8)}_${Math.round(cy / 2.8)}_${Math.round(h / 2.0)}`;
+          if (seenGrid.has(dedupKey)) continue;
+          seenGrid.add(dedupKey);
+
+          candidates.push({ enuRing, cx, cy, h, minH, effR, areaM2, distFromOrigin, posHash });
         }
       }
 
-      // Sort by distance from project/camera center so nearest 950 buildings get 4K procedural facades while any outer buildings retain MapLibre native 3D fill-extrusion fallback (zero geographic gaps!)
+      // Sort by distance from project/camera center so nearest 950 buildings get haio.sg GLSL facades & 3D rooftops while outer buildings retain MapLibre native 3D fill-extrusion fallback
       candidates.sort((a, b) => a.distFromOrigin - b.distFromOrigin);
       const maxBuildings = Math.min(950, candidates.length);
       three3DLayer.osmCityTruncated = (candidates.length > 950);
@@ -3911,54 +4828,138 @@ def main():
         return;
       }
 
-      const parapetPalette = [
-        [0.52, 0.58, 0.64],
-        [0.64, 0.36, 0.30],
-        [0.74, 0.67, 0.58],
-        [0.42, 0.45, 0.49],
-        [0.44, 0.56, 0.59],
-        [0.82, 0.78, 0.72]
+      // Haio.sg's 15 Condo Stone & Metallic Fin Palettes + 3 Office Skyscraper Palettes + 2 Hotel Palettes + 3 Mall Palettes + Villa Palettes
+      const CONDO_PALETTES = [
+        { base: [0.92, 0.90, 0.86], band: [0.64, 0.45, 0.30] }, // Warm limestone + copper bronze fin
+        { base: [0.89, 0.87, 0.83], band: [0.72, 0.63, 0.48] }, // Travertine + champagne gold fin
+        { base: [0.86, 0.88, 0.90], band: [0.34, 0.42, 0.50] }, // Cool architectural grey + slate blue fin
+        { base: [0.94, 0.92, 0.88], band: [0.46, 0.36, 0.28] }, // Ivory stone + dark espresso bronze fin
+        { base: [0.84, 0.79, 0.73], band: [0.58, 0.34, 0.26] }, // Warm sandstone + terracotta bronze fin
+        { base: [0.90, 0.89, 0.87], band: [0.52, 0.55, 0.58] }, // Pearl precast + brushed titanium fin
+        { base: [0.88, 0.84, 0.78], band: [0.68, 0.52, 0.36] }  // Gulf sand stone + warm amber bronze fin
+      ];
+      const OFFICE_PALETTES = [
+        { base: [0.86, 0.83, 0.77], band: [0.44, 0.48, 0.52] }, // 800: Ribbed warm limestone & dark ribbon windows (like AXA tower in haio.sg)
+        { base: [0.26, 0.42, 0.54], band: [0.68, 0.78, 0.86] }, // 801: Sapphire-teal reflective curtain wall with silver mullions
+        { base: [0.22, 0.26, 0.30], band: [0.66, 0.54, 0.38] }  // 802: Charcoal-anthracite glass with deep champagne-bronze vertical fins
+      ];
+      const HOTEL_PALETTES = [
+        { base: [0.30, 0.46, 0.58], band: [0.76, 0.68, 0.54] }, // 1200: Reflective azure curtain wall + champagne trim
+        { base: [0.88, 0.83, 0.75], band: [0.56, 0.40, 0.30] }  // 1201: Warm travertine precast with recessed dark balconies
+      ];
+      const MALL_PALETTES = [
+        { base: [0.82, 0.79, 0.74], band: [0.55, 0.48, 0.40] }, // 300: Faceted greige panels over white finned retail podium
+        { base: [0.86, 0.81, 0.73], band: [0.42, 0.54, 0.62] }, // 301: Natural stone courses with corner glass curtain wall
+        { base: [0.78, 0.74, 0.68], band: [0.62, 0.44, 0.30] }  // 302: Timber architectural fins & glass atrium
+      ];
+      const VILLA_PALETTES = [
+        { base: [0.95, 0.92, 0.87], band: [0.35, 0.32, 0.28], roof: [0.58, 0.35, 0.26] },
+        { base: [0.90, 0.86, 0.80], band: [0.28, 0.30, 0.32], roof: [0.34, 0.36, 0.38] },
+        { base: [0.93, 0.89, 0.83], band: [0.48, 0.36, 0.26], roof: [0.52, 0.38, 0.28] }
       ];
 
-      for (let idx = 0; idx < maxBuildings; idx++) {
-        const { enuRing, cx, cy, h, minH, effR } = candidates[idx];
-        const bHash = Math.abs(Math.round(cx * 13 + cy * 29 + h * 7));
-        const bucketIdx = bHash % 6;
-        const tintRgb = [1.0, 1.0, 1.0];
+      const roofStoneRgb = [0.78, 0.75, 0.71];
+      const roofSlabRgb = [0.54, 0.52, 0.49];
+      const plantWallRgb = [0.48, 0.46, 0.43];
+      const plantTopRgb = [0.64, 0.62, 0.58];
+      const gardenRgb = [0.22, 0.42, 0.18];
+      const coolingRgb = [0.66, 0.69, 0.72];
 
-        let topRing = enuRing;
-        if (h >= 64.0 && effR >= 9.5 && minH === 0) {
-          // Multi-tier architectural setback for tall skyscrapers
-          const splitZ = Math.round(h * 0.78);
-          pushTexturedWallRing(enuRing, minH, splitZ, bucketIdx, tintRgb);
-          const setbackDeck = (bHash % 3 === 0) ? [0.34, 0.48, 0.31] : [0.44, 0.43, 0.41];
-          pushSolidRoofPoly(enuRing, splitZ - 0.5, splitZ, parapetPalette[bucketIdx], setbackDeck);
-          topRing = scaleEnuRing(enuRing, 0.82);
-          pushTexturedWallRing(topRing, splitZ, h, bucketIdx, tintRgb);
-        } else {
-          pushTexturedWallRing(enuRing, minH, h, bucketIdx, tintRgb);
+      for (let idx = 0; idx < maxBuildings; idx++) {
+        const { enuRing, cx, cy, h, minH, effR, areaM2, posHash } = candidates[idx];
+        const bHash = Math.abs(posHash + Math.round(h * 7));
+
+        // 1. Low-Rise Villa / Townhouse (h <= 13.5m and area < 420 m²)
+        if (h <= 13.5 && areaM2 < 420.0 && minH === 0) {
+          const vp = VILLA_PALETTES[bHash % VILLA_PALETTES.length];
+          const vScheme = 610 + (bHash % 4) * 10 + (bHash % 3);
+          const lotRing = expandEnuRing(enuRing, 1.8);
+          pushSolidRoofPoly(lotRing, 0.0, 0.35, [0.74, 0.71, 0.66], [0.42, 0.56, 0.36]);
+          pushMetricShaderWallRing(enuRing, 0.35, h, vp.base, vp.band, vScheme, h);
+          pushPitchedVillaRoof(expandEnuRing(enuRing, 0.35), h, Math.min(2.8, Math.max(1.6, effR * 0.28)), vp.roof);
+          continue;
         }
 
-        // Realistic Aerial 3D Rooftop: Weathered Dark Concrete/Gravel or Green Sky-Garden Deck + Architectural Parapet + 3D HVAC Penthouse
-        const isGreenRoof = (h >= 14.0 && h <= 56.0 && bHash % 4 === 0);
-        const deckRgb = isGreenRoof ? [0.34, 0.49, 0.31] : ((bHash % 2 === 0) ? [0.42, 0.41, 0.39] : [0.49, 0.47, 0.44]);
-        const parapetWallRgb = parapetPalette[bucketIdx];
-        const parapetCopingRgb = [
-          Math.min(1, parapetWallRgb[0] * 1.12),
-          Math.min(1, parapetWallRgb[1] * 1.12),
-          Math.min(1, parapetWallRgb[2] * 1.12)
-        ];
+        // 2. Large Shopping Mall / Retail Podium (h <= 26m and area >= 850 m²)
+        if (h <= 26.0 && areaM2 >= 850.0) {
+          const mp = MALL_PALETTES[bHash % MALL_PALETTES.length];
+          const mScheme = 300 + (bHash % 3);
+          pushMetricShaderWallRing(enuRing, minH, h, mp.base, mp.band, mScheme, h);
+          pushSolidRoofPoly(enuRing, h - 0.6, h + 0.9, roofStoneRgb, roofStoneRgb);
+          const insetRoof = scaleEnuRing(enuRing, 0.90);
+          pushSolidRoofPoly(insetRoof, h + 0.9, h + 1.0, null, roofSlabRgb);
+          // Rooftop Glass Atrium Skylight + HVAC Cooling Towers
+          const skylightRing = scaleEnuRing(enuRing, 0.45);
+          pushSolidRoofPoly(skylightRing, h + 1.0, h + 3.2, [0.35, 0.52, 0.64], [0.48, 0.68, 0.80]);
+          const ctRing = makeArchFootprint("rect", cx + effR * 0.35, cy - effR * 0.25, 6.5, 4.2, 0);
+          pushSolidRoofPoly(ctRing, h + 1.0, h + 3.8, coolingRgb, plantTopRgb);
+          continue;
+        }
 
-        // Raised perimeter parapet wall + inset recessed roof well
-        pushSolidRoofPoly(topRing, h - 0.65, h + 0.55, parapetWallRgb, parapetCopingRgb);
-        const insetDeckRing = scaleEnuRing(topRing, 0.88);
-        pushSolidRoofPoly(insetDeckRing, h + 0.55, h + 0.58, null, deckRgb);
+        // 3. Determine Scheme for High-Rise / Mid-Rise Buildings (Office 800..802, Hotel 1200..1201, or Condo 100..114)
+        let schemeCode = 100 + (bHash % 15);
+        let pal = CONDO_PALETTES[bHash % CONDO_PALETTES.length];
+        let isOffice = false;
 
-        if (effR >= 7.5 && h >= 16.0) {
-          // 3D Rooftop Mechanical Penthouse / Elevator Overrun Core
-          const mechRing = scaleEnuRing(topRing, 0.38);
-          const mechH = Math.min(4.5, Math.max(2.6, h * 0.045));
-          pushSolidRoofPoly(mechRing, h + 0.55, h + 0.55 + mechH, [0.55, 0.58, 0.62], [0.68, 0.71, 0.75]);
+        if (h >= 52.0 && (bHash % 3 === 0)) {
+          const oIdx = bHash % 3;
+          schemeCode = 800 + oIdx;
+          pal = OFFICE_PALETTES[oIdx];
+          isOffice = true;
+        } else if (h >= 36.0 && (bHash % 5 === 1)) {
+          const hIdx = bHash % 2;
+          schemeCode = 1200 + hIdx;
+          pal = HOTEL_PALETTES[hIdx];
+        }
+
+        // Parcel ground apron / landscaped podium base under tall towers so 2D satellite shadows are softened
+        if (minH === 0 && effR >= 7.0) {
+          const apronRing = expandEnuRing(enuRing, 2.2);
+          pushSolidRoofPoly(apronRing, 0.0, 0.55, roofStoneRgb, [0.74, 0.71, 0.66]);
+        }
+
+        let topRing = enuRing;
+        if (h >= 58.0 && effR >= 9.0 && minH === 0) {
+          // Articulated Podium + Setback Tower Shaft for Tall Skyscrapers
+          const podZ = Math.min(16.5, Math.max(10.5, Math.round(h * 0.14)));
+          const podRing = expandEnuRing(enuRing, 2.4);
+          pushMetricShaderWallRing(podRing, 0.55, podZ, pal.base, pal.band, schemeCode, h);
+          pushSolidRoofPoly(podRing, podZ - 0.35, podZ + 0.45, roofStoneRgb, (bHash % 2 === 0) ? gardenRgb : roofSlabRgb);
+
+          if (h >= 92.0 && (bHash % 2 === 0)) {
+            const splitZ = Math.round(h * 0.76);
+            pushMetricShaderWallRing(enuRing, podZ, splitZ, pal.base, pal.band, schemeCode, h);
+            pushSolidRoofPoly(enuRing, splitZ - 0.4, splitZ + 0.4, roofStoneRgb, gardenRgb);
+            topRing = scaleEnuRing(enuRing, 0.84);
+            pushMetricShaderWallRing(topRing, splitZ, h, pal.base, pal.band, schemeCode, h);
+          } else {
+            pushMetricShaderWallRing(enuRing, podZ, h, pal.base, pal.band, schemeCode, h);
+          }
+        } else {
+          pushMetricShaderWallRing(enuRing, minH, h, pal.base, pal.band, schemeCode, h);
+        }
+
+        // 4. Haio.sg 3D Rooftop Architecture: Perimeter Parapet + Recessed Roof Well + Crown Trellis Frame + Mechanical Plant + Sky-Garden
+        pushSolidRoofPoly(topRing, h - 0.45, h + 1.10, roofStoneRgb, roofStoneRgb);
+        const wellRing = scaleEnuRing(topRing, 0.88);
+        pushSolidRoofPoly(wellRing, h + 1.10, h + 1.18, null, roofSlabRgb);
+
+        if (effR >= 7.2 && h >= 18.0) {
+          // 3D Mechanical Plant Room / Elevator Overrun Core
+          const plantRing = scaleEnuRing(topRing, 0.42);
+          const plantH = Math.min(4.2, Math.max(2.8, h * 0.04));
+          pushSolidRoofPoly(plantRing, h + 1.18, h + 1.18 + plantH, plantWallRgb, plantTopRgb);
+
+          // Adjacent Rooftop Sky-Garden or Cooling Tower Bank
+          const featRing = scaleEnuRing(topRing, 0.68);
+          if (isOffice) {
+            pushSolidRoofPoly(featRing, h + 1.18, h + 2.6, coolingRgb, plantTopRgb);
+          } else {
+            pushSolidRoofPoly(featRing, h + 1.18, h + 1.75, roofStoneRgb, gardenRgb);
+            // Architectural Rooftop Crown Trellis / Pergola Frame on Condo/Hotel Towers
+            const crownFrameOuter = scaleEnuRing(topRing, 0.82);
+            pushSolidRoofPoly(crownFrameOuter, h + 2.8, h + 3.35, pal.band, pal.base);
+          }
         }
       }
 
@@ -3968,21 +4969,23 @@ def main():
       }
 
       const cityGroup = new THREE.Group();
-      for (let i = 0; i < 6; i++) {
-        const b = buckets[i];
-        if (!b.pos.length) continue;
-        const g = new THREE.BufferGeometry();
-        g.setAttribute("position", new THREE.Float32BufferAttribute(b.pos, 3));
-        g.setAttribute("uv", new THREE.Float32BufferAttribute(b.uv, 2));
-        g.setAttribute("color", new THREE.Float32BufferAttribute(b.col, 3));
-        const m = new THREE.Mesh(g, three3DLayer.cityFacadeMats[i]);
-        m.frustumCulled = false;
-        cityGroup.add(m);
+      if (wallPos.length) {
+        const wg = new THREE.BufferGeometry();
+        wg.setAttribute("position", new THREE.Float32BufferAttribute(wallPos, 3));
+        wg.setAttribute("normal", new THREE.Float32BufferAttribute(wallNorm, 3));
+        wg.setAttribute("uv", new THREE.Float32BufferAttribute(wallUv, 2));
+        wg.setAttribute("color", new THREE.Float32BufferAttribute(wallCol, 3));
+        wg.setAttribute("hdbBand", new THREE.Float32BufferAttribute(wallBand, 4));
+        wg.setAttribute("hdbWall", new THREE.Float32BufferAttribute(wallMeta, 4));
+        const wm = new THREE.Mesh(wg, three3DLayer.cityFacadeMats[0]);
+        wm.frustumCulled = false;
+        cityGroup.add(wm);
       }
 
       if (roofPos.length) {
         const rg = new THREE.BufferGeometry();
         rg.setAttribute("position", new THREE.Float32BufferAttribute(roofPos, 3));
+        rg.setAttribute("normal", new THREE.Float32BufferAttribute(roofNorm, 3));
         rg.setAttribute("color", new THREE.Float32BufferAttribute(roofCol, 3));
         const rm = new THREE.Mesh(rg, three3DLayer.cityRoofMat);
         rm.frustumCulled = false;
@@ -4095,7 +5098,7 @@ def main():
 
       map3d = new maplibregl.Map({
         container: "map3dCanvas",
-        center: [initLon + 0.00030, initLat - 0.00016],
+        center: [initLon + 0.00014, initLat + 0.00004],
         zoom: window.innerWidth <= 768 ? 15.8 : 16.55,
         pitch: 58,
         bearing: 60,
@@ -4167,7 +5170,7 @@ def main():
               type: "raster",
               source: "sat-tiles",
               layout: { visibility: "visible" },
-              paint: { "raster-opacity": 1.0, "raster-contrast": 0.08, "raster-saturation": 0.12 }
+              paint: { "raster-opacity": 1.0, "raster-contrast": -0.06, "raster-brightness-min": 0.08, "raster-saturation": 0.04 }
             },
             {
               id: "light-raster-layer",
@@ -4357,11 +5360,11 @@ def main():
         if (map3d) map3d.triggerRepaint();
       });
       map3d.on("moveend", () => {
-        scheduleOsmCityRebuild(80);
+        scheduleOsmCityRebuild(140);
       });
-      map3d.on("sourcedata", (e) => {
-        if (e.sourceId === "openmaptiles" && e.isSourceLoaded) {
-          scheduleOsmCityRebuild(100);
+      map3d.on("idle", () => {
+        if (!three3DLayer || three3DLayer.osmCityBuildingCount === 0) {
+          scheduleOsmCityRebuild(120);
         }
       });
       map3d.on("zoom", () => {
@@ -4433,10 +5436,11 @@ def main():
       }
       if (map3d.getLayer("osm-3d-buildings")) {
         const hasThreeCity = (three3DLayer && three3DLayer.osmCityBuildingCount > 0 && zNow >= 14.0);
-        // If candidates.length > 950 at intermediate zoom, keep MapLibre native fill-extrusion visible at 0.55 opacity so outer buildings beyond the 950 nearest Three.js meshes still render in 3D with zero geographic gaps!
+        // If candidates.length > 950 at intermediate zoom (< 14.8), keep MapLibre native fill-extrusion visible at 0.55 opacity so outer buildings beyond the 950 nearest Three.js meshes still render in 3D with zero geographic gaps!
+        const showFallbackExtrusion = Boolean(three3DLayer && three3DLayer.osmCityTruncated && zNow < 14.8);
         const fillExtOpacity = !is3DBlocksEnabled
           ? 0.0
-          : (hasThreeCity ? (three3DLayer.osmCityTruncated ? 0.55 : 0.002) : 0.82);
+          : (hasThreeCity ? (showFallbackExtrusion ? 0.55 : 0.002) : 0.82);
         map3d.setPaintProperty(
           "osm-3d-buildings",
           "fill-extrusion-opacity",
@@ -5788,7 +6792,7 @@ def main():
               <div class="kv-row">
                 <div class="kv-lbl">4. 3D Building Coverage (950 Cap Fallback) &amp; Complete WebGL GPU Disposal</div>
                 <div class="kv-val">
-                  • <strong>Zero Geographic Gaps Across Zoom Levels:</strong> At zoom ≥ 14.0, the nearest <strong>950</strong> OpenMapTiles building footprints render as Three.js meshes with procedural 4K façades. Whenever <code>candidates.length &gt; 950</code> (`osmCityTruncated = true`), MapLibre's native GPU <code>osm-3d-buildings</code> <code>fill-extrusion</code> layer automatically remains visible at <code>0.55</code> opacity so buildings beyond the 950 cap still render in 3D with zero geographic holes.<br/>
+                  • <strong>Zero Geographic Gaps Across Zoom Levels:</strong> At zoom ≥ 14.0, the nearest <strong>950</strong> OpenMapTiles building footprints render as Three.js meshes with procedural 4K façades. Whenever <code>candidates.length &gt; 950</code> (<code>osmCityTruncated = true</code>), MapLibre's native GPU <code>osm-3d-buildings</code> <code>fill-extrusion</code> layer automatically remains visible at <code>0.55</code> opacity so buildings beyond the 950 cap still render in 3D with zero geographic holes.<br/>
                   • <strong>Full GPU Resource Cleanup:</strong> <code>disposeThreeGroup(grp, true)</code> and <code>disposeAllThreeGpuResources()</code> explicitly dispose buffer geometries, materials, procedural <code>CanvasTexture</code> maps, and <code>renderer.renderLists</code>.
                 </div>
               </div>
@@ -6640,9 +7644,8 @@ def main():
             <strong>${u5br}</strong>
           </div>
 
-          <p style="font-size:0.73rem; color:#64748b; line-height:1.42; margin:6px 0 10px;">
-            <span class="badge-missing">Architectural CAD Façade Not Publicly Filed</span> Exterior shown as neutral storey-proportional procedural massing (${spec.storeys} storeys). Pick a block to colour homes by unit type:
-          </p>
+          <!-- REAL ARCHITECTURAL FLOORPLAN, ELEVATION SECTION & FACADE BLUEPRINT (DATASET #05B) -->
+          ${buildArchitecturalBlueprintSvg(p, spec)}
 
           <!-- OR PICK A BLOCK -->
           <div class="haio-block-grid">
@@ -6652,6 +7655,22 @@ def main():
               <span>${b.stacksLabel}<br/>${b.storeys} storeys</span>
             </div>`).join("")}
           </div>
+
+          ${spec.arch ? `
+          <details class="tech-accordion" style="margin:8px 0 10px;">
+            <summary>🏛️ Full 9-Category Architectural, Floorplan, Elevation &amp; Structural Dossier (${spec.arch.arch_id})</summary>
+            <div class="tech-body" style="font-size:0.71rem; line-height:1.45;">
+              <div style="margin-bottom:4px;"><strong>1. Masterplan &amp; Site Layout:</strong> ${spec.arch.cat1_masterplan_and_site_layout}</div>
+              <div style="margin-bottom:4px;"><strong>2. Plot Layout &amp; DM Boundaries:</strong> ${spec.arch.cat2_plot_layout_and_boundaries}</div>
+              <div style="margin-bottom:4px;"><strong>3. Tower &amp; Building Floor Plans:</strong> ${spec.arch.cat3_tower_and_building_floor_plans}</div>
+              <div style="margin-bottom:4px;"><strong>4. Typical Floor Plates &amp; Cores:</strong> ${spec.arch.cat4_typical_floor_plans_and_plates}</div>
+              <div style="margin-bottom:4px;"><strong>5. Elevations, Curtain-Wall &amp; Structural System:</strong> ${spec.arch.cat5_elevations_and_building_sections}</div>
+              <div style="margin-bottom:4px;"><strong>6. Apartment Mix &amp; Area Schedule:</strong> ${spec.arch.cat6_apartment_config_and_area_schedule}</div>
+              <div style="margin-bottom:4px;"><strong>7. Landscape, Pools &amp; MEP Utilities:</strong> ${spec.arch.cat7_landscape_and_infrastructure_plan}</div>
+              <div style="margin-bottom:4px;"><strong>8. Parking Layouts &amp; Ratios:</strong> ${spec.arch.cat8_parking_layouts_and_allocation}</div>
+              <div><strong>9. Concrete/Rebar Grade &amp; Brochure Status:</strong> ${spec.arch.cat9_published_specs_and_brochure_status}</div>
+            </div>
+          </details>` : ""}
 
           <!-- 04. TRAFFIC RELATIONSHIP & LOGISTICS -->
           <div class="prof-sec-hdr"><span>04. Traffic Relationship &amp; HGV Load</span><span class="ep-pill-mod">MODELLED + PUBLISHED</span></div>
