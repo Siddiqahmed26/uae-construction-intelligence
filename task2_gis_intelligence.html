@@ -1427,23 +1427,23 @@
   <header class="exec-header">
     <div class="brand-cluster">
       <div class="brand-title" onclick="backToCityMapOverview()">
-        <span class="haio-logo-pin">◈</span>
-        <span>uae intelligence</span>
+        <span class="haio-logo-pin">🗺️</span>
+        <span>UAE Construction &amp; Traffic Intelligence</span>
       </div>
       <div class="kpi-strip">
-        <span class="kpi-chip">Scope <strong id="hudScope">Dubai 3D</strong></span>
-        <span class="kpi-chip">Sites <strong id="hudProjects">25</strong></span>
+        <span class="kpi-chip">Scope <strong id="hudScope">Dubai Corridors</strong></span>
+        <span class="kpi-chip">Sites <strong id="hudProjects">25 Active Sites</strong></span>
         <span class="kpi-chip">Avg Speed <strong id="hudAvgSpeed" style="color:#059669;">43.9 km/h</strong></span>
       </div>
     </div>
 
-    <!-- 5 MAIN AREAS (HAIO PILL NAVIGATION) -->
+    <!-- 5 MAIN EXECUTIVE AREAS (GOAL-ALIGNED NAVIGATION) -->
     <nav class="mode-switcher" aria-label="Primary Platform Modes">
-      <button class="mode-btn" id="mode-overview" onclick="setPlatformMode('overview', this)">1. Discover</button>
-      <button class="mode-btn active" id="mode-construction" onclick="setPlatformMode('construction', this)">2. 3D Towers &amp; Blocks</button>
-      <button class="mode-btn" id="mode-traffic" onclick="setPlatformMode('traffic', this)">3. Commute &amp; Traffic</button>
-      <button class="mode-btn" id="mode-project" onclick="setPlatformMode('project', this)">4. Block Explorer</button>
-      <button class="mode-btn" id="mode-evidence" onclick="setPlatformMode('evidence', this)">5. Full Data ↓</button>
+      <button class="mode-btn active" id="mode-overview" onclick="setPlatformMode('overview', this)">1. Overview</button>
+      <button class="mode-btn" id="mode-construction" onclick="setPlatformMode('construction', this)">2. Construction Map</button>
+      <button class="mode-btn" id="mode-traffic" onclick="setPlatformMode('traffic', this)">3. Traffic Intelligence</button>
+      <button class="mode-btn" id="mode-project" onclick="setPlatformMode('project', this)">4. Project Explorer</button>
+      <button class="mode-btn" id="mode-evidence" onclick="setPlatformMode('evidence', this)">5. Evidence &amp; Data ↓</button>
     </nav>
 
     <div class="header-actions">
@@ -1467,18 +1467,18 @@
     </div>
   </header>
 
-  <!-- 2. FULL-BLEED 3D STAGE + FLOATING ROUNDED CARD INSPECTOR (HAIO.SG ARCHITECTURE) -->
+  <!-- 2. FULL-BLEED REALISTIC 3D GIS STAGE + FLOATING INTELLIGENCE INSPECTOR -->
   <main class="workbench" id="mainWorkbench">
 
     <section class="map-stage" id="mapStage">
-      <!-- Top-Left Floating Pill Controls (Exact haio.sg < Map + Blocks Toggle + 2D/3D + Layers) -->
+      <!-- Top-Left Floating Map Controls -->
       <div class="haio-floating-top-left">
-        <button class="haio-pill-btn" onclick="backToCityMapOverview()" title="Zoom out to city-wide 3D overview">
-          <span>‹ Map</span>
+        <button class="haio-pill-btn" onclick="backToCityMapOverview()" title="Reset to Dubai &amp; UAE Corridor Overview">
+          <span>‹ Overview</span>
         </button>
 
-        <button class="haio-pill-btn" id="blocksTogglePill" onclick="toggle3DBlocksMassing()" title="Toggle 3D Floor &amp; Stack Extrusions">
-          <span>Blocks</span>
+        <button class="haio-pill-btn" id="blocksTogglePill" onclick="toggle3DBlocksMassing()" title="Toggle Real OpenStreetMap 3D Buildings">
+          <span>3D Buildings</span>
           <span class="haio-switch-track on" id="blocksSwitchTrack">
             <span class="haio-switch-thumb"></span>
           </span>
@@ -1490,31 +1490,31 @@
         </div>
 
         <button class="haio-pill-btn" onclick="toggleLayersPopover()" style="padding:8px 13px; font-size:0.78rem;">
-          <span>⚙ Layers (11)</span>
+          <span>⚙ Layers &amp; Filters (11)</span>
         </button>
       </div>
 
-      <!-- Center-Top Floating Lens Dock (haio.sg Discovery Lenses) -->
-      <div class="haio-lens-dock" id="haioLensDock">
-        <button class="haio-lens-btn" id="lens-1" onclick="selectLensDock(1)">
-          <span class="lens-ico">🧭</span>
-          <span>Discover</span>
+      <!-- Center-Top Floating Scenario Dock (Hidden to avoid duplicate toolbar clutter) -->
+      <div class="haio-lens-dock" id="haioLensDock" style="display:none;">
+        <button class="haio-lens-btn active" id="lens-1" onclick="selectLensDock(1)">
+          <span class="lens-ico">🔥</span>
+          <span>Hotspots</span>
         </button>
-        <button class="haio-lens-btn active" id="lens-2" onclick="selectLensDock(2)">
-          <span class="lens-ico">🏢</span>
-          <span>3D Towers</span>
-        </button>
-        <button class="haio-lens-btn" id="lens-3" onclick="selectLensDock(3)">
-          <span class="lens-ico">🚗</span>
+        <button class="haio-lens-btn" id="lens-2" onclick="selectLensDock(2)">
+          <span class="lens-ico">🚧</span>
           <span>JVC Traffic</span>
         </button>
-        <button class="haio-lens-btn" id="lens-4" onclick="selectLensDock(4)">
+        <button class="haio-lens-btn" id="lens-3" onclick="selectLensDock(3)">
           <span class="lens-ico">⏱️</span>
           <span>AM vs PM</span>
         </button>
+        <button class="haio-lens-btn" id="lens-4" onclick="selectLensDock(4)">
+          <span class="lens-ico">🏗️</span>
+          <span>Projects</span>
+        </button>
         <button class="haio-lens-btn" id="lens-5" onclick="selectLensDock(5)">
-          <span class="lens-ico">📦</span>
-          <span>Supply</span>
+          <span class="lens-ico">🏢</span>
+          <span>Downtown 3D</span>
         </button>
         <button class="haio-lens-btn" id="lens-6" onclick="selectLensDock(6)">
           <span class="lens-ico">🗺️</span>
@@ -1522,7 +1522,7 @@
         </button>
       </div>
 
-      <!-- Primary WebGL 3D MapLibre GL JS Canvas (60° Pitch, 45° Bearing, 3D Floor/Stack Extrusions) -->
+      <!-- Primary WebGL 3D MapLibre GL JS Canvas (Real OSM 3D Buildings + Satellite + Road Corridors) -->
       <div id="map3dCanvas"></div>
       <!-- Synchronized Backing 2D Leaflet Canvas -->
       <div id="mapCanvas" class="basemap-dark"></div>
@@ -1581,7 +1581,7 @@
 
         <div class="layer-list">
           <div class="layer-item">
-            <label><input type="checkbox" id="chk-L1" checked onchange="toggleLayerGroup('projects', this.checked)"/><span class="layer-dot" style="background:#2563eb;"></span> 1. Construction Projects &amp; 3D Towers</label>
+            <label><input type="checkbox" id="chk-L1" checked onchange="toggleLayerGroup('projects', this.checked)"/><span class="layer-dot" style="background:#2563eb;"></span> 1. Active Construction Projects (32 + 5)</label>
             <span class="prov-tag prov-ver">Default ON</span>
           </div>
           <div class="layer-item">
@@ -1627,21 +1627,21 @@
         </div>
       </div>
 
-      <!-- Bottom-Left Floating Pills: Compass Orbit Pill (🧭 NE 45°) + Sun/Time Window + Basemap -->
+      <!-- Bottom-Left Floating Pills: Compass Orbit + 4 Diurnal Time Windows + Basemap -->
       <div class="haio-floating-bottom-left">
         <button class="haio-compass-pill" onclick="orbitCameraStep()" title="Click to orbit 3D camera by 45°">
-          <svg class="compass-needle-svg" id="compassSvg" viewBox="0 0 24 24" style="transform: rotate(-45deg);">
+          <svg class="compass-needle-svg" id="compassSvg" viewBox="0 0 24 24" style="transform: rotate(-28deg);">
             <polygon points="12,2 16,12 12,10 8,12" fill="#ef4444"/>
             <polygon points="12,22 16,12 12,14 8,12" fill="#94a3b8"/>
           </svg>
-          <span id="compassLabel">NE 45°</span>
+          <span id="compassLabel">NE 28°</span>
         </button>
 
-        <div class="time-group" aria-label="Sun Lighting &amp; Traffic Time Window">
+        <div class="time-group" aria-label="Traffic Time Window Selector">
           <button class="time-btn" data-tp="Morning Peak (07:30–09:30)" onclick="setTimeWindow('Morning Peak (07:30–09:30)', this)">☀ AM Peak</button>
-          <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday</button>
+          <button class="time-btn" data-tp="Midday (12:00–14:00)" onclick="setTimeWindow('Midday (12:00–14:00)', this)">🚛 Midday HGV</button>
           <button class="time-btn active" data-tp="Evening Peak (17:00–20:00)" onclick="setTimeWindow('Evening Peak (17:00–20:00)', this)">🌇 PM Peak</button>
-          <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night</button>
+          <button class="time-btn" data-tp="Night (22:00–05:00)" onclick="setTimeWindow('Night (22:00–05:00)', this)">🌙 Night Pour</button>
         </div>
 
         <div class="basemap-switcher">
@@ -1661,16 +1661,16 @@
       </div>
     </section>
 
-    <!-- HAIO.SG FLOATING RIGHT ROUNDED CARD INSPECTOR -->
+    <!-- FLOATING RIGHT INTELLIGENCE INSPECTOR -->
     <aside class="sidebar-right">
       <div class="drawer-tabs">
-        <button class="dtab-btn" id="dtab-uc" onclick="switchDrawerTab('uc')">🧭 Discover</button>
-        <button class="dtab-btn active" id="dtab-insp" onclick="switchDrawerTab('insp')">🧊 3D Block &amp; Road</button>
+        <button class="dtab-btn active" id="dtab-uc" onclick="switchDrawerTab('uc')">📌 Scenarios &amp; Hotspots</button>
+        <button class="dtab-btn" id="dtab-insp" onclick="switchDrawerTab('insp')">🏗️ Project / Road Inspector</button>
         <button class="dtab-btn" id="dtab-qa" onclick="switchDrawerTab('qa')">💬 Ask Data</button>
       </div>
 
-      <!-- TAB 1: DISCOVER, 3D LAUNCHES & GUIDED SCENARIOS -->
-      <div class="drawer-body" id="dpanel-uc" style="display:none;">
+      <!-- TAB 1: GUIDED CONSTRUCTION & TRAFFIC SCENARIOS -->
+      <div class="drawer-body" id="dpanel-uc">
         <div style="display:grid; grid-template-columns:repeat(4,1fr); gap:4px; margin-bottom:10px;">
           <button class="uc-btn active" id="btn-uc1" onclick="runUseCase(1)">1. Hotspots</button>
           <button class="uc-btn" id="btn-uc2" onclick="runUseCase(2)">2. JVC</button>
@@ -1679,7 +1679,7 @@
         </div>
 
         <details class="tech-accordion" style="margin-bottom:10px;">
-          <summary style="font-size:0.73rem; padding:8px 12px;">🧭 Guided 5-Step Story Tour (UAE → Dubai → JVC → 3D Tower → Road)</summary>
+          <summary style="font-size:0.73rem; padding:8px 12px;">🧭 Guided 5-Step Story Tour (UAE → Dubai → JVC → Project → Road)</summary>
           <div class="tech-body" style="padding:8px 10px;">
             <div class="story-bar" role="region" aria-label="Guided Visual Storytelling Sequence">
               <button class="story-step" id="story-1" onclick="runStoryStep(1)">1. UAE Overview</button>
@@ -1698,8 +1698,8 @@
         <div id="useCaseContainer"></div>
       </div>
 
-      <!-- TAB 2: HAIO.SG 3D BLOCK / FLOOR / STACK EXPLORER & ROAD INSPECTOR -->
-      <div class="drawer-body" id="dpanel-insp">
+      <!-- TAB 2: CONSTRUCTION PROJECT & ROAD CORRIDOR INSPECTOR -->
+      <div class="drawer-body" id="dpanel-insp" style="display:none;">
         <div id="inspectorContainer"></div>
       </div>
 
@@ -2134,244 +2134,58 @@
       return { storeys, homes, blocksCount, stacksPerBlock, heightM, blocks };
     }
 
-    function rotRectRing(cLon, cLat, rx, ry, angleDeg) {
-      const rad = (angleDeg * Math.PI) / 180.0;
-      const cosA = Math.cos(rad);
-      const sinA = Math.sin(rad);
-      const corners = [[-rx, -ry], [rx, -ry], [rx, ry], [-rx, ry], [-rx, -ry]];
-      return corners.map(([dx, dy]) => [
-        +(cLon + (dx * cosA - dy * sinA)).toFixed(6),
-        +(cLat + (dx * sinA + dy * cosA) * 0.90).toFixed(6)
-      ]);
+    // Build smooth circular/octagonal active construction site ground perimeter (zero fake rectangular boxes)
+    function makeSiteCircleRing(cLon, cLat, radiusMeters, steps = 28) {
+      const coords = [];
+      const dLat = radiusMeters / 111320.0;
+      const dLon = radiusMeters / (111320.0 * Math.cos((cLat * Math.PI) / 180.0));
+      for (let i = 0; i <= steps; i++) {
+        const ang = (i / steps) * 2.0 * Math.PI;
+        coords.push([
+          +(cLon + Math.cos(ang) * dLon).toFixed(6),
+          +(cLat + Math.sin(ang) * dLat).toFixed(6)
+        ]);
+      }
+      return coords;
     }
 
-    // Build realistic 3D surrounding context skyline around all UAE project clusters (haio.sg style)
-    function buildContext3DGeoJSON() {
+    function buildProjectSiteZonesGeoJSON() {
       const features = [];
-      const offsets = [
-        [-0.0014, 0.0011, 145, 0.00022, 0.00018, 24],
-        [-0.0021, 0.0004, 185, 0.00024, 0.00019, 24],
-        [-0.0016, -0.0010, 118, 0.00025, 0.00018, 24],
-        [-0.0009, 0.0017, 162, 0.00021, 0.00017, 24],
-        [0.0012, 0.0014, 154, 0.00026, 0.00020, 24],
-        [0.0019, 0.0005, 112, 0.00023, 0.00018, 24],
-        [-0.0025, -0.0005, 96, 0.00022, 0.00018, 24],
-        [0.0008, -0.0015, 84, 0.00025, 0.00019, 24],
-        [-0.0004, -0.0018, 128, 0.00021, 0.00017, 24],
-        [-0.0028, 0.0015, 134, 0.00024, 0.00018, 24]
-      ];
-      const shades = ["#64748b", "#475569", "#526077", "#718096", "#3b495e"];
-      DATA.projects.slice(0, 25).forEach((p, pIdx) => {
-        const [lat, lon] = parseCoord(p.coordinates);
-        offsets.forEach(([dlon, dlat, hBase, rx, ry, ang], idx) => {
-          const bLon = lon + dlon;
-          const bLat = lat + dlat;
-          const h = Math.round(hBase * (0.75 + ((pIdx * 7 + idx * 3) % 5) * 0.12));
-          // Podium
-          features.push({
-            type: "Feature",
-            properties: { base: 0, height: 18, color: "#475569" },
-            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 1.25, ry * 1.25, ang)] }
-          });
-          // Main context shaft
-          features.push({
-            type: "Feature",
-            properties: { base: 18, height: h, color: shades[(pIdx + idx) % shades.length] },
-            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx, ry, ang)] }
-          });
-          // Crown step
-          features.push({
-            type: "Feature",
-            properties: { base: h, height: h + 12, color: "#94a3b8" },
-            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 0.72, ry * 0.72, ang)] }
-          });
-        });
-      });
-      return { type: "FeatureCollection", features };
-    }
-
-    // Build floor-by-floor & stack-by-stack 3D architectural massing for all 37 projects + 5 JVC sub-clusters
-    function buildProject3DMassingGeoJSON() {
-      const features = [];
-      if (!is3DBlocksEnabled) return { type: "FeatureCollection", features };
-
       const emFilter = document.getElementById("emirateSelect") ? document.getElementById("emirateSelect").value : "ALL";
-      const linkByProj = {};
-      DATA.impact_links.forEach(l => { linkByProj[l.project_id] = l; });
+      const q = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
 
       DATA.projects.forEach(p => {
         if (emFilter !== "ALL" && p.emirate !== emFilter) return;
+        if (q && !JSON.stringify(p).toLowerCase().includes(q)) return;
         const [lat, lon] = parseCoord(p.coordinates);
-        const spec = getProject3DSpec(p);
-        const isSelectedProj = (p.project_id === selected3DProjectId);
-        const link = linkByProj[p.project_id];
-        const primObs = link ? getRoadObsForWindow(link.primary_road_id, currentTimeWindow) : null;
-        const tColor = primObs ? congestionColor(primObs.congestion_level) : "#3b82f6";
+        const st = projectScaleStyle(p);
+        const isSel = (p.project_id === selected3DProjectId);
+        const radM = st.radius >= 11 ? 320 : (st.radius >= 8 ? 220 : 150);
 
-        spec.blocks.forEach(blk => {
-          const bLon = lon + blk.dLon;
-          const bLat = lat + blk.dLat;
-          const rx = 0.00024;
-          const ry = 0.00019;
-          const rot = 24;
-          const podiumH = 25;
-
-          // 1. Louvered Podium Base (5 alternating architectural slab layers)
-          for (let s = 0; s < 5; s++) {
-            const sb0 = s * 5;
-            const sb1 = sb0 + 5;
-            features.push({
-              type: "Feature",
-              properties: {
-                project_id: p.project_id,
-                block_id: blk.id,
-                base: sb0,
-                height: sb1,
-                color: (s % 2 === 0) ? "#cbd5e1" : "#64748b"
-              },
-              geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 1.16, ry * 1.16, rot)] }
-            });
-          }
-
-          // 2. Lower Sky-Terrace / Amenity Deck (Emerald Garden + Warm Amber Level — exact haio.sg signature)
-          features.push({
-            type: "Feature",
-            properties: { project_id: p.project_id, block_id: blk.id, base: podiumH, height: podiumH + 3.5, color: "#10b981" },
-            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 1.08, ry * 1.08, rot)] }
-          });
-          features.push({
-            type: "Feature",
-            properties: { project_id: p.project_id, block_id: blk.id, base: podiumH + 3.5, height: podiumH + 9.5, color: "#f59e0b" },
-            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 1.02, ry * 1.02, rot)] }
-          });
-
-          // 3. Central Structural Core (provides vertical mullion contrast between the 4 corner stacks)
-          const shaftBase = podiumH + 9.5;
-          const shaftTop = blk.heightM;
-          features.push({
-            type: "Feature",
-            properties: { project_id: p.project_id, block_id: blk.id, base: shaftBase, height: shaftTop - 4, color: "#cbd5e1" },
-            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 0.56, ry * 0.56, rot)] }
-          });
-
-          // 4. 4 Quadrant Vertical Stacks (Stack 01..04) x 12 Vertical Floor-Band Tiers
-          const stackQuads = [
-            { id: "S1", dx: -rx * 0.52, dy: ry * 0.52, unit: "4br" },
-            { id: "S2", dx: rx * 0.52, dy: ry * 0.52, unit: "4br" },
-            { id: "S3", dx: rx * 0.52, dy: -ry * 0.52, unit: "5br" },
-            { id: "S4", dx: -rx * 0.52, dy: -ry * 0.52, unit: "5br" }
-          ];
-          const qRx = rx * 0.44;
-          const qRy = ry * 0.44;
-          const rad = (rot * Math.PI) / 180.0;
-          const cosA = Math.cos(rad);
-          const sinA = Math.sin(rad);
-
-          const numTiers = 12;
-          const tierSpan = (shaftTop - shaftBase) / numTiers;
-
-          for (let t = 0; t < numTiers; t++) {
-            const z0 = +(shaftBase + t * tierSpan).toFixed(1);
-            const z1 = +(z0 + tierSpan * 0.84).toFixed(1);
-            const zTop = +(z0 + tierSpan).toFixed(1);
-
-            const isSkyTerrace = (t === 4 || t === 8);
-            let floorZone = "low";
-            if (t >= 3 && t <= 6) floorZone = "mid";
-            else if (t >= 7 && t <= 9) floorZone = "high";
-            else if (t >= 10) floorZone = "penthouse";
-
-            if (isSkyTerrace) {
-              // Recessed Sky-Garden & Warm Golden Amenity Band across the tower
-              features.push({
-                type: "Feature",
-                properties: { project_id: p.project_id, block_id: blk.id, base: z0, height: +(z0 + tierSpan * 0.35).toFixed(1), color: "#10b981" },
-                geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 0.96, ry * 0.96, rot)] }
-              });
-              features.push({
-                type: "Feature",
-                properties: { project_id: p.project_id, block_id: blk.id, base: +(z0 + tierSpan * 0.35).toFixed(1), height: zTop, color: "#f59e0b" },
-                geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 0.92, ry * 0.92, rot)] }
-              });
-              continue;
-            }
-
-            stackQuads.forEach(sq => {
-              const sLon = bLon + (sq.dx * cosA - sq.dy * sinA);
-              const sLat = bLat + (sq.dx * sinA + sq.dy * cosA) * 0.90;
-              const unitCat = (t >= 10) ? "penthouse" : sq.unit;
-
-              let slabColor = "#ffffff";
-              if (isSelectedProj) {
-                const isNeutral = (active3DBlock === "ALL" && active3DFloor === "ALL" && active3DStack === "ALL" && active3DShowMe === "all");
-                if (isNeutral) {
-                  slabColor = (t % 2 === 0) ? "#ffffff" : "#f8fafc";
-                } else {
-                  const matchBlk = (active3DBlock === "ALL" || active3DBlock === blk.id);
-                  const matchFlr = (active3DFloor === "ALL" || active3DFloor === floorZone);
-                  const matchStk = (active3DStack === "ALL" || active3DStack === sq.id);
-                  const matchShow = (active3DShowMe === "all" || active3DShowMe === "4br_5br_mix" || active3DShowMe === "traffic" || active3DShowMe === unitCat);
-
-                  if (matchBlk && matchFlr && matchStk && matchShow) {
-                    if (active3DShowMe === "traffic") slabColor = tColor;
-                    else if (unitCat === "4br") slabColor = "#f59e0b"; // Warm Gold (4BR / 1-3BR)
-                    else if (unitCat === "5br") slabColor = "#10b981"; // Emerald (5BR / 4BR)
-                    else slabColor = "#2563eb"; // Royal Blue (Penthouses)
-                  } else {
-                    slabColor = "#cbd5e1";
-                  }
-                }
-              } else {
-                slabColor = "#f1f5f9";
-              }
-
-              // Main residential floor-stack volume
-              features.push({
-                type: "Feature",
-                properties: {
-                  project_id: p.project_id,
-                  block_id: blk.id,
-                  stack_id: sq.id,
-                  floor_zone: floorZone,
-                  unit_type: unitCat,
-                  base: z0,
-                  height: z1,
-                  color: slabColor
-                },
-                geometry: { type: "Polygon", coordinates: [rotRectRing(sLon, sLat, qRx, qRy, rot)] }
-              });
-
-              // Crisp horizontal slab-edge shadow band
-              features.push({
-                type: "Feature",
-                properties: {
-                  project_id: p.project_id,
-                  block_id: blk.id,
-                  base: z1,
-                  height: zTop,
-                  color: "#94a3b8"
-                },
-                geometry: { type: "Polygon", coordinates: [rotRectRing(sLon, sLat, qRx * 1.02, qRy * 1.02, rot)] }
-              });
-            });
-          }
-
-          // 5. Crown Architectural Parapet
-          features.push({
-            type: "Feature",
-            properties: { project_id: p.project_id, block_id: blk.id, base: shaftTop, height: shaftTop + 5, color: "#f8fafc" },
-            geometry: { type: "Polygon", coordinates: [rotRectRing(bLon, bLat, rx * 0.78, ry * 0.78, rot)] }
-          });
+        features.push({
+          type: "Feature",
+          properties: {
+            project_id: p.project_id,
+            color: isSel ? "#2563eb" : st.fillColor,
+            fillOpacity: isSel ? 0.28 : 0.16,
+            lineWidth: isSel ? 3.0 : 1.8
+          },
+          geometry: { type: "Polygon", coordinates: [makeSiteCircleRing(lon, lat, radM)] }
         });
       });
 
-      // Also extrude JVC Sub-Development Clusters in 3D
       DATA.subdevs.forEach(sd => {
         if (emFilter !== "ALL" && sd.emirate !== emFilter) return;
+        if (q && !JSON.stringify(sd).toLowerCase().includes(q)) return;
         features.push({
           type: "Feature",
-          properties: { project_id: sd.subdev_id, block_id: "B1", base: 0, height: 110, color: "#a855f7" },
-          geometry: { type: "Polygon", coordinates: [rotRectRing(sd.longitude, sd.latitude, 0.00028, 0.00022, 18)] }
+          properties: {
+            project_id: sd.subdev_id,
+            color: "#a855f7",
+            fillOpacity: 0.18,
+            lineWidth: 1.8
+          },
+          geometry: { type: "Polygon", coordinates: [makeSiteCircleRing(sd.longitude, sd.latitude, 160)] }
         });
       });
 
@@ -2397,7 +2211,7 @@
     function orbitCameraStep() {
       if (!map3d) return;
       const nextBearing = (Math.round(map3d.getBearing() / 45) * 45 + 45) % 360;
-      map3d.easeTo({ bearing: nextBearing, pitch: currentCameraDim === "3D" ? 60 : 0, duration: 650 });
+      map3d.easeTo({ bearing: nextBearing, pitch: currentCameraDim === "3D" ? 55 : 0, duration: 650 });
     }
 
     function setCameraDimension(dim) {
@@ -2406,8 +2220,8 @@
       document.getElementById("btnDim3D").classList.toggle("active", dim === "3D");
       if (map3d) {
         map3d.easeTo({
-          pitch: dim === "3D" ? 60 : 0,
-          bearing: dim === "3D" ? 45 : 0,
+          pitch: dim === "3D" ? 55 : 0,
+          bearing: dim === "3D" ? 28 : 0,
           duration: 800
         });
       }
@@ -2417,17 +2231,16 @@
       is3DBlocksEnabled = !is3DBlocksEnabled;
       const trk = document.getElementById("blocksSwitchTrack");
       if (trk) trk.classList.toggle("on", is3DBlocksEnabled);
+      if (map3d && map3dLoaded && map3d.getLayer("osm-3d-buildings")) {
+        map3d.setLayoutProperty("osm-3d-buildings", "visibility", is3DBlocksEnabled ? "visible" : "none");
+      }
       sync3DMapLayers();
     }
 
     function backToCityMapOverview() {
-      active3DBlock = "ALL";
-      active3DFloor = "ALL";
-      active3DStack = "ALL";
-      active3DShowMe = "all";
       switchDrawerTab("uc");
-      flyBothMaps(25.165, 55.265, 11.6, 52, 30);
-      document.getElementById("hudScope").textContent = "Dubai 3D City Overview";
+      flyBothMaps(25.125, 55.235, 11.4, 50, 28);
+      document.getElementById("hudScope").textContent = "Dubai Corridors Overview";
       runUseCase(1, false);
     }
 
@@ -2436,28 +2249,31 @@
       if (idx === 1) {
         backToCityMapOverview();
       } else if (idx === 2) {
-        showProjectInspector(selected3DProjectId || "PRJ-D11", true);
-      } else if (idx === 3) {
         runUseCase(2, true);
-      } else if (idx === 4) {
+      } else if (idx === 3) {
         runUseCase(3, true);
+      } else if (idx === 4) {
+        showProjectInspector(selected3DProjectId || "PRJ-D6", true);
       } else if (idx === 5) {
-        switchDrawerTab("uc");
-        flyBothMaps(25.1844, 55.2798, 13.8, 60, 45);
-        runUseCase(1, false);
+        // Fly to Downtown Dubai / Business Bay real 3D OpenStreetMap skyline + active road corridors
+        switchDrawerTab("insp");
+        flyBothMaps(25.1915, 55.2745, 15.1, 60, 35);
+        document.getElementById("hudScope").textContent = "Downtown & Business Bay 3D Skyline";
+        showProjectInspector("PRJ-D6", false);
       } else if (idx === 6) {
         runUseCase(4, true);
       }
     }
 
-    function flyBothMaps(lat, lon, zoom, pitch = 60, bearing = 45) {
+    function flyBothMaps(lat, lon, zoom, pitch = 54, bearing = 28) {
+      const clampedZoom = Math.min(17.4, Math.max(9.0, zoom));
       if (map) {
-        map.flyTo([lat, lon], Math.min(18, Math.max(9, Math.round(zoom))), { duration: 0.8 });
+        map.flyTo([lat, lon], Math.min(18, Math.max(9, Math.round(clampedZoom))), { duration: 0.8 });
       }
       if (map3d) {
         map3d.flyTo({
           center: [lon, lat],
-          zoom: Math.max(9, zoom),
+          zoom: clampedZoom,
           pitch: currentCameraDim === "3D" ? pitch : 0,
           bearing: currentCameraDim === "3D" ? bearing : 0,
           duration: 1100,
@@ -2468,42 +2284,43 @@
 
     function init3DMap() {
       if (typeof maplibregl === "undefined") return;
-      const pHero = DATA.projects.find(x => x.project_id === "PRJ-D11") || DATA.projects[0];
-      const [hLat, hLon] = parseCoord(pHero.coordinates);
 
       map3d = new maplibregl.Map({
         container: "map3dCanvas",
-        center: [hLon, hLat],
-        zoom: window.innerWidth <= 768 ? 15.1 : 15.8,
-        pitch: 60,
-        bearing: 45,
+        center: [55.235, 25.125],
+        zoom: window.innerWidth <= 768 ? 10.6 : 11.4,
+        pitch: 50,
+        bearing: 28,
         minZoom: 8.5,
-        maxZoom: 18.5,
+        maxZoom: 17.6,
         maxBounds: [[51.0, 22.4], [56.8, 26.5]],
         antialias: true,
         attributionControl: false,
         style: {
           version: 8,
+          glyphs: "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
           light: {
             anchor: "viewport",
             color: "#ffffff",
-            intensity: 0.48,
+            intensity: 0.52,
             position: [1.35, 210, 42]
           },
           sources: {
             "sat-tiles": {
               type: "raster",
               tiles: ["https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"],
-              tileSize: 256
+              tileSize: 256,
+              maxzoom: 17
             },
             "light-tiles": {
               type: "raster",
               tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-              tileSize: 256
+              tileSize: 256,
+              maxzoom: 18
             },
-            "context-3d": {
-              type: "geojson",
-              data: buildContext3DGeoJSON()
+            "openmaptiles": {
+              type: "vector",
+              url: "https://tiles.openfreemap.org/planet"
             },
             "communities-3d": {
               type: "geojson",
@@ -2517,9 +2334,9 @@
               type: "geojson",
               data: { type: "FeatureCollection", features: [] }
             },
-            "projects-3d": {
+            "projects-zones-3d": {
               type: "geojson",
-              data: buildProject3DMassingGeoJSON()
+              data: buildProjectSiteZonesGeoJSON()
             }
           },
           layers: [
@@ -2533,7 +2350,7 @@
               type: "raster",
               source: "sat-tiles",
               layout: { visibility: "visible" },
-              paint: { "raster-opacity": 1.0, "raster-contrast": 0.08, "raster-saturation": 0.05 }
+              paint: { "raster-opacity": 1.0, "raster-contrast": 0.06, "raster-saturation": 0.05 }
             },
             {
               id: "light-raster-layer",
@@ -2562,6 +2379,25 @@
               }
             },
             {
+              id: "projects-zone-fill-3d",
+              type: "fill",
+              source: "projects-zones-3d",
+              paint: {
+                "fill-color": ["get", "color"],
+                "fill-opacity": ["get", "fillOpacity"]
+              }
+            },
+            {
+              id: "projects-zone-line-3d",
+              type: "line",
+              source: "projects-zones-3d",
+              paint: {
+                "line-color": ["get", "color"],
+                "line-width": ["get", "lineWidth"],
+                "line-opacity": 0.92
+              }
+            },
+            {
               id: "roads-casing-3d",
               type: "line",
               source: "roads-3d",
@@ -2571,8 +2407,13 @@
               },
               paint: {
                 "line-color": "#0f172a",
-                "line-width": ["get", "casingWidth"],
-                "line-opacity": ["interpolate", ["linear"], ["zoom"], 13.2, 0.82, 14.8, 0.0]
+                "line-width": [
+                  "interpolate", ["exponential", 1.35], ["zoom"],
+                  9, ["*", ["get", "casingWidth"], 0.75],
+                  13, ["*", ["get", "casingWidth"], 1.15],
+                  16.5, ["*", ["get", "casingWidth"], 2.1]
+                ],
+                "line-opacity": 0.88
               }
             },
             {
@@ -2585,8 +2426,13 @@
               },
               paint: {
                 "line-color": ["get", "color"],
-                "line-width": ["get", "trafficWidth"],
-                "line-opacity": ["interpolate", ["linear"], ["zoom"], 13.2, 0.94, 14.8, 0.0]
+                "line-width": [
+                  "interpolate", ["exponential", 1.35], ["zoom"],
+                  9, ["*", ["get", "trafficWidth"], 0.75],
+                  13, ["*", ["get", "trafficWidth"], 1.15],
+                  16.5, ["*", ["get", "trafficWidth"], 2.1]
+                ],
+                "line-opacity": 0.96
               }
             },
             {
@@ -2595,32 +2441,69 @@
               source: "impacts-3d",
               paint: {
                 "line-color": "#fbbf24",
-                "line-width": 2,
+                "line-width": 2.4,
                 "line-dasharray": [2, 2],
-                "line-opacity": 0.85
+                "line-opacity": 0.92
               }
             },
             {
-              id: "context-3d-layer",
+              id: "osm-3d-buildings",
               type: "fill-extrusion",
-              source: "context-3d",
-              minzoom: 11,
+              source: "openmaptiles",
+              "source-layer": "building",
+              minzoom: 12.5,
+              filter: ["!", ["has", "hide_3d"]],
               paint: {
-                "fill-extrusion-color": ["get", "color"],
-                "fill-extrusion-height": ["get", "height"],
-                "fill-extrusion-base": ["get", "base"],
-                "fill-extrusion-opacity": 0.72
+                "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
+                "fill-extrusion-height": ["coalesce", ["get", "render_height"], 14],
+                "fill-extrusion-color": [
+                  "interpolate",
+                  ["linear"],
+                  ["coalesce", ["get", "render_height"], 14],
+                  0, "#e2e8f0",
+                  30, "#cbd5e1",
+                  90, "#93c5fd",
+                  200, "#60a5fa",
+                  380, "#38bdf8"
+                ],
+                "fill-extrusion-vertical-gradient": true,
+                "fill-extrusion-opacity": 0.84
               }
             },
             {
-              id: "project-3d-slabs-layer",
-              type: "fill-extrusion",
-              source: "projects-3d",
+              id: "osm-road-labels",
+              type: "symbol",
+              source: "openmaptiles",
+              "source-layer": "transportation_name",
+              minzoom: 12,
+              layout: {
+                "symbol-placement": "line",
+                "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
+                "text-font": ["Noto Sans Regular"],
+                "text-size": ["interpolate", ["linear"], ["zoom"], 12, 10, 16, 13]
+              },
               paint: {
-                "fill-extrusion-color": ["get", "color"],
-                "fill-extrusion-height": ["get", "height"],
-                "fill-extrusion-base": ["get", "base"],
-                "fill-extrusion-opacity": 0.96
+                "text-color": "#f8fafc",
+                "text-halo-color": "#0f172a",
+                "text-halo-width": 1.6
+              }
+            },
+            {
+              id: "osm-place-labels",
+              type: "symbol",
+              source: "openmaptiles",
+              "source-layer": "place",
+              minzoom: 10,
+              maxzoom: 15.5,
+              layout: {
+                "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
+                "text-font": ["Noto Sans Bold"],
+                "text-size": ["interpolate", ["linear"], ["zoom"], 10, 11, 14, 14]
+              },
+              paint: {
+                "text-color": "#ffffff",
+                "text-halo-color": "rgba(15, 23, 42, 0.9)",
+                "text-halo-width": 2.0
               }
             }
           ]
@@ -2637,15 +2520,14 @@
         updateCompassUI();
       });
 
-      map3d.on("click", "project-3d-slabs-layer", (e) => {
+      map3d.on("click", "projects-zone-fill-3d", (e) => {
         if (e.features && e.features.length > 0) {
-          const props = e.features[0].properties;
-          if (props.project_id && String(props.project_id).startsWith("PRJ-")) {
-            if (props.block_id && props.project_id === selected3DProjectId) {
-              select3DBlockCard(props.block_id);
-            } else {
-              showProjectInspector(props.project_id, true);
-            }
+          const pid = e.features[0].properties.project_id;
+          if (pid && String(pid).startsWith("PRJ-")) {
+            showProjectInspector(pid, true);
+          } else if (pid && String(pid).startsWith("SUB-")) {
+            const sd = DATA.subdevs.find(x => x.subdev_id === pid);
+            if (sd) showSubdevInspector(sd, true);
           }
         }
       });
@@ -2685,7 +2567,7 @@
       }
       map3d.getSource("communities-3d")?.setData({ type: "FeatureCollection", features: commFeats });
 
-      // 2. Roads & Traffic GeoJSON
+      // 2. Roads & Traffic GeoJSON (All 23 Real OpenStreetMap Highway Geometries)
       const roadFeats = [];
       if (showRoads || showTraffic) {
         DATA.roads.forEach(r => {
@@ -2699,8 +2581,8 @@
             properties: {
               road_id: r.road_id,
               color: tCol,
-              casingWidth: isFwy ? 6 : 4,
-              trafficWidth: isFwy ? 3.8 : 2.6
+              casingWidth: isFwy ? 6.5 : 4.5,
+              trafficWidth: isFwy ? 4.2 : 2.8
             },
             geometry: { type: "LineString", coordinates: r.geometry_wgs84 }
           });
@@ -2708,27 +2590,26 @@
       }
       map3d.getSource("roads-3d")?.setData({ type: "FeatureCollection", features: roadFeats });
 
-      // 3. Impact Vectors GeoJSON
+      // 3. Impact Vectors GeoJSON (Active when Layer 11 is toggled OR for the currently inspected project)
       const impFeats = [];
-      if (showImpacts) {
-        DATA.impact_links.forEach(l => {
-          if (l.nearest_road_vertex_lat !== undefined && l.nearest_road_vertex_lon !== undefined) {
-            const p = DATA.projects.find(x => x.project_id === l.project_id);
-            if (p) {
-              const [lat, lon] = parseCoord(p.coordinates);
-              impFeats.push({
-                type: "Feature",
-                properties: { project_id: l.project_id },
-                geometry: { type: "LineString", coordinates: [[lon, lat], [l.nearest_road_vertex_lon, l.nearest_road_vertex_lat]] }
-              });
-            }
+      DATA.impact_links.forEach(l => {
+        if (!showImpacts && l.project_id !== selected3DProjectId) return;
+        if (l.nearest_road_vertex_lat !== undefined && l.nearest_road_vertex_lon !== undefined) {
+          const p = DATA.projects.find(x => x.project_id === l.project_id);
+          if (p) {
+            const [lat, lon] = parseCoord(p.coordinates);
+            impFeats.push({
+              type: "Feature",
+              properties: { project_id: l.project_id },
+              geometry: { type: "LineString", coordinates: [[lon, lat], [l.nearest_road_vertex_lon, l.nearest_road_vertex_lat]] }
+            });
           }
-        });
-      }
+        }
+      });
       map3d.getSource("impacts-3d")?.setData({ type: "FeatureCollection", features: impFeats });
 
-      // 4. 3D Project Floor & Stack Extrusions
-      map3d.getSource("projects-3d")?.setData(showProjs ? buildProject3DMassingGeoJSON() : { type: "FeatureCollection", features: [] });
+      // 4. Active Construction Site Perimeter Zones
+      map3d.getSource("projects-zones-3d")?.setData(showProjs ? buildProjectSiteZonesGeoJSON() : { type: "FeatureCollection", features: [] });
 
       // 5. Update 3D Sun Lighting based on active diurnal window
       if (currentTimeWindow.includes("Morning")) {
@@ -2741,63 +2622,86 @@
         map3d.setLight({ anchor: "viewport", color: "#fde68a", intensity: 0.54, position: [1.45, 265, 45] });
       }
 
-      // 6. Floating Dark Callout Pills ("Block 1 · 4 stacks") & Key Road Speed Pills on 3D Canvas
+      // 6. Interactive Construction Project Pins & Live Road Speed Pills on 3D Canvas
       map3dMarkers.forEach(m => m.remove());
       map3dMarkers = [];
 
-      if (showProjs && is3DBlocksEnabled) {
-        const isCloseTowerZoom = map3d.getZoom() >= 14.0;
-        const heroP = DATA.projects.find(x => x.project_id === selected3DProjectId);
-        if (heroP && isCloseTowerZoom) {
-          const [hLat, hLon] = parseCoord(heroP.coordinates);
-          const spec = getProject3DSpec(heroP);
-          spec.blocks.forEach(blk => {
-            const el = document.createElement("div");
-            el.className = "haio-3d-block-callout hero";
-            el.innerHTML = `<span>${blk.label} · ${spec.stacksPerBlock} stacks · ${blk.storeys}F</span>`;
-            el.onclick = (ev) => {
-              ev.stopPropagation();
-              select3DBlockCard(blk.id);
-            };
-            const mk = new maplibregl.Marker({ element: el, anchor: "bottom", offset: blk.blockNum === 1 ? [-38, -24] : [42, 14] })
-              .setLngLat([hLon + blk.dLon, hLat + blk.dLat])
-              .addTo(map3d);
-            map3dMarkers.push(mk);
-          });
-        }
+      const zNow = map3d.getZoom();
 
-        // Compact callouts for flagship towers
+      if (showProjs) {
         DATA.projects.forEach(p => {
-          if (isCloseTowerZoom && p.project_id === selected3DProjectId) return;
           if (emFilter !== "ALL" && p.emirate !== emFilter) return;
           if (q && !JSON.stringify(p).toLowerCase().includes(q)) return;
           const [lat, lon] = parseCoord(p.coordinates);
-          const spec = getProject3DSpec(p);
+          const st = projectScaleStyle(p);
+          const isSel = (p.project_id === selected3DProjectId);
+          const shortName = p.project_name.split("(")[0].trim().slice(0, 22);
+          const valShort = (p.published_investment_value || "").split("(")[0].trim().slice(0, 14);
+
           const el = document.createElement("div");
-          el.className = "haio-3d-block-callout";
-          el.style.padding = "4px 10px";
-          el.style.fontSize = "0.71rem";
-          el.innerHTML = `<span>🏢 ${p.project_name.split('(')[0].trim().slice(0, 18)} · ${spec.storeys}F</span>`;
+          el.className = isSel ? "haio-3d-block-callout hero" : "haio-3d-block-callout";
+          el.style.padding = isSel ? "6px 12px" : "4px 9px";
+          el.style.fontSize = isSel ? "0.76rem" : "0.70rem";
+          el.style.borderLeft = `4px solid ${st.fillColor}`;
+          el.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${st.fillColor};display:inline-block;"></span><span><strong>${p.project_id}</strong>: ${shortName}${zNow >= 12.2 && valShort ? ` · <em style="color:#93c5fd;font-style:normal;">${valShort}</em>` : ""}</span>`;
           el.onclick = (ev) => {
             ev.stopPropagation();
             showProjectInspector(p.project_id, true);
           };
-          const mk = new maplibregl.Marker({ element: el, anchor: "bottom", offset: [0, -10] })
+          const mk = new maplibregl.Marker({ element: el, anchor: "bottom", offset: [0, -6] })
             .setLngLat([lon, lat])
             .addTo(map3d);
           map3dMarkers.push(mk);
         });
+
+        // Show JVC multi-tower sub-clusters when zoomed >= 12.5
+        if (zNow >= 12.5) {
+          DATA.subdevs.forEach(sd => {
+            if (emFilter !== "ALL" && sd.emirate !== emFilter) return;
+            if (q && !JSON.stringify(sd).toLowerCase().includes(q)) return;
+            const el = document.createElement("div");
+            el.className = "haio-3d-block-callout";
+            el.style.padding = "4px 9px";
+            el.style.fontSize = "0.69rem";
+            el.style.borderLeft = "4px solid #a855f7";
+            el.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:#a855f7;display:inline-block;"></span><span><strong>${sd.subdev_id}</strong>: ${sd.developer} (${sd.building_count} Towers)</span>`;
+            el.onclick = (ev) => {
+              ev.stopPropagation();
+              showSubdevInspector(sd, true);
+            };
+            const mk = new maplibregl.Marker({ element: el, anchor: "bottom", offset: [0, -6] })
+              .setLngLat([sd.longitude, sd.latitude])
+              .addTo(map3d);
+            map3dMarkers.push(mk);
+          });
+        }
       }
 
-      if (showTraffic && map3d.getZoom() < 14.2) {
-        const coreRoadSpecs = [
-          { id: "RD-DXB-01", code: "E11 SZR" },
-          { id: "RD-DXB-03", code: "E44 Khail" },
-          { id: "RD-DXB-05", code: "D61 Hessa" },
-          { id: "RD-DXB-09", code: "E611 Freight" },
-          { id: "RD-SHJ-01", code: "E311 Shj" }
-        ];
-        coreRoadSpecs.forEach(ra => {
+      if (showTraffic) {
+        const roadPillSpecs = zNow >= 12.5
+          ? [
+              { id: "RD-DXB-01", code: "E11 SZR" },
+              { id: "RD-DXB-03", code: "E44 Khail" },
+              { id: "RD-DXB-05", code: "D61 Hessa" },
+              { id: "RD-DXB-06", code: "D63 Umm Suq" },
+              { id: "RD-DXB-07", code: "JVC Blvd" },
+              { id: "RD-DXB-08", code: "E311 MBZ" },
+              { id: "RD-DXB-09", code: "E611 Freight" },
+              { id: "RD-DXB-11", code: "D62 Khor" },
+              { id: "RD-DXB-12", code: "D71 FinCtr" },
+              { id: "RD-DXB-15", code: "E77 DWC" },
+              { id: "RD-SHJ-01", code: "E311 Shj" },
+              { id: "RD-SHJ-02", code: "E611 Shj" }
+            ]
+          : [
+              { id: "RD-DXB-01", code: "E11 SZR" },
+              { id: "RD-DXB-03", code: "E44 Khail" },
+              { id: "RD-DXB-05", code: "D61 Hessa" },
+              { id: "RD-DXB-09", code: "E611 Freight" },
+              { id: "RD-SHJ-01", code: "E311 Shj" }
+            ];
+
+        roadPillSpecs.forEach(ra => {
           const rObj = DATA.roads.find(x => x.road_id === ra.id);
           const obs = getRoadObsForWindow(ra.id, currentTimeWindow);
           if (!rObj || !obs || !rObj.geometry_wgs84.length) return;
@@ -2822,7 +2726,7 @@
 
     function initMap() {
       map = L.map("mapCanvas", {
-        center: [25.1844, 55.2798],
+        center: [25.125, 55.235],
         zoom: window.innerWidth <= 768 ? 10 : 11,
         minZoom: 9,
         maxZoom: 18,
@@ -2842,7 +2746,6 @@
       populateCommunityDropdown();
       renderAllMapLayers();
       runUseCase(1, false);
-      showProjectInspector("PRJ-D11", false);
     }
 
     function setPlatformMode(mode, btnEl) {
@@ -2858,9 +2761,10 @@
         setLayerSet(["communities", "roads", "traffic", "projects"]);
         backToCityMapOverview();
       } else if (mode === "construction") {
-        switchDrawerTab("insp");
+        switchDrawerTab("uc");
         setLayerSet(["communities", "devbounds", "projects", "roads", "traffic"]);
-        showProjectInspector(selected3DProjectId || "PRJ-D11", true);
+        flyBothMaps(25.0585, 55.2090, 13.8, 56, 32);
+        runUseCase(2, false);
       } else if (mode === "traffic") {
         switchDrawerTab("uc");
         setLayerSet(["roads", "traffic", "intersections", "impacts", "projects"]);
@@ -3496,159 +3400,83 @@
     }
 
     // =========================================================================
-    // SECTION C3: HAIO.SG 3D BLOCK / FLOOR / STACK EXPLORER + PROJECT INSPECTOR
+    // SECTION C3: CONSTRUCTION PROJECT & TRAFFIC IMPACT INSPECTOR (REAL DATA)
     // =========================================================================
     function showProjectInspector(pid, fly = true) {
-      if (selected3DProjectId !== pid) {
-        active3DBlock = "ALL";
-        active3DFloor = "ALL";
-        active3DStack = "ALL";
-        active3DShowMe = "all";
-      }
       selected3DProjectId = pid;
       currentInspState = { type: "project", id: pid };
       switchDrawerTab("insp");
       const p = DATA.projects.find(x => x.project_id === pid);
       if (!p) return;
-      const spec = getProject3DSpec(p);
       const link = DATA.impact_links.find(x => x.project_id === pid);
       const docs = DATA.documents.filter(d => d.project_id === pid);
       const [lat, lon] = parseCoord(p.coordinates);
 
       sync3DMapLayers();
       if (fly) {
-        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 15.2 : 15.9, 60, 45);
-        document.getElementById("hudScope").textContent = `${p.project_name.split('(')[0].trim()} · 3D`;
+        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 14.5 : 15.1, 56, 32);
+        document.getElementById("hudScope").textContent = `${p.project_id}: ${p.project_name.split('(')[0].trim()}`;
       }
 
       const primRoadObs = link ? getRoadObsForWindow(link.primary_road_id, currentTimeWindow) : null;
-      const hgvInfo = getWindowHgvBannerInfo(currentTimeWindow);
-
-      const homes4br = Math.round(spec.homes * 0.48);
-      const homes5br = Math.round(spec.homes * 0.40);
-      const homesPent = Math.max(4, spec.homes - homes4br - homes5br);
+      const secRoadObs = link && link.secondary_road_id ? getRoadObsForWindow(link.secondary_road_id, currentTimeWindow) : null;
+      const st = projectScaleStyle(p);
 
       const docsHtml = docs.map(d =>
         `<div style="margin-bottom:4px;">• <a href="${d.document_url}" target="_blank" rel="noopener">${d.document_title} ↗</a> <span style="color:#64748b;">(${d.document_type} | ${d.availability_status})</span></div>`
       ).join("") || "Linked in Task 1 Document Archive";
 
       const projOptionsHtml = DATA.projects.map(pr => {
-        const sp = getProject3DSpec(pr);
-        return `<option value="${pr.project_id}" ${pr.project_id === pid ? 'selected' : ''}>${pr.project_id}: ${pr.project_name.split('(')[0].trim()} (${sp.storeys}F · ${pr.emirate})</option>`;
+        return `<option value="${pr.project_id}" ${pr.project_id === pid ? 'selected' : ''}>${pr.project_id}: ${pr.project_name.split('(')[0].trim()} (${pr.emirate} · ${pr.city_district_community.split('/')[0].trim()})</option>`;
       }).join("");
 
       document.getElementById("inspectorContainer").innerHTML = `
-        <div>
-          <!-- Quick 3D Project Switcher -->
+        <div class="detail-card">
+          <!-- Project Switcher Dropdown -->
           <div style="display:flex; justify-content:space-between; align-items:center; gap:8px; margin-bottom:10px;">
-            <select class="haio-select" style="padding:6px 10px; font-size:0.76rem; background:#f8fafc;" onchange="showProjectInspector(this.value, true)" aria-label="Switch 3D Launch Project">
+            <select class="haio-select" style="padding:6px 10px; font-size:0.76rem; background:#f8fafc;" onchange="showProjectInspector(this.value, true)" aria-label="Select Active Construction Project">
               ${projOptionsHtml}
             </select>
-            <button class="mobile-back-map-btn" onclick="document.getElementById('mapStage').scrollIntoView({behavior:'smooth',block:'center'})">🗺️ ↑ 3D Map</button>
+            <button class="mobile-back-map-btn" onclick="document.getElementById('mapStage').scrollIntoView({behavior:'smooth',block:'center'})">🗺️ ↑ Map</button>
           </div>
 
-          <!-- HAIO.SG EXACT HEADER -->
-          <h3 class="haio-card-title">${p.project_name.split('(')[0].trim()}</h3>
-          <div class="haio-card-sub">${spec.homes.toLocaleString()} homes · ${spec.stacksPerBlock * spec.blocksCount} stacks · ${spec.blocksCount} ${spec.blocksCount === 1 ? 'block' : 'blocks'} · ${spec.storeys} storeys</div>
-
-          <div class="haio-divider"></div>
-
-          <!-- BLOCK DROPDOWN -->
-          <div style="margin-bottom:12px;">
-            <label class="haio-field-lbl" for="haioBlockSel">BLOCK</label>
-            <select id="haioBlockSel" class="haio-select" onchange="update3DBlockControls(this.value, undefined, undefined, this.value !== 'ALL' && active3DShowMe === 'all' ? '4br_5br_mix' : undefined)">
-              <option value="ALL" ${active3DBlock === 'ALL' ? 'selected' : ''}>All blocks</option>
-              ${spec.blocks.map(b => `<option value="${b.id}" ${active3DBlock === b.id ? 'selected' : ''}>${b.label} (${b.stacksLabel} · ${b.storeys} storeys)</option>`).join("")}
-            </select>
+          <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; flex-wrap:wrap; margin-bottom:6px;">
+            <span class="brand-badge">${p.project_id} • ${p.emirate} • ${st.tier.split('(')[0].trim()}</span>
+            <span class="conf-pill ${(p.confidence_classification || '').includes('Verified') ? 'b-ver' : 'b-cor'}">${(p.confidence_classification || 'Verified').split('(')[0].trim()}</span>
           </div>
 
-          <!-- FLOOR & STACK TWO-COLUMN DROPDOWNS -->
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
-            <div>
-              <label class="haio-field-lbl" for="haioFloorSel">FLOOR</label>
-              <select id="haioFloorSel" class="haio-select" onchange="update3DBlockControls(undefined, this.value, undefined, this.value !== 'ALL' && active3DShowMe === 'all' ? '4br_5br_mix' : undefined)">
-                <option value="ALL" ${active3DFloor === 'ALL' ? 'selected' : ''}>All floors (1–${spec.storeys})</option>
-                <option value="low" ${active3DFloor === 'low' ? 'selected' : ''}>Low Zone (F07–F35)</option>
-                <option value="mid" ${active3DFloor === 'mid' ? 'selected' : ''}>Mid Zone (F36–F75)</option>
-                <option value="high" ${active3DFloor === 'high' ? 'selected' : ''}>High Zone (F76+)</option>
-                <option value="penthouse" ${active3DFloor === 'penthouse' ? 'selected' : ''}>Sky Penthouses</option>
-              </select>
-            </div>
-            <div>
-              <label class="haio-field-lbl" for="haioStackSel">STACK</label>
-              <select id="haioStackSel" class="haio-select" onchange="update3DBlockControls(undefined, undefined, this.value, this.value !== 'ALL' && active3DShowMe === 'all' ? '4br_5br_mix' : undefined)">
-                <option value="ALL" ${active3DStack === 'ALL' ? 'selected' : ''}>All stacks (01–04)</option>
-                <option value="S1" ${active3DStack === 'S1' ? 'selected' : ''}>Stack 01 (NW View)</option>
-                <option value="S2" ${active3DStack === 'S2' ? 'selected' : ''}>Stack 02 (NE View)</option>
-                <option value="S3" ${active3DStack === 'S3' ? 'selected' : ''}>Stack 03 (SE View)</option>
-                <option value="S4" ${active3DStack === 'S4' ? 'selected' : ''}>Stack 04 (SW View)</option>
-              </select>
-            </div>
-          </div>
+          <h3 class="haio-card-title" style="font-size:1.15rem; margin-bottom:4px;">${p.project_name}</h3>
+          <div style="font-size:0.78rem; color:#2563eb; font-weight:700; margin-bottom:10px;">${p.developer} • ${p.city_district_community}</div>
 
-          <!-- SHOW ME PILLS -->
-          <label class="haio-field-lbl">SHOW ME</label>
-          <div class="haio-showme-row">
-            <button class="haio-showme-pill ${active3DShowMe === 'all' || active3DShowMe === '4br_5br_mix' ? 'active' : ''}" onclick="update3DBlockControls('ALL', 'ALL', 'ALL', 'all')">All homes</button>
-            <button class="haio-showme-pill ${active3DShowMe === '4br' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, '4br')">4 bedrooms</button>
-            <button class="haio-showme-pill ${active3DShowMe === '5br' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, '5br')">5 bedrooms</button>
-            <button class="haio-showme-pill ${active3DShowMe === 'penthouse' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, 'penthouse')">Penthouses</button>
-            <button class="haio-showme-pill ${active3DShowMe === 'traffic' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, 'traffic')">🚗 Traffic Impact</button>
-          </div>
-
-          <!-- UNIT TYPES · HOMES BAR -->
-          <label class="haio-field-lbl">UNIT TYPES · HOMES</label>
-          <div class="haio-unit-bar">
-            <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:9px;height:9px;border-radius:50%;background:#f59e0b;display:inline-block;"></span> 4BR <strong style="color:#64748b;margin-left:4px;">${homes4br}</strong></span>
-            <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:9px;height:9px;border-radius:50%;background:#10b981;display:inline-block;"></span> 5BR <strong style="color:#64748b;margin-left:4px;">${homes5br}</strong></span>
-            <span style="display:inline-flex;align-items:center;gap:6px;"><span style="width:9px;height:9px;border-radius:50%;background:#2563eb;display:inline-block;"></span> Sky PH <strong style="color:#64748b;margin-left:4px;">${homesPent}</strong></span>
-          </div>
-          <p style="font-size:0.74rem; color:#64748b; margin:0 0 14px; line-height:1.45;">
-            Exterior shown with architectural slab edges &amp; sky-terraces. Pick a block, floor zone, or unit type to colour homes in 3D.
-          </p>
-
-          <!-- OR PICK A BLOCK -->
-          <label class="haio-field-lbl">OR PICK A BLOCK</label>
-          <div class="haio-block-grid">
-            ${spec.blocks.map(b => `
-              <div class="haio-block-card ${active3DBlock === b.id ? 'active' : ''}" onclick="select3DBlockCard('${b.id}')">
-                <strong>${b.label}</strong>
-                <span>${b.stacksLabel}</span>
-                <span>${b.storeys} storeys</span>
-              </div>
-            `).join("")}
-          </div>
-          <div style="font-size:0.74rem; color:#64748b; margin-bottom:14px;">
-            Tap a block to look closer · Ctrl or ⌘ + drag to turn
-          </div>
-
-          <div class="haio-divider"></div>
-
-          <!-- CONNECTED CORRIDOR TRAFFIC & HGV INTELLIGENCE -->
-          ${primRoadObs ? `
+          <!-- LIVE SURROUNDING ROAD & TRAFFIC IMPACT BANNER -->
+          ${primRoadObs && link ? `
           <div class="live-window-banner">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="color:#2563eb;">⏱️ ${currentTimeWindow.split('(')[0].trim()}</strong>
+            <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
+              <strong style="color:#2563eb;">⏱️ ${currentTimeWindow.split('(')[0].trim()} Corridor Speed</strong>
               <span style="color:${congestionColor(primRoadObs.congestion_level)}; font-weight:800;">~${primRoadObs.average_speed_kmh} km/h (${primRoadObs.travel_time_min_per_10km} min/10km)</span>
             </div>
-            <div style="margin-top:3px; color:#334155; font-size:0.73rem;">Corridor (<a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')"><strong>${link.primary_road_name}</strong></a>): <strong>${primRoadObs.congestion_level.split('(')[0].trim()} Congestion</strong> · V/C = ${primRoadObs.vc_ratio} (${primRoadObs.modelled_demand_vph_dir}/${primRoadObs.reference_capacity_vph_dir} vph/dir)</div>
+            <div style="margin-top:4px; color:#334155; font-size:0.74rem;">
+              Primary Access: <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')"><strong>${link.primary_road_name} (${link.primary_road_id})</strong></a> · <strong>${link.distance_to_primary_road_km} km</strong> Haversine<br/>
+              Status: <strong>${primRoadObs.congestion_level.split('(')[0].trim()} Congestion</strong> · V/C = ${primRoadObs.vc_ratio} (${primRoadObs.modelled_demand_vph_dir}/${primRoadObs.reference_capacity_vph_dir} vph/dir)
+            </div>
           </div>` : ""}
 
+          <!-- 4 EXECUTIVE CONSTRUCTION & TRAFFIC KPI CARDS -->
           <div class="exec-metric-grid">
             <div class="exec-metric-box">
-              <div class="em-lbl">Developer &amp; Area</div>
-              <div class="em-val" style="font-size:0.80rem;">${p.developer}</div>
-              <div class="em-sub">${p.city_district_community}</div>
+              <div class="em-lbl">Published Investment</div>
+              <div class="em-val" style="color:#2563eb;">${(p.published_investment_value || '').split('[')[0].trim()}</div>
+              <div class="em-sub">GFA: ${(p.gross_floor_area || '').split('[')[0].trim()}</div>
             </div>
             <div class="exec-metric-box">
-              <div class="em-lbl">Published Value</div>
-              <div class="em-val" style="color:#2563eb;">${p.published_investment_value}</div>
-              <div class="em-sub">GFA: ${p.gross_floor_area}</div>
+              <div class="em-lbl">Lifecycle &amp; Timeline</div>
+              <div class="em-val" style="font-size:0.78rem; color:#059669;">${p.lifecycle_status.split('(')[0].trim()}</div>
+              <div class="em-sub">${(p.timeline_milestones || '2025–2029').split(';')[0].trim()}</div>
             </div>
             <div class="exec-metric-box">
-              <div class="em-lbl">Nearest Corridor</div>
-              <div class="em-val" style="font-size:0.78rem;">${link ? `<a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a>` : "Arterial Grid"}</div>
-              <div class="em-sub">${link ? `${link.distance_to_primary_road_km} km Haversine` : ""}</div>
+              <div class="em-lbl">Structural Scale</div>
+              <div class="em-val" style="font-size:0.78rem;">${(p.towers_and_buildings_count || '').split('(')[0].trim()}</div>
+              <div class="em-sub">${(p.floors_and_height || '').split('(')[0].trim()}</div>
             </div>
             <div class="exec-metric-box">
               <div class="em-lbl">Scenario HGV Load</div>
@@ -3657,14 +3485,48 @@
             </div>
           </div>
 
+          <!-- STRUCTURED CONSTRUCTION & ROAD IMPACT BREAKDOWN -->
+          <div class="kv-grid">
+            ${link ? `
+            <div class="kv-row">
+              <div class="kv-lbl">Epistemic Traffic Impact Classification (Section D4)</div>
+              <div class="kv-val">
+                <strong style="color:#2563eb;">${link.epistemic_impact_classification}</strong><br/>
+                <span style="color:#059669; font-weight:700;">Published RTA/SRTA Fact:</span> ${link.published_road_capacity_and_upgrade_fact}
+              </div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-lbl">Surrounding Road Corridors &amp; Bottleneck Junction</div>
+              <div class="kv-val">
+                • <strong>Primary Corridor:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a> (${link.distance_to_primary_road_km} km to vertex <code>[${link.nearest_road_vertex_wgs84}]</code>)<br/>
+                • <strong>Secondary Corridor:</strong> <a href="javascript:void(0)" onclick="showRoadInspector('${link.secondary_road_id}')">${link.secondary_road_name}</a> (${link.distance_to_secondary_road_km} km)<br/>
+                • <strong>Nearest Bottleneck Junction:</strong> ${link.nearest_intersection_name} (${link.distance_to_intersection_km} km)
+              </div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-lbl">Scenario-Based Construction Logistics (4-Component HGV Model)</div>
+              <div class="kv-val">
+                <strong>${link.total_hgv_round_trips_day} round-trips/day (${link.total_hgv_one_way_movements_day} one-way movements/day)</strong>:<br/>
+                • Concrete Mixers (8.5 m³): <strong>${link.concrete_mixer_loads_day}/day</strong> | Rebar Trailers (25 t): <strong>${link.rebar_trailer_loads_day}/day</strong><br/>
+                • Earthworks Tippers (18 m³): <strong>${link.earthworks_tipper_loads_day}/day</strong> | MEP/Fit-Out Trucks (12 t): <strong>${link.mep_fitout_truck_loads_day}/day</strong><br/>
+                • <strong>RTA Truck Ban Routing:</strong> ${link.hgv_routing_and_ban_compliance}
+              </div>
+            </div>` : ""}
+            <div class="kv-row">
+              <div class="kv-lbl">Units, Master Plan &amp; Contractors</div>
+              <div class="kv-val">
+                • <strong>Residential / Commercial Supply:</strong> ${p.apartments_and_villas_count}<br/>
+                • <strong>Contractors &amp; Consultants:</strong> ${p.main_contractor_and_consultants}
+              </div>
+            </div>
+          </div>
+
           <details class="tech-accordion">
-            <summary>Engineering &amp; Provenance: BPR Traffic, 4-Component HGV &amp; Sources (${docs.length})</summary>
+            <summary>Official Documents (${docs.length}), Provenance &amp; HGV Equations</summary>
             <div class="tech-body">
-              <div style="margin-bottom:6px;"><strong>1. Nearest-Vertex Geometry Validation:</strong> ${link ? `Project Centroid <code>${link.project_coordinates}</code> → Nearest Road Vertex <code>${link.nearest_road_vertex_wgs84}</code> (<strong>${link.distance_to_primary_road_km} km</strong> via ${link.geometry_validation_method}). Nearest Junction: ${link.nearest_intersection_name} (${link.distance_to_intersection_km} km).` : p.coordinates}</div>
-              ${link ? `<div style="margin-bottom:6px;"><strong>2. Scenario-Based 4-Component HGV Breakdown:</strong> <strong>${link.total_hgv_round_trips_day} round-trips/day (${link.total_hgv_one_way_movements_day} one-way/day)</strong> = ${link.concrete_mixer_loads_day} concrete mixers + ${link.rebar_trailer_loads_day} rebar trailers + ${link.earthworks_tipper_loads_day} earthworks tippers + ${link.mep_fitout_truck_loads_day} MEP/fit-out trucks.<br/><span style="color:#b45309;">Assumptions: ${link.hgv_modelling_assumptions_and_sensitivity}</span><br/><strong>HGV Ban Compliance:</strong> ${link.hgv_routing_and_ban_compliance}</div>` : ""}
-              <div style="margin-bottom:6px;"><strong>3. Contractors &amp; Consultants:</strong> ${p.main_contractor_and_consultants}</div>
-              <div style="margin-bottom:6px;"><strong>4. Supporting Documents (${docs.length}):</strong> ${docsHtml}</div>
-              <div><strong>5. Dual Provenance Trail:</strong> Project (${link ? link.project_source_id : p.project_id}): <a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> | Corridor (${link ? link.corridor_traffic_source_id : ""}): ${link ? `<a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_source_title} ↗</a>` : ""}</div>
+              ${link ? `<div style="margin-bottom:6px;"><strong>HGV Modelling Assumptions:</strong> ${link.hgv_modelling_assumptions_and_sensitivity}</div>` : ""}
+              <div style="margin-bottom:6px;"><strong>Supporting Official Documents (${docs.length}):</strong> ${docsHtml}</div>
+              <div><strong>Dual Provenance Trail:</strong> Project (${link ? link.project_source_id : p.project_id}): <a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> ${link ? `| Corridor (${link.corridor_traffic_source_id}): <a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_source_title} ↗</a>` : ""}</div>
             </div>
           </details>
         </div>
@@ -3880,30 +3742,15 @@
         }
 
         const dxbComms = DATA.communities.filter(c => c.emirate === "Dubai");
-        const launches3D = [
-          { id: "PRJ-D11", name: "Burj Binghatti Jacob & Co (104F)", area: "Business Bay · 8 Stacks · 2 Blocks", status: "Active 3D Massing" },
-          { id: "PRJ-D10", name: "Burj Azizi (131F)", area: "Sheikh Zayed Rd · 8 Stacks · 2 Blocks", status: "Active 3D Massing" },
-          { id: "PRJ-D12", name: "Six Senses Residences (122F)", area: "Dubai Marina · 8 Stacks · 2 Blocks", status: "Active 3D Massing" },
-          { id: "PRJ-D13", name: "Franck Muller Aeternitas (106F)", area: "Dubai Marina · 8 Stacks · 2 Blocks", status: "Active 3D Massing" },
-          { id: "PRJ-D3", name: "Dubai Creek Harbour Towers (131F)", area: "Creek Harbour · 8 Stacks · 2 Blocks", status: "Active 3D Massing" },
-          { id: "PRJ-D20", name: "DIFC Zabeel District Towers (65F)", area: "DIFC Zabeel · 8 Stacks · 2 Blocks", status: "Active 3D Massing" }
+        const flagshipQuickJump = [
+          { id: "PRJ-D6", name: "PRJ-D6: Binghatti Mercedes-Benz Places", area: "Downtown Dubai · AED 3.7B · D71 Financial Ctr Rd", tag: "Inspect Site →" },
+          { id: "PRJ-D11", name: "PRJ-D11: Burj Binghatti Jacob & Co", area: "Business Bay · AED 3.0B · E44 Al Khail Rd", tag: "Inspect Site →" },
+          { id: "PRJ-D3", name: "PRJ-D3: Dubai Creek Harbour Masterplan", area: "Creek Harbour · AED 55B · D62 Ras Al Khor Rd", tag: "Inspect Site →" },
+          { id: "PRJ-D16", name: "PRJ-D16: DAMAC Lagoons Master Community", area: "Hessa St Corridor · AED 28B · D61 Hessa St", tag: "Inspect Site →" },
+          { id: "PRJ-D1", name: "PRJ-D1: Al Maktoum Int'l Airport (DWC)", area: "Dubai South · AED 128B · E611 & E77 Freight", tag: "Inspect Site →" },
+          { id: "PRJ-D2", name: "PRJ-D2: Palm Jebel Ali Mega-Island", area: "Jebel Ali Coast · AED 35B · E11 Sheikh Zayed Rd", tag: "Inspect Site →" }
         ];
         document.getElementById("useCaseContainer").innerHTML = `
-          <div class="detail-card" style="margin-bottom:10px;">
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-              <span style="font-size:0.72rem; font-weight:800; color:#0f172a; text-transform:uppercase; letter-spacing:0.05em;">🧊 6 Flagship Launches in 3D</span>
-              <span style="font-size:0.68rem; color:#2563eb; font-weight:700;">Click to fly into 3D Tower View →</span>
-            </div>
-            ${launches3D.map(l => `
-              <div class="haio-launch-row" onclick="showProjectInspector('${l.id}')">
-                <div>
-                  <div class="haio-launch-name">${l.name}</div>
-                  <div class="haio-launch-meta">${l.area}</div>
-                </div>
-                <span class="haio-launch-3d-tag">🧊 3D floors &amp; stacks</span>
-              </div>
-            `).join("")}
-          </div>
           <div class="detail-card">
             <span class="brand-badge">Use Case 1 — City-Wide Hotspot Intelligence</span>
             <h4 style="margin-top:6px;">"Which areas in Dubai currently have the highest construction activity?"</h4>
@@ -3935,6 +3782,22 @@
             <div style="font-size:0.71rem; color:#64748b; border-top:1px solid #e2e8f0; padding-top:6px;">
               <strong>Key Analytical Insight:</strong> High construction GFA does <em>not</em> automatically produce severe congestion. <strong>Dubai South / DWC (7.85M m² GFA)</strong> experiences <em>Low–Moderate</em> congestion because it is served by 12-lane 24/7 HGV-exempt freeways (<code>E611</code> &amp; <code>E77</code>), whereas <strong>JVC (3.42M m² GFA)</strong> and <strong>Business Bay (3.85M m² GFA)</strong> experience <em>Severe</em> peak congestion due to arterial/collector access funnels.
             </div>
+          </div>
+
+          <div class="detail-card" style="margin-top:10px;">
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+              <span style="font-size:0.72rem; font-weight:800; color:#0f172a; text-transform:uppercase; letter-spacing:0.05em;">🏗️ Flagship Construction Sites &amp; Corridors</span>
+              <span style="font-size:0.68rem; color:#2563eb; font-weight:700;">Click to fly to site →</span>
+            </div>
+            ${flagshipQuickJump.map(l => `
+              <div class="haio-launch-row" onclick="showProjectInspector('${l.id}')">
+                <div>
+                  <div class="haio-launch-name">${l.name}</div>
+                  <div class="haio-launch-meta">${l.area}</div>
+                </div>
+                <span class="haio-launch-3d-tag">${l.tag}</span>
+              </div>
+            `).join("")}
           </div>
         `;
       } else if (num === 2) {
