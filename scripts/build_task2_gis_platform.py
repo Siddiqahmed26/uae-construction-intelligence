@@ -58,7 +58,35 @@ def load_ds(stem: str):
 
 def build_data_payload():
     projs_all = load_ds("04_project_inventory")
+    audits_all = {a["project_id"]: a for a in load_ds("06c_pipeline_and_calculation_audit")}
+    supply_recon = load_ds("06b_supply_pipeline_reconciliation")
+    sqlite_schemas = load_ds("11_sqlite_schema_inspector")
+
+    for p in projs_all:
+        a = audits_all.get(p["project_id"], {})
+        p["gross_project_value_aed_b"] = a.get("gross_project_value_aed_b", 0.0)
+        p["valuation_basis"] = a.get("valuation_basis", "Published Official GDV / Contract Award (Verified)")
+        p["macro_sector"] = a.get("macro_sector", p.get("project_category", "Mixed-Use / Residential"))
+        p["is_estimated_gdv"] = ("Est. GDV" in str(p.get("published_investment_value", "")))
+
     projs_dxb_shj = [p for p in projs_all if p["emirate"] in ("Dubai", "Sharjah")]
+    uae_projects_summary = [
+        {
+            "project_id": p["project_id"],
+            "project_name": p["project_name"],
+            "developer": p["developer"],
+            "emirate": p["emirate"],
+            "community": p["city_district_community"],
+            "coordinates": p["coordinates"],
+            "lifecycle_status": p["lifecycle_status"],
+            "published_investment_value": p["published_investment_value"],
+            "gross_project_value_aed_b": p["gross_project_value_aed_b"],
+            "is_estimated_gdv": p["is_estimated_gdv"],
+            "gross_floor_area": p.get("gross_floor_area", ""),
+            "confidence": p.get("confidence_classification", "Verified"),
+        }
+        for p in projs_all
+    ]
     docs_all = load_ds("05_project_documents")
     facs_all = [f for f in load_ds("09b_nearby_facilities_dataset") if f["emirate"] in ("Dubai", "Sharjah")]
     sources_all = load_ds("11_provenance_source_register")
@@ -126,6 +154,9 @@ def build_data_payload():
 
     return {
         "projects": projs_dxb_shj,
+        "uae_projects_summary": uae_projects_summary,
+        "supply_recon": supply_recon,
+        "sqlite_schemas": sqlite_schemas,
         "documents": docs_all,
         "facilities": facs_all,
         "sources": {s["source_id"]: s for s in sources_all},
@@ -1678,16 +1709,383 @@ def main():
         padding: 5px 9px;
       }}
     }}
+
+    /* =========================================================================
+       7-MODULE ANALYTICAL WORKSPACE, 4-LEVEL ZOOM BAR & 5-SECTION INSPECTOR CSS
+       ========================================================================= */
+    @media (max-width: 1860px) {{
+      .kpi-strip {{
+        display: none !important;
+      }}
+    }}
+    .brand-cluster {{
+      flex-shrink: 0;
+    }}
+    .mode-switcher {{
+      gap: 3px;
+      flex: 0 1 auto;
+    }}
+    .mode-btn {{
+      padding: 6px 10px;
+      font-size: 0.74rem;
+    }}
+    .ctrl-btn {{
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #0f172a;
+      padding: 6px 12px;
+      border-radius: 999px;
+      font-size: 0.73rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+    }}
+    .ctrl-btn:hover {{
+      background: #eff6ff;
+      border-color: #2563eb;
+      color: #2563eb;
+    }}
+    .ctrl-btn.primary {{
+      background: #2563eb;
+      border-color: #1d4ed8;
+      color: #ffffff;
+    }}
+    .ev-table {{
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.74rem;
+      color: #1e293b;
+      background: #ffffff;
+    }}
+    .ev-table th, .ev-table td {{
+      padding: 8px 10px;
+      border-bottom: 1px solid #e2e8f0;
+      text-align: left;
+      vertical-align: top;
+      line-height: 1.4;
+    }}
+    .ev-table th {{
+      background: #f8fafc;
+      color: #0f172a;
+      font-weight: 800;
+      font-size: 0.69rem;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      border-bottom: 2px solid #cbd5e1;
+    }}
+    .ev-table tr:hover td {{
+      background: #f8fafc;
+    }}
+    .sidebar-right {{
+      width: 432px;
+    }}
+    .analytical-workspace {{
+      position: absolute;
+      inset: 0;
+      z-index: 1450;
+      background: rgba(248, 250, 252, 0.98);
+      backdrop-filter: blur(18px);
+      overflow-y: auto;
+      display: none;
+      padding: 0 24px 48px 24px;
+      color: #0f172a;
+    }}
+    .analytical-workspace .aw-sticky-bar {{
+      margin: 0 -24px 18px -24px;
+    }}
+    .analytical-workspace.open {{
+      display: block;
+    }}
+    .analytical-workspace.split-mode {{
+      left: auto;
+      right: 0;
+      width: min(64vw, 980px);
+      border-left: 1px solid #cbd5e1;
+      box-shadow: -16px 0 48px rgba(15, 23, 42, 0.24);
+    }}
+    .aw-sticky-bar {{
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }}
+    .aw-container {{
+      max-width: 1480px;
+      margin: 0 auto;
+      padding: 20px 24px;
+    }}
+    .aw-kpi-grid {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 12px;
+      margin-bottom: 18px;
+    }}
+    .aw-kpi-card {{
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 16px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 8px rgba(15, 23, 42, 0.04);
+    }}
+    .aw-kpi-card .k-lbl {{
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748b;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 4px;
+    }}
+    .aw-kpi-card .k-val {{
+      font-size: 1.38rem;
+      font-weight: 800;
+      color: #0f172a;
+      margin: 5px 0 3px;
+      letter-spacing: -0.02em;
+    }}
+    .aw-kpi-card .k-sub {{
+      font-size: 0.72rem;
+      color: #475569;
+      line-height: 1.35;
+    }}
+    .aw-grid-2 {{
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(420px, 1fr));
+      gap: 16px;
+      margin-bottom: 18px;
+    }}
+    .aw-panel-card {{
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 18px;
+      padding: 18px;
+      box-shadow: 0 2px 10px rgba(15, 23, 42, 0.04);
+      margin-bottom: 16px;
+    }}
+    .aw-panel-card h3 {{
+      margin: 0 0 6px 0;
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: #0f172a;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }}
+    .aw-bar-row {{
+      display: grid;
+      grid-template-columns: 185px 1fr 110px;
+      align-items: center;
+      gap: 10px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      font-size: 0.76rem;
+      cursor: pointer;
+      transition: background 0.15s;
+    }}
+    .aw-bar-row:hover {{
+      background: #f1f5f9;
+    }}
+    .aw-bar-track {{
+      width: 100%;
+      height: 10px;
+      background: #f1f5f9;
+      border-radius: 999px;
+      overflow: hidden;
+      position: relative;
+    }}
+    .aw-bar-fill {{
+      height: 100%;
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }}
+    .geo-zoom-bar {{
+      position: absolute;
+      top: 62px;
+      left: 16px;
+      z-index: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      pointer-events: none;
+    }}
+    .geo-zoom-bar > * {{
+      pointer-events: auto;
+    }}
+    .zoom-lvl-pill {{
+      background: rgba(255, 255, 255, 0.96);
+      backdrop-filter: blur(10px);
+      border: 1px solid #cbd5e1;
+      border-radius: 999px;
+      padding: 3px;
+      display: inline-flex;
+      align-items: center;
+      gap: 2px;
+      box-shadow: 0 4px 16px rgba(15, 23, 42, 0.14);
+    }}
+    .zlvl-btn {{
+      border: none;
+      background: transparent;
+      color: #475569;
+      font-size: 0.71rem;
+      font-weight: 700;
+      padding: 5px 10px;
+      border-radius: 999px;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: all 0.15s;
+    }}
+    .zlvl-btn:hover {{
+      color: #0f172a;
+      background: #f1f5f9;
+    }}
+    .zlvl-btn.active {{
+      background: #0f172a;
+      color: #ffffff;
+    }}
+    .preset-grid {{
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 5px;
+      margin: 8px 0 10px;
+    }}
+    .preset-btn {{
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      color: #334155;
+      font-size: 0.69rem;
+      font-weight: 700;
+      padding: 6px 6px;
+      border-radius: 8px;
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.15s;
+    }}
+    .preset-btn:hover, .preset-btn.active {{
+      background: #eff6ff;
+      border-color: #2563eb;
+      color: #2563eb;
+    }}
+    .layer-group-hdr {{
+      font-size: 0.66rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: #2563eb;
+      margin: 8px 0 3px;
+      padding-left: 2px;
+    }}
+    .layer-meta-sub {{
+      font-size: 0.64rem;
+      color: #64748b;
+      font-weight: 500;
+      margin-left: 22px;
+      line-height: 1.25;
+    }}
+    .prof-sec-hdr {{
+      font-size: 0.71rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #1e293b;
+      background: #f1f5f9;
+      border-left: 3px solid #2563eb;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin: 12px 0 8px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }}
+    .badge-missing {{
+      display: inline-block;
+      background: #f1f5f9;
+      border: 1px solid #cbd5e1;
+      color: #475569;
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+    }}
+    .badge-hyp {{
+      display: inline-block;
+      background: #eef2ff;
+      border: 1px solid #a5b4fc;
+      color: #4338ca;
+      font-size: 0.68rem;
+      font-weight: 800;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }}
+    @media (max-width: 1360px) {{
+      .geo-zoom-bar {{
+        top: 58px;
+        left: 16px;
+      }}
+    }}
+    @media (max-width: 1024px) {{
+      .analytical-workspace {{
+        position: relative;
+        inset: auto;
+      }}
+      .analytical-workspace.split-mode {{
+        width: 100%;
+      }}
+      .aw-grid-2 {{
+        grid-template-columns: 1fr;
+      }}
+      .aw-bar-row {{
+        grid-template-columns: 120px 1fr 90px;
+      }}
+      .geo-zoom-bar {{
+        display: none;
+      }}
+    }}
+    @media print {{
+      .exec-header, .map-stage, .sidebar-right, .aw-sticky-bar button {{
+        display: none !important;
+      }}
+      .workbench {{
+        height: auto !important;
+        overflow: visible !important;
+        background: #ffffff !important;
+      }}
+      .analytical-workspace {{
+        display: block !important;
+        position: static !important;
+        background: #ffffff !important;
+        overflow: visible !important;
+      }}
+    }}
   </style>
 </head>
 <body>
 
-  <!-- 1. HAIO-STYLE ULTRA-CLEAN WHITE TOP NAVBAR -->
+  <!-- 1. HAIO-STYLE ULTRA-CLEAN WHITE TOP NAVBAR (7-MODULE INFORMATION ARCHITECTURE) -->
   <header class="exec-header">
     <div class="brand-cluster">
-      <div class="brand-title" onclick="backToCityMapOverview()">
+      <div class="brand-title" onclick="setPlatformMode('explorer', document.getElementById('mode-explorer'))">
         <span class="haio-logo-pin">🗺️</span>
-        <span>UAE Construction &amp; Traffic Intelligence</span>
+        <span>UAE Construction Intelligence</span>
       </div>
       <div class="kpi-strip">
         <span class="kpi-chip">Scope <strong id="hudScope">Dubai Corridors</strong></span>
@@ -1696,29 +2094,37 @@ def main():
       </div>
     </div>
 
-    <!-- 5 MAIN EXECUTIVE AREAS (GOAL-ALIGNED NAVIGATION) -->
-    <nav class="mode-switcher" aria-label="Primary Platform Modes">
-      <button class="mode-btn active" id="mode-overview" onclick="setPlatformMode('overview', this)">1. Overview</button>
-      <button class="mode-btn" id="mode-construction" onclick="setPlatformMode('construction', this)">2. Construction Map</button>
-      <button class="mode-btn" id="mode-traffic" onclick="setPlatformMode('traffic', this)">3. Traffic Intelligence</button>
-      <button class="mode-btn" id="mode-project" onclick="setPlatformMode('project', this)">4. Project Explorer</button>
-      <button class="mode-btn" id="mode-evidence" onclick="setPlatformMode('evidence', this)">5. Evidence &amp; Data ↓</button>
+    <!-- 7 PROPOSED PLATFORM NAVIGATION MODULES -->
+    <nav class="mode-switcher" aria-label="Primary Platform Navigation Modules">
+      <button class="mode-btn" id="mode-overview" onclick="setPlatformMode('overview', this)" title="UAE-wide construction and transport intelligence summary">01 Overview</button>
+      <button class="mode-btn" id="mode-construction" onclick="setPlatformMode('construction', this)" title="Projects, communities, development concentration and construction activity">02 Construction</button>
+      <button class="mode-btn active" id="mode-explorer" onclick="setPlatformMode('explorer', this)" title="Interactive 2D/3D GIS, roads, projects, buildings and geographic layers">03 GIS Explorer</button>
+      <button class="mode-btn" id="mode-traffic" onclick="setPlatformMode('traffic', this)" title="Traffic conditions, corridors, time comparisons and bottleneck analysis">04 Traffic</button>
+      <button class="mode-btn" id="mode-impact" onclick="setPlatformMode('impact', this)" title="Project-road relationships, logistics movements, network and scenario simulator">05 Impact &amp; Logistics</button>
+      <button class="mode-btn" id="mode-project" onclick="setPlatformMode('project', this)" title="Individual development, developer, investment and 5-section project profile">06 Project Explorer</button>
+      <button class="mode-btn" id="mode-evidence" onclick="setPlatformMode('evidence', this)" title="Sources, official datasets, methodology, assumptions and validation">07 Data &amp; Evidence</button>
     </nav>
 
     <div class="header-actions">
       <select id="emirateSelect" class="emirate-pill-select" onchange="onEmirateChange()" aria-label="Select Emirate">
         <option value="Dubai" selected>Dubai (25 Sites)</option>
         <option value="Sharjah">Sharjah (12 Sites)</option>
-        <option value="ALL">All UAE (37 Sites)</option>
+        <option value="ALL">All UAE (37 + 85)</option>
       </select>
 
       <details class="export-dropdown">
         <summary>Data &amp; Exports ▾</summary>
         <div class="export-menu">
-          <a href="#evidence-tables" onclick="document.getElementById('evidenceAccordion').open=true"><span>📊 All 11 Task 2 Datasets</span><span>↓</span></a>
-          <a href="datasets/task2_verification_receipt.json" target="_blank"><span>✅ Verification Receipt</span><span>JSON</span></a>
+          <a href="javascript:void(0)" onclick="setPlatformMode('overview', document.getElementById('mode-overview')); setTimeout(()=>window.print(), 250);"><span>🖨️ Printable Executive Summary</span><span>PDF</span></a>
+          <a href="javascript:void(0)" onclick="exportFilteredProjectsCsv()"><span>📥 Export Filtered Projects</span><span>CSV</span></a>
+          <a href="csv/16_road_network_dataset.csv" download><span>🛣️ Road Corridors (23)</span><span>CSV</span></a>
+          <a href="csv/17_traffic_congestion_observations.csv" download><span>🚦 Traffic Conditions (22)</span><span>CSV</span></a>
+          <a href="csv/21b_intersections_and_nodes.csv" download><span>🛑 Bottleneck Intersections (16)</span><span>CSV</span></a>
+          <a href="csv/22_project_road_impact_links.csv" download><span>🚛 Project-Road &amp; HGV Links (37)</span><span>CSV</span></a>
+          <a href="csv/11_provenance_source_register.csv" download><span>📚 Source Register (452)</span><span>CSV</span></a>
           <a href="datasets/dubai_sharjah_gis_bundle.geojson" target="_blank"><span>📦 Spatial Bundle (123)</span><span>GeoJSON</span></a>
           <a href="datasets/21_task2_spatial_database.sqlite"><span>🗄️ Task 2 Spatial DB</span><span>SQLite</span></a>
+          <a href="datasets/task2_verification_receipt.json" target="_blank"><span>✅ Verification Receipt (A–F)</span><span>JSON</span></a>
           <a href="task2_gis_and_traffic_intelligence_report.md" target="_blank"><span>📄 Full Task 2 Report</span><span>MD</span></a>
           <a href="index.html"><span>🏛️ Switch to Task 1 (85 Projects)</span><span>→</span></a>
         </div>
@@ -1726,8 +2132,28 @@ def main():
     </div>
   </header>
 
-  <!-- 2. FULL-BLEED REALISTIC 3D GIS STAGE + FLOATING INTELLIGENCE INSPECTOR -->
+  <!-- 2. FULL-BLEED REALISTIC 3D GIS STAGE + FLOATING INTELLIGENCE INSPECTOR + 7-MODULE WORKSPACE -->
   <main class="workbench" id="mainWorkbench">
+
+    <!-- DEDICATED ANALYTICAL WORKSPACE OVERLAY FOR MODULES 01, 02, 04, 05, 07 -->
+    <section class="analytical-workspace" id="analyticalWorkspaceModal" aria-label="Analytical Module Workspace">
+      <div class="aw-sticky-bar">
+        <div>
+          <span class="brand-badge" id="awModuleBadge">MODULE 01</span>
+          <strong style="font-size:1.05rem; margin-left:8px; color:#0f172a;" id="awModuleTitle">Executive Overview</strong>
+          <span style="font-size:0.76rem; color:#64748b; margin-left:8px;" id="awModuleSub">UAE-wide construction activity, transport corridors &amp; traffic impact summary</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+          <span class="ep-pill-pub">PUBLISHED FACT</span>
+          <span class="ep-pill-mod">MODELLED ESTIMATE</span>
+          <span class="badge-hyp">HYPOTHETICAL SCENARIO</span>
+          <button onclick="toggleAnalyticalSplitMode()" id="btnAwSplitToggle" style="background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; padding:6px 12px; border-radius:999px; font-size:0.75rem; font-weight:700; cursor:pointer;">◫ Split View with Map</button>
+          <button onclick="window.print()" style="background:#f8fafc; border:1px solid #cbd5e1; color:#0f172a; padding:6px 12px; border-radius:999px; font-size:0.75rem; font-weight:700; cursor:pointer;">🖨️ Print Report</button>
+          <button onclick="closeAnalyticalWorkspace()" style="background:#2563eb; border:1px solid #1d4ed8; color:#ffffff; padding:6px 14px; border-radius:999px; font-size:0.76rem; font-weight:700; cursor:pointer;">🗺️ Return to 3D GIS Map ✕</button>
+        </div>
+      </div>
+      <div class="aw-container" id="analyticalWorkspaceBody"></div>
+    </section>
 
     <section class="map-stage" id="mapStage">
       <!-- Top-Left Floating Map Controls (Exact haio.sg < Map + Blocks [ON] + 2D/3D + Layers) -->
@@ -1749,8 +2175,24 @@ def main():
         </div>
 
         <button class="haio-pill-btn" onclick="toggleLayersPopover()" style="padding:8px 13px; font-size:0.78rem;">
-          <span>⚙ Layers (11)</span>
+          <span>⚙ Layers &amp; Presets (11)</span>
         </button>
+      </div>
+
+      <!-- Phase 4.1 & 3.2: 4 Adaptive Geographic Zoom Levels + Concentration Mode Switcher -->
+      <div class="geo-zoom-bar" id="geoZoomLevelBar">
+        <div class="zoom-lvl-pill" role="group" aria-label="4 Adaptive Geographic Zoom Levels">
+          <button class="zlvl-btn" id="zlvl-1" onclick="setGeoZoomLevel(1)" title="Level 1: UAE National Overview (All 7 Emirates &amp; Primary Highways)">L1: UAE</button>
+          <button class="zlvl-btn" id="zlvl-2" onclick="setGeoZoomLevel(2)" title="Level 2: Emirate Regional (Dubai or Sharjah Corridors &amp; Hotspots)">L2: Emirate</button>
+          <button class="zlvl-btn" id="zlvl-3" onclick="setGeoZoomLevel(3)" title="Level 3: Community Local (JVC Sub-Clusters, Collectors &amp; Junctions)">L3: Community</button>
+          <button class="zlvl-btn active" id="zlvl-4" onclick="setGeoZoomLevel(4)" title="Level 4: Project &amp; Corridor Detailed (3D Massing &amp; Vertex Vectors)">L4: Project 3D</button>
+        </div>
+        <div class="zoom-lvl-pill" role="group" aria-label="Construction Concentration Map Mode">
+          <button class="zlvl-btn active" id="cmode-points" onclick="setConcentrationMode('points', this)" title="Proportional Project Points">● Points</button>
+          <button class="zlvl-btn" id="cmode-heatmap" onclick="setConcentrationMode('heatmap', this)" title="Kernel Density Heatmap from Project Coordinates &amp; Active GFA">🔥 Density Heatmap</button>
+          <button class="zlvl-btn" id="cmode-boundaries" onclick="setConcentrationMode('boundaries', this)" title="Community Hotspot Boundaries (10 Zones)">⬡ Communities</button>
+          <button class="zlvl-btn" id="cmode-clusters" onclick="setConcentrationMode('clusters', this)" title="Development Sub-Clusters &amp; Impact Radii">◎ Clusters</button>
+        </div>
       </div>
 
       <!-- 3D Projected Hero Tower Roof Callout ("Block 1 · 2 stacks") -->
@@ -1758,41 +2200,22 @@ def main():
         <span id="hero3DRoofCalloutText">Block 1 · 2 stacks</span>
       </div>
 
-      <!-- Photorealistic 3D Attribution Badge (Bottom-Right beside Inspector Card) -->
-      <div id="photoreal3DAttribution" style="position:absolute; right:430px; bottom:14px; z-index:780; display:flex; align-items:center; gap:8px; pointer-events:none;">
-        <div style="background:rgba(15,23,42,0.62); backdrop-filter:blur(6px); color:#f8fafc; padding:3px 9px; border-radius:6px; font-size:0.66rem; font-weight:600; line-height:1.2; text-align:right;">
-          <strong style="font-size:0.74rem; display:block; letter-spacing:0.01em;">3D Earth &amp; RTA GIS</strong>
-          <span>Airbus · Maxar · OSM 3D</span>
+      <!-- Photorealistic 3D Attribution & Explicit Procedural vs. Sourced Massing Disclosure Badge -->
+      <div id="photoreal3DAttribution" style="position:absolute; left:16px; bottom:62px; z-index:780; display:flex; align-items:center; gap:8px; pointer-events:none;">
+        <div style="background:rgba(15,23,42,0.78); backdrop-filter:blur(8px); color:#f8fafc; padding:5px 11px; border-radius:8px; font-size:0.65rem; font-weight:600; line-height:1.3; text-align:left; border:1px solid rgba(255,255,255,0.16);">
+          <strong style="font-size:0.72rem; display:block; color:#38bdf8;">4K Satellite · Procedural Project 3D · OSM Footprints</strong>
+          <span>Selected Tower: Storey-Proportional Illustrative Massing (Not Approved CAD) · City: OSM 3D</span>
         </div>
-        <div style="width:22px; height:22px; border-radius:50%; background:#ffffff; color:#0f172a; display:inline-flex; align-items:center; justify-content:center; font-size:0.74rem; font-weight:800; box-shadow:0 2px 8px rgba(0,0,0,0.3);">i</div>
       </div>
 
       <!-- Center-Top Floating Scenario Dock (Hidden to avoid duplicate toolbar clutter) -->
       <div class="haio-lens-dock" id="haioLensDock" style="display:none;">
-        <button class="haio-lens-btn active" id="lens-1" onclick="selectLensDock(1)">
-          <span class="lens-ico">🔥</span>
-          <span>Hotspots</span>
-        </button>
-        <button class="haio-lens-btn" id="lens-2" onclick="selectLensDock(2)">
-          <span class="lens-ico">🚧</span>
-          <span>JVC Traffic</span>
-        </button>
-        <button class="haio-lens-btn" id="lens-3" onclick="selectLensDock(3)">
-          <span class="lens-ico">⏱️</span>
-          <span>AM vs PM</span>
-        </button>
-        <button class="haio-lens-btn" id="lens-4" onclick="selectLensDock(4)">
-          <span class="lens-ico">🏗️</span>
-          <span>Projects</span>
-        </button>
-        <button class="haio-lens-btn" id="lens-5" onclick="selectLensDock(5)">
-          <span class="lens-ico">🏢</span>
-          <span>Downtown 3D</span>
-        </button>
-        <button class="haio-lens-btn" id="lens-6" onclick="selectLensDock(6)">
-          <span class="lens-ico">🗺️</span>
-          <span>Sharjah</span>
-        </button>
+        <button class="haio-lens-btn active" id="lens-1" onclick="selectLensDock(1)"><span class="lens-ico">🔥</span><span>Hotspots</span></button>
+        <button class="haio-lens-btn" id="lens-2" onclick="selectLensDock(2)"><span class="lens-ico">🚧</span><span>JVC Traffic</span></button>
+        <button class="haio-lens-btn" id="lens-3" onclick="selectLensDock(3)"><span class="lens-ico">⏱️</span><span>AM vs PM</span></button>
+        <button class="haio-lens-btn" id="lens-4" onclick="selectLensDock(4)"><span class="lens-ico">🏗️</span><span>Projects</span></button>
+        <button class="haio-lens-btn" id="lens-5" onclick="selectLensDock(5)"><span class="lens-ico">🏢</span><span>Downtown 3D</span></button>
+        <button class="haio-lens-btn" id="lens-6" onclick="selectLensDock(6)"><span class="lens-ico">🗺️</span><span>Sharjah</span></button>
       </div>
 
       <!-- Primary WebGL 3D MapLibre GL JS Canvas (Real OSM 3D Buildings + Satellite + Road Corridors) -->
@@ -1800,14 +2223,24 @@ def main():
       <!-- Synchronized Backing 2D Leaflet Canvas -->
       <div id="mapCanvas" class="basemap-dark"></div>
 
-      <!-- Collapsible Advanced Layers & Filters Popover (All 11 Layers Preserved) -->
-      <div class="layers-drawer-popover" id="layersPopover">
-        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
-          <strong style="font-size:0.84rem; color:#0f172a;">Map Layers (11) &amp; Spatial Filters</strong>
+      <!-- Phase 4.2: Organized 7-Group Layer System & 6 Layer Presets Popover -->
+      <div class="layers-drawer-popover" id="layersPopover" style="width:376px;">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
+          <strong style="font-size:0.84rem; color:#0f172a;">7-Group GIS Layers (11) &amp; Presets</strong>
           <div style="display:flex; gap:6px;">
             <button onclick="resetAllFilters()" style="background:#eff6ff;border:1px solid #bfdbfe;color:#2563eb;font-size:0.70rem;font-weight:700;padding:3px 9px;border-radius:999px;cursor:pointer;">Reset</button>
             <button onclick="toggleLayersPopover()" style="background:transparent;border:none;color:#64748b;font-size:0.95rem;cursor:pointer;">✕</button>
           </div>
+        </div>
+
+        <label class="ctrl-label" style="margin-top:2px;">One-Click Analytical Layer Presets (6)</label>
+        <div class="preset-grid" id="layerPresetGrid">
+          <button class="preset-btn active" onclick="applyLayerPreset('construction_overview', this)">1. Construction Overview</button>
+          <button class="preset-btn" onclick="applyLayerPreset('traffic_overview', this)">2. Traffic Overview</button>
+          <button class="preset-btn" onclick="applyLayerPreset('logistics', this)">3. Construction Logistics</button>
+          <button class="preset-btn" onclick="applyLayerPreset('disruptions', this)">4. Road Disruptions</button>
+          <button class="preset-btn" onclick="applyLayerPreset('project_impact', this)">5. Project Impact</button>
+          <button class="preset-btn" onclick="applyLayerPreset('all_layers', this)">6. All 11 Layers</button>
         </div>
 
         <input type="text" id="searchInput" class="ctrl-input" placeholder="Search project, road, community (e.g. JVC, Hessa)..." oninput="applyMapFilters()"/>
@@ -1823,7 +2256,7 @@ def main():
             <label class="ctrl-label">Congestion Filter</label>
             <select id="congestionFilter" class="ctrl-select" onchange="applyMapFilters()">
               <option value="ALL">All Levels</option>
-              <option value="Severe">Severe Only</option>
+              <option value="Severe">Severe (&lt;42% v₀)</option>
               <option value="High">High &amp; Severe</option>
               <option value="Moderate">Moderate</option>
               <option value="Low">Low / Free-Flow</option>
@@ -1844,63 +2277,109 @@ def main():
           <div>
             <label class="ctrl-label">Epistemic Tier</label>
             <select id="epistemicFilter" class="ctrl-select" onchange="applyMapFilters()">
-              <option value="ALL">All 4 Tiers</option>
-              <option value="Tier 4">Tier 4: Confirmed ROW</option>
-              <option value="Tier 2">Tier 2: Spatial Assoc.</option>
-              <option value="Tier 3">Tier 3: Modelled HGV</option>
+              <option value="ALL">All Epistemic Tiers</option>
+              <option value="Tier 4">Confirmed Causal (ROW)</option>
+              <option value="Tier 2">Spatial Association</option>
+              <option value="Tier 3">Modelled HGV Load</option>
             </select>
           </div>
         </div>
 
         <div class="layer-list">
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L1" checked onchange="toggleLayerGroup('projects', this.checked)"/><span class="layer-dot" style="background:#2563eb;"></span> 1. Active Construction Projects (32 + 5)</label>
-            <span class="prov-tag prov-ver">Default ON</span>
+          <div class="layer-group-hdr">Group 1 — Construction Activity</div>
+          <div class="layer-item" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label><input type="checkbox" id="chk-L1" checked onchange="toggleLayerGroup('projects', this.checked)"/><span class="layer-dot" style="background:#2563eb;"></span> 1. Active Construction Projects (32 + 5)</label>
+              <span class="prov-tag prov-ver">Published</span>
+            </div>
+            <div class="layer-meta-sub">Source: DLD / SRERD / Developer Releases (DS #04) · Updated: Nov 2026</div>
           </div>
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L3" checked onchange="toggleLayerGroup('communities', this.checked)"/><span class="layer-dot" style="background:#7c3aed;"></span> 2. Community Hotspots (10)</label>
-            <span class="prov-tag prov-ver">Default ON</span>
+          <div class="layer-item" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label><input type="checkbox" id="chk-L3" checked onchange="toggleLayerGroup('communities', this.checked)"/><span class="layer-dot" style="background:#7c3aed;"></span> 2. Community Hotspots (10 Zones)</label>
+              <span class="prov-tag prov-ver">Derived</span>
+            </div>
+            <div class="layer-meta-sub">Source: DM GIS &amp; DLD Escrow Boundaries (DS #21A) · Updated: Nov 2026</div>
           </div>
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L6" checked onchange="toggleLayerGroup('traffic', this.checked)"/><span class="layer-dot" style="background:#ef4444;"></span> 3. Modelled Corridor Speeds</label>
-            <span class="prov-tag prov-mod">Modelled</span>
+          <div class="layer-item" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label><input type="checkbox" id="chk-L2" onchange="toggleLayerGroup('devbounds', this.checked)"/><span class="layer-dot" style="background:#8b5cf6;"></span> 5. JVC Sub-Clusters (5 Multi-Tower)</label>
+              <span class="prov-tag prov-ver">Published</span>
+            </div>
+            <div class="layer-meta-sub">Source: DLD Plot Registry &amp; Developer Filings (DS #21D) · Updated: Nov 2026</div>
           </div>
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L4" checked onchange="toggleLayerGroup('roads', this.checked)"/><span class="layer-dot" style="background:#64748b;"></span> 4. Base Road Network (23)</label>
-            <span class="prov-tag prov-ver">RTA Cap</span>
+
+          <div class="layer-group-hdr">Group 2 — Transport Network</div>
+          <div class="layer-item" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label><input type="checkbox" id="chk-L4" checked onchange="toggleLayerGroup('roads', this.checked)"/><span class="layer-dot" style="background:#64748b;"></span> 4. Base Road Network (23 Corridors)</label>
+              <span class="prov-tag prov-ver">Published</span>
+            </div>
+            <div class="layer-meta-sub">Source: RTA / SRTA &amp; OSM Highway Polylines (DS #16) · Updated: Nov 2026</div>
           </div>
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L2" onchange="toggleLayerGroup('devbounds', this.checked)"/><span class="layer-dot" style="background:#8b5cf6;"></span> 5. JVC Sub-Clusters &amp; Radii</label>
-            <span class="prov-tag prov-ver">Zoom/Toggle</span>
+          <div class="layer-item" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label><input type="checkbox" id="chk-L8" onchange="toggleLayerGroup('transit', this.checked)"/><span class="layer-dot" style="background:#3b82f6;"></span> 8. Metro Red/Blue &amp; Etihad Rail (3)</label>
+              <span class="prov-tag prov-ver">Published</span>
+            </div>
+            <div class="layer-meta-sub">Source: RTA Rail Agency (SRC-440) &amp; Etihad Rail · Updated: May 2025</div>
           </div>
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L5" onchange="toggleLayerGroup('intersections', this.checked)"/><span class="layer-dot" style="background:#f43f5e;"></span> 6. Bottleneck Intersections (16)</label>
-            <span class="prov-tag prov-ver">Corrob.</span>
+
+          <div class="layer-group-hdr">Group 3 — Traffic Conditions &amp; Bottlenecks</div>
+          <div class="layer-item" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label><input type="checkbox" id="chk-L6" checked onchange="toggleLayerGroup('traffic', this.checked)"/><span class="layer-dot" style="background:#ef4444;"></span> 3. Modelled Corridor Speeds (4 Windows)</label>
+              <span class="prov-tag prov-mod">Modelled</span>
+            </div>
+            <div class="layer-meta-sub">Source: Two-Term BPR + Bottleneck Model on RTA Cap (DS #17) · Nov 2026</div>
           </div>
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L7" onchange="toggleLayerGroup('incidents', this.checked)"/><span class="layer-dot" style="background:#f97316;"></span> 7. Active RTA/SRTA Roadworks (5)</label>
-            <span class="prov-tag prov-ver">Verified</span>
+          <div class="layer-item" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label><input type="checkbox" id="chk-L5" onchange="toggleLayerGroup('intersections', this.checked)"/><span class="layer-dot" style="background:#f43f5e;"></span> 6. Bottleneck Intersections (16 Nodes)</label>
+              <span class="prov-tag prov-mod">Derived/LOS</span>
+            </div>
+            <div class="layer-meta-sub">Source: RTA/SRTA Interchange Upgrades (DS #21B) · Updated: Nov 2026</div>
           </div>
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L8" onchange="toggleLayerGroup('transit', this.checked)"/><span class="layer-dot" style="background:#3b82f6;"></span> 8. Metro Red/Blue &amp; Etihad Rail</label>
-            <span class="prov-tag prov-ver">Verified</span>
+
+          <div class="layer-group-hdr">Group 4 — Construction Logistics</div>
+          <div class="layer-item" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label><input type="checkbox" id="chk-L9" onchange="toggleLayerGroup('facilities', this.checked)"/><span class="layer-dot" style="background:#10b981;"></span> 9. Logistics, Batching &amp; Urban Hubs (30)</label>
+              <span class="prov-tag prov-ver">Observed</span>
+            </div>
+            <div class="layer-meta-sub">Source: Al Quoz/Ras Al Khor/JAFZA/Sajaa &amp; Civic Registry (DS #09B)</div>
           </div>
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L9" onchange="toggleLayerGroup('facilities', this.checked)"/><span class="layer-dot" style="background:#10b981;"></span> 9. Logistics &amp; Batching Plants</label>
-            <span class="prov-tag prov-ver">Verified</span>
+
+          <div class="layer-group-hdr">Group 5 — Road Disruption</div>
+          <div class="layer-item" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label><input type="checkbox" id="chk-L7" onchange="toggleLayerGroup('incidents', this.checked)"/><span class="layer-dot" style="background:#f97316;"></span> 7. Active RTA/SRTA Roadworks (5 Zones)</label>
+              <span class="prov-tag prov-ver">Published</span>
+            </div>
+            <div class="layer-meta-sub">Source: Official RTA/SRTA Capital Works Releases (DS #21C) · 2024–2026</div>
           </div>
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L10" onchange="toggleLayerGroup('parking', this.checked)"/><span class="layer-dot" style="background:#14b8a6;"></span> 10. Parking &amp; Mobility Hubs</label>
-            <span class="prov-tag prov-ver">Verified</span>
+
+          <div class="layer-group-hdr">Group 6 — Project-to-Road Impact</div>
+          <div class="layer-item" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label><input type="checkbox" id="chk-L11" onchange="toggleLayerGroup('impacts', this.checked)"/><span class="layer-dot" style="background:#f59e0b;"></span> 11. Project-to-Road Impact Vectors (37)</label>
+              <span class="prov-tag prov-mod">Derived/Mod</span>
+            </div>
+            <div class="layer-meta-sub">Source: WGS84 Haversine Nearest-Vertex + 4-Comp HGV (DS #22)</div>
           </div>
-          <div class="layer-item">
-            <label><input type="checkbox" id="chk-L11" onchange="toggleLayerGroup('impacts', this.checked)"/><span class="layer-dot" style="background:#f59e0b;"></span> 11. Project-to-Road Impact Vectors</label>
-            <span class="prov-tag prov-mod">Modelled</span>
+
+          <div class="layer-group-hdr">Group 7 — Urban Context &amp; Mobility</div>
+          <div class="layer-item" style="flex-direction:column; align-items:stretch;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <label><input type="checkbox" id="chk-L10" onchange="toggleLayerGroup('parking', this.checked)"/><span class="layer-dot" style="background:#14b8a6;"></span> 10. Parking, EV &amp; Mobility Hubs (7)</label>
+              <span class="prov-tag prov-ver">Published</span>
+            </div>
+            <div class="layer-meta-sub">Source: Parkin PJSC, RTA Park-and-Ride &amp; DEWA EV (DS #20)</div>
           </div>
         </div>
       </div>
 
-      <!-- Bottom-Left Floating Pills: Compass Orbit + 4 Diurnal Time Windows + Basemap -->
+      <!-- Bottom-Left Floating Pills: Compass Orbit + 4 Diurnal Time Windows + Basemap + Traffic Heatmap Legend -->
       <div class="haio-floating-bottom-left">
         <button class="haio-compass-pill" onclick="orbitCameraStep()" title="Click to orbit 3D camera by 45°">
           <svg class="compass-needle-svg" id="compassSvg" viewBox="0 0 24 24" style="transform: rotate(-60deg);">
@@ -1923,6 +2402,15 @@ def main():
           <button class="bm-btn" onclick="setBasemap('dark', this)">Dark</button>
         </div>
 
+        <!-- Phase 5.3 Contextual Traffic Condition Heatmap Legend -->
+        <div class="map-legend" id="contextualMapLegend" title="Traffic Condition Heatmap Legend (Ratio of Corridor Speed v to Free-Flow v₀)">
+          <span class="leg-row"><span class="layer-dot" style="background:#10b981;"></span>Low</span>
+          <span class="leg-row"><span class="layer-dot" style="background:#eab308;"></span>Mod</span>
+          <span class="leg-row"><span class="layer-dot" style="background:#f97316;"></span>High</span>
+          <span class="leg-row"><span class="layer-dot" style="background:#ef4444;"></span>Severe</span>
+          <span class="leg-row"><span class="layer-dot" style="background:#64748b;"></span>N/A</span>
+        </div>
+
         <span id="hudTime" style="display:none;">Evening Peak (17:00–20:00)</span>
         <span id="hudHgvStatus" style="display:none;">🚫 HGV Ban 17:00–20:00 (E11/E44/D61)</span>
         <div style="display:none;">
@@ -1937,8 +2425,8 @@ def main():
     <!-- FLOATING RIGHT INTELLIGENCE INSPECTOR -->
     <aside class="sidebar-right">
       <div class="drawer-tabs">
-        <button class="dtab-btn active" id="dtab-insp" onclick="switchDrawerTab('insp')">🏢 3D Block &amp; Road</button>
-        <button class="dtab-btn" id="dtab-uc" onclick="switchDrawerTab('uc')">📌 Hotspots &amp; Traffic</button>
+        <button class="dtab-btn active" id="dtab-insp" onclick="switchDrawerTab('insp')">🏢 5-Sec Profile &amp; 3D</button>
+        <button class="dtab-btn" id="dtab-uc" onclick="switchDrawerTab('uc')">📌 Hotspots &amp; Tour</button>
         <button class="dtab-btn" id="dtab-qa" onclick="switchDrawerTab('qa')">💬 Ask Data</button>
       </div>
 
@@ -2857,6 +3345,23 @@ def main():
       });
     }
 
+    // Phase 12: Explicit WebGL GPU Buffer & Material Disposal to Prevent Safari Memory Warnings
+    function disposeThreeGroup(grp, disposeMaterials = false) {
+      if (!grp) return;
+      grp.traverse((obj) => {
+        if (obj.geometry && typeof obj.geometry.dispose === "function") {
+          obj.geometry.dispose();
+        }
+        if (disposeMaterials && obj.material) {
+          if (Array.isArray(obj.material)) {
+            obj.material.forEach(m => m && typeof m.dispose === "function" && m.dispose());
+          } else if (typeof obj.material.dispose === "function") {
+            obj.material.dispose();
+          }
+        }
+      });
+    }
+
     // Rebuilds the Unique 3D Architectural Complex for the Selected UAE Project (32 Flagship + 5 JVC Sub-Clusters)
     function rebuildThreeHeroScene() {
       if (!three3DLayer || !three3DLayer.scene || typeof THREE === "undefined") return;
@@ -2895,11 +3400,12 @@ def main():
           const selB = spec.blocks.find(b => b.id === active3DBlock) || spec.blocks[0];
           calloutTxtEl.textContent = `${selB.label} · ${selB.storeys} storeys`;
         } else {
-          calloutTxtEl.textContent = `${shortLbl} · ${spec.storeys}F`;
+          calloutTxtEl.textContent = `${shortLbl} · ${spec.storeys}F (Procedural 3D)`;
         }
       }
 
       if (three3DLayer.heroGroup) {
+        disposeThreeGroup(three3DLayer.heroGroup, true);
         three3DLayer.scene.remove(three3DLayer.heroGroup);
       }
 
@@ -3364,9 +3870,9 @@ def main():
         }
       }
 
-      // Sort by distance from project/camera center so 100% of viewport buildings in all directions are always rendered!
+      // Sort by distance from project/camera center so 100% of viewport buildings in all directions are rendered within safe WebGL memory budget
       candidates.sort((a, b) => a.distFromOrigin - b.distFromOrigin);
-      const maxBuildings = Math.min(2400, candidates.length);
+      const maxBuildings = Math.min(950, candidates.length);
       if (maxBuildings === 0) return;
 
       const parapetPalette = [
@@ -3421,6 +3927,7 @@ def main():
       }
 
       if (three3DLayer.osmCityGroup) {
+        disposeThreeGroup(three3DLayer.osmCityGroup, false);
         three3DLayer.scene.remove(three3DLayer.osmCityGroup);
       }
 
@@ -3453,7 +3960,7 @@ def main():
       if (map3d) map3d.triggerRepaint();
     }
 
-    function scheduleOsmCityRebuild(delayMs = 120) {
+    function scheduleOsmCityRebuild(delayMs = 220) {
       if (osmCityRebuildTimer) clearTimeout(osmCityRebuildTimer);
       osmCityRebuildTimer = setTimeout(() => {
         rebuildOsmCityScene();
@@ -3599,6 +4106,10 @@ def main():
             "projects-zones-3d": {
               type: "geojson",
               data: buildProjectSiteZonesGeoJSON()
+            },
+            "projects-heat-source-3d": {
+              type: "geojson",
+              data: { type: "FeatureCollection", features: [] }
             }
           },
           layers: [
@@ -3640,6 +4151,27 @@ def main():
                 "line-color": ["get", "color"],
                 "line-width": 1.4,
                 "line-opacity": 0.65
+              }
+            },
+            {
+              id: "projects-heatmap-3d",
+              type: "heatmap",
+              source: "projects-heat-source-3d",
+              maxzoom: 16.5,
+              layout: { visibility: "none" },
+              paint: {
+                "heatmap-weight": ["coalesce", ["get", "heatWeight"], 0.6],
+                "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 8, 1.1, 14, 2.6],
+                "heatmap-color": [
+                  "interpolate", ["linear"], ["heatmap-density"],
+                  0, "rgba(37, 99, 235, 0)",
+                  0.2, "rgba(56, 189, 248, 0.55)",
+                  0.45, "rgba(52, 211, 153, 0.72)",
+                  0.7, "rgba(251, 191, 36, 0.85)",
+                  1.0, "rgba(239, 68, 68, 0.95)"
+                ],
+                "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 8, 22, 13, 44, 16, 62],
+                "heatmap-opacity": 0.86
               }
             },
             {
@@ -3790,10 +4322,12 @@ def main():
       });
       map3d.on("zoom", () => {
         syncPhotorealistic3DVisibility();
+        if (typeof updateZoomLevelIndicator === "function") updateZoomLevelIndicator();
       });
       map3d.on("zoomend", () => {
         sync3DMapLayers();
-        scheduleOsmCityRebuild(80);
+        scheduleOsmCityRebuild(220);
+        if (typeof updateZoomLevelIndicator === "function") updateZoomLevelIndicator();
       });
 
       map3d.on("load", () => {
@@ -3935,8 +4469,30 @@ def main():
       });
       map3d.getSource("impacts-3d")?.setData({ type: "FeatureCollection", features: impFeats });
 
-      // 4. Active Construction Site Perimeter Zones
+      // 4. Active Construction Site Perimeter Zones & Concentration Heatmap Source
       map3d.getSource("projects-zones-3d")?.setData(showProjs ? buildProjectSiteZonesGeoJSON() : { type: "FeatureCollection", features: [] });
+
+      const heatFeats = [];
+      DATA.projects.forEach(p => {
+        if (emFilter !== "ALL" && p.emirate !== emFilter) return;
+        const [lat, lon] = parseCoord(p.coordinates);
+        const st = projectScaleStyle(p);
+        const w = st.radius >= 11 ? 1.0 : (st.radius >= 8.5 ? 0.75 : 0.5);
+        heatFeats.push({
+          type: "Feature",
+          properties: { project_id: p.project_id, heatWeight: w },
+          geometry: { type: "Point", coordinates: [lon, lat] }
+        });
+      });
+      DATA.subdevs.forEach(sd => {
+        if (emFilter !== "ALL" && sd.emirate !== emFilter) return;
+        heatFeats.push({
+          type: "Feature",
+          properties: { project_id: sd.subdev_id, heatWeight: 0.65 },
+          geometry: { type: "Point", coordinates: [sd.longitude, sd.latitude] }
+        });
+      });
+      map3d.getSource("projects-heat-source-3d")?.setData({ type: "FeatureCollection", features: heatFeats });
 
       // 5. Update 3D Sun Lighting based on active diurnal window
       if (currentTimeWindow.includes("Morning")) {
@@ -4039,37 +4595,1231 @@ def main():
       showProjectInspector("PRJ-D11", false);
     }
 
-    function setPlatformMode(mode, btnEl) {
-      if (btnEl) {
-        document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
-        btnEl.classList.add("active");
-      }
-      const wb = document.getElementById("mainWorkbench");
-      if (wb.classList.contains("panel-collapsed")) toggleRightPanel();
+    let currentPlatformMode = "explorer";
+    let currentConcentrationMode = "points";
+    let analyticalSplitView = false;
+    let activeWorkspaceCommunityId = "COM-DXB-01";
 
-      if (mode === "overview") {
+    // =========================================================================
+    // PHASE 4: ADAPTIVE GEOGRAPHIC ZOOM LEVELS (L1 UAE -> L2 EMIRATE -> L3 COMMUNITY -> L4 PROJECT 3D)
+    // =========================================================================
+    function setGeoZoomLevel(lvl) {
+      const numLvl = String(lvl).replace("L", "");
+      document.querySelectorAll("#geoZoomLevelBar .zlvl-btn[id^='zlvl-']").forEach(b => b.classList.remove("active"));
+      const btn = document.getElementById(`zlvl-${numLvl}`);
+      if (btn) btn.classList.add("active");
+
+      if (numLvl === "1") {
+        document.getElementById("emirateSelect").value = "ALL";
+        populateCommunityDropdown();
+        setLayerSet(["communities", "roads", "traffic", "projects"]);
+        flyBothMaps(25.120, 55.340, 9.6, 38, 15);
+        document.getElementById("hudScope").textContent = "L1: UAE National Overview";
+        renderAllMapLayers();
+      } else if (numLvl === "2") {
+        const em = document.getElementById("emirateSelect").value === "Sharjah" ? "Sharjah" : "Dubai";
+        document.getElementById("emirateSelect").value = em;
+        populateCommunityDropdown();
+        setLayerSet(["communities", "roads", "traffic", "projects"]);
+        if (em === "Sharjah") {
+          flyBothMaps(25.318, 55.475, 11.8, 50, 30);
+          document.getElementById("hudScope").textContent = "L2: Sharjah Regional";
+        } else {
+          flyBothMaps(25.165, 55.265, 11.6, 50, 32);
+          document.getElementById("hudScope").textContent = "L2: Dubai Regional";
+        }
+        renderAllMapLayers();
+      } else if (numLvl === "3") {
+        const cid = document.getElementById("communitySelect").value !== "ALL" ? document.getElementById("communitySelect").value : "COM-DXB-01";
+        const c = DATA.communities.find(x => x.community_id === cid) || DATA.communities[0];
+        if (c) {
+          setLayerSet(["communities", "devbounds", "roads", "traffic", "intersections", "projects"]);
+          flyBothMaps(c.center_lat, c.center_lon, 14.1, 56, 38);
+          document.getElementById("hudScope").textContent = `L3: ${c.community_name}`;
+          showCommunityInspector(c);
+        }
+      } else if (numLvl === "4") {
+        const pid = selected3DProjectId || "PRJ-D11";
+        setLayerSet(["communities", "devbounds", "roads", "traffic", "impacts", "projects"]);
+        showProjectInspector(pid, true);
+        document.getElementById("hudScope").textContent = `L4: ${pid} 3D & Corridor`;
+      }
+    }
+
+    function updateZoomLevelIndicator() {
+      if (!map3d) return;
+      const z = map3d.getZoom();
+      let activeId = "zlvl-4";
+      if (z < 10.6) activeId = "zlvl-1";
+      else if (z < 13.0) activeId = "zlvl-2";
+      else if (z < 15.2) activeId = "zlvl-3";
+      document.querySelectorAll("#geoZoomLevelBar .zlvl-btn[id^='zlvl-']").forEach(b => {
+        b.classList.toggle("active", b.id === activeId);
+      });
+    }
+
+    // =========================================================================
+    // PHASE 3.2: CONSTRUCTION CONCENTRATION MAP SWITCHER (POINTS / HEATMAP / COMMUNITIES / CLUSTERS)
+    // =========================================================================
+    function setConcentrationMode(mode, btnEl) {
+      const normMode = (mode === "communities") ? "boundaries" : mode;
+      currentConcentrationMode = normMode;
+      ["cmode-points", "cmode-heatmap", "cmode-boundaries", "cmode-clusters"].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle("active", id === `cmode-${normMode}`);
+      });
+      if (btnEl) btnEl.classList.add("active");
+
+      if (map3d && map3dLoaded) {
+        if (map3d.getLayer("projects-heatmap-3d")) {
+          map3d.setLayoutProperty("projects-heatmap-3d", "visibility", normMode === "heatmap" ? "visible" : "none");
+        }
+        if (map3d.getLayer("communities-fill-3d")) {
+          map3d.setPaintProperty("communities-fill-3d", "fill-opacity", normMode === "boundaries" ? 0.28 : 0.08);
+        }
+        if (map3d.getLayer("communities-line-3d")) {
+          map3d.setPaintProperty("communities-line-3d", "line-width", normMode === "boundaries" ? 2.8 : 1.4);
+        }
+      }
+
+      if (normMode === "points") {
+        setLayerSet(["communities", "roads", "traffic", "projects"]);
+      } else if (normMode === "heatmap") {
+        setLayerSet(["communities", "roads", "projects"]);
+        if (map3d && map3d.getZoom() > 13.5) {
+          flyBothMaps(25.165, 55.285, 11.4, 46, 25);
+        }
+      } else if (normMode === "boundaries") {
+        setLayerSet(["communities", "roads", "traffic", "projects"]);
+        if (map3d && map3d.getZoom() > 13.5) {
+          flyBothMaps(25.165, 55.285, 11.6, 48, 28);
+        }
+      } else if (normMode === "clusters") {
+        setLayerSet(["communities", "devbounds", "projects", "roads", "impacts"]);
+        flyBothMaps(25.0585, 55.2090, 14.1, 56, 38);
+      }
+    }
+
+    // =========================================================================
+    // PHASE 4.2: 6 ONE-CLICK LAYER PRESETS
+    // =========================================================================
+    function applyLayerPreset(presetName, btnEl) {
+      document.querySelectorAll("#layerPresetGrid .preset-btn").forEach(b => b.classList.remove("active"));
+      if (btnEl) btnEl.classList.add("active");
+
+      if (presetName === "construction") {
+        setLayerSet(["projects", "devbounds", "communities", "roads"]);
+      } else if (presetName === "traffic") {
+        setLayerSet(["roads", "traffic", "intersections", "communities"]);
+      } else if (presetName === "logistics") {
+        setLayerSet(["roads", "traffic", "parking", "impacts", "projects"]);
+      } else if (presetName === "disruptions") {
+        setLayerSet(["roads", "traffic", "incidents", "intersections"]);
+      } else if (presetName === "impact") {
+        setLayerSet(["projects", "devbounds", "roads", "traffic", "impacts", "intersections"]);
+      } else if (presetName === "all") {
+        setLayerSet(["projects", "devbounds", "communities", "roads", "intersections", "traffic", "incidents", "transit", "facilities", "parking", "impacts"]);
+      }
+    }
+
+    // =========================================================================
+    // PHASE 2: 7-MODULE INFORMATION ARCHITECTURE & DEDICATED ANALYTICAL WORKSPACE
+    // =========================================================================
+    function closeAnalyticalWorkspace() {
+      const aw = document.getElementById("analyticalWorkspaceModal");
+      if (aw) aw.classList.remove("open", "split-mode");
+      document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+      const expBtn = document.getElementById("mode-explorer");
+      if (expBtn) expBtn.classList.add("active");
+      currentPlatformMode = "explorer";
+      setTimeout(() => {
+        if (map) map.invalidateSize();
+        if (map3d) map3d.resize();
+      }, 150);
+    }
+
+    function toggleAnalyticalSplitMode() {
+      analyticalSplitView = !analyticalSplitView;
+      const aw = document.getElementById("analyticalWorkspaceModal");
+      if (aw) aw.classList.toggle("split-mode", analyticalSplitView);
+      setTimeout(() => {
+        if (map) map.invalidateSize();
+        if (map3d) map3d.resize();
+      }, 220);
+    }
+
+    function setPlatformMode(mode, btnEl) {
+      currentPlatformMode = mode;
+      document.querySelectorAll(".mode-btn").forEach(b => b.classList.remove("active"));
+      if (btnEl) {
+        btnEl.classList.add("active");
+      } else {
+        const targetBtn = document.getElementById(`mode-${mode}`);
+        if (targetBtn) targetBtn.classList.add("active");
+      }
+
+      const aw = document.getElementById("analyticalWorkspaceModal");
+      const wb = document.getElementById("mainWorkbench");
+
+      if (mode === "explorer") {
+        if (aw) aw.classList.remove("open", "split-mode");
+        if (wb && wb.classList.contains("panel-collapsed")) toggleRightPanel();
         switchDrawerTab("uc");
         setLayerSet(["communities", "roads", "traffic", "projects"]);
-        backToCityMapOverview();
-      } else if (mode === "construction") {
-        switchDrawerTab("uc");
-        setLayerSet(["communities", "devbounds", "projects", "roads", "traffic"]);
-        flyBothMaps(25.0585, 55.2090, 13.8, 56, 32);
-        runUseCase(2, false);
-      } else if (mode === "traffic") {
-        switchDrawerTab("uc");
-        setLayerSet(["roads", "traffic", "intersections", "impacts", "projects"]);
-        runUseCase(3, true);
-      } else if (mode === "project") {
+        setTimeout(() => { if (map3d) map3d.resize(); }, 120);
+        return;
+      }
+
+      if (mode === "project") {
+        if (aw) aw.classList.remove("open", "split-mode");
+        if (wb && wb.classList.contains("panel-collapsed")) toggleRightPanel();
         switchDrawerTab("insp");
         setLayerSet(["communities", "roads", "traffic", "impacts", "projects", "devbounds"]);
-        showProjectInspector("PRJ-D11", true);
-      } else if (mode === "evidence") {
-        const det = document.getElementById("evidenceAccordion");
-        if (det) det.open = true;
-        const evSec = document.getElementById("evidence-tables") || document.getElementById("evidenceSection");
-        if (evSec) evSec.scrollIntoView({ behavior: "smooth" });
+        showProjectInspector(selected3DProjectId || "PRJ-D11", true);
+        return;
       }
+
+      // Modes 01 (overview), 02 (construction), 04 (traffic), 05 (impact), 07 (evidence) open the dedicated Analytical Workspace
+      if (!aw) return;
+      aw.classList.add("open");
+      aw.classList.toggle("split-mode", analyticalSplitView);
+
+      if (mode === "overview") {
+        renderExecutiveOverviewModule(aw);
+      } else if (mode === "construction") {
+        renderConstructionIntelligenceModule(aw);
+      } else if (mode === "traffic") {
+        renderTrafficIntelligenceModule(aw);
+      } else if (mode === "impact") {
+        renderImpactAndLogisticsModule(aw);
+      } else if (mode === "evidence") {
+        renderDataAndEvidenceModule(aw);
+      }
+      aw.scrollTop = 0;
+    }
+
+    function inspectEntityOnMapFromWorkspace(type, id) {
+      closeAnalyticalWorkspace();
+      if (type === "project") {
+        showProjectInspector(id, true);
+      } else if (type === "road") {
+        showRoadInspector(id, true);
+      } else if (type === "community") {
+        const c = DATA.communities.find(x => x.community_id === id);
+        if (c) {
+          flyBothMaps(c.center_lat, c.center_lon, (c.recommended_zoom || 13) + 0.8, 56, 38);
+          showCommunityInspector(c);
+        }
+      } else if (type === "intersection") {
+        const i = DATA.intersections.find(x => x.intersection_id === id);
+        if (i) showIntersectionInspector(i, true);
+      } else if (type === "subdev") {
+        const sd = DATA.subdevs.find(x => x.subdev_id === id);
+        if (sd) showSubdevInspector(sd, true);
+      }
+    }
+
+    function exportFilteredProjectsCsv() {
+      const emFilter = document.getElementById("emirateSelect") ? document.getElementById("emirateSelect").value : "ALL";
+      const rows = (DATA.uae_projects_summary && DATA.uae_projects_summary.length) ? DATA.uae_projects_summary : DATA.projects;
+      const filtered = rows.filter(r => emFilter === "ALL" || r.emirate === emFilter);
+      const headers = ["project_id", "project_name", "emirate", "city_district_community", "developer", "project_type", "lifecycle_status", "published_investment_value", "gross_project_value_aed_b", "hard_construction_cost_aed_b", "is_estimated_gdv", "gross_floor_area", "expected_completion_date", "coordinates", "confidence", "source_url"];
+      const csvLines = [headers.join(",")];
+      filtered.forEach(r => {
+        const vals = headers.map(h => {
+          const v = r[h] !== undefined && r[h] !== null ? String(r[h]).replace(/"/g, '""') : "";
+          return `"${v}"`;
+        });
+        csvLines.push(vals.join(","));
+      });
+      const blob = new Blob([csvLines.join("\n")], { type: "text/csv;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `uae_construction_projects_${emFilter.toLowerCase()}_export.csv`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function buildWorkspaceStickyHeader(badgeText, titleText, subtitleText) {
+      return `
+        <div class="aw-sticky-bar">
+          <div>
+            <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+              <span class="brand-badge" style="background:#dbeafe; color:#1d4ed8;">${badgeText}</span>
+              <span style="font-size:0.72rem; color:#64748b; font-weight:700;">Active Window: <strong style="color:#0f172a;">${currentTimeWindow}</strong></span>
+            </div>
+            <h2 style="margin:4px 0 0; font-size:1.18rem; font-weight:800; color:#0f172a;">${titleText}</h2>
+            <div style="font-size:0.76rem; color:#475569; margin-top:2px;">${subtitleText}</div>
+          </div>
+          <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+            <button class="ctrl-btn" onclick="toggleAnalyticalSplitMode()" title="View Analytical Dashboard Side-by-Side with 3D GIS Map">${analyticalSplitView ? '🗖 Full Width View' : '◫ Split Screen with 3D Map'}</button>
+            <button class="ctrl-btn" onclick="window.print()" title="Print / Save PDF Executive Report">🖨️ Print PDF</button>
+            <button class="ctrl-btn" style="background:#0f172a; color:#fff; border-color:#0f172a;" onclick="closeAnalyticalWorkspace()">🗺️ Return to 3D GIS Map ✕</button>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // MODULE 01: EXECUTIVE OVERVIEW (UAE-WIDE & DUBAI/SHARJAH INTELLIGENCE SUMMARY)
+    // =========================================================================
+    function renderExecutiveOverviewModule(container) {
+      const allUae = DATA.uae_projects_summary || [];
+      const emCounts = {};
+      allUae.forEach(p => {
+        emCounts[p.emirate] = (emCounts[p.emirate] || 0) + 1;
+      });
+      const emRowsHtml = Object.entries(emCounts).map(([em, cnt]) => {
+        const isDeepGis = (em === "Dubai" || em === "Sharjah");
+        const pct = Math.round((cnt / Math.max(1, allUae.length)) * 100);
+        return `
+          <div class="aw-bar-row">
+            <div><strong>${em}</strong> ${isDeepGis ? '<span class="ep-pill-pub">Task 2 Deep GIS</span>' : '<span class="ep-pill-mod">Task 1 Baseline</span>'}</div>
+            <div class="aw-bar-track"><div class="aw-bar-fill" style="width:${Math.max(8, pct * 2.5)}%; background:${isDeepGis ? '#2563eb' : '#64748b'};"></div></div>
+            <div style="text-align:right; font-weight:800;">${cnt} Flagships</div>
+          </div>
+        `;
+      }).join("");
+
+      container.innerHTML = `
+        ${buildWorkspaceStickyHeader("MODULE 01 — EXECUTIVE OVERVIEW", "UAE Construction Activity, Geographic Intelligence & Traffic Impact Summary", "Unified executive command center across all 7 UAE Emirates (85 Flagship Developments) with deep spatial & corridor traffic modelling for Dubai (20 Flagships + 5 JVC Clusters) and Sharjah (12 Flagships).")}
+
+        <div class="aw-kpi-grid">
+          <div class="aw-kpi-card">
+            <div class="k-lbl">UAE National Flagship Inventory</div>
+            <div class="k-val">85 Projects</div>
+            <div class="k-sub">Across all 7 UAE Emirates (<code>04_project_inventory.csv</code>) · <strong>32</strong> in Dubai &amp; Sharjah Task 2 GIS + <strong>5</strong> JVC Sub-Clusters (37 Spatial Entities)</div>
+          </div>
+          <div class="aw-kpi-card">
+            <div class="k-lbl">Published Official Investment (27/32)</div>
+            <div class="k-val" style="color:#059669;">AED 765.9B</div>
+            <div class="k-sub"><span class="ep-pill-pub">PUBLISHED</span> Dubai: <strong>AED 675.4B</strong> (16 projects) · Sharjah: <strong>AED 90.5B</strong> (11 projects) — Strictly separated from Estimated GDV</div>
+          </div>
+          <div class="aw-kpi-card">
+            <div class="k-lbl">Estimated Masterplan GDV (5/32)</div>
+            <div class="k-val" style="color:#b45309;">AED 253.0B</div>
+            <div class="k-sub"><span class="badge-missing">ESTIMATED GDV</span> 5 Masterplans with partial contract awards (<code>PRJ-D2</code>, <code>PRJ-D4</code>, <code>PRJ-D11</code>, <code>PRJ-D16</code>, <code>PRJ-SH5</code>) · Hard Construction Cost: <strong>AED 595.8B</strong></div>
+          </div>
+          <div class="aw-kpi-card">
+            <div class="k-lbl">Mapped Transport &amp; Traffic Network</div>
+            <div class="k-val" style="color:#2563eb;">23 Corridors</div>
+            <div class="k-sub"><strong>16</strong> Dubai + <strong>7</strong> Sharjah OSM Highway Geometries · <strong>16</strong> Bottleneck Intersections · <strong>8</strong> Logistics Hubs · <strong>8</strong> Active Roadworks</div>
+          </div>
+          <div class="aw-kpi-card">
+            <div class="k-lbl">City Baseline vs. Corridor BPR Speed</div>
+            <div class="k-val" style="color:#dc2626;">31.3 km/h</div>
+            <div class="k-sub"><span class="ep-pill-pub">TomTom City Index</span> 42.7% annual congestion (47.5% YoY comparison) · Hessa St D61 AM Peak: <strong>29.0 km/h (V/C=1.04)</strong></div>
+          </div>
+        </div>
+
+        <div class="aw-grid-2">
+          <div class="aw-panel-card">
+            <h3>1. UAE 7-Emirate Geographic Coverage (85 Flagship Projects)</h3>
+            <p style="font-size:0.76rem; color:#475569; margin-bottom:10px;">
+              Task 1 catalogued <strong>85 flagship projects across all 7 UAE Emirates</strong>. Task 2 performs deep-dive spatial GIS, road network, HGV logistics, and 4-window BPR traffic impact modelling across <strong>Dubai (20 flagships + 5 JVC sub-clusters)</strong> and <strong>Sharjah (12 flagships)</strong>:
+            </p>
+            ${emRowsHtml}
+            <div style="margin-top:12px; display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="ctrl-btn" onclick="closeAnalyticalWorkspace(); setGeoZoomLevel('L1');">🗺️ View L1 UAE National Map</button>
+              <button class="ctrl-btn" onclick="closeAnalyticalWorkspace(); document.getElementById('emirateSelect').value='Dubai'; setGeoZoomLevel('L2');">🏙️ View L2 Dubai Regional Map</button>
+              <button class="ctrl-btn" onclick="closeAnalyticalWorkspace(); document.getElementById('emirateSelect').value='Sharjah'; setGeoZoomLevel('L2');">🏛️ View L2 Sharjah Regional Map</button>
+            </div>
+          </div>
+
+          <div class="aw-panel-card">
+            <h3>2. Platform Navigation &amp; Analytical Modules (01–07)</h3>
+            <div class="kv-grid">
+              <div class="kv-row" style="cursor:pointer;" onclick="setPlatformMode('construction')">
+                <div class="kv-lbl">02 — Construction Intelligence</div>
+                <div class="kv-val">Published vs. Estimated Investment separation, Developer &amp; Lifecycle distribution, Missing-Data Register, Density Heatmap switcher, and <strong>10-Community Intelligence Explorer</strong>.</div>
+              </div>
+              <div class="kv-row" style="cursor:pointer;" onclick="setPlatformMode('explorer')">
+                <div class="kv-lbl">03 — Geographic Explorer (2D/3D GIS)</div>
+                <div class="kv-val">4 Adaptive Zoom Levels (<code>L1 UAE</code> → <code>L2 Emirate</code> → <code>L3 Community</code> → <code>L4 Project 3D</code>), 7 Organized Layer Groups, and 6 One-Click Layer Presets.</div>
+              </div>
+              <div class="kv-row" style="cursor:pointer;" onclick="setPlatformMode('traffic')">
+                <div class="kv-lbl">04 — Traffic Intelligence</div>
+                <div class="kv-val">23-Corridor Speed/Capacity/V/C Table, 4-Window Visual Time Comparison Charts, 16-Intersection Bottleneck Explorer, and <strong>Multi-Factor Traffic Cause Matrix</strong>.</div>
+              </div>
+              <div class="kv-row" style="cursor:pointer;" onclick="setPlatformMode('impact')">
+                <div class="kv-lbl">05 — Construction Impact &amp; Logistics</div>
+                <div class="kv-val">8 Logistics Facilities, 4-Component HGV Trip Breakdown, 37-Link 5-Category Epistemic Matrix, Impact Rankings, and <strong>Interactive Hypothetical Scenario Simulator</strong>.</div>
+              </div>
+              <div class="kv-row" style="cursor:pointer;" onclick="setPlatformMode('project')">
+                <div class="kv-lbl">06 — Project Explorer (5-Section Profile + 3D)</div>
+                <div class="kv-val">Structured 5-Section Project Profile with explicit <code>Unavailable / Restricted</code> indicators + interactive 3D Block/Floor/Stack massing.</div>
+              </div>
+              <div class="kv-row" style="cursor:pointer;" onclick="setPlatformMode('evidence')">
+                <div class="kv-lbl">07 — Data, Methodology &amp; Evidence</div>
+                <div class="kv-val">Searchable 11-Dataset Catalogue, Source Register, Step-by-Step Worked BPR &amp; HGV Equations, Data-Quality Dashboard (TomTom 42.7% vs 47.5%), and 12 Exports.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="aw-panel-card">
+          <h3>3. Top 10 Dubai &amp; Sharjah Construction Hotspots Ranked by Composite Activity Index</h3>
+          <div style="overflow-x:auto;">
+            <table class="ev-table">
+              <thead>
+                <tr>
+                  <th>Community ID</th>
+                  <th>Emirate</th>
+                  <th>Community / Corridor Name</th>
+                  <th>Activity Index Score</th>
+                  <th>Active Devs</th>
+                  <th>Active Towers</th>
+                  <th>Scheduled Units (2025–29)</th>
+                  <th>Active Structural GFA (m²)</th>
+                  <th>Primary Road Corridors</th>
+                  <th>Observed / Modelled Congestion</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${DATA.communities.map(c => `
+                  <tr>
+                    <td><code>${c.community_id}</code></td>
+                    <td><strong>${c.emirate}</strong></td>
+                    <td><strong>${c.community_name}</strong></td>
+                    <td><strong style="color:#2563eb;">${c.construction_activity_index_score}</strong></td>
+                    <td>${c.active_developments_count}</td>
+                    <td>${c.active_towers_and_buildings}</td>
+                    <td>${c.scheduled_units_2025_2029.toLocaleString()}</td>
+                    <td><strong>${c.active_structural_gfa_sqm.toLocaleString()} m²</strong></td>
+                    <td>${c.primary_road_corridors}</td>
+                    <td><span style="color:${congestionColor(c.observed_congestion_severity)}; font-weight:700;">${c.observed_congestion_severity}</span></td>
+                    <td><button class="ctrl-btn" onclick="inspectEntityOnMapFromWorkspace('community', '${c.community_id}')">🗺️ Zoom 3D</button></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // MODULE 02: CONSTRUCTION INTELLIGENCE (DASHBOARD, INVESTMENT SEPARATION, MISSING DATA, COMMUNITY EXPLORER)
+    // =========================================================================
+    function selectCommunityInWorkspace(cid) {
+      activeWorkspaceCommunityId = cid;
+      const aw = document.getElementById("analyticalWorkspaceModal");
+      if (aw) renderConstructionIntelligenceModule(aw);
+    }
+
+    function renderConstructionIntelligenceModule(container) {
+      const summaryRows = (DATA.uae_projects_summary || []).filter(r => r.emirate === "Dubai" || r.emirate === "Sharjah");
+      const pubProjs = summaryRows.filter(r => !r.is_estimated_gdv);
+      const estProjs = summaryRows.filter(r => r.is_estimated_gdv);
+
+      // Developer aggregation
+      const devMap = {};
+      DATA.projects.forEach(p => {
+        const dName = p.developer.split("(")[0].trim();
+        devMap[dName] = (devMap[dName] || 0) + 1;
+      });
+      const devSorted = Object.entries(devMap).sort((a, b) => b[1] - a[1]).slice(0, 10);
+
+      // Selected community deep intelligence
+      const selComm = DATA.communities.find(c => c.community_id === activeWorkspaceCommunityId) || DATA.communities[0];
+      const commFlagshipIds = (selComm.flagship_project_ids || "").split(",").map(s => s.trim()).filter(Boolean);
+      const commProjs = DATA.projects.filter(p => commFlagshipIds.some(fid => p.project_id === fid.split("(")[0].trim()) || p.city_district_community.toLowerCase().includes(selComm.community_name.split("(")[0].trim().toLowerCase().slice(0, 8)));
+      const commSubdevs = selComm.community_id === "COM-DXB-01" ? DATA.subdevs : [];
+      const commLinks = DATA.impact_links.filter(l => commProjs.some(p => p.project_id === l.project_id) || commSubdevs.some(s => s.subdev_id === l.project_id));
+      const commRoadIds = new Set();
+      commLinks.forEach(l => { commRoadIds.add(l.primary_road_id); commRoadIds.add(l.secondary_road_id); });
+      const commRoads = DATA.roads.filter(r => commRoadIds.has(r.road_id) || (selComm.primary_road_corridors || "").includes(r.road_code.split("/")[0].trim()));
+      const commInts = DATA.intersections.filter(i => i.emirate === selComm.emirate && (i.community.toLowerCase().includes(selComm.community_name.split("(")[0].trim().toLowerCase().slice(0, 6)) || commRoads.some(r => i.connected_road_ids.includes(r.road_id))));
+      const commIncidents = DATA.incidents.filter(inc => commRoads.some(r => r.road_id === inc.road_id));
+      const commLogistics = DATA.parking.filter(pk => pk.emirate === selComm.emirate);
+
+      container.innerHTML = `
+        ${buildWorkspaceStickyHeader("MODULE 02 — CONSTRUCTION INTELLIGENCE", "Construction Activity Dashboard, Published vs. Estimated Investment & Community Explorer", "Strict separation of Published Official Investment (AED 765.9B across 27 projects) from Estimated Masterplan GDV (AED 253.0B across 5 projects) and Modelled Hard Construction Cost (AED 595.8B).")}
+
+        <!-- 3.1 CONSTRUCTION ACTIVITY OVERVIEW KPIs -->
+        <div class="aw-kpi-grid">
+          <div class="aw-kpi-card">
+            <div class="k-lbl">Total Identified Task 2 Sites</div>
+            <div class="k-val">37 Active Entities</div>
+            <div class="k-sub"><strong>20</strong> Dubai Flagships + <strong>5</strong> JVC Multi-Tower Clusters + <strong>12</strong> Sharjah Flagships (Plus 53 Flagships across the other 5 Emirates = 85 Total)</div>
+          </div>
+          <div class="aw-kpi-card">
+            <div class="k-lbl">Published Official Investment (${pubProjs.length}/32)</div>
+            <div class="k-val" style="color:#059669;">AED 765.9B</div>
+            <div class="k-sub"><span class="ep-pill-pub">PUBLISHED FACT</span> 16 Dubai Projects (<strong>AED 675.4B</strong>) + 11 Sharjah Projects (<strong>AED 90.5B</strong>) with official DLD/Developer/Gov valuation</div>
+          </div>
+          <div class="aw-kpi-card">
+            <div class="k-lbl">Estimated Masterplan GDV (${estProjs.length}/32)</div>
+            <div class="k-val" style="color:#b45309;">AED 253.0B</div>
+            <div class="k-sub"><span class="badge-missing">ESTIMATED MASTERPLAN GDV</span> 5 Projects with partial contract awards (<code>PRJ-D2</code> AED 100B+, <code>PRJ-D4</code> AED 90B+, <code>PRJ-D11</code> AED 3B+, <code>PRJ-D16</code> AED 55B+, <code>PRJ-SH5</code> AED 5B+)</div>
+          </div>
+          <div class="aw-kpi-card">
+            <div class="k-lbl">Active Structural GFA (10 Communities)</div>
+            <div class="k-val" style="color:#2563eb;">31.69M m²</div>
+            <div class="k-sub"><strong>199,200</strong> scheduled residential/mixed units (2025–2029) across <strong>180</strong> active developments &amp; <strong>400</strong> towers/clusters</div>
+          </div>
+          <div class="aw-kpi-card">
+            <div class="k-lbl">Incomplete / Restricted Information</div>
+            <div class="k-val" style="color:#dc2626;">5 Sub-Clusters</div>
+            <div class="k-sub"><span class="badge-missing">NO STANDALONE GDV</span> <code>SUB-JVC-01..05</code> tracked by Active GFA (1.20M m²) &amp; Units (9,330); Plot-level TIS filings restricted in RTA TES portal</div>
+          </div>
+        </div>
+
+        <!-- 3.2 CONCENTRATION MAP MODE SWITCHER & DISCLOSURE -->
+        <div class="aw-panel-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px;">
+            <div>
+              <h3 style="margin:0;">3.2 Construction Concentration &amp; Spatial Density Controls</h3>
+              <p style="font-size:0.75rem; color:#475569; margin:4px 0 0;">
+                <strong>Disclosed Density Calculation Method:</strong> MapLibre WebGL kernel density estimation (<code>projects-heatmap-3d</code>) weighted strictly by verified project coordinates and normalized GFA/investment scale tier (Mega ≥25B weight <code>1.0</code>, Major 5–25B weight <code>0.75</code>, Sub-Cluster weight <code>0.65</code>, Standard weight <code>0.50</code>). Does not extrapolate intensity into unmapped parcels.
+              </p>
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              <button class="ctrl-btn" onclick="closeAnalyticalWorkspace(); setConcentrationMode('points');">● Switch Map to Project Points</button>
+              <button class="ctrl-btn" style="background:#fef3c7; border-color:#f59e0b; color:#92400e;" onclick="closeAnalyticalWorkspace(); setConcentrationMode('heatmap');">🔥 Launch Density Heatmap on Map</button>
+              <button class="ctrl-btn" onclick="closeAnalyticalWorkspace(); setConcentrationMode('communities');">⬡ Community Boundaries</button>
+              <button class="ctrl-btn" onclick="closeAnalyticalWorkspace(); setConcentrationMode('clusters');">◎ JVC Development Clusters</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="aw-grid-2">
+          <!-- PUBLISHED VS ESTIMATED INVESTMENT & MISSING DATA REGISTER -->
+          <div class="aw-panel-card">
+            <h3>3.1A Published vs. Estimated Investment &amp; Missing-Data Register</h3>
+            <div class="kv-grid">
+              <div class="kv-row">
+                <div class="kv-lbl"><span class="ep-pill-pub">CATEGORY 1 — PUBLISHED INVESTMENT</span> 27 Flagship Projects (AED 765.9B)</div>
+                <div class="kv-val">
+                  Direct government or developer disclosures: e.g., <code>PRJ-D1</code> Al Maktoum Int'l Airport (AED 128.0B, Dubai Media Office), <code>PRJ-D3</code> Palm Jebel Ali (AED 150.0B, Nakheel), <code>PRJ-D5</code> Dubai Creek Harbour (AED 75.0B, Emaar), <code>PRJ-SH2</code> Aljada (AED 35.0B, Arada), <code>PRJ-SH1</code> Sharjah Waterfront City (AED 25.0B).
+                </div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl"><span class="badge-missing">CATEGORY 2 — ESTIMATED MASTERPLAN GDV</span> 5 Flagship Projects (AED 253.0B)</div>
+                <div class="kv-val">
+                  Masterplans where total GDV is estimated from partial contract awards and phased launches (never merged into Published Investment without disclosure):<br/>
+                  • <code>PRJ-D2</code> Dubai Islands (Est. AED 100.0B+ Masterplan GDV; AED 7.0B+ published awards)<br/>
+                  • <code>PRJ-D4</code> Dubai South Residential &amp; Logistics (Est. AED 90.0B+ Multi-Developer GDV; AED 4.0B+ published awards)<br/>
+                  • <code>PRJ-D16</code> DAMAC Lagoons (Est. AED 55.0B+ Masterplan GDV; AED 7.0B+ main works package)<br/>
+                  • <code>PRJ-SH5</code> Khalid Bin Sultan City (Est. AED 5.0B+ Masterplan GDV; Zaha Hadid masterplan)<br/>
+                  • <code>PRJ-D11</code> Burj Binghatti Jacob &amp; Co (Est. AED 3.0B+ GDV)
+                </div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl"><span class="badge-missing">CATEGORY 3 — MISSING / RESTRICTED DATA</span> Explicit Non-Invented Fields</div>
+                <div class="kv-val">
+                  • <strong>5 JVC Sub-Clusters (<code>SUB-JVC-01..05</code>):</strong> Multi-parcel developer clusters do not publish a single consolidated GDV; tracked strictly via verified DLD active tower counts (29 towers), total units (9,330), and active structural GFA (1.20M m²).<br/>
+                  • <strong>Plot-Level Consultant TIS Reports:</strong> Confidential in RTA's TES portal; platform uses published RTA/SRTA corridor capacity studies (<code>TIS-001..008</code>).<br/>
+                  • <strong>Architectural CAD/BIM Facades:</strong> Not publicly filed; 3D viewer renders storey-proportional procedural massing with explicit attribution.
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- DEVELOPER & LIFECYCLE DISTRIBUTION -->
+          <div class="aw-panel-card">
+            <h3>3.1B Top Developers &amp; Lifecycle Status Distribution (Dubai &amp; Sharjah)</h3>
+            <div style="font-size:0.74rem; color:#475569; margin-bottom:8px;"><strong>Leading Developers by Flagship Count (Dataset #04):</strong></div>
+            ${devSorted.map(([dev, count]) => `
+              <div class="aw-bar-row">
+                <div><strong>${dev}</strong></div>
+                <div class="aw-bar-track"><div class="aw-bar-fill" style="width:${Math.min(100, count * 18)}%; background:#0284c7;"></div></div>
+                <div style="text-align:right; font-weight:700;">${count} Flagship${count > 1 ? 's' : ''}</div>
+              </div>
+            `).join("")}
+            <div style="margin-top:12px; font-size:0.74rem; color:#475569;"><strong>Lifecycle Status Breakdown (32 Flagships + 5 Sub-Clusters):</strong></div>
+            <div class="kv-grid" style="margin-top:6px;">
+              <div class="kv-row">
+                <div class="kv-lbl">Active Under Construction / Phased Handover</div>
+                <div class="kv-val"><strong>29 Flagship Developments + 5 JVC Sub-Clusters</strong> (Earthworks, Piling, Superstructure, MEP, or Phased Handover verified via DLD Oqood/Escrow &amp; satellite imagery).</div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">Masterplan / Early Infrastructure / Piling Launch</div>
+                <div class="kv-val"><strong>3 Developments</strong> (<code>PRJ-D10</code> Burj Azizi piling, <code>PRJ-SH5</code> Khalid Bin Sultan City phase 1 launch, <code>PRJ-SH12</code> Jebel Jais/East Coast).</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3.3 INTERACTIVE COMMUNITY INTELLIGENCE EXPLORER -->
+        <div class="aw-panel-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
+            <div>
+              <h3 style="margin:0;">3.3 Community Intelligence Explorer — Select Any Community for Full Spatial &amp; Traffic Breakdown</h3>
+              <div style="font-size:0.75rem; color:#475569;">Inspect community boundaries, sub-clusters, projects, nearby roads, intersections, roadworks, logistics hubs, and project-to-road connections:</div>
+            </div>
+            <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
+              <select class="haio-select" style="width:auto; min-width:280px;" onchange="selectCommunityInWorkspace(this.value)" aria-label="Select Community in Explorer">
+                ${DATA.communities.map(c => `<option value="${c.community_id}" ${c.community_id === selComm.community_id ? 'selected' : ''}>${c.community_id}: ${c.community_name} (${c.emirate} · Score ${c.construction_activity_index_score})</option>`).join("")}
+              </select>
+              <button class="ctrl-btn" style="background:#2563eb; color:#fff; border-color:#2563eb;" onclick="inspectEntityOnMapFromWorkspace('community', '${selComm.community_id}')">🗺️ Open ${selComm.community_id} on 3D Map</button>
+            </div>
+          </div>
+
+          <div class="aw-kpi-grid" style="margin-bottom:12px;">
+            <div class="aw-kpi-card">
+              <div class="k-lbl">Community &amp; Activity Score</div>
+              <div class="k-val" style="font-size:1.05rem; color:#2563eb;">${selComm.construction_activity_index_score}</div>
+              <div class="k-sub">${selComm.community_name} (<code>${selComm.community_id}</code> · Center: <code>[${selComm.center_lat}, ${selComm.center_lon}]</code>)</div>
+            </div>
+            <div class="aw-kpi-card">
+              <div class="k-lbl">Active Developments &amp; Towers</div>
+              <div class="k-val">${selComm.active_developments_count} Devs / ${selComm.active_towers_and_buildings} Towers</div>
+              <div class="k-sub">Scheduled Units (2025–2029): <strong>${selComm.scheduled_units_2025_2029.toLocaleString()}</strong></div>
+            </div>
+            <div class="aw-kpi-card">
+              <div class="k-lbl">Active Structural GFA</div>
+              <div class="k-val" style="color:#059669;">${selComm.active_structural_gfa_sqm.toLocaleString()} m²</div>
+              <div class="k-sub">Boundary Polygon: <strong>${selComm.polygon_wgs84.length} WGS84 Vertices</strong></div>
+            </div>
+            <div class="aw-kpi-card">
+              <div class="k-lbl">Associated Traffic Corridors</div>
+              <div class="k-val" style="font-size:0.95rem; color:#dc2626;">${selComm.primary_road_corridors}</div>
+              <div class="k-sub">${selComm.observed_congestion_severity}</div>
+            </div>
+          </div>
+
+          <div class="aw-grid-2">
+            <div>
+              <h4 style="margin:0 0 8px; font-size:0.84rem; color:#0f172a;">Projects &amp; Sub-Clusters in ${selComm.community_name} (${commProjs.length + commSubdevs.length})</h4>
+              <div class="kv-grid">
+                ${commProjs.map(p => {
+                  const lk = DATA.impact_links.find(x => x.project_id === p.project_id);
+                  return `
+                  <div class="kv-row" style="cursor:pointer;" onclick="inspectEntityOnMapFromWorkspace('project', '${p.project_id}')">
+                    <div class="kv-lbl">${p.project_id} · ${p.developer} · ${(p.published_investment_value || '').split('[')[0]}</div>
+                    <div class="kv-val"><strong>${p.project_name}</strong> (${p.lifecycle_status})<br/>${lk ? `Connected to <strong>${lk.primary_road_name} (${lk.distance_to_primary_road_km} km)</strong> · Scenario HGV: ${lk.total_hgv_round_trips_day} round-trips/d` : ''}</div>
+                  </div>`;
+                }).join("")}
+                ${commSubdevs.map(sd => `
+                  <div class="kv-row" style="cursor:pointer;" onclick="inspectEntityOnMapFromWorkspace('subdev', '${sd.subdev_id}')">
+                    <div class="kv-lbl">${sd.subdev_id} (Sub-Cluster) · ${sd.developer} · <span class="badge-missing">No Standalone GDV</span></div>
+                    <div class="kv-val"><strong>${sd.development_name}</strong> — ${sd.building_count} Towers, ${sd.total_units.toLocaleString()} Units, ${sd.active_gfa_sqm.toLocaleString()} m² GFA · <strong>${sd.distance_to_road_km} km</strong> to ${sd.primary_access_road_id}</div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+
+            <div>
+              <h4 style="margin:0 0 8px; font-size:0.84rem; color:#0f172a;">Nearby Roads (${commRoads.length}), Intersections (${commInts.length}), Roadworks (${commIncidents.length}) &amp; Logistics (${commLogistics.length})</h4>
+              <div class="kv-grid">
+                ${commRoads.map(r => {
+                  const obs = getCorridorProfileForWindow(r, currentTimeWindow).obs;
+                  return `
+                  <div class="kv-row" style="cursor:pointer;" onclick="inspectEntityOnMapFromWorkspace('road', '${r.road_id}')">
+                    <div class="kv-lbl">Road Corridor: ${r.road_id} (${r.road_code})</div>
+                    <div class="kv-val"><strong>${r.road_name}</strong> · Capacity: ${r.capacity_vph_per_dir}<br/>${obs ? `<span style="color:${congestionColor(obs.congestion_level)}; font-weight:700;">${currentTimeWindow.split('(')[0]}: ~${obs.average_speed_kmh} km/h (V/C=${obs.vc_ratio})</span>` : ''}</div>
+                  </div>`;
+                }).join("")}
+                ${commInts.slice(0, 4).map(i => `
+                  <div class="kv-row" style="cursor:pointer;" onclick="inspectEntityOnMapFromWorkspace('intersection', '${i.intersection_id}')">
+                    <div class="kv-lbl">Junction Bottleneck: ${i.intersection_id} (${i.peak_level_of_service.split('(')[0]})</div>
+                    <div class="kv-val"><strong>${i.intersection_name}</strong> — ${i.rta_upgrade_and_mitigation}</div>
+                  </div>
+                `).join("")}
+                ${commIncidents.map(inc => `
+                  <div class="kv-row">
+                    <div class="kv-lbl">🚧 Active Roadworks: ${inc.incident_id} (${inc.epistemic_tier})</div>
+                    <div class="kv-val"><strong>${inc.road_name}</strong> — ${inc.speed_and_capacity_impact}</div>
+                  </div>
+                `).join("")}
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // MODULE 04: TRAFFIC INTELLIGENCE (23 CORRIDORS, 4-WINDOW CHARTS, 16 BOTTLENECKS, MULTI-FACTOR CAUSES)
+    // =========================================================================
+    function renderTrafficIntelligenceModule(container) {
+      const keyChartRoadIds = ["RD-DXB-05", "RD-DXB-03", "RD-DXB-01", "RD-DXB-12", "RD-DXB-09", "RD-SHJ-01", "RD-SHJ-02"];
+      const timeComparisonRowsHtml = keyChartRoadIds.map(rid => {
+        const r = DATA.roads.find(x => x.road_id === rid);
+        if (!r) return "";
+        const winCells = ALL_TIME_WINDOWS.map(tp => {
+          const obs = getCorridorProfileForWindow(r, tp).obs;
+          if (!obs) return `<td>—</td>`;
+          const col = congestionColor(obs.congestion_level);
+          const pct = Math.min(100, Math.round((obs.average_speed_kmh / 100) * 100));
+          return `
+            <td>
+              <div style="display:flex; justify-content:space-between; font-size:0.72rem; font-weight:800; color:${col};">
+                <span>${obs.average_speed_kmh} km/h</span>
+                <span>V/C ${obs.vc_ratio}</span>
+              </div>
+              <div class="aw-bar-track" style="margin:3px 0;"><div class="aw-bar-fill" style="width:${pct}%; background:${col};"></div></div>
+              <div style="font-size:0.66rem; color:#64748b;">${obs.travel_time_min_per_10km} min/10km · ${obs.modelled_demand_vph_dir}/${obs.reference_capacity_vph_dir} vph</div>
+            </td>
+          `;
+        }).join("");
+        return `
+          <tr>
+            <td><a href="javascript:void(0)" onclick="inspectEntityOnMapFromWorkspace('road', '${r.road_id}')"><strong>${r.road_id}</strong>: ${r.road_name.split('(')[0]}</a><br/><span style="font-size:0.68rem; color:#64748b;">${r.hgv_truck_ban_window.slice(0, 58)}...</span></td>
+            ${winCells}
+          </tr>
+        `;
+      }).join("");
+
+      container.innerHTML = `
+        ${buildWorkspaceStickyHeader("MODULE 04 — TRAFFIC INTELLIGENCE", "Corridor Performance, 4-Window Diurnal Comparison, Bottleneck Intersections & Multi-Factor Causes", "Published RTA/SRTA statutory capacities, upgrade travel-time reduction targets, and TomTom city-wide baselines combined with transparent two-term BPR + bottleneck-delay corridor modelling.")}
+
+        <!-- 5.2 4-WINDOW VISUAL TIME COMPARISON -->
+        <div class="aw-panel-card">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
+            <div>
+              <h3 style="margin:0;">5.2 Diurnal Time-of-Day Comparison Across Key Corridors (Morning vs. Midday vs. Evening vs. Night)</h3>
+              <div style="font-size:0.74rem; color:#475569;">Click any time-window button below to synchronize the entire platform and 3D map lighting/speeds:</div>
+            </div>
+            <div style="display:flex; gap:6px; flex-wrap:wrap;">
+              ${ALL_TIME_WINDOWS.map(tp => `<button class="ctrl-btn ${currentTimeWindow === tp ? 'primary' : ''}" onclick="setTimeWindow('${tp}'); renderTrafficIntelligenceModule(document.getElementById('analyticalWorkspaceModal'));">${tp}</button>`).join("")}
+            </div>
+          </div>
+          <div style="overflow-x:auto;">
+            <table class="ev-table">
+              <thead>
+                <tr>
+                  <th>Corridor &amp; HGV Restriction Window</th>
+                  <th>🌅 Morning Peak (07:30–09:30)<br/><span style="font-weight:500; color:#dc2626;">HGVs Banned on E11/E44/D61</span></th>
+                  <th>🚛 Midday Peak (12:00–14:00)<br/><span style="font-weight:500; color:#d97706;">Active HGV Delivery Window</span></th>
+                  <th>🌇 Evening Peak (17:00–20:00)<br/><span style="font-weight:500; color:#dc2626;">HGVs Banned on E11/E44/D61</span></th>
+                  <th>🌙 Night Logistics (22:00–05:00)<br/><span style="font-weight:500; color:#059669;">Unrestricted Concrete Pours</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                ${timeComparisonRowsHtml}
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="aw-grid-2">
+          <!-- 5.4 MULTI-FACTOR TRAFFIC CAUSE ANALYSIS MATRIX -->
+          <div class="aw-panel-card">
+            <h3>5.4 Multi-Factor Congestion Cause Analysis (Preventing False Single-Cause Attribution)</h3>
+            <p style="font-size:0.75rem; color:#475569; margin-bottom:8px;">
+              <strong>Analytical Guardrail:</strong> Traffic congestion on corridors near construction hotspots is driven by 8 interacting urban factors — never solely by construction trucks (especially during 06:30–08:30 AM and 17:30–20:00 PM when HGVs are legally banned on E11, E44, and D61):
+            </p>
+            <div class="kv-grid">
+              <div class="kv-row">
+                <div class="kv-lbl">1. Commuter Demand &amp; Cross-Border Flows (Primary AM/PM Driver)</div>
+                <div class="kv-val"><span class="ep-pill-pub">PUBLISHED</span> Morning &amp; evening rush-hour queues on <code>RD-DXB-05</code> (Hessa St), <code>RD-DXB-01</code> (E11), and <code>RD-SHJ-01</code> (Sharjah E311 National Paints) are dominated by resident commuter flows when HGVs are banned.</div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">2. Rapid Population &amp; Handover Growth (Structural Demand)</div>
+                <div class="kv-val"><span class="ep-pill-pub">PUBLISHED</span> Completed residential towers in JVC (28,500 scheduled units), Business Bay (19,400 units), and Aljada (25,000 units) add permanent commuter vehicles to collector grids.</div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">3. School Zones &amp; Hospital Peak Trips (07:15–08:15 &amp; 14:30–15:30)</div>
+                <div class="kv-val"><span class="ep-pill-pub">VERIFIED GIS LAYER 9</span> 10 mapped schools &amp; hospitals (e.g., GEMS Founders School Al Barsha South 0.35 km from Hessa St, Kids World JVC, University City Sharjah) create localized morning/afternoon drop-off queues.</div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">4. Commercial Attractions &amp; Malls (Evening &amp; Weekend Peaks)</div>
+                <div class="kv-val"><span class="ep-pill-pub">VERIFIED GIS LAYER 9</span> Dubai Mall (<code>FAC-DXB-02</code>, >105M annual visitors), Circle Mall JVC (<code>FAC-DXB-01</code>), and Mall of the Emirates drive evening V/C ratios above 0.90 on Financial Centre Rd (D71) and Umm Suqeim St (D63).</div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">5. Active RTA/SRTA Capital Roadworks &amp; Diversion Zones</div>
+                <div class="kv-val"><span class="ep-pill-pub">TIER 4 CAUSAL</span> 8 active capital work zones (e.g., <code>INC-DXB-01</code> AED 689M Hessa St flyover works, <code>INC-SHJ-02</code> Etihad Rail University City bridge diversion) temporarily narrow lane geometry before doubling long-term capacity.</div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">6. Signalized &amp; Weaving Intersection Bottlenecks (16 Nodes)</div>
+                <div class="kv-val"><span class="ep-pill-mod">MODELLED + PUBLISHED</span> Ramp-weaving and signal delay (<code>+d_adj</code> up to +14.85 min/10km at <code>INT-DXB-01</code> Hessa × Al Khail and <code>INT-SHJ-01</code> National Paints) govern corridor travel time more than mid-block link capacity.</div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">7. Dynamic Salik Toll Pricing &amp; Route Redistribution</div>
+                <div class="kv-val"><span class="ep-pill-pub">PUBLISHED (SRC-435)</span> Variable Salik pricing (AED 6 Peak / AED 4 Off-Peak from Jan 31, 2025) + Al Safa South &amp; Business Bay gates shift ~9–12% of toll-avoiding commuters onto toll-free Al Khail Rd (E44) and E311.</div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">8. Construction HGV Logistics (Midday 08:30–13:00 &amp; Night 20:30–05:00)</div>
+                <div class="kv-val"><span class="ep-pill-mod">TIER 3 SCENARIO</span> Concrete mixers (8.5 m³) and rebar trailers (25 t) concentrate on local collector boulevards (<code>RD-DXB-07</code> JVC Circle Blvd, <code>RD-DXB-13</code> Marasi Dr) during permitted Midday and Night windows.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 5.3 BOTTLENECK INTERSECTION EXPLORER (16 NODES) -->
+          <div class="aw-panel-card">
+            <h3>5.3 Constrained Intersection &amp; Bottleneck Explorer (16 Nodes)</h3>
+            <div style="max-height:540px; overflow-y:auto;">
+              <table class="ev-table">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Intersection Name &amp; Type</th>
+                    <th>Peak LOS</th>
+                    <th>Connected Roads &amp; Projects</th>
+                    <th>RTA / SRTA Capital Mitigation</th>
+                    <th>Map</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${DATA.intersections.map(i => `
+                    <tr>
+                      <td><code>${i.intersection_id}</code></td>
+                      <td><strong>${i.intersection_name}</strong><br/><span style="color:#64748b; font-size:0.68rem;">${i.community} · ${i.intersection_type}</span></td>
+                      <td><strong style="color:${i.peak_level_of_service.includes('LOS F') || i.peak_level_of_service.includes('LOS E') ? '#dc2626' : '#d97706'};">${i.peak_level_of_service}</strong></td>
+                      <td>Roads: <code>${i.connected_road_ids}</code><br/>Projects: <code>${i.served_project_ids}</code></td>
+                      <td>${i.rta_upgrade_and_mitigation}</td>
+                      <td><button class="ctrl-btn" onclick="inspectEntityOnMapFromWorkspace('intersection', '${i.intersection_id}')">🗺️</button></td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5.1 FULL 23-CORRIDOR EXPLORER TABLE -->
+        <div class="aw-panel-card">
+          <h3>5.1 Complete 23-Corridor Engineering &amp; Traffic Intelligence Table (${currentTimeWindow})</h3>
+          <div style="overflow-x:auto;">
+            <table class="ev-table">
+              <thead>
+                <tr>
+                  <th>Road ID</th>
+                  <th>Corridor Name &amp; Code</th>
+                  <th>Authority &amp; Type</th>
+                  <th>Lanes &amp; Speed Limit</th>
+                  <th>Published Capacity (vph/dir)</th>
+                  <th>Modelled Speed (${currentTimeWindow.split('(')[0].trim()})</th>
+                  <th>Modelled Volume &amp; V/C</th>
+                  <th>Congestion Level</th>
+                  <th>Evidence &amp; Source</th>
+                  <th>Map</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${DATA.roads.map(r => {
+                  const { obs, exactMatch } = getCorridorProfileForWindow(r, currentTimeWindow);
+                  const col = obs ? congestionColor(obs.congestion_level) : "#64748b";
+                  return `
+                  <tr>
+                    <td><code>${r.road_id}</code></td>
+                    <td><strong>${r.road_name}</strong> (<code>${r.road_code}</code>)</td>
+                    <td>${r.authority}<br/><span style="color:#64748b;">${r.road_type}</span></td>
+                    <td>${r.lanes_per_direction} lanes/dir<br/>Limit: ${r.speed_limit_kmh}</td>
+                    <td><span class="ep-pill-pub">PUBLISHED</span><br/><strong>${r.capacity_vph_per_dir.split('[')[0]}</strong></td>
+                    <td><strong style="color:${col}; font-size:0.82rem;">~${obs ? obs.average_speed_kmh : '—'} km/h</strong><br/><span style="color:#64748b;">${obs ? obs.travel_time_min_per_10km : '—'} min/10km</span></td>
+                    <td><span class="ep-pill-mod">MODELLED</span><br/>${obs ? `${obs.modelled_demand_vph_dir}/${obs.reference_capacity_vph_dir} vph (V/C=${obs.vc_ratio})` : '—'}</td>
+                    <td><strong style="color:${col};">${obs ? obs.congestion_level : '—'}</strong></td>
+                    <td>${exactMatch ? `<span class="ep-pill-pub">Dataset #17 (${obs.observation_id})</span>` : `<span class="ep-pill-mod">Diurnal BPR</span>`}<br/><code>${r.source_id}</code></td>
+                    <td><button class="ctrl-btn" onclick="inspectEntityOnMapFromWorkspace('road', '${r.road_id}')">🗺️ Inspect</button></td>
+                  </tr>`;
+                }).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    // =========================================================================
+    // MODULE 05: CONSTRUCTION IMPACT & LOGISTICS (FACILITIES, HGV CHART, 37 LINKS, HYPOTHETICAL SCENARIO ENGINE)
+    // =========================================================================
+    function runHypotheticalScenario() {
+      const roadId = document.getElementById("simRoadSelect")?.value || "RD-DXB-05";
+      const hgvMult = parseFloat(document.getElementById("simHgvMultiplier")?.value || "1.0");
+      const banMode = document.getElementById("simBanPolicy")?.value || "enforced";
+      const capMode = document.getElementById("simUpgradeStage")?.value || "baseline";
+
+      const r = DATA.roads.find(x => x.road_id === roadId) || DATA.roads[4];
+      const baseObs = getCorridorProfileForWindow(r, currentTimeWindow).obs;
+      if (!baseObs) return;
+
+      const connectedLinks = DATA.impact_links.filter(l => l.primary_road_id === roadId || l.secondary_road_id === roadId);
+      const baseDailyHgvMovements = connectedLinks.reduce((acc, l) => acc + (l.total_hgv_one_way_movements_day || 0), 0);
+
+      // Hourly HGV PCE (1 HGV = 2.5 Passenger Car Equivalent)
+      const isPeakWindow = currentTimeWindow.includes("Morning") || currentTimeWindow.includes("Evening");
+      let hourlyHgvTrips = Math.round((baseDailyHgvMovements * hgvMult) * (isPeakWindow ? (banMode === "enforced" ? 0.02 : 0.14) : 0.12));
+      const hgvPceAdded = Math.round(hourlyHgvTrips * 2.5);
+
+      // Capacity adjustment under upgrade stage
+      let simCapacity = baseObs.reference_capacity_vph_dir;
+      if (capMode === "phased") simCapacity = Math.round(simCapacity * 1.35);
+      else if (capMode === "completed") simCapacity = Math.round(simCapacity * 1.85);
+
+      const baseNonHgvDemand = Math.max(400, baseObs.modelled_demand_vph_dir - Math.round((baseDailyHgvMovements * 0.05) * 2.5));
+      const simDemand = Math.round(baseNonHgvDemand + hgvPceAdded);
+      const simVc = +(simDemand / simCapacity).toFixed(2);
+
+      const t0 = baseObs.free_flow_time_min_per_10km;
+      const alpha = baseObs.bpr_alpha || 0.15;
+      const beta = baseObs.bpr_beta || 4.0;
+      const simBprTime = +(t0 * (1 + alpha * Math.pow(simVc, beta))).toFixed(2);
+      const capDelayFactor = capMode === "completed" ? 0.42 : (capMode === "phased" ? 0.70 : 1.0);
+      const simBottleneckDelay = +(baseObs.bottleneck_and_control_delay_min_per_10km * capDelayFactor * Math.pow(simVc / Math.max(0.3, baseObs.vc_ratio), 1.4)).toFixed(2);
+      const simTotalTime = +(simBprTime + simBottleneckDelay).toFixed(2);
+      const simSpeed = +(600.0 / simTotalTime).toFixed(1);
+      const speedDelta = +(simSpeed - baseObs.average_speed_kmh).toFixed(1);
+
+      const outEl = document.getElementById("hypotheticalScenarioOutput");
+      if (outEl) {
+        outEl.innerHTML = `
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; margin-bottom:8px;">
+            <span class="badge-hyp">⚠️ HYPOTHETICAL SCENARIO SIMULATION — NOT OBSERVED LIVE TRAFFIC</span>
+            <span style="font-size:0.74rem; color:#475569;">Corridor: <strong>${r.road_id} (${r.road_name})</strong> · Window: <strong>${currentTimeWindow}</strong></span>
+          </div>
+          <div class="aw-kpi-grid" style="margin-bottom:6px;">
+            <div class="aw-kpi-card">
+              <div class="k-lbl">Baseline Modelled Speed &amp; V/C</div>
+              <div class="k-val">${baseObs.average_speed_kmh} km/h</div>
+              <div class="k-sub">V/C = <strong>${baseObs.vc_ratio}</strong> (${baseObs.modelled_demand_vph_dir}/${baseObs.reference_capacity_vph_dir} vph/dir)</div>
+            </div>
+            <div class="aw-kpi-card">
+              <div class="k-lbl">Simulated Scenario Speed</div>
+              <div class="k-val" style="color:${simSpeed >= baseObs.average_speed_kmh ? '#059669' : '#dc2626'};">${simSpeed} km/h (${speedDelta >= 0 ? '+' : ''}${speedDelta} km/h)</div>
+              <div class="k-sub">Travel Time: <strong>${simTotalTime} min/10km</strong> (vs ${baseObs.travel_time_min_per_10km} min/10km baseline)</div>
+            </div>
+            <div class="aw-kpi-card">
+              <div class="k-lbl">Simulated V/C &amp; Capacity</div>
+              <div class="k-val" style="color:${simVc <= 0.85 ? '#059669' : '#dc2626'};">V/C = ${simVc}</div>
+              <div class="k-sub">Demand: <strong>${simDemand} vph/dir</strong> (incl. +${hgvPceAdded} HGV PCE/hr) · Cap: <strong>${simCapacity} vph/dir</strong></div>
+            </div>
+            <div class="aw-kpi-card">
+              <div class="k-lbl">Simulated BPR + Queue Breakdown</div>
+              <div class="k-val" style="font-size:0.95rem;">t_BPR=${simBprTime} + d_adj=${simBottleneckDelay}</div>
+              <div class="k-sub">Connected Sites: <strong>${connectedLinks.length}</strong> (${hourlyHgvTrips} HGV movements/hr simulated)</div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function renderImpactAndLogisticsModule(container) {
+      const topHgvLinks = [...DATA.impact_links].sort((a, b) => (b.total_hgv_round_trips_day || 0) - (a.total_hgv_round_trips_day || 0)).slice(0, 10);
+
+      // Corridor exposure ranking
+      const roadExposure = DATA.roads.map(r => {
+        const links = DATA.impact_links.filter(l => l.primary_road_id === r.road_id || l.secondary_road_id === r.road_id);
+        const totalHgv = links.reduce((s, l) => s + (l.total_hgv_round_trips_day || 0), 0);
+        const amObs = getCorridorProfileForWindow(r, "Morning Peak (07:30-09:30)").obs;
+        return { road: r, linkCount: links.length, totalHgv, amSpeed: amObs ? amObs.average_speed_kmh : 50, amVc: amObs ? amObs.vc_ratio : 0.7 };
+      }).sort((a, b) => (b.linkCount * 100 + b.totalHgv) - (a.linkCount * 100 + a.totalHgv)).slice(0, 8);
+
+      container.innerHTML = `
+        ${buildWorkspaceStickyHeader("MODULE 05 — CONSTRUCTION IMPACT & LOGISTICS", "Construction Logistics Hubs, 4-Component HGV Movements, 5-Category Epistemic Impact & Scenario Engine", "Explicitly distinguishing Spatial Proximity (Tier 1/2), Modelled HGV Logistics Load (Tier 3), Observed Roadworks Interaction (Tier 4), and Hypothetical Scenario Simulations.")}
+
+        <!-- 7.3 INTERACTIVE HYPOTHETICAL SCENARIO SIMULATOR -->
+        <div class="aw-panel-card" style="border:2px solid #cbd5e1; background:#f8fafc;">
+          <h3 style="margin:0 0 6px;">7.3 Interactive What-If Construction &amp; Corridor Scenario Simulator</h3>
+          <p style="font-size:0.75rem; color:#475569; margin:0 0 10px;">
+            Adjust construction HGV intensity, HGV peak-hour ban enforcement, and RTA/SRTA bridge upgrade completion below to compute hypothetical BPR V/C and speed impacts:
+          </p>
+          <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(200px, 1fr)); gap:10px; margin-bottom:12px;">
+            <div>
+              <label class="haio-field-lbl">TARGET CORRIDOR</label>
+              <select id="simRoadSelect" class="haio-select" onchange="runHypotheticalScenario()">
+                ${DATA.roads.slice(0, 12).map(r => `<option value="${r.road_id}" ${r.road_id === 'RD-DXB-05' ? 'selected' : ''}>${r.road_id}: ${r.road_name.split('(')[0]}</option>`).join("")}
+              </select>
+            </div>
+            <div>
+              <label class="haio-field-lbl">ACTIVE CONSTRUCTION HGV INTENSITY</label>
+              <select id="simHgvMultiplier" class="haio-select" onchange="runHypotheticalScenario()">
+                <option value="0.5">50% Intensity (Off-Peak / Earthworks Complete)</option>
+                <option value="1.0" selected>100% Baseline Active Core Pour Intensity</option>
+                <option value="1.5">150% Surge Intensity (Simultaneous Raft Pours)</option>
+                <option value="2.0">200% Extreme Stress Test (2x Active Sites)</option>
+              </select>
+            </div>
+            <div>
+              <label class="haio-field-lbl">RTA PEAK-WINDOW HGV BAN POLICY</label>
+              <select id="simBanPolicy" class="haio-select" onchange="runHypotheticalScenario()">
+                <option value="enforced" selected>Statutory HGV Ban Enforced (06:30–08:30 &amp; 17:30–20:00)</option>
+                <option value="unrestricted">Hypothetical Unrestricted HGV Access in Peak Hours</option>
+              </select>
+            </div>
+            <div>
+              <label class="haio-field-lbl">RTA / SRTA CAPITAL UPGRADE STAGE</label>
+              <select id="simUpgradeStage" class="haio-select" onchange="runHypotheticalScenario()">
+                <option value="baseline" selected>Current Work-Zone Baseline Capacity</option>
+                <option value="phased">Phased Flyover Opening (+35% Capacity)</option>
+                <option value="completed">Full Upgrade Complete (+85% Capacity / Grade-Separated)</option>
+              </select>
+            </div>
+          </div>
+          <div id="hypotheticalScenarioOutput"></div>
+        </div>
+
+        <div class="aw-grid-2">
+          <!-- 6.1 & 6.3 LOGISTICS FACILITIES & CORRIDOR NETWORK -->
+          <div class="aw-panel-card">
+            <h3>6.1 &amp; 6.3 Construction Logistics Hubs &amp; Supply Chain Network (8 Facilities)</h3>
+            <p style="font-size:0.74rem; color:#475569; margin-bottom:8px;">
+              Tracing <strong>Logistics Facility → Primary Freight Corridor → Bottleneck Intersection → Served Construction Projects</strong> (Dataset #20):
+            </p>
+            <div style="overflow-x:auto;">
+              <table class="ev-table">
+                <thead>
+                  <tr>
+                    <th>Hub ID</th>
+                    <th>Facility Name &amp; Type</th>
+                    <th>Capacity / Fleet</th>
+                    <th>Corridor → Projects Network &amp; HGV Rule</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${DATA.parking.map(pk => `
+                    <tr>
+                      <td><code>${pk.parking_id}</code></td>
+                      <td><strong>${pk.facility_name}</strong><br/><span style="color:#64748b; font-size:0.68rem;">${pk.emirate} · ${pk.community} (${pk.facility_category || pk.facility_type || 'Logistics & Staging'})</span></td>
+                      <td><strong>${pk.capacity_bays}</strong></td>
+                      <td>${pk.occupancy_and_congestion_impact}</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- 6.2 4-COMPONENT HGV LOAD BREAKDOWN & TOP GENERATORS -->
+          <div class="aw-panel-card">
+            <h3>6.2 Top 10 Projects Ranked by Scenario Daily HGV Round-Trips (4-Component Model)</h3>
+            <p style="font-size:0.74rem; color:#475569; margin-bottom:8px;">
+              <strong>Disclosed Formula:</strong> Sum of Ready-Mix Concrete (<code>0.42 m³/m² ÷ 8.5 m³ mixer</code>), Rebar (<code>0.065 t/m² ÷ 25 t trailer</code>), Earthworks (<code>0.35 m³/m² ÷ 18 m³ tipper</code>), and MEP/Fit-Out (<code>0.18 t/m² ÷ 12 t truck</code>) over 1,825 days × active phase multiplier:
+            </p>
+            ${topHgvLinks.map(l => {
+              const pct = Math.min(100, Math.round((l.total_hgv_round_trips_day / 1600) * 100));
+              return `
+                <div class="aw-bar-row" style="cursor:pointer;" onclick="inspectEntityOnMapFromWorkspace('project', '${l.project_id}')">
+                  <div><strong>${l.project_id}</strong>: ${l.project_name.split('(')[0].slice(0, 22)}</div>
+                  <div class="aw-bar-track"><div class="aw-bar-fill" style="width:${pct}%; background:#d97706;"></div></div>
+                  <div style="text-align:right; font-size:0.72rem;"><strong>${l.total_hgv_round_trips_day} trips/d</strong> (${l.concrete_mixer_loads_day} mix / ${l.rebar_trailer_loads_day} reb)</div>
+                </div>
+              `;
+            }).join("")}
+
+            <h4 style="margin:14px 0 6px; font-size:0.82rem; color:#0f172a;">7.2 Top Corridors Ranked by Connected Construction Exposure</h4>
+            <div style="overflow-x:auto;">
+              <table class="ev-table">
+                <thead>
+                  <tr>
+                    <th>Road ID</th>
+                    <th>Corridor Name</th>
+                    <th>Connected Sites</th>
+                    <th>Combined Scenario HGV Trips/Day</th>
+                    <th>AM Peak Speed &amp; V/C</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  ${roadExposure.map(re => `
+                    <tr style="cursor:pointer;" onclick="inspectEntityOnMapFromWorkspace('road', '${re.road.road_id}')">
+                      <td><code>${re.road.road_id}</code></td>
+                      <td><strong>${re.road.road_name}</strong></td>
+                      <td><strong>${re.linkCount} Sites</strong></td>
+                      <td><strong>${re.totalHgv.toLocaleString()} round-trips/d</strong></td>
+                      <td>~${re.amSpeed} km/h (V/C=${re.amVc})</td>
+                    </tr>
+                  `).join("")}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 7.1 COMPLETE 37-LINK PROJECT-TO-ROAD IMPACT TABLE WITH 5 EPISTEMIC CATEGORIES -->
+        <div class="aw-panel-card">
+          <h3>7.1 Complete 37-Link Project-to-Road Spatial &amp; Epistemic Impact Matrix (Dataset #22)</h3>
+          <p style="font-size:0.74rem; color:#475569; margin-bottom:8px;">
+            Every link is classified into our strict Epistemic Impact Hierarchy: <strong>1. Spatial Proximity Only</strong> (WGS84 Haversine distance to nearest vertex), <strong>2. Shared Corridor Exposure</strong> (Tier 2), <strong>3. Modelled Construction Logistics Load</strong> (Tier 3 4-component HGV trips), <strong>4. Observed Roadworks / Bottleneck Interaction</strong> (Tier 4), and <strong>5. Confirmed Direct Traffic Impact</strong> (substantiated by official RTA/SRTA work-zone/corridor filings):
+          </p>
+          <div style="max-height:520px; overflow-y:auto;">
+            <table class="ev-table">
+              <thead>
+                <tr>
+                  <th>Link ID</th>
+                  <th>Project / Sub-Cluster</th>
+                  <th>Primary Road Corridor &amp; Vertex Dist</th>
+                  <th>Nearest Junction &amp; Dist</th>
+                  <th>4-Component Scenario HGV Trips/Day</th>
+                  <th>HGV Window Compliance</th>
+                  <th>Epistemic Impact Classification</th>
+                  <th>Map</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${DATA.impact_links.map(l => `
+                  <tr>
+                    <td><code>${l.link_id}</code></td>
+                    <td><strong>${l.project_id}</strong>: ${l.project_name.split('(')[0]}<br/><span style="color:#64748b; font-size:0.68rem;">${l.emirate} · ${l.community}</span></td>
+                    <td><a href="javascript:void(0)" onclick="inspectEntityOnMapFromWorkspace('road', '${l.primary_road_id}')"><strong>${l.primary_road_id}</strong>: ${l.primary_road_name.split('(')[0]}</a><br/><strong>${l.distance_to_primary_road_km} km</strong> to <code>[${l.nearest_road_vertex_wgs84}]</code></td>
+                    <td><code>${l.nearest_intersection_id}</code> (${l.distance_to_intersection_km} km)<br/><span style="color:#64748b; font-size:0.68rem;">${l.nearest_intersection_name}</span></td>
+                    <td><strong>${l.total_hgv_round_trips_day} round-trips/d</strong> (${l.total_hgv_one_way_movements_day} one-way)<br/><span style="font-size:0.68rem; color:#64748b;">Mix:${l.concrete_mixer_loads_day} | Reb:${l.rebar_trailer_loads_day} | Tip:${l.earthworks_tipper_loads_day} | MEP:${l.mep_fitout_truck_loads_day}</span></td>
+                    <td>${l.hgv_routing_and_ban_compliance}</td>
+                    <td><span class="ep-pill-mod">${l.epistemic_impact_classification}</span></td>
+                    <td><button class="ctrl-btn" onclick="inspectEntityOnMapFromWorkspace('${l.project_id.startsWith('SUB-') ? 'subdev' : 'project'}', '${l.project_id}')">🗺️</button></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+      runHypotheticalScenario();
+    }
+
+    // =========================================================================
+    // MODULE 07: DATA, METHODOLOGY & EVIDENCE (DATA CATALOGUE, WORKED BPR/HGV MATH, DATA QUALITY, EXPORTS)
+    // =========================================================================
+    function renderDataAndEvidenceModule(container) {
+      const catList = [
+        { id: "13_community_hotspots", name: "Community Construction Hotspots & Polygons", rows: DATA.communities.length, type: "Published + Derived Index", src: "DLD Open Data (SRC-020), DM GIS, SRTA", csv: "13_community_hotspots.csv" },
+        { id: "14_jvc_subdevelopments", name: "JVC Multi-Tower Sub-Development Clusters", rows: DATA.subdevs.length, type: "Published Registry + Modelled HGV", src: "DLD dld_projects-open (SRC-020)", csv: "14_jvc_subdevelopments.csv" },
+        { id: "15_road_network_corridors", name: "Dubai & Sharjah Road Network Corridors (OSM WGS84)", rows: DATA.roads.length, type: "Published Capacity + Verified GIS", src: "RTA (SRC-433, SRC-434), SRTA, OpenStreetMap", csv: "15_road_network_corridors.csv" },
+        { id: "16_road_intersections", name: "Major Road Intersections & Bottleneck Nodes", rows: DATA.intersections.length, type: "Published Upgrades + Modelled LOS", src: "RTA Hessa/Al Khail Releases, SRTA", csv: "16_road_intersections.csv" },
+        { id: "17_traffic_congestion_observations", name: "City-Wide Baseline & Corridor BPR Observations", rows: DATA.observations.length, type: "1 Published Baseline + 21 Modelled BPR", src: "TomTom Index (SRC-436), RTA, BPR Model", csv: "17_traffic_congestion_observations.csv" },
+        { id: "18_Active_Roadworks_Incidents", name: "Active RTA/SRTA Capital Roadworks & Diversions", rows: DATA.incidents.length, type: "Published Official Works", src: "RTA Media Releases, SRTA, Etihad Rail", csv: "18_Active_Roadworks_Incidents.csv" },
+        { id: "19_Public_Transport_Lines", name: "Metro Red/Blue Lines & Etihad Rail Corridors", rows: DATA.transit_lines.length, type: "Published Official Transit", src: "RTA Rail Agency, Etihad Rail", csv: "19_Public_Transport_Lines.csv" },
+        { id: "20_Parking_and_Logistics_Facilities", name: "Ready-Mix Batching Plants, Precast Yards & Hubs", rows: DATA.parking.length, type: "Published Industrial + Verified GIS", src: "DM Industrial GIS, RMC Operators, RTA Policy", csv: "20_Parking_and_Logistics_Facilities.csv" },
+        { id: "22_project_road_impact_links", name: "Project-to-Road Spatial & Epistemic Impact Links", rows: DATA.impact_links.length, type: "Derived Geodesic + Modelled HGV", src: "WGS84 Haversine + 4-Component HGV Model", csv: "22_project_road_impact_links.csv" },
+        { id: "23_traffic_impact_studies_tis", name: "Corridor Traffic Impact Studies (TIS) Registry", rows: DATA.tis.length, type: "Published Corridor Studies", src: "RTA TES & Corridor Releases, SRTA", csv: "23_traffic_impact_studies_tis.csv" },
+        { id: "24_traffic_data_providers_evaluation", name: "Traffic Telemetry & GIS Data Provider Audit", rows: DATA.providers.length, type: "Verified Technical Audit", src: "TomTom, Dubai Pulse, HERE, Google, Mapbox", csv: "24_traffic_data_providers_evaluation.csv" }
+      ];
+
+      container.innerHTML = `
+        ${buildWorkspaceStickyHeader("MODULE 07 — DATA, METHODOLOGY & EVIDENCE", "Data Catalogue, Worked BPR & HGV Mathematical Equations, Data-Quality Reconciliation & Exports", "100% traceability from published government/regulatory benchmarks (RTA, SRTA, DLD, TomTom, Salik) to derived spatial geometry and modelled BPR/HGV outputs.")}
+
+        <!-- PHASE 10: EXPORT & REPORTING BAR -->
+        <div class="aw-panel-card" style="background:#f8fafc; border:1.5px solid #cbd5e1;">
+          <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px;">
+            <div>
+              <h3 style="margin:0;">10.1 Client Export &amp; Reporting Center</h3>
+              <div style="font-size:0.75rem; color:#475569;">Download filtered CSV tables, the unified GeoJSON GIS bundle, the 30-object Spatial SQLite database, or print a formatted Executive PDF Report:</div>
+            </div>
+            <div style="display:flex; gap:8px; flex-wrap:wrap;">
+              <button class="ctrl-btn primary" onclick="exportFilteredProjectsCsv()">📥 Export Filtered Projects CSV</button>
+              <button class="ctrl-btn" onclick="window.print()">🖨️ Print Executive Report (PDF)</button>
+              <a class="ctrl-btn" style="text-decoration:none;" href="datasets/dubai_sharjah_gis_bundle.geojson" download="dubai_sharjah_gis_bundle.geojson">🗺️ GeoJSON Bundle (249 Features)</a>
+              <a class="ctrl-btn" style="text-decoration:none;" href="datasets/21_task2_spatial_database.sqlite" download="21_task2_spatial_database.sqlite">🗄️ Spatial SQLite DB (30 Objects)</a>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8.3 DATA QUALITY & RECONCILIATION DASHBOARD -->
+        <div class="aw-panel-card">
+          <h3>8.3 Data-Quality, Epistemic Separation &amp; Reconciliation Dashboard</h3>
+          <div class="aw-grid-2">
+            <div class="kv-grid">
+              <div class="kv-row">
+                <div class="kv-lbl">1. TomTom Dubai Traffic Index Reconciliation (42.7% vs. 47.5%)</div>
+                <div class="kv-val">
+                  • <strong>Stored Primary Baseline (<code>OBS-DXB-CITY-00</code> / <code>SRC-436</code>):</strong> Records <strong>42.7%</strong> annual city-wide congestion level, <strong>31.3 km/h</strong> city-wide average speed (<strong>19 min 10 sec</strong> per 10 km), <strong>42.3%</strong> AM peak congestion (32.1 km/h), and <strong>94.4%</strong> PM peak congestion (22.6 km/h).<br/>
+                  • <strong>Subsequent YoY Edition Comparison:</strong> Records <strong>47.5%</strong> congestion (+4.8 percentage points YoY increase as Dubai registered vehicles surpassed 3.5M).<br/>
+                  • <strong>Strict Epistemic Rule:</strong> Both figures are city-wide aggregates and are <em>never</em> disaggregated to individual road segments.
+                </div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">2. Investment Valuation Reconciliation (Published vs. Estimated vs. Hard Cost)</div>
+                <div class="kv-val">
+                  • <strong>Published Official Investment (27/32 Flagships):</strong> <strong>AED 765.9B</strong> (Dubai: AED 675.4B across 16 projects; Sharjah: AED 90.5B across 11 projects).<br/>
+                  • <strong>Estimated Masterplan GDV (5/32 Flagships):</strong> <strong>AED 253.0B</strong> across 5 masterplans with partial contract awards (<code>PRJ-D2</code>, <code>PRJ-D4</code>, <code>PRJ-D11</code>, <code>PRJ-D16</code>, <code>PRJ-SH5</code>).<br/>
+                  • <strong>Modelled Hard Construction Cost (32/32 Flagships):</strong> <strong>AED 595.8B</strong> derived via RICS/T&amp;T unit-cost benchmarks (<code>06c_pipeline_and_calculation_audit.csv</code>).
+                </div>
+              </div>
+            </div>
+            <div class="kv-grid">
+              <div class="kv-row">
+                <div class="kv-lbl">3. Missing, Unavailable &amp; Restricted Information Disclosure</div>
+                <div class="kv-val">
+                  • <strong>JVC Sub-Clusters (<code>SUB-JVC-01..05</code>):</strong> Multi-plot developer clusters lack standalone published GDV; tracked by verified DLD tower count (29 towers), units (9,330), and active structural GFA (1.20M m²).<br/>
+                  • <strong>Plot-Level Consultant TIS Filings:</strong> Restricted commercial submissions in RTA's TES portal; platform uses published RTA/SRTA corridor studies (<code>TIS-001..008</code>).<br/>
+                  • <strong>Live Loop-Detector Telemetry:</strong> RTA does not expose public per-link loop-detector feeds without an enterprise agreement; segment speeds are explicitly labelled <strong>Modelled Corridor Estimates</strong>.
+                </div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">4. Procedural 3D Massing vs. Sourced Footprints Disclosure</div>
+                <div class="kv-val">
+                  • <strong>Surrounding City Context:</strong> Extruded from OpenMapTiles / OpenStreetMap building footprints (capped at 950 nearest meshes with GPU geometry disposal).<br/>
+                  • <strong>Selected Project Tower:</strong> Rendered as storey-proportional procedural massing because developer architectural CAD/BIM façade files are not publicly filed.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8.2 STEP-BY-STEP WORKED METHODOLOGY EXPLORER -->
+        <div class="aw-panel-card">
+          <h3>8.2 Step-by-Step Mathematical Methodology &amp; Worked Examples</h3>
+          <div class="aw-grid-2">
+            <div class="kv-grid">
+              <div class="kv-row">
+                <div class="kv-lbl">Equation 1 — Two-Term BPR Link + Bottleneck Delay Model</div>
+                <div class="kv-val">
+                  <code>t_BPR = t₀ × [1 + α × (V / C)^β]</code> &nbsp;|&nbsp; <code>t_total = t_BPR + d_adj</code> &nbsp;|&nbsp; <code>v_modelled = 600 / t_total</code><br/>
+                  <strong>Worked Example (<code>OBS-DXB-001</code> — Hessa St D61 Morning Peak 07:30–09:30):</strong><br/>
+                  1. Free-flow speed <code>v₀ = 80 km/h</code> → <code>t₀ = 600 / 80 = 7.50 min/10km</code>.<br/>
+                  2. Pre-upgrade capacity <code>C = 4,000 vph/dir</code> (published RTA <code>SRC-433</code>); AM demand <code>V = 4,160 vph/dir</code> → <code>V/C = 1.04</code>.<br/>
+                  3. Uninterrupted BPR time (<code>α=0.15, β=4.0</code>): <code>t_BPR = 7.50 × [1 + 0.15 × (1.04)⁴] = 8.81 min/10km</code> (<code>v_BPR = 68.1 km/h</code>).<br/>
+                  4. Signal/ramp queue delay at Al Khail &amp; SZR interchanges: <code>d_adj = +11.87 min/10km</code>.<br/>
+                  5. Total travel time: <code>8.81 + 11.87 = 20.68 min/10km</code> → Modelled Speed = <strong><code>600 / 20.68 = 29.0 km/h</code></strong>.
+                </div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">Equation 2 — 4-Component Scenario Daily HGV Trip Estimation</div>
+                <div class="kv-val">
+                  <code>Trips/day = [(GFA×0.42/8.5) + (GFA×0.065/25) + (GFA×0.35/18) + (GFA×0.18/12)] / 1,825 × M_phase</code><br/>
+                  <strong>Worked Example (<code>PRJ-D6</code> — JVC Active High-Rise Cluster, <code>GFA = 3,420,000 m²</code>, <code>M_phase = 2.085</code>):</strong><br/>
+                  • Concrete Mixers (8.5 m³): <strong>193 loads/day</strong> | Rebar Trailers (25 t): <strong>11 loads/day</strong><br/>
+                  • Earthworks Tippers (18 m³): <strong>76 loads/day</strong> | MEP/Fit-Out Trucks (12 t): <strong>59 loads/day</strong><br/>
+                  • Total Scenario Load: <strong>339 round-trips/day (678 one-way HGV movements/day)</strong>.
+                </div>
+              </div>
+            </div>
+            <div class="kv-grid">
+              <div class="kv-row">
+                <div class="kv-lbl">Equation 3 — Composite Construction Activity Index (0–100 Scale)</div>
+                <div class="kv-val">
+                  <code>Score = 0.35 × Norm(GFA) + 0.25 × Norm(Units) + 0.20 × Norm(Towers) + 0.20 × Norm(Devs)</code><br/>
+                  <strong>Worked Example (<code>COM-DXB-01</code> — JVC &amp; Al Barsha South):</strong><br/>
+                  38 active developments, 64 active towers, 28,500 scheduled units, 3.42M m² active structural GFA → Composite Score = <strong>94.5 / 100 (Rank #2 in UAE behind Dubai South 96.0)</strong>.
+                </div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">Equation 4 — WGS84 Geodesic Nearest-Vertex Distance (Haversine)</div>
+                <div class="kv-val">
+                  <code>d = 2R × arcsin(√[sin²(Δφ/2) + cos(φ₁)cos(φ₂)sin²(Δλ/2)])</code>, <code>R = 6,371.0 km</code><br/>
+                  Computed from each project centroid <code>[lat, lon]</code> to the exact nearest vertex along the OpenStreetMap highway polyline (verified to <code>0.00 km</code> tolerance across all 37 links).
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 8.1 DATA CATALOGUE TABLE -->
+        <div class="aw-panel-card">
+          <h3>8.1 Complete Task 2 Dataset Catalogue (11 Datasets · 157 Verified Records + Spatial SQLite)</h3>
+          <div style="overflow-x:auto;">
+            <table class="ev-table">
+              <thead>
+                <tr>
+                  <th>Dataset ID</th>
+                  <th>Dataset Title</th>
+                  <th>Row Count</th>
+                  <th>Epistemic Type</th>
+                  <th>Primary Sources</th>
+                  <th>Download CSV</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${catList.map(c => `
+                  <tr>
+                    <td><code>${c.id}</code></td>
+                    <td><strong>${c.name}</strong></td>
+                    <td><strong>${c.rows} rows</strong></td>
+                    <td><span class="ep-pill-pub">${c.type}</span></td>
+                    <td>${c.src}</td>
+                    <td><a class="ctrl-btn" style="text-decoration:none;" href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/${c.csv}" target="_blank" rel="noopener">📥 CSV</a></td>
+                  </tr>
+                `).join("")}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
     }
 
     function setLayerSet(activeKeys) {
@@ -4688,7 +6438,7 @@ def main():
     }
 
     // =========================================================================
-    // SECTION C3: HAIO.SG 3D BLOCK EXPLORER + UAE CONSTRUCTION & TRAFFIC INSPECTOR
+    // SECTION C3: HAIO.SG 3D BLOCK EXPLORER + 5-SECTION STRUCTURED PROJECT PROFILE
     // =========================================================================
     function showProjectInspector(pid, fly = true) {
       selected3DProjectId = pid;
@@ -4698,6 +6448,7 @@ def main():
       if (!p) return;
       const link = DATA.impact_links.find(x => x.project_id === pid);
       const docs = DATA.documents.filter(d => d.project_id === pid);
+      const summaryRow = (DATA.uae_projects_summary || []).find(x => x.project_id === pid);
       const [lat, lon] = parseCoord(p.coordinates);
       const spec = getProject3DSpec(p);
 
@@ -4713,9 +6464,21 @@ def main():
       const u4br = Math.max(16, Math.round(spec.homes * 0.50));
       const u5br = Math.max(16, spec.homes - u4br);
 
+      const isEstGdv = summaryRow ? summaryRow.is_estimated_gdv : (p.published_investment_value || "").toLowerCase().includes("est.");
+      const valBadge = isEstGdv
+        ? `<span class="badge-missing" title="Masterplan GDV Estimate with Partial Contract Awards">ESTIMATED MASTERPLAN GDV</span>`
+        : `<span class="ep-pill-pub" title="Officially Published Value">PUBLISHED VALUE</span>`;
+      const confVal = p.confidence_classification || p.confidence || "Verified";
+      const projType = p.project_category || p.project_type || "Mixed-Use Development";
+      const timelineTxt = p.timeline_milestones || p.status_evidence_and_history || '<span class="badge-missing">Timeline Unavailable</span>';
+      const plotAreaTxt = p.land_plot_area || p.site_area || '<span class="badge-missing">Plot Area Unavailable</span>';
+      const hardCostTxt = (p.estimated_hard_cost_and_rate || "").split("[")[0].trim() || (summaryRow && summaryRow.hard_construction_cost_aed_b ? `AED ${summaryRow.hard_construction_cost_aed_b}B` : '<span class="badge-missing">Unavailable</span>');
+      const secRoadObj = link && link.secondary_road_id ? DATA.roads.find(r => r.road_id === link.secondary_road_id) : null;
+      const secRoadLabel = secRoadObj ? `${secRoadObj.road_name.split('(')[0].trim()} (${secRoadObj.road_id})` : (link && link.secondary_road_id ? link.secondary_road_id : '<span class="badge-missing">None</span>');
+
       const docsHtml = docs.map(d =>
         `<div style="margin-bottom:4px;">• <a href="${d.document_url}" target="_blank" rel="noopener">${d.document_title} ↗</a> <span style="color:#64748b;">(${d.document_type} | ${d.availability_status})</span></div>`
-      ).join("") || "Linked in Task 1 Document Archive";
+      ).join("") || `<span class="badge-missing">No Standalone Filing Linked</span>`;
 
       const projOptionsHtml = DATA.projects.map(pr => {
         return `<option value="${pr.project_id}" ${pr.project_id === pid ? 'selected' : ''}>${pr.project_id}: ${pr.project_name.split('(')[0].trim()} (${pr.emirate} · ${pr.city_district_community.split('/')[0].trim()})</option>`;
@@ -4735,15 +6498,58 @@ def main():
           <h3 class="haio-card-title">${cleanTitle}</h3>
           <div class="haio-card-sub">${spec.homes.toLocaleString()} homes · ${spec.stacksPerBlock * spec.blocksCount} stacks · ${spec.blocksCount} blocks · ${p.project_id}</div>
 
+          <!-- 01. PROJECT INFORMATION -->
+          <div class="prof-sec-hdr"><span>01. Project Information</span><span class="conf-pill ${confVal === 'Verified' ? 'b-ver' : 'b-est'}">${confVal}</span></div>
+          <div class="kv-grid" style="margin-bottom:10px;">
+            <div class="kv-row">
+              <div class="kv-lbl">Project ID · Developer · Type</div>
+              <div class="kv-val"><strong>${p.project_id}</strong> · <strong style="color:#059669;">${p.developer}</strong><br/>Category: <strong>${projType}</strong></div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-lbl">Lifecycle Status &amp; Construction Timeline</div>
+              <div class="kv-val"><strong>${p.lifecycle_status}</strong><br/>${timelineTxt}</div>
+            </div>
+          </div>
+
+          <!-- 02. GEOGRAPHIC CONTEXT -->
+          <div class="prof-sec-hdr"><span>02. Geographic Context</span><span>WGS84 Verified</span></div>
+          <div class="kv-grid" style="margin-bottom:10px;">
+            <div class="kv-row">
+              <div class="kv-lbl">Emirate · Community · Coordinates &amp; Plot Area</div>
+              <div class="kv-val"><strong>${p.emirate}</strong> · ${p.city_district_community}<br/>Coordinates: <code>${p.coordinates}</code><br/>Plot/Site Area: <strong>${plotAreaTxt}</strong></div>
+            </div>
+            <div class="kv-row">
+              <div class="kv-lbl">Connected Road Corridors &amp; Nearest Intersections</div>
+              <div class="kv-val">
+                ${link ? `Primary: <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')"><strong>${link.primary_road_name} (${link.primary_road_id})</strong></a> — <strong>${link.distance_to_primary_road_km} km</strong> Haversine to vertex <code>[${link.nearest_road_vertex_wgs84}]</code><br/>Secondary Corridor: <a href="javascript:void(0)" onclick="showRoadInspector('${link.secondary_road_id}')">${secRoadLabel}</a><br/>Nearest Junction: <strong>${link.nearest_intersection_name} (${link.nearest_intersection_id})</strong> — ${link.distance_to_intersection_km} km` : '<span class="badge-missing">No Spatial Link</span>'}
+              </div>
+            </div>
+          </div>
+
+          <!-- 03. CONSTRUCTION ACTIVITY, INVESTMENT & 3D MASSING -->
+          <div class="prof-sec-hdr"><span>03. Construction Activity &amp; 3D Massing</span>${valBadge}</div>
+          <div class="exec-metric-grid" style="margin-top:6px;">
+            <div class="exec-metric-box">
+              <div class="em-lbl">${isEstGdv ? 'Est. Masterplan GDV' : 'Published Investment'}</div>
+              <div class="em-val" style="color:${isEstGdv ? '#b45309' : '#2563eb'};">${(p.published_investment_value || '').split('[')[0].trim()}</div>
+              <div class="em-sub">Hard Cost: ${hardCostTxt}</div>
+            </div>
+            <div class="exec-metric-box">
+              <div class="em-lbl">Gross Floor Area (GFA)</div>
+              <div class="em-val" style="font-size:0.78rem; color:#0f172a;">${(p.gross_floor_area || '').split('[')[0].trim()}</div>
+              <div class="em-sub">${p.floors_and_height ? p.floors_and_height.split(';')[0].slice(0, 42) : `${spec.storeys} storeys`}</div>
+            </div>
+          </div>
+
           <!-- BLOCK SELECTOR -->
-          <label class="haio-field-lbl">BLOCK</label>
-          <select class="haio-select" style="margin-bottom:12px;" onchange="update3DBlockControls(this.value, undefined, undefined, undefined)" aria-label="Select 3D Building Block">
+          <label class="haio-field-lbl">3D MASSING BLOCK SELECTOR (STOREY-PROPORTIONAL PROCEDURAL MASSING)</label>
+          <select class="haio-select" style="margin-bottom:10px;" onchange="update3DBlockControls(this.value, undefined, undefined, undefined)" aria-label="Select 3D Building Block">
             <option value="ALL" ${active3DBlock === 'ALL' ? 'selected' : ''}>All blocks (${spec.blocksCount})</option>
             ${spec.blocks.map(b => `<option value="${b.id}" ${active3DBlock === b.id ? 'selected' : ''}>${b.label} (${b.storeys} storeys)</option>`).join("")}
           </select>
 
           <!-- FLOOR & STACK 2-COLUMN SELECTORS (100% UNLOCKED) -->
-          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px;">
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px;">
             <div>
               <label class="haio-field-lbl">FLOOR</label>
               <select class="haio-select" onchange="update3DBlockControls(undefined, this.value, undefined, undefined)" aria-label="Select Floor Zone">
@@ -4772,20 +6578,18 @@ def main():
           </div>
 
           <!-- UNIT TYPES · HOMES SUMMARY BAR -->
-          <label class="haio-field-lbl">UNIT TYPES · HOMES</label>
-          <div class="haio-unit-bar">
+          <div class="haio-unit-bar" style="margin-bottom:8px;">
             <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:9px;height:9px;border-radius:50%;background:#fbbf24;display:inline-block;"></span> 4BR</span>
             <strong>${u4br}</strong>
             <span style="display:inline-flex; align-items:center; gap:6px; margin-left:8px;"><span style="width:9px;height:9px;border-radius:50%;background:#34d399;display:inline-block;"></span> 5BR</span>
             <strong>${u5br}</strong>
           </div>
 
-          <p style="font-size:0.75rem; color:#64748b; line-height:1.45; margin:8px 0 12px;">
-            Exterior shown plain: the developer's façade is not on file, so glass and slab edges are neutral and illustrative. Pick a block to colour homes by unit type.
+          <p style="font-size:0.73rem; color:#64748b; line-height:1.42; margin:6px 0 10px;">
+            <span class="badge-missing">Architectural CAD Façade Not Publicly Filed</span> Exterior shown as neutral storey-proportional procedural massing (${spec.storeys} storeys). Pick a block to colour homes by unit type:
           </p>
 
           <!-- OR PICK A BLOCK -->
-          <label class="haio-field-lbl">OR PICK A BLOCK</label>
           <div class="haio-block-grid">
             ${spec.blocks.map(b => `
             <div class="haio-block-card ${active3DBlock === b.id ? 'active' : ''}" onclick="select3DBlockCard('${b.id}')">
@@ -4793,13 +6597,9 @@ def main():
               <span>${b.stacksLabel}<br/>${b.storeys} storeys</span>
             </div>`).join("")}
           </div>
-          <div style="font-size:0.73rem; color:#64748b; margin-bottom:12px;">Tap a block to look closer · Ctrl or ⌘ + drag to turn</div>
 
-          <div class="haio-divider"></div>
-
-          <!-- UAE CONSTRUCTION & SURROUNDING ROAD TRAFFIC INTELLIGENCE -->
-          <label class="haio-field-lbl" style="color:#2563eb;">UAE CONSTRUCTION &amp; SURROUNDING ROAD TRAFFIC IMPACT</label>
-
+          <!-- 04. TRAFFIC RELATIONSHIP & LOGISTICS -->
+          <div class="prof-sec-hdr"><span>04. Traffic Relationship &amp; HGV Load</span><span class="ep-pill-mod">MODELLED + PUBLISHED</span></div>
           ${primRoadObs && link ? `
           <div class="live-window-banner" style="margin-top:6px;">
             <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px;">
@@ -4808,53 +6608,46 @@ def main():
             </div>
             <div style="margin-top:4px; color:#334155; font-size:0.74rem;">
               Access Road: <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')"><strong>${link.primary_road_name} (${link.primary_road_id})</strong></a> · <strong>${link.distance_to_primary_road_km} km</strong> Haversine<br/>
-              Status: <strong>${primRoadObs.congestion_level.split('(')[0].trim()} Congestion</strong> · V/C = ${primRoadObs.vc_ratio} (${primRoadObs.modelled_demand_vph_dir}/${primRoadObs.reference_capacity_vph_dir} vph/dir)
+              Status: <strong>${primRoadObs.congestion_level.split('(')[0].trim()} Congestion</strong> · V/C = ${primRoadObs.vc_ratio} (${primRoadObs.modelled_demand_vph_dir}/${primRoadObs.reference_capacity_vph_dir} vph/dir)<br/>
+              Epistemic Impact Tier: <strong style="color:#1d4ed8;">${link.epistemic_impact_classification}</strong>
             </div>
           </div>` : ""}
 
-          <div class="exec-metric-grid">
-            <div class="exec-metric-box">
-              <div class="em-lbl">Published Investment</div>
-              <div class="em-val" style="color:#2563eb;">${(p.published_investment_value || '').split('[')[0].trim()}</div>
-              <div class="em-sub">GFA: ${(p.gross_floor_area || '').split('[')[0].trim()}</div>
+          <div class="kv-grid" style="margin-bottom:10px;">
+            <div class="kv-row">
+              <div class="kv-lbl">Scenario Daily HGV Logistics Load (4-Component Breakdown)</div>
+              <div class="kv-val">
+                ${link ? `<strong>${link.total_hgv_round_trips_day} round-trips/day (${link.total_hgv_one_way_movements_day} one-way movements/day)</strong><br/>• Ready-Mix Concrete (8.5 m³): <strong>${link.concrete_mixer_loads_day}/d</strong> | Steel Rebar (25 t): <strong>${link.rebar_trailer_loads_day}/d</strong> | Earthworks (18 m³): <strong>${link.earthworks_tipper_loads_day}/d</strong> | MEP/Fit-Out (12 t): <strong>${link.mep_fitout_truck_loads_day}/d</strong><br/><span style="color:#059669; font-weight:700;">HGV Window Rule:</span> ${link.hgv_routing_and_ban_compliance}` : '<span class="badge-missing">Unavailable</span>'}
+              </div>
             </div>
-            <div class="exec-metric-box">
-              <div class="em-lbl">Developer &amp; Status</div>
-              <div class="em-val" style="font-size:0.78rem; color:#059669;">${p.developer.split('(')[0].trim()}</div>
-              <div class="em-sub">${p.lifecycle_status.split('(')[0].trim()}</div>
-            </div>
-            <div class="exec-metric-box">
-              <div class="em-lbl">Scenario HGV Load</div>
-              <div class="em-val" style="color:#d97706;">${link ? `${link.total_hgv_round_trips_day} trips/day` : "N/A"}</div>
-              <div class="em-sub">${link ? `${link.total_hgv_one_way_movements_day} one-way/day` : ""}</div>
-            </div>
-            <div class="exec-metric-box">
-              <div class="em-lbl">Epistemic Tier</div>
-              <div class="em-val" style="font-size:0.75rem;">${link ? link.epistemic_impact_classification.split(':')[0] : "Tier 2"}</div>
-              <div class="em-sub">${p.city_district_community.split('/')[0].trim()}</div>
+            <div class="kv-row">
+              <div class="kv-lbl">Plot-Level Consultant Traffic Impact Study (TIS) Filing</div>
+              <div class="kv-val">
+                <span class="badge-missing">Plot-Level Consultant TIS Restricted in RTA TES Portal</span><br/>
+                <span style="font-size:0.72rem; color:#334155;">Substantiated at corridor level via <strong>${link ? link.published_road_capacity_and_upgrade_fact : 'RTA/SRTA Corridor Release'}</strong>.</span>
+              </div>
             </div>
           </div>
 
-          <details class="tech-accordion">
-            <summary>4-Component HGV Logistics &amp; Corridor Connections</summary>
-            <div class="tech-body">
-              ${link ? `
-              <div style="margin-bottom:6px;"><strong>Epistemic Classification:</strong> ${link.epistemic_impact_classification}</div>
-              <div style="margin-bottom:6px;"><strong>Published RTA/SRTA Benchmark:</strong> ${link.published_road_capacity_and_upgrade_fact}</div>
-              <div style="margin-bottom:6px;"><strong>Connected Corridors:</strong> Primary: <a href="javascript:void(0)" onclick="showRoadInspector('${link.primary_road_id}')">${link.primary_road_name}</a> (${link.distance_to_primary_road_km} km to <code>[${link.nearest_road_vertex_wgs84}]</code>) | Secondary: <a href="javascript:void(0)" onclick="showRoadInspector('${link.secondary_road_id}')">${link.secondary_road_name}</a> (${link.distance_to_secondary_road_km} km)</div>
-              <div><strong>4-Component Daily HGV Breakdown (${link.total_hgv_round_trips_day} round-trips/d):</strong> Mixers: ${link.concrete_mixer_loads_day}/d | Rebar: ${link.rebar_trailer_loads_day}/d | Tippers: ${link.earthworks_tipper_loads_day}/d | MEP: ${link.mep_fitout_truck_loads_day}/d</div>
-              ` : ""}
+          <!-- 05. EVIDENCE & SOURCES -->
+          <div class="prof-sec-hdr"><span>05. Evidence, Documents (${docs.length}) &amp; Provenance</span><span>${confVal}</span></div>
+          <div class="kv-grid">
+            <div class="kv-row">
+              <div class="kv-lbl">Contractors &amp; Engineering Consultants</div>
+              <div class="kv-val">${p.main_contractor_and_consultants || '<span class="badge-missing">Unavailable</span>'}</div>
             </div>
-          </details>
-
-          <details class="tech-accordion">
-            <summary>Official Documents (${docs.length}), Contractors &amp; Provenance</summary>
-            <div class="tech-body">
-              <div style="margin-bottom:6px;"><strong>Contractors &amp; Consultants:</strong> ${p.main_contractor_and_consultants}</div>
-              <div style="margin-bottom:6px;"><strong>Official Documents (${docs.length}):</strong> ${docsHtml}</div>
-              <div><strong>Provenance:</strong> <a href="${p.source_url}" target="_blank" rel="noopener">${p.publisher} ↗</a> ${link ? `| <a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_source_title} ↗</a>` : ""}</div>
+            <div class="kv-row">
+              <div class="kv-lbl">Official Documents &amp; Regulatory Filings (${docs.length})</div>
+              <div class="kv-val">${docsHtml}</div>
             </div>
-          </details>
+            <div class="kv-row">
+              <div class="kv-lbl">Primary Source Citation &amp; Verification Notes</div>
+              <div class="kv-val">
+                <a href="${p.source_url}" target="_blank" rel="noopener"><strong>${p.source_id || 'SRC'}: ${p.publisher} (${p.publication_date}) ↗</strong></a>
+                ${link ? `<br/><a href="${link.corridor_source_url}" target="_blank" rel="noopener">${link.corridor_traffic_source_id || link.source_id}: ${link.corridor_source_title} ↗</a>` : ""}
+              </div>
+            </div>
+          </div>
         </div>
       `;
     }
