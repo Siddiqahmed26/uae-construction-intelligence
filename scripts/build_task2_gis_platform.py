@@ -263,7 +263,14 @@ def main():
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" crossorigin=""/>
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin=""></script>
-  <script src="https://unpkg.com/three@0.160.0/build/three.min.js" crossorigin=""></script>
+  <script type="module">
+    import * as THREE_NS from "./vendor/three-0.170.0/three.module.js";
+    import {{ TilesRenderer }} from "./vendor/3d-tiles-renderer-0.4.28/index.three.js";
+    window.THREE = Object.assign({{}}, THREE_NS);
+    window.TilesRenderer = TilesRenderer;
+    window.__haioVendorReady = true;
+    window.dispatchEvent(new CustomEvent("haio-vendor-ready"));
+  </script>
   <style>
     :root {{
       --bg-dark: #f8fafc;
@@ -2541,14 +2548,17 @@ def main():
       }
     }
 
-    function flyBothMaps(lat, lon, zoom, pitch = 60, bearing = 60) {
-      const clampedZoom = Math.min(17.4, Math.max(9.0, zoom));
+    function flyBothMaps(lat, lon, zoom, pitch = 58, bearing = 60) {
+      const clampedZoom = Math.min(17.6, Math.max(9.0, zoom));
       if (map) {
         map.flyTo([lat, lon], Math.min(18, Math.max(9, Math.round(clampedZoom))), { duration: 0.8 });
       }
       if (map3d) {
+        const isClose3D = clampedZoom >= 15.2 && currentCameraDim === "3D";
+        const targetLon = isClose3D ? (lon + 0.00030) : lon;
+        const targetLat = isClose3D ? (lat - 0.00016) : lat;
         map3d.flyTo({
-          center: [lon, lat],
+          center: [targetLon, targetLat],
           zoom: clampedZoom,
           pitch: currentCameraDim === "3D" ? pitch : 0,
           bearing: currentCameraDim === "3D" ? bearing : 0,
@@ -2559,1836 +2569,372 @@ def main():
     }
 
     // =========================================================================
-    // HAIO.SG 5-PILLAR PHOTOREALISTIC 3D ARCHITECTURAL & GLSL SHADER ENGINE
+    // HAIO.SG EXACT 4K GOOGLE PHOTOREALISTIC 3D TILESET + BLOCK 1 TOWER ENGINE
     // =========================================================================
     let three3DLayer = null;
-    let threeTextureCache = {};
 
-    // Pillar 1A: haio.sg's Exact PMREM HDR Sky, Horizon & Area-Light Environment Map (eI in 03a9d_mxyap4f.js)
-    function buildHaioEnvMap(renderer, sunDir = [0.35, 0.93]) {
-      if (!renderer || typeof THREE.PMREMGenerator === "undefined") return null;
-      const envScene = new THREE.Scene();
-      const [ox, nz] = sunDir;
-      const sphereGeo = new THREE.SphereGeometry(10, 32, 16);
-      const colors = [];
-      const pos = sphereGeo.attributes.position;
-      const colZenith = new THREE.Color(0xc4d8ec);
-      const colHorizon = new THREE.Color(0xe9ebec);
-      const colGround = new THREE.Color(0xc2b8aa);
-      const tmpCol = new THREE.Color();
+    const HAIO_EARTH_CIRC = 2 * Math.PI * 6371008.8;
+    const HAIO_TILE_ORIGIN = [103.85016935, 1.2764661];
+    const HAIO_DEFAULT_GROUND_M = 15.6;
 
-      for (let i = 0; i < pos.count; i++) {
-        const vx = pos.getX(i) / 10;
-        const vy = pos.getY(i) / 10;
-        const vz = pos.getZ(i) / 10;
-        if (vy > 0) {
-          tmpCol.copy(colHorizon).lerp(colZenith, Math.pow(vy, 0.6));
-        } else {
-          tmpCol.copy(colHorizon).lerp(colGround, Math.min(1, -1.6 * vy));
-        }
-        const horizDot = (vx * ox + vz * nz) / Math.max(1e-6, Math.hypot(vx, vz));
-        tmpCol.multiplyScalar(0.55 + 0.40 * Math.max(0, horizDot));
-        colors.push(tmpCol.r, tmpCol.g, tmpCol.b);
+    // Exact WGS84 footprint rings of Block 1 · 2 stacks (stack 01 & stack 02) from haio.sg
+    const HAIO_STACK_01_RING = [
+      [103.8501091, 1.2765122], [103.8501104, 1.2765061], [103.8501289, 1.276494], [103.8501309, 1.2764847],
+      [103.8501383, 1.2764799], [103.8501444, 1.2764812], [103.8501522, 1.2764893], [103.8501707, 1.2764773],
+      [103.850172, 1.2764711], [103.8502202, 1.2764396], [103.8502263, 1.2764409], [103.850249, 1.2764766],
+      [103.8502618, 1.2764761], [103.8502941, 1.2765269], [103.8502928, 1.276533], [103.8502779, 1.2765427],
+      [103.8502868, 1.2765608], [103.8502855, 1.276567], [103.8502522, 1.2765888], [103.8502563, 1.2765994],
+      [103.850255, 1.2766055], [103.8501828, 1.2766527], [103.8501767, 1.2766514], [103.8501707, 1.2766421],
+      [103.8501579, 1.2766425], [103.8501244, 1.2765899], [103.8501257, 1.2765837], [103.8501449, 1.2765686],
+      [103.8501091, 1.2765122]
+    ];
+    const HAIO_STACK_02_RING = [
+      [103.8500459, 1.2763223], [103.8500663, 1.276309], [103.8500754, 1.276311], [103.8501236, 1.2762795],
+      [103.8501297, 1.2762808], [103.8501715, 1.2763466], [103.8501819, 1.2763424], [103.850188, 1.2763438],
+      [103.8502215, 1.2763963], [103.8502201, 1.2764025], [103.8502121, 1.2764104], [103.8502264, 1.2764329],
+      [103.8502251, 1.2764391], [103.8501714, 1.2764741], [103.8501701, 1.2764804], [103.8501534, 1.2764912],
+      [103.8501473, 1.2764899], [103.8501234, 1.2764524], [103.8501309, 1.2764395], [103.8501178, 1.2764189],
+      [103.8501031, 1.2764205], [103.8500697, 1.2763679], [103.8500735, 1.2763575], [103.8500687, 1.2763499],
+      [103.8500577, 1.2763492], [103.8500446, 1.2763285], [103.8500459, 1.2763223]
+    ];
+
+    // Exact 14-point convex clip ring around Block 1 · 2 stacks so tile_084 & tile_096 (terracotta + smoked-glass building) are 100% unclipped
+    const HAIO_CLIP_RING_LONLAT = [
+      [103.850042, 1.276320], [103.850065, 1.276305], [103.850128, 1.276275], [103.850188, 1.276340],
+      [103.850228, 1.276400], [103.850265, 1.276472], [103.850298, 1.276528], [103.850288, 1.276570],
+      [103.850256, 1.276608], [103.850180, 1.276656], [103.850155, 1.276645], [103.850120, 1.276588],
+      [103.850105, 1.276510], [103.850042, 1.276320]
+    ];
+
+    function haioProjectMerc(lon, lat) {
+      return [
+        (lon + 180) / 360,
+        (1 - Math.log(Math.tan(Math.PI / 4 + (lat * Math.PI) / 180 / 2)) / Math.PI) / 2
+      ];
+    }
+
+    function haioLonLatToTileEnu(lon, lat) {
+      const p0 = haioProjectMerc(HAIO_TILE_ORIGIN[0], HAIO_TILE_ORIGIN[1]);
+      const h0 = 1 / (HAIO_EARTH_CIRC * Math.cos((HAIO_TILE_ORIGIN[1] * Math.PI) / 180));
+      const p = haioProjectMerc(lon, lat);
+      return [(p[0] - p0[0]) / h0, -(p[1] - p0[1]) / h0];
+    }
+
+    // haio.sg's exact aO(lon, lat, groundM) Local ENU -> ECEF 4x4 matrix
+    function haioLocalEnuToEcefArray(lon, lat, groundM) {
+      const a = (lat * Math.PI) / 180;
+      const o = (lon * Math.PI) / 180;
+      const n = Math.sin(a);
+      const l = Math.cos(a);
+      const i = Math.sin(o);
+      const s = Math.cos(o);
+      const d = 6378137 / Math.sqrt(1 - 0.00669437999014 * n * n);
+      const c = [(d + groundM) * l * s, (d + groundM) * l * i, (0.99330562000986 * d + groundM) * n];
+      return [
+        -i, s, 0, 0,
+        -n * s, -n * i, l, 0,
+        l * s, l * i, n, 0,
+        c[0], c[1], c[2], 1
+      ];
+    }
+
+    // Expand a 2D polygon ring outward from its centroid by distM meters (ey in haio.sg)
+    function expandEnuRing(pts, distM) {
+      let cx = 0, cy = 0;
+      const n = pts.length;
+      for (const [x, y] of pts) {
+        cx += x;
+        cy += y;
       }
-      sphereGeo.setAttribute("color", new THREE.Float32BufferAttribute(colors, 3));
-      const skyMat = new THREE.MeshBasicMaterial({ vertexColors: true, side: THREE.BackSide });
-      envScene.add(new THREE.Mesh(sphereGeo, skyMat));
-
-      const disposables = [sphereGeo, skyMat];
-      const addLightCard = (w, h, mult, hex, s, d, c) => {
-        const mat = new THREE.MeshBasicMaterial({
-          color: new THREE.Color(hex).multiplyScalar(mult),
-          side: THREE.DoubleSide
-        });
-        const geo = new THREE.PlaneGeometry(w, h);
-        const mesh = new THREE.Mesh(geo, mat);
-        mesh.position.set(ox * c - nz * s, d, nz * c + ox * s);
-        mesh.lookAt(0, 0.3 * d, 0);
-        envScene.add(mesh);
-        disposables.push(geo, mat);
-      };
-      addLightCard(14, 4, 2.8, 0xeef4ff, 0, 1.6, 8.5);
-      addLightCard(4, 3, 6.5, 0xfff1dc, -2.5, 4.5, 7.5);
-      addLightCard(9, 9, 0.6, 0xffffff, 0, 9.4, 0);
-
-      const pmrem = new THREE.PMREMGenerator(renderer);
-      const rt = pmrem.fromScene(envScene, 0.035);
-      pmrem.dispose();
-      disposables.forEach(d => d.dispose());
-      return rt.texture;
-    }
-
-    // Pillar 2: haio.sg's Exact Sub-Pixel Anti-Aliased GLSL Architectural Facade Shader (hdb-facade-v25)
-    // Ported directly from 3odmktrl9c8av.js with Y-up coordinates (vHdbZ = position.y, vHdbNz = normal.y)
-    // and linear-to-sRGB gamma conversion so stone piers, copper/bronze fins, recessed glass balconies,
-    // sky-garden terraces, ground-floor lit lift lobbies, malls, and office curtain walls match haio.sg 1:1.
-    const HAIO_FACADE_TAG = "hdb-facade-v25-uae";
-    const HAIO_VERT_PREAMBLE = `
-attribute vec4 hdbBand;
-attribute vec4 hdbWall;
-varying vec4 vHdbBand;
-varying vec4 vHdbWall;
-varying float vHdbZ;
-varying float vHdbNz;
-`;
-    const HAIO_VERT_BODY = `
-  vHdbBand = hdbBand;
-  vHdbZ = position.y;
-  vHdbNz = normal.y;
-  vHdbWall = hdbWall;
-`;
-    const HAIO_FRAG_PREAMBLE = `
-varying vec4 vHdbBand;
-varying vec4 vHdbWall;
-varying float vHdbZ;
-varying float vHdbNz;
-float hdbCov(float x, float a, float b, float p) {
-  return clamp((min(x + 0.5 * p, b) - max(x - 0.5 * p, a)) / max(p, 1e-4), 0.0, 1.0);
-}
-`;
-    const HAIO_FRAG_BODY = `
-  if (vHdbBand.a > 0.0 && abs(vHdbNz) < 0.5 && vHdbWall.y > 0.0 && vHdbWall.w > 750.0) {
-    float uz = vHdbZ;
-    float utop = vHdbBand.a;
-    float uu = vHdbWall.x;
-    float ulen = vHdbWall.y;
-    float upz = max(fwidth(uz), 1e-4);
-    float upu = max(fwidth(uu), 1e-4);
-    float ufade = 1.0 - smoothstep(0.03, 0.1, min(upu, upz));
-    int ucode = int(vHdbWall.w - 800.0 + 0.5);
-    int ukind = ucode / 100;
-    int ustyle = ucode - ukind * 100;
-    bool ufront = vHdbWall.z > 0.5 && vHdbWall.z < 1.5;
-    vec3 ucol = vec3(0.8);
-    vec3 uavg = vec3(0.8);
-    if (ukind == 0) {
-      float st = 3.8;
-      float fz = mod(uz, st);
-      float lev = floor(uz / st);
-      if (ustyle == 1) {
-        vec3 wall = vec3(0.86, 0.85, 0.82);
-        vec3 glass = vec3(0.10, 0.16, 0.22);
-        vec3 g = mix(glass, glass * 2.2 + 0.05, smoothstep(1.0, 3.0, fz) * 0.5);
-        g = mix(g, vec3(0.72), hdbCov(mod(uu, 1.5), 0.0, 0.08, upu) * ufade);
-        ucol = mix(wall, g, hdbCov(fz, 1.0, 3.0, upz) * step(1.0, lev));
-        ucol = mix(ucol, wall * 0.72, hdbCov(fz, 0.0, 0.22, upz) * step(1.0, lev));
-        uavg = mix(wall, glass, 0.35);
-      } else {
-        vec3 glass = ustyle == 0 ? vec3(0.14, 0.28, 0.34) : vec3(0.07, 0.09, 0.12);
-        vec3 sky = ustyle == 0 ? vec3(0.42, 0.60, 0.66) : vec3(0.26, 0.30, 0.36);
-        vec3 g = mix(glass, sky, smoothstep(0.0, st, fz) * 0.58);
-        g = mix(g, glass * 0.55, hdbCov(fz, 0.0, 0.72, upz));
-        float mw = ustyle == 0 ? 0.07 : 0.26;
-        vec3 mc = ustyle == 0 ? vec3(0.72, 0.75, 0.77) : vec3(0.36, 0.29, 0.22);
-        g = mix(g, mc, hdbCov(mod(uu, 1.5), 0.0, mw, upu) * ufade);
-        float winLit = fract(sin(floor(uu / 3.0) * 19.3 + lev * 43.7) * 43758.5453);
-        if (winLit > 0.74 && lev >= 1.0) {
-          g = mix(g, vec3(0.88, 0.72, 0.44), 0.42 * hdbCov(fz, 0.85, 3.3, upz) * hdbCov(mod(uu, 3.0), 0.2, 2.7, upu));
-        }
-        ucol = g;
-        uavg = mix(glass, sky, 0.32);
+      cx /= Math.max(1, n);
+      cy /= Math.max(1, n);
+      let area2 = 0;
+      for (let i = 0; i < n; i++) {
+        const [x0, y0] = pts[i];
+        const [x1, y1] = pts[(i + 1) % n];
+        area2 += x0 * y1 - x1 * y0;
       }
-      if (ufront && uz < 7.0) {
-        float lw = min(14.0, ulen * 0.55);
-        float lu = uu - (ulen - lw) * 0.5;
-        float lob = hdbCov(lu, 0.0, lw, upu) * hdbCov(uz, 0.0, 6.0, upz);
-        vec3 lit = mix(vec3(0.72, 0.62, 0.46), vec3(0.12), hdbCov(mod(lu, 2.0), 0.0, 0.1, upu) * ufade);
-        ucol = mix(ucol, lit, lob);
-        ucol = mix(ucol, vec3(0.22), hdbCov(lu, -1.0, lw + 1.0, upu) * hdbCov(uz, 6.0, 6.45, upz));
+      const effR = Math.max(2.0, Math.sqrt(Math.abs(area2 * 0.5) / Math.PI));
+      const scale = (effR + distM) / effR;
+      return pts.map(([x, y]) => [cx + (x - cx) * scale, cy + (y - cy) * scale]);
+    }
+
+    // Extrude a closed 2D ENU polygon [x, y] from z0 to z1 into Z-up BufferGeometry arrays
+    function appendExtrudedZUpPolygon(posArr, normArr, colArr, ring2d, z0, z1, sideRgb, topRgb, mullionRgb = null) {
+      if (!ring2d || ring2d.length < 3 || z1 <= z0) return;
+      const openRing = (ring2d.length > 3 && Math.hypot(ring2d[0][0] - ring2d[ring2d.length - 1][0], ring2d[0][1] - ring2d[ring2d.length - 1][1]) < 1e-4)
+        ? ring2d.slice(0, -1)
+        : ring2d;
+      if (openRing.length < 3) return;
+
+      let cx = 0, cy = 0;
+      for (const [x, y] of openRing) {
+        cx += x;
+        cy += y;
       }
-      ucol = mix(ucol, ustyle == 1 ? vec3(0.88) : vec3(0.28, 0.30, 0.33), hdbCov(uz, utop - 1.2, utop + 1.0, upz));
-    } else if (ukind == 4) {
-      float st = 3.2;
-      float fz = mod(uz, st);
-      float lev = floor(uz / st);
-      if (ustyle == 0) {
-        vec3 wall = vec3(0.18, 0.28, 0.37);
-        vec3 glass = vec3(0.09, 0.19, 0.29);
-        vec3 g = mix(glass, glass * 2.1 + 0.08, smoothstep(0.6, 2.6, fz) * 0.55);
-        g = mix(g, vec3(0.76), hdbCov(mod(uu, 1.8), 0.0, 0.08, upu) * ufade);
-        ucol = mix(wall, g, hdbCov(fz, 0.6, 2.9, upz) * step(1.0, lev));
-        uavg = mix(wall, glass, 0.35);
-      } else {
-        vec3 wall = vec3(0.78, 0.72, 0.62);
-        vec3 glass = vec3(0.12, 0.18, 0.24);
-        float bal = hdbCov(mod(uu, 4.0), 0.4, 3.2, upu) * hdbCov(fz, 0.0, 2.2, upz) * step(1.0, lev);
-        ucol = mix(wall, vec3(0.08), bal * 0.38);
-        ucol = mix(ucol, glass, hdbCov(mod(uu, 4.0), 0.7, 2.6, upu) * hdbCov(fz, 0.3, 1.9, upz) * step(1.0, lev));
-        ucol = mix(ucol, wall * 0.82, hdbCov(fz, 0.0, 0.20, upz) * step(1.0, lev));
-        uavg = mix(wall, glass, 0.22);
-      }
-      if (ufront && uz < 4.2 && ulen > 8.0) {
-        float lw = min(11.0, ulen * 0.45);
-        float lu = uu - (ulen - lw) * 0.5;
-        float canopy = hdbCov(lu, 0.0, lw, upu) * hdbCov(uz, 3.2, 3.65, upz);
-        ucol = mix(ucol, vec3(0.86, 0.82, 0.74), canopy);
-        vec3 lit = mix(vec3(0.68, 0.56, 0.38), vec3(0.1), hdbCov(mod(lu, 2.2), 0.0, 0.12, upu) * ufade);
-        ucol = mix(ucol, lit, hdbCov(lu, 0.0, lw, upu) * hdbCov(uz, 0.0, 3.1, upz));
-      }
-      ucol = mix(ucol, vec3(0.3), hdbCov(uz, utop - 0.9, utop - 0.5, upz));
-    } else {
-      float st = 3.8;
-      float fz = mod(uz, st);
-      float lev = floor(uz / st);
-      vec3 wall = vec3(0.84, 0.82, 0.78);
-      vec3 acc = ustyle == 0 ? vec3(0.14, 0.44, 0.54) : vec3(0.68, 0.24, 0.18);
-      vec3 glass = vec3(0.14, 0.22, 0.28);
-      float bu = mod(uu, 3.2);
-      float win = hdbCov(bu, 0.5, 2.7, upu) * hdbCov(fz, 1.0, 2.9, upz) * step(1.0, lev);
-      ucol = mix(wall, glass, win);
-      ucol = mix(ucol, acc, hdbCov(uz, utop - 1.5, utop - 0.5, upz));
-      uavg = mix(wall, glass, 0.3);
-    }
-    float ures = 1.0 - smoothstep(0.7, 1.6, max(upz, upu));
-    vec3 linOut = mix(uavg, ucol, ures);
-    diffuseColor.rgb = pow(max(linOut, vec3(0.0)), vec3(0.76));
-  } else if (vHdbBand.a > 0.0 && abs(vHdbNz) < 0.5 && vHdbWall.y > 0.0 && vHdbWall.w > 550.0) {
-    float lz = vHdbZ;
-    float ltop = vHdbBand.a;
-    float lu = vHdbWall.x;
-    float llen = vHdbWall.y;
-    float lpz = max(fwidth(lz), 1e-4);
-    float lpu = max(fwidth(lu), 1e-4);
-    float lfade = 1.0 - smoothstep(0.03, 0.1, min(lpu, lpz));
-    int lcode = int(vHdbWall.w - 600.0 + 0.5);
-    int lera = lcode / 10;
-    int lvar = lcode - lera * 10;
-    bool front = vHdbWall.z > 0.5 && vHdbWall.z < 1.5;
-    float lst = 3.20;
-    float lfz = mod(lz, lst);
-    float llev = floor(lz / lst);
-    vec3 charcoal = vec3(0.05, 0.055, 0.065);
-    vec3 wall = lvar == 0 ? vec3(0.72, 0.70, 0.65) : (lvar == 1 ? vec3(0.64, 0.59, 0.53) : vec3(0.78, 0.75, 0.69));
-    vec3 glass = vec3(0.08, 0.13, 0.18);
-    float bays = max(1.0, floor(llen / 3.2 + 0.5));
-    float bw = llen / bays;
-    float bu = mod(lu, bw);
-    float g0 = front ? 0.3 : 0.9;
-    float g1 = front ? lst - 0.35 : 2.35;
-    float gl = hdbCov(bu, 0.45, bw - 0.45, lpu) * hdbCov(lfz, g0, g1, lpz);
-    vec3 g = mix(glass, glass * 2.4 + vec3(0.06, 0.08, 0.1), smoothstep(g0, g1, lfz) * 0.6);
-    float mull = hdbCov(mod(bu - 0.45, 1.2), 0.0, 0.06, lpu) * lfade;
-    g = mix(g, charcoal, mull);
-    vec3 lcol = mix(wall, g, gl);
-    if (front && llev >= 1.0) {
-      float bal = hdbCov(lfz, 0.25, 1.25, lpz) * hdbCov(bu, 0.2, bw - 0.2, lpu);
-      lcol = mix(lcol, mix(lcol, vec3(0.62, 0.72, 0.74), 0.55), bal);
-      lcol = mix(lcol, charcoal, hdbCov(lfz, 1.2, 1.26, lpz) * hdbCov(bu, 0.2, bw - 0.2, lpu));
-    }
-    lcol = mix(lcol, charcoal, hdbCov(lfz, 0.0, 0.24, lpz) * step(1.0, llev));
-    lcol = mix(lcol, lcol * 0.75, hdbCov(lz, ltop - 0.35, ltop + 1.0, lpz));
-    vec3 lavg = mix(wall, glass, 0.32);
-    float lres = 1.0 - smoothstep(0.7, 1.6, max(lpz, lpu));
-    vec3 linOut = mix(lavg, lcol, lres);
-    diffuseColor.rgb = pow(max(linOut, vec3(0.0)), vec3(0.76));
-  } else if (vHdbBand.a > 0.0 && abs(vHdbNz) < 0.5 && vHdbWall.y > 0.0 && vHdbWall.w > 250.0) {
-    float rz = vHdbZ;
-    float rtop = vHdbBand.a;
-    float ru = vHdbWall.x;
-    float rlen = vHdbWall.y;
-    float rpz = max(fwidth(rz), 1e-4);
-    float rpu = max(fwidth(ru), 1e-4);
-    float mh = fract(sin(floor(rtop * 3.0 + 0.5) * 7.31 + 11.0) * 43758.5453);
-    float wh = fract(sin(floor(rlen * 4.0 + 0.5) * 3.2475 + floor(rtop * 10.0 + 0.5) * 0.41414) * 43758.5453);
-    int mstyle = int(vHdbWall.w - 300.0 + 0.5);
-    float gl = min(5.0, rtop - 0.8);
-    float fade = 1.0 - smoothstep(0.03, 0.1, min(rpu, rpz));
-    vec3 rcol;
-    vec3 ravg;
-    float s0 = 0.0;
-    float s1 = rlen;
-    float boxBase = gl;
-    vec3 ink = vec3(0.04);
-    if (mstyle == 0) {
-      float pod = rtop < 16.0 ? gl : min(max(gl + 3.0, rtop * 0.32), rtop - 9.0);
-      float vd = rtop < 16.0 ? gl : pod + 3.6;
-      vec3 greige = vec3(0.45, 0.42, 0.38);
-      float pu = floor(ru / 1.5);
-      float pz = floor(rz / 3.0);
-      float fu = fract(ru / 1.5);
-      float fz = fract(rz / 3.0);
-      float ph = fract(sin(pu * 12.99 + pz * 78.23) * 43758.55);
-      bool up = ph > 0.5 ? fu > fz : fu < 1.0 - fz;
-      vec3 box = greige * (up ? 0.9 + 0.12 * ph : 1.04 - 0.08 * ph);
-      box = mix(greige, box, fade);
-      box = mix(box, greige * 0.75, (hdbCov(fu * 1.5, 0.0, 0.03, rpu) + hdbCov(fz * 3.0, 0.0, 0.03, rpz)) * fade);
-      vec3 fins = mix(vec3(0.46, 0.46, 0.45), vec3(0.83, 0.83, 0.81), hdbCov(mod(ru, 0.6), 0.0, 0.22, rpu));
-      fins = mix(vec3(0.70), fins, fade);
-      vec3 voidc = mix(vec3(0.035, 0.038, 0.042), vec3(0.80, 0.80, 0.78), hdbCov(mod(ru + 3.0, 7.5), 0.0, 1.1, rpu));
-      voidc = mix(voidc, vec3(0.55, 0.55, 0.52), hdbCov(rz, vd - 0.25, vd, rpz));
-      rcol = rz < pod ? fins : (rz < vd ? voidc : box);
-      ravg = rz < pod ? vec3(0.70) : (rz < vd ? vec3(0.1) : greige);
-      boxBase = vd;
-      ink = vec3(0.50, 0.33, 0.17);
-    } else if (mstyle == 1) {
-      vec3 stone = vec3(0.56, 0.49, 0.40);
-      rcol = stone * (0.97 + 0.03 * fract(sin(floor(ru / 3.0) * 3.1 + floor(rz / 1.4) * 1.7) * 437.5));
-      rcol = mix(rcol, stone * 0.62, hdbCov(mod(rz, 1.4), 0.0, 0.07, rpz) * fade);
-      rcol = mix(rcol, stone * 0.85, hdbCov(mod(ru, 3.0), 0.0, 0.03, rpu) * fade);
-      ravg = stone * 0.95;
-      if (rlen >= 16.0 && rtop > gl + 6.0) {
-        float gw = min(20.0, rlen * 0.3);
-        float g0 = wh < 0.5 ? 0.0 : rlen - gw;
-        float inG = hdbCov(ru, g0, g0 + gw, rpu) * hdbCov(rz, gl + 1.0, rtop - 3.0, rpz);
-        float h01 = clamp((rz - gl) / max(rtop - gl, 1.0), 0.0, 1.0);
-        vec3 g = mix(vec3(0.03, 0.14, 0.15), vec3(0.28, 0.48, 0.50), 0.2 + 0.6 * h01);
-        float gm = hdbCov(mod(ru - g0, 1.5), 0.0, 0.06, rpu) + hdbCov(mod(rz, 1.4), 0.0, 0.08, rpz);
-        g = mix(g, vec3(0.55, 0.56, 0.55), clamp(gm, 0.0, 1.0) * fade + 0.08 * (1.0 - fade));
-        rcol = mix(rcol, g, inG);
-        ravg = mix(ravg, g, gw / rlen);
-        if (wh < 0.5) s0 = gw + 1.0; else s1 = rlen - gw - 1.0;
-      }
-      ink = vec3(0.07, 0.07, 0.08);
-    } else {
-      vec3 orange = vec3(0.75, 0.25, 0.08);
-      vec3 timber = vec3(0.32, 0.12, 0.05);
-      vec3 dglass = vec3(0.05, 0.08, 0.12);
-      float fz = mod(rz - gl, 4.5);
-      float band = hdbCov(fz, 0.0, 1.3, rpz);
-      vec3 finsc = mix(dglass, timber, hdbCov(mod(ru, 0.8), 0.0, 0.3, rpu));
-      finsc = mix(mix(dglass, timber, 0.375), finsc, fade);
-      rcol = mix(finsc, orange, band);
-      rcol = mix(rcol, orange * 1.1, hdbCov(rz, rtop - 2.2, rtop + 1.0, rpz));
-      ravg = mix(mix(dglass, timber, 0.375), orange, 0.35);
-      if (rlen >= 20.0 && rtop > gl + 6.0) {
-        float aw = rlen * 0.24;
-        float a0 = (rlen - aw) * 0.5;
-        float inA = hdbCov(ru, a0, a0 + aw, rpu) * hdbCov(rz, 0.0, rtop - 2.2, rpz);
-        float h01 = clamp(rz / max(rtop, 1.0), 0.0, 1.0);
-        vec3 g = mix(vec3(0.05, 0.16, 0.34), vec3(0.35, 0.55, 0.78), 0.2 + 0.6 * h01);
-        float gm = hdbCov(mod(ru - a0, 1.5), 0.0, 0.07, rpu) + hdbCov(mod(rz, 3.0), 0.0, 0.1, rpz);
-        g = mix(g, vec3(0.6), clamp(gm, 0.0, 1.0) * fade + 0.08 * (1.0 - fade));
-        g = mix(g, vec3(0.35), hdbCov(ru, a0, a0 + 0.6, rpu) + hdbCov(ru, a0 + aw - 0.6, a0 + aw, rpu));
-        rcol = mix(rcol, g, inA);
-        ravg = mix(ravg, g, aw / rlen);
-        s0 = a0 + aw + 1.0;
-      }
-      ink = vec3(0.95, 0.95, 0.93);
-    }
-    if (rz < gl) {
-      vec3 inside = mix(vec3(0.55, 0.48, 0.38), vec3(0.93, 0.87, 0.76), smoothstep(0.0, gl, rz));
-      float gm = hdbCov(mod(ru, 2.0), 0.0, 0.07, rpu) + hdbCov(rz, 0.0, 0.15, rpz) + hdbCov(rz, 3.0, 3.1, rpz);
-      vec3 st = mix(inside, vec3(0.22, 0.22, 0.23), clamp(gm, 0.0, 1.0) * fade + 0.06 * (1.0 - fade));
-      st = mix(st, vec3(0.03), hdbCov(rz, gl - 0.6, gl, rpz));
-      rcol = st;
-      ravg = mix(inside, vec3(0.1), 0.25);
-    }
-    rcol = mix(rcol, mstyle == 2 ? vec3(0.9) : ravg * 0.7, hdbCov(rz, rtop - 0.35, rtop + 1.0, rpz));
-    float rres = 1.0 - smoothstep(0.7, 1.6, max(rpz, rpu));
-    vec3 linOut = mix(ravg, rcol, rres);
-    diffuseColor.rgb = pow(max(linOut, vec3(0.0)), vec3(0.76));
-  } else if (vHdbBand.a > 0.0 && abs(vHdbNz) < 0.5 && vHdbWall.y > 0.0 && vHdbWall.w > 50.0) {
-    // ── LUXURY CONDO & MIXED-USE TOWER (haio.sg exact Leedon Green / Marina View shader)
-    // Module: stone pier | copper/bronze/timber/champagne/white fin | recessed balcony bay | fin | pier
-    // Plus Sky-Garden Terrace Floors every 10-14 storeys, Copper Crown Frames, and Lit Ground Lift Lobby!
-    float cz = vHdbZ;
-    float ctop = vHdbBand.a;
-    float cu = vHdbWall.x;
-    float clen = vHdbWall.y;
-    float cpz = max(fwidth(cz), 1e-4);
-    float cpu = max(fwidth(cu), 1e-4);
-    float cst = 3.2;
-    float cfz = mod(cz, cst);
-    float h01 = clamp(cz / max(ctop, 1.0), 0.0, 1.0);
-    int cstyle = int(vHdbWall.w - 100.0 + 0.5);
-    bool cshop = cstyle >= 10;
-    if (cshop) cstyle -= 10;
-    vec3 stone = vec3(0.624, 0.578, 0.515);     // #CFC8BE warm light stone
-    vec3 slabCol = vec3(0.776, 0.753, 0.708);   // #E4E1DB slab edge
-    vec3 copper = vec3(0.381, 0.102, 0.027);    // #A65A2E copper / timber
-    vec3 balus = vec3(0.337, 0.431, 0.527);     // #9DB0C0 glass balustrade
-    vec3 inner = vec3(0.043, 0.065, 0.098);     // #3A4858 glazing behind
-    vec3 skyLo = vec3(0.078, 0.212, 0.431);     // #4F7FB0 curtain glass
-    vec3 skyHi = vec3(0.266, 0.468, 0.730);     // #8DB6DE sky in the glass
-    float cmod = 7.2;
-    if (cstyle == 1) {
-      stone = vec3(0.807, 0.807, 0.791);        // #E8E8E4 crisp white frame
-      copper = vec3(0.093, 0.070, 0.052);       // #564B42 dark bronze fins
-      balus = vec3(0.300, 0.420, 0.560);        // #94ADC5 cool glass
-      cmod = 6.0;
-    } else if (cstyle == 2) {
-      stone = vec3(0.694, 0.604, 0.456);        // #D9CBB4 sand stone
-      copper = vec3(0.521, 0.293, 0.115);       // #BF925F light timber fins
-      balus = vec3(0.371, 0.448, 0.500);        // #A3B2BB
-      cmod = 8.0;
-    } else if (cstyle == 3) {
-      stone = vec3(0.141, 0.144, 0.153);        // #686A6D charcoal frame
-      copper = vec3(0.604, 0.488, 0.319);       // #CBB997 champagne fins
-      balus = vec3(0.216, 0.296, 0.402);        // #7F93AA
-      inner = vec3(0.025, 0.036, 0.055);
-      cmod = 6.6;
-    } else if (cstyle == 4) {
-      stone = vec3(0.527, 0.546, 0.558);        // #C0C3C5 pale grey
-      copper = vec3(0.871, 0.871, 0.858);       // #F0F0EE white fins
-      balus = vec3(0.235, 0.468, 0.527);        // #86B6C0 teal-blue glass
-      skyLo = vec3(0.052, 0.270, 0.371);
-      cmod = 7.6;
-    }
-    vec3 ccol;
-    vec3 cavg;
-    if (clen < 4.5) {
-      vec3 g = mix(skyLo, skyHi, 0.2 + 0.7 * h01);
-      float mull = hdbCov(mod(cu, 1.5), 0.0, 0.07, cpu);
-      mull = mix(0.05, mull, 1.0 - smoothstep(0.03, 0.08, cpu));
-      ccol = mix(g, vec3(0.2, 0.22, 0.25), mull);
-      ccol = mix(ccol, slabCol * 0.85, hdbCov(cfz, 0.0, 0.18, cpz));
-      cavg = mix(g, slabCol, 0.08);
-    } else {
-      float mods = max(1.0, floor(clen / cmod + 0.5));
-      float mw = clen / mods;
-      float mi = floor(cu / mw);
-      float mu = cu - mi * mw;
-      float pier = 1.3;
-      float fin = 0.32;
-      float inPier = hdbCov(mu, 0.0, pier, cpu);
-      float inFin = hdbCov(mu, pier, pier + fin, cpu) + hdbCov(mu, mw - fin, mw, cpu);
-      vec3 bay = mix(inner, inner * 1.6 + skyHi * 0.12, h01);
-      float clevel = floor(cz / cst);
-      float unitLit = fract(sin(mi * 23.7 + clevel * 59.1 + float(cstyle) * 7.3) * 43758.5453);
-      if (unitLit > 0.72 && clevel >= 1.0) {
-        bay = mix(bay, vec3(0.88, 0.68, 0.38), 0.48 * hdbCov(cfz, 1.15, cst - 0.35, cpz));
-      }
-      bay = mix(bay, balus * (0.85 + 0.25 * h01), hdbCov(cfz, 0.22, 1.15, cpz));
-      bay = mix(bay, slabCol, hdbCov(cfz, 0.0, 0.24, cpz));
-      bay *= 1.0 - 0.35 * hdbCov(cfz, cst - 0.35, cst, cpz);
-      float edge = min(mu - pier - fin, mw - fin - mu);
-      bay *= 0.8 + 0.2 * smoothstep(0.0, 0.9, edge);
-      float every = 10.0 + float(cstyle);
-      if (clevel > 2.0 && mod(clevel, every) == every - 1.0 && cz < ctop - 2.0 * cst) {
-        vec3 leaf = vec3(0.12, 0.28, 0.06);
-        vec3 terr = inner * 0.55;
-        float shrub = 1.05 + 0.3 * sin(cu * 2.1 + clevel) * sin(cu * 0.7);
-        float tint = 0.8 + 0.4 * fract(sin(floor(cu * 1.3) * 12.9898) * 437.585);
-        terr = mix(terr, leaf * 1.15, hdbCov(mod(cu, 5.0), 1.6, 3.4, cpu) * hdbCov(cfz, 1.0, 2.7, cpz));
-        terr = mix(terr, leaf * tint, hdbCov(cfz, 0.25, 0.25 + shrub, cpz));
-        terr = mix(terr, slabCol, hdbCov(cfz, 0.0, 0.25, cpz));
-        bay = terr;
-      }
-      ccol = bay;
-      ccol = mix(ccol, copper * (0.95 + 0.1 * h01), clamp(inFin, 0.0, 1.0));
-      ccol = mix(ccol, stone * (0.96 + 0.04 * sin(floor(cz / cst) * 1.3)), clamp(inPier, 0.0, 1.0));
-      ccol = mix(ccol, ccol * 0.9, clamp(inPier, 0.0, 1.0) * hdbCov(cfz, 0.0, 0.06, cpz));
-      if (mod(mi, 2.0) < 1.0) {
-        float crown = hdbCov(cz, ctop - 2.0 * cst, ctop + 1.0, cpz);
-        float lintel = hdbCov(cz, ctop - 0.7, ctop + 1.0, cpz);
-        float side = hdbCov(mu, pier, pier + fin * 2.2, cpu) + hdbCov(mu, mw - fin * 2.2, mw, cpu);
-        ccol = mix(ccol, copper * 1.08, crown * clamp(side + lintel, 0.0, 1.0));
-      }
-      float pierShare = pier / mw;
-      float finShare = 2.0 * fin / mw;
-      cavg = stone * pierShare + copper * finShare + mix(inner * 1.3, balus, 0.35) * (1.0 - pierShare - finShare);
-    }
-    ccol = mix(ccol, stone * 1.05, hdbCov(cz, ctop - 0.6, ctop + 1.0, cpz));
-    if (cshop) {
-      if (cz < 4.40) {
-        float sn = max(1.0, floor(clen / 6.0 + 0.5));
-        float sw = clen / sn;
-        float si = floor(cu / sw);
-        float su = cu - si * sw;
-        float sHash = fract(sin(si * 17.31 + floor(clen * 4.0 + 0.5) * 0.925) * 43758.5453);
-        vec3 lit = vec3(0.93, 0.74, 0.46);
-        vec3 shop = mix(lit * 0.65, lit, smoothstep(0.3, 2.6, cz));
-        shop = mix(shop, shop * 0.55, hdbCov(mod(cz, 0.9), 0.0, 0.12, cpz) * hdbCov(cz, 0.4, 2.6, cpz));
-        float door = hdbCov(su, sw * 0.62, sw * 0.62 + 1.8, cpu) * hdbCov(cz, 0.0, 2.4, cpz);
-        shop = mix(shop, vec3(0.36, 0.30, 0.22), 0.45 * door);
-        shop *= 1.0 - 0.35 * hdbCov(cz, 2.9, 3.3, cpz);
-        vec3 st = shop;
-        st = mix(st, stone, hdbCov(su, 0.0, 0.35, cpu) + hdbCov(su, sw - 0.35, sw, cpu));
-        vec3 signCol = sHash > 0.7 ? vec3(0.02, 0.30, 0.32) : (sHash > 0.4 ? vec3(0.75, 0.28, 0.04) : vec3(0.04, 0.10, 0.34));
-        float fascia = hdbCov(cz, 3.3, 4.1, cpz);
-        float signBox = hdbCov(su, sw * 0.2, sw * 0.8, cpu) * hdbCov(cz, 3.42, 3.98, cpz);
-        st = mix(st, vec3(0.07, 0.07, 0.08), fascia);
-        st = mix(st, signCol, signBox);
-        st = mix(st, vec3(0.78, 0.77, 0.74), hdbCov(cz, 4.1, 5.4, cpz));
-        ccol = st;
-        cavg = mix(lit * 0.8, vec3(0.2, 0.2, 0.2), 0.3);
-      }
-    } else if (cz < cst) {
-      vec3 base = mix(stone * 0.9, inner * 1.4, 0.35);
-      ccol = mix(ccol, base, 0.8 * hdbCov(cz, 0.0, cst - 0.4, cpz));
-      ccol = mix(ccol, vec3(0.10, 0.25, 0.05), hdbCov(cz, 0.0, 0.7, cpz));
-      if (clen >= 8.0) {
-        float ew = min(4.5, clen * 0.4);
-        float du = cu - (clen - ew) * 0.5;
-        float inDoor = hdbCov(du, 0.0, ew, cpu) * hdbCov(cz, 0.0, cst - 0.5, cpz);
-        vec3 warm = vec3(0.90, 0.70, 0.42);
-        vec3 hall = mix(warm * 0.55, warm, smoothstep(0.0, 2.4, cz));
-        float lifts = hdbCov(du, ew * 0.3, ew * 0.46, cpu) + hdbCov(du, ew * 0.54, ew * 0.7, cpu);
-        hall = mix(hall, vec3(0.20, 0.19, 0.18), clamp(lifts, 0.0, 1.0) * hdbCov(cz, 0.0, 2.3, cpz));
-        float frame = hdbCov(du, 0.0, 0.15, cpu) + hdbCov(du, ew - 0.15, ew, cpu) + hdbCov(cz, 2.55, 2.7, cpz);
-        hall = mix(hall, copper * 0.8, clamp(frame, 0.0, 1.0));
-        ccol = mix(ccol, hall, inDoor);
-        float canopy = hdbCov(du, -0.8, ew + 0.8, cpu) * hdbCov(cz, cst - 0.5, cst - 0.2, cpz);
-        ccol = mix(ccol, slabCol * 1.05, canopy);
-      }
-      ccol = mix(ccol, slabCol, 0.7 * hdbCov(cfz, cst - 0.4, cst, cpz));
-    }
-    float cres = 1.0 - smoothstep(0.7, 1.6, max(cpz, cpu));
-    vec3 linOut = mix(cavg, ccol, cres);
-    diffuseColor.rgb = pow(max(linOut, vec3(0.0)), vec3(0.76));
-  }
-`;
+      cx /= openRing.length;
+      cy /= openRing.length;
 
-    function applyHaioFacadeShader(material) {
-      if (!material) return material;
-      material.extensions = { derivatives: true };
-      const prevCompile = material.onBeforeCompile;
-      material.onBeforeCompile = function (shader, renderer) {
-        if (prevCompile) prevCompile.call(material, shader, renderer);
-        if (!shader || typeof shader.fragmentShader !== "string" || shader.fragmentShader.includes(HAIO_FACADE_TAG)) return;
-        const vAnchor = "#include <begin_vertex>";
-        const fAnchor = "#include <color_fragment>";
-        if (shader.vertexShader.includes(vAnchor) && shader.fragmentShader.includes(fAnchor)) {
-          shader.vertexShader = shader.vertexShader
-            .replace("void main() {", `${HAIO_VERT_PREAMBLE}\nvoid main() {`)
-            .replace(vAnchor, `${vAnchor}\n${HAIO_VERT_BODY}`);
-          shader.fragmentShader = shader.fragmentShader
-            .replace("void main() {", `${HAIO_FRAG_PREAMBLE}\nvoid main() {`)
-            .replace(fAnchor, `${fAnchor}\n// ${HAIO_FACADE_TAG}\n${HAIO_FRAG_BODY}`);
-        }
-      };
-      material.customProgramCacheKey = function () {
-        return HAIO_FACADE_TAG;
-      };
-      material.needsUpdate = true;
-      return material;
-    }
+      for (let i = 0; i < openRing.length; i++) {
+        const [x0, y0] = openRing[i];
+        const [x1, y1] = openRing[(i + 1) % openRing.length];
+        const dx = x1 - x0;
+        const dy = y1 - y0;
+        const segLen = Math.hypot(dx, dy);
+        if (segLen < 0.05) continue;
 
-    let haioSharedWallMat = null;
-    let haioSharedRoofMat = null;
-    function getHaioSharedWallMat() {
-      if (haioSharedWallMat) return haioSharedWallMat;
-      haioSharedWallMat = new THREE.MeshLambertMaterial({
-        vertexColors: true,
-        side: THREE.DoubleSide
-      });
-      applyHaioFacadeShader(haioSharedWallMat);
-      return haioSharedWallMat;
-    }
-    function getHaioSharedRoofMat() {
-      if (haioSharedRoofMat) return haioSharedRoofMat;
-      haioSharedRoofMat = new THREE.MeshLambertMaterial({
-        vertexColors: true,
-        side: THREE.DoubleSide
-      });
-      return haioSharedRoofMat;
-    }
-
-    function createHaioWallBuffer() {
-      return { pos: [], norm: [], col: [], band: [], wall: [] };
-    }
-    function createHaioRoofBuffer() {
-      return { pos: [], norm: [], col: [] };
-    }
-    function buildHaioWallMesh(wb) {
-      if (!wb || !wb.pos || !wb.pos.length) return null;
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute("position", new THREE.Float32BufferAttribute(wb.pos, 3));
-      geo.setAttribute("normal", new THREE.Float32BufferAttribute(wb.norm, 3));
-      geo.setAttribute("color", new THREE.Float32BufferAttribute(wb.col, 3));
-      geo.setAttribute("hdbBand", new THREE.Float32BufferAttribute(wb.band, 4));
-      geo.setAttribute("hdbWall", new THREE.Float32BufferAttribute(wb.wall, 4));
-      const mesh = new THREE.Mesh(geo, getHaioSharedWallMat());
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      return mesh;
-    }
-    function buildHaioRoofMesh(rb) {
-      if (!rb || !rb.pos || !rb.pos.length) return null;
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute("position", new THREE.Float32BufferAttribute(rb.pos, 3));
-      geo.setAttribute("normal", new THREE.Float32BufferAttribute(rb.norm, 3));
-      geo.setAttribute("color", new THREE.Float32BufferAttribute(rb.col, 3));
-      const mesh = new THREE.Mesh(geo, getHaioSharedRoofMat());
-      mesh.castShadow = true;
-      mesh.receiveShadow = true;
-      return mesh;
-    }
-
-    // Pillar 3: haio.sg's Exact 3D Rooftop & Grounds Palette (sRGB-corrected from q in 3odmktrl9c8av.js)
-    const srgbCol = (r, g, b) => [Math.pow(r, 0.76), Math.pow(g, 0.76), Math.pow(b, 0.76)];
-    const HAIO_COLORS = {
-      roofStone: srgbCol(0.776, 0.753, 0.708),
-      roofDarkRim: srgbCol(0.06, 0.065, 0.075),
-      plantRoom: srgbCol(0.479, 0.456, 0.423),
-      roofGarden: srgbCol(0.155, 0.363, 0.08),
-      mallParapet: srgbCol(0.52, 0.50, 0.46),
-      acUnit: srgbCol(0.761, 0.768, 0.753),
-      fan: srgbCol(0.04, 0.045, 0.055),
-      coolingTower: srgbCol(0.347, 0.451, 0.509),
-      fanStack: srgbCol(0.14, 0.17, 0.19),
-      duct: srgbCol(0.485, 0.515, 0.533),
-      skylight: srgbCol(0.18, 0.38, 0.58),
-      pergolaCopper: srgbCol(0.381, 0.142, 0.047),
-      pergolaCanopy: srgbCol(0.30, 0.18, 0.09),
-      pergolaBronze: srgbCol(0.18, 0.18, 0.20),
-      pergolaWhite: srgbCol(0.86, 0.86, 0.84),
-      lawn: srgbCol(0.16, 0.38, 0.11),
-      deck: srgbCol(0.72, 0.68, 0.58),
-      coping: srgbCol(0.82, 0.79, 0.73),
-      pool: srgbCol(0.08, 0.56, 0.86),
-      poolLane: srgbCol(0.02, 0.08, 0.32),
-      court: srgbCol(0.10, 0.38, 0.22),
-      courtOut: srgbCol(0.04, 0.16, 0.08),
-      line: srgbCol(0.92, 0.92, 0.90),
-      net: srgbCol(0.05, 0.05, 0.05),
-      pole: srgbCol(0.12, 0.12, 0.14)
-    };
-
-    // Low-level Y-up geometry writers for haio.sg 3D roofs (parapets, pergolas, plant rooms, cooling towers, AC units, skylights)
-    function pushQuadYUp(rb, p0, p1, p2, p3, nx, ny, nz, col) {
-      const pts = [p0, p1, p2, p0, p2, p3];
-      for (const p of pts) {
-        rb.pos.push(p[0], p[1], p[2]);
-        rb.norm.push(nx, ny, nz);
-        rb.col.push(col[0], col[1], col[2]);
-      }
-    }
-
-    function pushWallYUp(rb, x0, z0, x1, z1, y0, y1, col) {
-      const len = Math.hypot(x1 - x0, z1 - z0) || 1;
-      const nx = (z1 - z0) / len;
-      const nz = -(x1 - x0) / len;
-      pushQuadYUp(rb, [x0, y0, z0], [x1, y0, z1], [x1, y1, z1], [x0, y1, z0], nx, 0, nz, col);
-      pushQuadYUp(rb, [x1, y0, z1], [x0, y0, z0], [x0, y1, z0], [x1, y1, z1], -nx, 0, -nz, col);
-    }
-
-    function pushBoxYUp(rb, cx, cz, angle, lenX, widZ, y0, y1, col) {
-      const c = Math.cos(angle);
-      const s = Math.sin(angle);
-      const corners = [
-        [-lenX / 2, -widZ / 2],
-        [lenX / 2, -widZ / 2],
-        [lenX / 2, widZ / 2],
-        [-lenX / 2, widZ / 2]
-      ].map(([u, v]) => [cx + u * c - v * s, cz + u * s + v * c]);
-
-      for (let i = 0; i < 4; i++) {
-        const [ax, az] = corners[i];
-        const [bx, bz] = corners[(i + 1) % 4];
-        const d = Math.hypot(bx - ax, bz - az) || 1;
-        pushQuadYUp(
-          rb,
-          [ax, y0, az], [bx, y0, bz], [bx, y1, bz], [ax, y1, az],
-          (bz - az) / d, 0, -(bx - ax) / d, col
-        );
-      }
-      pushQuadYUp(
-        rb,
-        [corners[0][0], y1, corners[0][1]],
-        [corners[1][0], y1, corners[1][1]],
-        [corners[2][0], y1, corners[2][1]],
-        [corners[3][0], y1, corners[3][1]],
-        0, 1, 0, col
-      );
-    }
-
-    function pushFlatPadYUp(rb, cx, cz, angle, lenX, widZ, y, col) {
-      const c = Math.cos(angle);
-      const s = Math.sin(angle);
-      const pt = (u, v) => [cx + u * c - v * s, y, cz + u * s + v * c];
-      pushQuadYUp(
-        rb,
-        pt(-lenX / 2, -widZ / 2),
-        pt(lenX / 2, -widZ / 2),
-        pt(lenX / 2, widZ / 2),
-        pt(-lenX / 2, widZ / 2),
-        0, 1, 0, col
-      );
-    }
-
-    // Appends a complete haio.sg building (extruded hdb-facade-v25 walls + 3D parapet/pergola/plant-room/HVAC roof)
-    function appendHaioBuildingToBuffers(wb, rb, pts, minH, topH, styleCode, accentRgb = [0.78, 0.62, 0.44], roofKind = "condo", styleVariant = 0) {
-      if (!pts || pts.length < 3 || topH <= minH + 0.5) return;
-
-      let cx = 0, cz = 0;
-      for (const p of pts) {
-        cx += p.x;
-        cz += p.z;
-      }
-      cx /= pts.length;
-      cz /= pts.length;
-
-      // Find longest wall for front lobby / porte-cochere orientation & roof alignment
-      let longestIdx = 0;
-      let maxSegLen = 0;
-      let roofAngle = 0;
-      for (let i = 0; i < pts.length; i++) {
-        const a = pts[i];
-        const b = pts[(i + 1) % pts.length];
-        const d = Math.hypot(b.x - a.x, b.z - a.z);
-        if (d > maxSegLen) {
-          maxSegLen = d;
-          longestIdx = i;
-          roofAngle = Math.atan2(b.z - a.z, b.x - a.x);
-        }
-      }
-
-      // Base vertex color fallback (used if far away)
-      let baseCol = [0.82, 0.80, 0.76];
-      if (styleCode >= 800 && styleCode < 900) baseCol = (styleCode === 801) ? [0.86, 0.85, 0.82] : [0.28, 0.42, 0.48];
-      else if (styleCode >= 1200) baseCol = [0.24, 0.36, 0.46];
-      else if (styleCode >= 300 && styleCode < 400) baseCol = [0.68, 0.64, 0.58];
-
-      // 1. Extrude vertical walls with hdbBand & hdbWall attributes
-      for (let i = 0; i < pts.length; i++) {
-        const p0 = pts[i];
-        const p1 = pts[(i + 1) % pts.length];
-        const dx = p1.x - p0.x;
-        const dz = p1.z - p0.z;
-        const segLen = Math.hypot(dx, dz);
-        if (segLen < 0.25) continue;
-
-        let nx = dz / segLen;
-        let nz = -dx / segLen;
-        const midX = (p0.x + p1.x) * 0.5 - cx;
-        const midZ = (p0.z + p1.z) * 0.5 - cz;
-        if (nx * midX + nz * midZ < 0) {
+        let nx = dy / segLen;
+        let ny = -dx / segLen;
+        const mx = (x0 + x1) * 0.5 - cx;
+        const my = (y0 + y1) * 0.5 - cy;
+        if (nx * mx + ny * my < 0) {
           nx = -nx;
-          nz = -nz;
+          ny = -ny;
         }
 
-        const isLobbyWall = (i === longestIdx) ? 1.0 : 0.0;
-        const quadVerts = [
-          { x: p0.x, y: minH, z: p0.z, u: 0.0 },
-          { x: p1.x, y: minH, z: p1.z, u: segLen },
-          { x: p1.x, y: topH, z: p1.z, u: segLen },
-          { x: p0.x, y: minH, z: p0.z, u: 0.0 },
-          { x: p1.x, y: topH, z: p1.z, u: segLen },
-          { x: p0.x, y: topH, z: p0.z, u: 0.0 }
-        ];
+        // Directional architectural shading so every facet of stack 01 & stack 02 has crisp 3D depth like haio.sg
+        const sunDot = nx * 0.52 + ny * (-0.48);
+        const shade = Math.min(1.06, Math.max(0.84, 0.96 + 0.10 * sunDot));
+        const r = Math.min(1, sideRgb[0] * shade);
+        const g = Math.min(1, sideRgb[1] * shade);
+        const b = Math.min(1, sideRgb[2] * shade);
 
-        for (const v of quadVerts) {
-          wb.pos.push(v.x, v.y, v.z);
-          wb.norm.push(nx, 0, nz);
-          wb.col.push(baseCol[0], baseCol[1], baseCol[2]);
-          wb.band.push(accentRgb[0], accentRgb[1], accentRgb[2], topH);
-          wb.wall.push(v.u, segLen, isLobbyWall, styleCode);
+        const quad = [
+          [x0, y0, z0], [x1, y1, z0], [x1, y1, z1],
+          [x0, y0, z0], [x1, y1, z1], [x0, y0, z1]
+        ];
+        for (const [vx, vy, vz] of quad) {
+          posArr.push(vx, vy, vz);
+          normArr.push(nx, ny, 0);
+          colArr.push(r, g, b);
+        }
+
+        // Subtle vertical architectural mullion rib at each vertex corner
+        if (mullionRgb && segLen >= 1.6) {
+          const mw = 0.09;
+          const ux = dx / segLen;
+          const uy = dy / segLen;
+          const mx0 = x0 + nx * 0.04;
+          const my0 = y0 + ny * 0.04;
+          const mx1 = mx0 + ux * mw;
+          const my1 = my0 + uy * mw;
+          const mQuad = [
+            [mx0, my0, z0], [mx1, my1, z0], [mx1, my1, z1],
+            [mx0, my0, z0], [mx1, my1, z1], [mx0, my0, z1]
+          ];
+          for (const [vx, vy, vz] of mQuad) {
+            posArr.push(vx, vy, vz);
+            normArr.push(nx, ny, 0);
+            colArr.push(mullionRgb[0], mullionRgb[1], mullionRgb[2]);
+          }
         }
       }
 
-      const isCondoRoof = (roofKind === "condo" || roofKind === 1 || roofKind === 5);
-
-      // 2. Triangulate base roof deck at topH
-      if (typeof THREE.ShapeUtils !== "undefined") {
-        const contour = pts.map(p => new THREE.Vector2(p.x, p.z));
+      if (typeof THREE !== "undefined" && typeof THREE.ShapeUtils !== "undefined") {
+        const contour = openRing.map(([x, y]) => new THREE.Vector2(x, y));
         const tris = THREE.ShapeUtils.triangulateShape(contour, []);
-        const rDeckCol = !isCondoRoof ? HAIO_COLORS.mallParapet : HAIO_COLORS.roofStone;
-        for (const t of tris) {
-          const a = pts[t[0]], b = pts[t[1]], c = pts[t[2]];
-          rb.pos.push(a.x, topH, a.z,  b.x, topH, b.z,  c.x, topH, c.z);
-          rb.norm.push(0, 1, 0,  0, 1, 0,  0, 1, 0);
-          rb.col.push(
-            rDeckCol[0], rDeckCol[1], rDeckCol[2],
-            rDeckCol[0], rDeckCol[1], rDeckCol[2],
-            rDeckCol[0], rDeckCol[1], rDeckCol[2]
+        for (const [i0, i1, i2] of tris) {
+          const a = openRing[i0], b = openRing[i1], c = openRing[i2];
+          posArr.push(a[0], a[1], z1, b[0], b[1], z1, c[0], c[1], z1);
+          normArr.push(0, 0, 1, 0, 0, 1, 0, 0, 1);
+          colArr.push(
+            topRgb[0], topRgb[1], topRgb[2],
+            topRgb[0], topRgb[1], topRgb[2],
+            topRgb[0], topRgb[1], topRgb[2]
           );
         }
       }
-
-      // 3. Extrude 3D Perimeter Parapet Walls around the roof edge
-      const parapetH = !isCondoRoof ? 1.4 : 1.15;
-      const parapetCol = (styleVariant % 2 === 1) ? HAIO_COLORS.roofDarkRim : HAIO_COLORS.roofStone;
-      for (let i = 0; i < pts.length; i++) {
-        const a = pts[i];
-        const b = pts[(i + 1) % pts.length];
-        pushWallYUp(rb, a.x, a.z, b.x, b.z, topH, topH + parapetH, parapetCol);
-      }
-
-      // Measure oriented bounding box in roof frame (cx, cz, roofAngle)
-      const cosA = Math.cos(roofAngle);
-      const sinA = Math.sin(roofAngle);
-      let uMin = Infinity, uMax = -Infinity, vMin = Infinity, vMax = -Infinity;
-      for (const p of pts) {
-        const u = (p.x - cx) * cosA + (p.z - cz) * sinA;
-        const v = -(p.x - cx) * sinA + (p.z - cz) * cosA;
-        if (u < uMin) uMin = u;
-        if (u > uMax) uMax = u;
-        if (v < vMin) vMin = v;
-        if (v > vMax) vMax = v;
-      }
-      const spanU = uMax - uMin;
-      const spanV = vMax - vMin;
-      if (spanU < 10 || spanV < 9) return;
-
-      const toWorld = (u, v) => [cx + u * cosA - v * sinA, cz + u * sinA + v * cosA];
-
-      if (isCondoRoof) {
-        // Condo 3D Rooftop: Mechanical Plant Room + Rooftop Sky-Garden Pad + Perimeter Pergola Trellis
-        const prLen = Math.min(spanU * 0.34, 13.0);
-        const prWid = Math.min(spanV * 0.38, 9.5);
-        pushBoxYUp(rb, cx, cz, roofAngle, prLen, prWid, topH, topH + 3.1, HAIO_COLORS.plantRoom);
-        pushBoxYUp(rb, cx, cz, roofAngle, prLen + 0.5, prWid + 0.5, topH + 3.1, topH + 3.35, HAIO_COLORS.roofStone);
-
-        const gdLen = Math.min(spanU * 0.32, 12.0);
-        const gdWid = Math.min(spanV * 0.48, 12.0);
-        const gdOffsetU = prLen * 0.5 + 1.8 + gdLen * 0.5;
-        if (gdOffsetU + gdLen * 0.5 < spanU * 0.46) {
-          const [gx, gz] = toWorld(gdOffsetU, 0);
-          pushFlatPadYUp(rb, gx, gz, roofAngle, gdLen + 0.8, gdWid + 0.8, topH + 0.10, HAIO_COLORS.coping);
-          pushFlatPadYUp(rb, gx, gz, roofAngle, gdLen, gdWid, topH + 0.18, HAIO_COLORS.roofGarden);
-        }
-
-        // 3D Rooftop Pergola / Louvred Crown Canopy on opposite side
-        const pgOffsetU = -(prLen * 0.5 + 1.6 + Math.min(spanU * 0.24, 8.0) * 0.5);
-        if (Math.abs(pgOffsetU) + 3.5 < spanU * 0.46) {
-          const [px, pz] = toWorld(pgOffsetU, 0);
-          const pCol = (styleVariant % 3 === 0) ? HAIO_COLORS.pergolaCopper : HAIO_COLORS.pergolaBronze;
-          const pLen = Math.min(spanU * 0.24, 8.5);
-          const pWid = Math.min(spanV * 0.42, 8.5);
-          for (const [du, dv] of [[-pLen * 0.45, -pWid * 0.45], [pLen * 0.45, -pWid * 0.45], [pLen * 0.45, pWid * 0.45], [-pLen * 0.45, pWid * 0.45]]) {
-            const [colX, colZ] = toWorld(pgOffsetU + du, dv);
-            pushBoxYUp(rb, colX, colZ, roofAngle, 0.35, 0.35, topH, topH + 3.2, pCol);
-          }
-          pushBoxYUp(rb, px, pz, roofAngle, pLen, pWid, topH + 2.95, topH + 3.25, pCol);
-        }
-      } else {
-        // Office / Mall / Hotel 3D Rooftop: Cooling Towers with Fan Stacks, Plant Room, Skylight & AC Condenser Rows
-        const prLen = Math.min(spanU * 0.30, 11.5);
-        const prWid = Math.min(spanV * 0.34, 7.5);
-        const [prX, prZ] = toWorld(-spanU * 0.16, 0);
-        pushBoxYUp(rb, prX, prZ, roofAngle, prLen, prWid, topH, topH + 3.4, HAIO_COLORS.plantRoom);
-
-        // 2 Cooling Towers with Cylindrical/Octagonal Fan Stacks & Dark Fan Discs
-        const ctSize = Math.min(3.8, spanV * 0.26);
-        for (let k = 0; k < 2; k++) {
-          const [ctx, ctz] = toWorld(spanU * 0.18 + (k - 0.5) * (ctSize + 0.8), -spanV * 0.14);
-          pushBoxYUp(rb, ctx, ctz, roofAngle, ctSize, ctSize, topH, topH + 3.5, HAIO_COLORS.coolingTower);
-          pushBoxYUp(rb, ctx, ctz, roofAngle, ctSize * 0.62, ctSize * 0.62, topH + 3.5, topH + 4.25, HAIO_COLORS.fanStack);
-          pushFlatPadYUp(rb, ctx, ctz, roofAngle, ctSize * 0.48, ctSize * 0.48, topH + 4.28, HAIO_COLORS.fan);
-        }
-
-        // Glass Skylight or AC Condenser Unit Row + HVAC Duct
-        if (spanU >= 22 && spanV >= 16) {
-          const [skX, skZ] = toWorld(0, spanV * 0.22);
-          const skLen = Math.min(spanU * 0.42, 16.0);
-          pushBoxYUp(rb, skX, skZ, roofAngle, skLen + 0.6, 4.2, topH, topH + 0.55, HAIO_COLORS.duct);
-          pushFlatPadYUp(rb, skX, skZ, roofAngle, skLen, 3.6, topH + 0.58, HAIO_COLORS.skylight);
-        }
-
-        // Row of AC Units with Dual Fans
-        for (let a = -1; a <= 1; a++) {
-          const [acX, acZ] = toWorld(spanU * 0.16 + a * 3.2, spanV * 0.18);
-          pushBoxYUp(rb, acX, acZ, roofAngle, 2.3, 1.35, topH, topH + 1.25, HAIO_COLORS.acUnit);
-          const [f1x, f1z] = toWorld(spanU * 0.16 + a * 3.2 - 0.52, spanV * 0.18);
-          const [f2x, f2z] = toWorld(spanU * 0.16 + a * 3.2 + 0.52, spanV * 0.18);
-          pushFlatPadYUp(rb, f1x, f1z, roofAngle, 0.85, 0.85, topH + 1.28, HAIO_COLORS.fan);
-          pushFlatPadYUp(rb, f2x, f2z, roofAngle, 0.85, 0.85, topH + 1.28, HAIO_COLORS.fan);
-        }
-      }
     }
 
-    // Helper to create polygonal footprint rings (rectangle, chamfered octagon, or stepped cruciform)
-    function makeRectRing(cx, cz, w, d, rotY = 0, chamfer = 0) {
-      const c = Math.cos(rotY);
-      const s = Math.sin(rotY);
-      const hw = w * 0.5;
-      const hd = d * 0.5;
-      let localPts;
-      if (chamfer > 0.1) {
-        const ch = Math.min(chamfer, hw * 0.35, hd * 0.35);
-        localPts = [
-          [-hw + ch, -hd], [hw - ch, -hd], [hw, -hd + ch], [hw, hd - ch],
-          [hw - ch, hd], [-hw + ch, hd], [-hw, hd - ch], [-hw, -hd + ch]
-        ];
-      } else {
-        localPts = [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]];
-      }
-      return localPts.map(([u, v]) => ({
-        x: cx + u * c - v * s,
-        z: cz + u * s + v * c
-      }));
+    function hexToRgb01(hexStr) {
+      const c = new THREE.Color(hexStr);
+      return [c.r, c.g, c.b];
     }
 
-    // Pillar 5: haio.sg's Exact Multi-Crown 3D Botanical Tree Generator (Module 729479 in 3odmktrl9c8av.js)
-    function addTreeCanopyCluster(parent, x, yBase, z, scale = 1.0) {
-      const group = new THREE.Group();
-      group.position.set(x, yBase, z);
-
-      const trunkGeo = new THREE.CylinderGeometry(0.28 * scale, 0.44 * scale, 3.8 * scale, 7);
-      const trunkMat = new THREE.MeshLambertMaterial({ color: 0x5c422c });
-      const trunk = new THREE.Mesh(trunkGeo, trunkMat);
-      trunk.position.y = 1.9 * scale;
-      trunk.castShadow = true;
-      trunk.receiveShadow = true;
-      group.add(trunk);
-
-      // 4 overlapping multi-crown foliage spheres with sunlit top tint (haio.sg dome/spread tree recipe)
-      const baseGreens = [0x2e6b34, 0x357a3b, 0x27622d, 0x3d8242, 0x245829];
-      const seed = Math.abs(Math.round(x * 13 + z * 29));
-      const darkGreen = baseGreens[seed % baseGreens.length];
-      const litGreen = new THREE.Color(darkGreen).multiplyScalar(1.28).getHex();
-
-      const puffs = [
-        { r: 2.95, dx: 0.0, dy: 5.4, dz: 0.0, col: litGreen },
-        { r: 2.18, dx: 1.75, dy: 4.8, dz: 0.65, col: darkGreen },
-        { r: 2.12, dx: -1.55, dy: 4.9, dz: 1.25, col: litGreen },
-        { r: 2.02, dx: 0.25, dy: 6.3, dz: -1.45, col: litGreen }
-      ];
-      puffs.forEach(pf => {
-        const g = new THREE.SphereGeometry(pf.r * scale, 9, 7);
-        const m = new THREE.MeshLambertMaterial({ color: pf.col });
-        const mesh = new THREE.Mesh(g, m);
-        mesh.position.set(pf.dx * scale, pf.dy * scale, pf.dz * scale);
-        mesh.scale.set(1.12, 0.86, 1.12);
-        mesh.castShadow = true;
-        mesh.receiveShadow = true;
-        group.add(mesh);
-      });
-      parent.add(group);
-    }
-
-    // Pillar 3B: haio.sg's Exact 3D Condo Resort Grounds (50m Lap Pool with Lane Lines, Tennis Court & Pavilions)
-    function buildHaioCondoGrounds3D(parent, ox, yBase, oz, rotY = 0) {
-      const rb = { pos: [], norm: [], col: [] };
-      const c = Math.cos(rotY);
-      const s = Math.sin(rotY);
-      const toW = (u, v) => [ox + u * c - v * s, oz + u * s + v * c];
-
-      // 1. Lush Landscaped Resort Lawn Base
-      const [lx, lz] = toW(0, 0);
-      pushFlatPadYUp(rb, lx, lz, rotY, 64, 88, yBase + 0.10, HAIO_COLORS.lawn);
-
-      // 2. 3D 32m x 12m Resort Lap Swimming Pool with Timber Deck, Coping & Lane Lines
-      const [px, pz] = toW(-6, -14);
-      const pLen = 30.0, pWid = 11.5;
-      pushFlatPadYUp(rb, px, pz, rotY, pLen + 6.0, pWid + 6.0, yBase + 0.16, HAIO_COLORS.deck);
-      pushFlatPadYUp(rb, px, pz, rotY, pLen + 0.8, pWid + 0.8, yBase + 0.20, HAIO_COLORS.coping);
-      pushFlatPadYUp(rb, px, pz, rotY, pLen, pWid, yBase + 0.24, HAIO_COLORS.pool);
-
-      const lanes = 4;
-      for (let i = 0; i < lanes; i++) {
-        const lv = -pWid * 0.5 + pWid * (i + 0.5) / lanes;
-        const [lnX, lnZ] = toW(-6, -14 + lv);
-        pushFlatPadYUp(rb, lnX, lnZ, rotY, pLen - 2.6, 0.24, yBase + 0.26, HAIO_COLORS.poolLane);
-      }
-
-      // 3. 3D Regulation Tennis Court (23.8m x 11.0m) with White Lines & Net
-      const [tcx, tcz] = toW(4, 18);
-      const cLen = 23.8, cWid = 11.0;
-      pushFlatPadYUp(rb, tcx, tcz, rotY, cLen + 3.2, cWid + 3.2, yBase + 0.16, HAIO_COLORS.courtOut);
-      pushFlatPadYUp(rb, tcx, tcz, rotY, cLen, cWid, yBase + 0.20, HAIO_COLORS.court);
-      // Court boundary & service lines
-      for (const dv of [-5.4, -4.1, 0, 4.1, 5.4]) {
-        const [lx0, lz0] = toW(4, 18 + dv);
-        pushFlatPadYUp(rb, lx0, lz0, rotY, dv === 0 ? 12.8 : cLen, 0.14, yBase + 0.23, HAIO_COLORS.line);
-      }
-      for (const du of [-11.8, -6.4, 0, 6.4, 11.8]) {
-        const [lx1, lz1] = toW(4 + du, 18);
-        pushFlatPadYUp(rb, lx1, lz1, rotY, 0.14, Math.abs(du) === 6.4 ? 8.2 : cWid, yBase + 0.23, HAIO_COLORS.line);
-      }
-      // Tennis Net
-      const [n0x, n0z] = toW(4, 18 - 6.0);
-      const [n1x, n1z] = toW(4, 18 + 6.0);
-      pushWallYUp(rb, n0x, n0z, n1x, n1z, yBase + 0.22, yBase + 1.05, HAIO_COLORS.net);
-      pushWallYUp(rb, n0x, n0z, n1x, n1z, yBase + 1.05, yBase + 1.15, HAIO_COLORS.line);
-
-      // 4. Poolside Timber Pavilion / Cabana
-      const [pvx, pvz] = toW(-22, -14);
-      pushBoxYUp(rb, pvx, pvz, rotY, 5.2, 5.2, yBase + 0.16, yBase + 0.42, HAIO_COLORS.coping);
-      pushBoxYUp(rb, pvx, pvz, rotY, 4.8, 4.8, yBase + 3.1, yBase + 3.6, HAIO_COLORS.pergolaCanopy);
-
-      const geo = new THREE.BufferGeometry();
-      geo.setAttribute("position", new THREE.Float32BufferAttribute(rb.pos, 3));
-      geo.setAttribute("normal", new THREE.Float32BufferAttribute(rb.norm, 3));
-      geo.setAttribute("color", new THREE.Float32BufferAttribute(rb.col, 3));
-      const mesh = new THREE.Mesh(geo, getHaioSharedRoofMat());
-      mesh.receiveShadow = true;
-      mesh.castShadow = true;
-      parent.add(mesh);
-    }
-
-    // Pillar 4: haio.sg's Exact Hero Development 3D Multi-Band Facade Engine (eX + e9 in 03a9d_mxyap4f.js)
-    // Builds physical 3D protruding floor slab ledges, translucent glass balcony railings, vertical mullions,
-    // full-height architectural fins & crown spires, double-height sky-garden terraces, and unit-mix highlights.
-    function buildHeroArticulatedTower3D(parent, wingSpecs, storeys, showMode, flrZone, stkFilter) {
-      const fCount = Math.min(54, Math.max(32, storeys || 51));
-      const isDefaultMode = (showMode === "all" && flrZone === "ALL" && stkFilter === "ALL");
-
-      // Crisp luminous architectural white materials matching haio.sg's Hero Block 1
-      const slabMat = new THREE.MeshStandardMaterial({
-        color: 0xffffff,
-        emissive: 0xffffff,
-        emissiveIntensity: 0.28,
-        roughness: 0.38,
-        metalness: 0.06
-      });
-      const frameMat = new THREE.MeshStandardMaterial({
-        color: 0xf1f5f9,
-        emissive: 0xe2e8f0,
-        emissiveIntensity: 0.22,
-        roughness: 0.35,
-        metalness: 0.15
-      });
-      const finMat = new THREE.MeshStandardMaterial({
-        color: 0xf8fafc,
-        emissive: 0xf1f5f9,
-        emissiveIntensity: 0.25,
-        roughness: 0.30,
-        metalness: 0.20,
-        side: THREE.DoubleSide
-      });
-      const railMat = new THREE.MeshStandardMaterial({
-        color: 0xe0f2fe,
-        metalness: 0.20,
-        roughness: 0.08,
-        transparent: true,
-        opacity: 0.48,
-        depthWrite: false,
-        side: THREE.DoubleSide
-      });
-      const gardenSoffitMat = new THREE.MeshStandardMaterial({
-        color: 0xfef3c7,
-        emissive: 0xfde68a,
-        emissiveIntensity: 0.42,
-        roughness: 0.55
-      });
-      const gardenGreenMat = new THREE.MeshStandardMaterial({ color: 0x3f7a34, roughness: 0.85 });
-      const crownGlassMat = new THREE.MeshStandardMaterial({
-        color: 0xe0f2fe,
-        emissive: 0xbae6fd,
-        emissiveIntensity: 0.35,
-        metalness: 0.25,
-        roughness: 0.18,
-        envMapIntensity: 0.9
-      });
-      const glassDefaultMat = new THREE.MeshStandardMaterial({
-        color: 0xf1f5f9,
-        emissive: 0xe2e8f0,
-        emissiveIntensity: 0.36,
-        metalness: 0.18,
-        roughness: 0.22,
-        envMapIntensity: 0.85
-      });
-      const mat4BR = new THREE.MeshStandardMaterial({ color: 0xfbbf24, emissive: 0xd97706, emissiveIntensity: 0.35, roughness: 0.3 });
-      const mat5BR = new THREE.MeshStandardMaterial({ color: 0x34d399, emissive: 0x059669, emissiveIntensity: 0.35, roughness: 0.3 });
-      const matBlue = new THREE.MeshStandardMaterial({ color: 0x3b82f6, emissive: 0x1d4ed8, emissiveIntensity: 0.35, roughness: 0.3 });
-
-      const heroGroup = new THREE.Group();
-
-      // Sculpted architectural stone & warm-lit lobby plinth under Block 1
-      const plinthGeo = new THREE.BoxGeometry(52, 3.6, 40);
-      const plinthMesh = new THREE.Mesh(plinthGeo, slabMat);
-      plinthMesh.position.set(-36, 1.8, 6);
-      plinthMesh.castShadow = true;
-      plinthMesh.receiveShadow = true;
-      heroGroup.add(plinthMesh);
-
-      const gardenStoreys = new Set([Math.round(fCount * 0.32), Math.round(fCount * 0.68)]);
-
-      wingSpecs.forEach((ws, wingIdx) => {
-        const wingGroup = new THREE.Group();
-        wingGroup.position.set(ws.x, 3.6, ws.z);
-        const stH = ws.h / fCount;
-        const is4BRWing = (wingIdx % 2 === 0);
-
-        // Floor-by-floor articulated glazing, protruding floor slabs & glass balcony balustrades
-        for (let f = 1; f <= fCount; f++) {
-          const y0 = (f - 1) * stH;
-          const y1 = f * stH;
-          const isGarden = gardenStoreys.has(f);
-
-          // Determine floor highlight material when user filters BLOCK / FLOOR / STACK / SHOW ME
-          let coreMat = glassDefaultMat;
-          if (!isDefaultMode) {
-            if (showMode === "4br" && is4BRWing) coreMat = mat4BR;
-            else if (showMode === "5br" && !is4BRWing) coreMat = mat5BR;
-            else if (showMode === "4br_5br_mix") coreMat = is4BRWing ? mat4BR : mat5BR;
-            else if (showMode === "hgv") coreMat = (f <= fCount * 0.45) ? mat4BR : matBlue;
-
-            if (flrZone === "LOW" && f <= Math.round(fCount * 0.35)) coreMat = matBlue;
-            else if (flrZone === "MID" && f > Math.round(fCount * 0.35) && f <= Math.round(fCount * 0.72)) coreMat = mat4BR;
-            else if (flrZone === "HIGH" && f > Math.round(fCount * 0.72)) coreMat = mat5BR;
-
-            if (stkFilter === "S1" && wingIdx < 3) coreMat = mat4BR;
-            else if (stkFilter === "S2" && wingIdx >= 3) coreMat = mat5BR;
-          } else if (f > fCount - 2) {
-            coreMat = crownGlassMat;
-          }
-
-          if (isGarden) {
-            // Recessed Sky-Garden Terrace Floor with Warm Wood Soffit & Lush Green Planter Ledge
-            const gCore = new THREE.Mesh(new THREE.BoxGeometry(ws.w - 2.2, stH - 0.22, ws.d - 2.2), gardenSoffitMat);
-            gCore.position.y = y0 + (stH - 0.22) * 0.5;
-            gCore.castShadow = true;
-            gCore.receiveShadow = true;
-            wingGroup.add(gCore);
-
-            const planter = new THREE.Mesh(new THREE.BoxGeometry(ws.w + 0.35, stH * 0.42, ws.d + 0.35), gardenGreenMat);
-            planter.position.y = y0 + stH * 0.22;
-            planter.castShadow = true;
-            wingGroup.add(planter);
-          } else {
-            // Glazed Curtain-Wall Core for this storey
-            const cMesh = new THREE.Mesh(new THREE.BoxGeometry(ws.w, stH - 0.22, ws.d), coreMat);
-            cMesh.position.y = y0 + (stH - 0.22) * 0.5;
-            cMesh.castShadow = true;
-            cMesh.receiveShadow = true;
-            wingGroup.add(cMesh);
-          }
-
-          // Protruding 3D Architectural Floor Slab Ledge at every single storey (n.slab in haio.sg)
-          const slabMesh = new THREE.Mesh(new THREE.BoxGeometry(ws.w + 0.65, 0.24, ws.d + 0.65), slabMat);
-          slabMesh.position.y = y1 - 0.12;
-          slabMesh.castShadow = true;
-          slabMesh.receiveShadow = true;
-          wingGroup.add(slabMesh);
-
-          // Protruding 3D Cantilevered Balcony & Translucent Glass Balustrade on outward facade (n.rail in haio.sg)
-          if (!isGarden && f >= 2 && f <= fCount - 2) {
-            const balZSign = (wingIdx % 2 === 0) ? 1 : -1;
-            const balW = ws.w * 0.64;
-            const balD = 1.25;
-            const balSlab = new THREE.Mesh(new THREE.BoxGeometry(balW, 0.20, balD), slabMat);
-            balSlab.position.set(0, y0 + 0.10, balZSign * (ws.d * 0.5 + balD * 0.5));
-            wingGroup.add(balSlab);
-
-            const balRail = new THREE.Mesh(new THREE.BoxGeometry(balW, stH * 0.38, 0.08), railMat);
-            balRail.position.set(0, y0 + 0.20 + stH * 0.19, balZSign * (ws.d * 0.5 + balD - 0.04));
-            balRail.renderOrder = 2;
-            wingGroup.add(balRail);
-          }
-        }
-
-        // Physical 3D Full-Height Vertical Architectural Mullions & Corner Champagne Fins + Crown Spires (n.frame & n.fin)
-        const cornerPositions = [
-          [-ws.w * 0.5, -ws.d * 0.5],
-          [ws.w * 0.5, -ws.d * 0.5],
-          [ws.w * 0.5, ws.d * 0.5],
-          [-ws.w * 0.5, ws.d * 0.5]
-        ];
-        cornerPositions.forEach(([cx, cz]) => {
-          const spireH = ws.h + 5.5;
-          const finMesh = new THREE.Mesh(new THREE.BoxGeometry(0.55, spireH, 0.95), finMat);
-          finMesh.position.set(cx, spireH * 0.5, cz);
-          finMesh.castShadow = true;
-          wingGroup.add(finMesh);
-        });
-
-        // Intermediate vertical mullions along front & back walls
-        for (const mx of [-ws.w * 0.22, ws.w * 0.22]) {
-          for (const mz of [-ws.d * 0.5 - 0.08, ws.d * 0.5 + 0.08]) {
-            const mMesh = new THREE.Mesh(new THREE.BoxGeometry(0.24, ws.h, 0.28), frameMat);
-            mMesh.position.set(mx, ws.h * 0.5, mz);
-            wingGroup.add(mMesh);
-          }
-        }
-
-        // Architectural Crown Frame, Mechanical Penthouse & Roof Garden on top of each stack wing
-        const crownFrame = new THREE.Mesh(new THREE.BoxGeometry(ws.w + 0.5, 1.4, ws.d + 0.5), finMat);
-        crownFrame.position.y = ws.h + 0.7;
-        crownFrame.castShadow = true;
-        wingGroup.add(crownFrame);
-
-        const mechPenthouse = new THREE.Mesh(new THREE.BoxGeometry(ws.w * 0.66, 3.2, ws.d * 0.66), slabMat);
-        mechPenthouse.position.y = ws.h + 1.6;
-        mechPenthouse.castShadow = true;
-        wingGroup.add(mechPenthouse);
-
-        heroGroup.add(wingGroup);
-      });
-
-      parent.add(heroGroup);
-    }
-
-    // Helper: Creates articulated architectural polygon footprints (Octagonal, Cruciform, L-Wing, Faceted Diamond, Chamfered Rect)
-    function makeArticulatedFootprint(cx, cz, w, d, rotY = 0, shapeKind = 0) {
-      const hw = w * 0.5;
-      const hd = d * 0.5;
-      let raw = [];
-      if (shapeKind === 0) {
-        // Chamfered 8-sided Octagonal Skyscraper footprint
-        const cw = hw * 0.28, cd = hd * 0.28;
-        raw = [
-          [-hw + cw, -hd], [hw - cw, -hd], [hw, -hd + cd], [hw, hd - cd],
-          [hw - cw, hd], [-hw + cw, hd], [-hw, hd - cd], [-hw, -hd + cd]
-        ];
-      } else if (shapeKind === 1) {
-        // Cruciform / Stepped-Wing 12-sided Skyscraper footprint
-        const iw = hw * 0.62, id = hd * 0.62;
-        raw = [
-          [-iw, -hd], [iw, -hd], [iw, -id], [hw, -id], [hw, id], [iw, id],
-          [iw, hd], [-iw, hd], [-iw, id], [-hw, id], [-hw, -id], [-iw, -id]
-        ];
-      } else if (shapeKind === 2) {
-        // Articulated L-Wing / Setback Courtyard footprint
-        const sw = hw * 0.35, sd = hd * 0.35;
-        raw = [
-          [-hw, -hd], [hw, -hd], [hw, sd], [sw, sd], [sw, hd], [-hw, hd]
-        ];
-      } else if (shapeKind === 3) {
-        // Faceted Sawtooth / Diamond Curtain-Wall footprint
-        raw = [
-          [-hw * 0.85, -hd], [0, -hd * 1.08], [hw * 0.85, -hd], [hw * 1.06, 0],
-          [hw * 0.85, hd], [0, hd * 1.08], [-hw * 0.85, hd], [-hw * 1.06, 0]
-        ];
-      } else {
-        // Subtle Beveled Architectural Podium footprint
-        const bw = hw * 0.10, bd = hd * 0.10;
-        raw = [
-          [-hw + bw, -hd], [hw - bw, -hd], [hw, -hd + bd], [hw, hd - bd],
-          [hw - bw, hd], [-hw + bw, hd], [-hw, hd - bd], [-hw, -hd + bd]
-        ];
-      }
-      const c = Math.cos(rotY), s = Math.sin(rotY);
-      return raw.map(([lx, lz]) => ({
-        x: cx + lx * c - lz * s,
-        z: cz + lx * s + lz * c
-      }));
-    }
-
-    // Helper: Appends a 3-Tier Articulated Skyscraper (Podium + Sculpted Shaft + Setback Crown + 3D Roof Structures)
-    function appendMultiTierTowerToBuffers(wb, rb, t) {
-      const { x, z, w, d, h, rot = 0, styleCode = 800, accentRgb = [0.74, 0.62, 0.45], variant = 0, shapeKind = 0 } = t;
-      if (h >= 46) {
-        const podH = Math.min(20, Math.max(11, Math.round(h * 0.13)));
-        const shaftTop = Math.round(h * 0.86);
-        // Tier 1: Street & Podium Base with Rooftop Sky-Garden or Pergola Terrace
-        const podPts = makeArticulatedFootprint(x, z, w * 1.24, d * 1.24, rot, 4);
-        appendHaioBuildingToBuffers(wb, rb, podPts, 0, podH, 300 + (variant % 3), accentRgb, (variant % 2 === 0) ? 5 : 1, variant);
-        // Tier 2: Main Articulated Tower Shaft
-        const shaftPts = makeArticulatedFootprint(x, z, w, d, rot, shapeKind);
-        appendHaioBuildingToBuffers(wb, rb, shaftPts, podH, shaftTop, styleCode, accentRgb, 5, variant + 1);
-        // Tier 3: Setback Crown Tier with 3D Cooling Towers / Mechanical Penthouse / Skylights
-        const crownPts = makeArticulatedFootprint(x, z, w * 0.74, d * 0.74, rot, 0);
-        const crownRoof = 1 + (variant % 4);
-        appendHaioBuildingToBuffers(wb, rb, crownPts, shaftTop, h, styleCode, accentRgb, crownRoof, variant + 2);
-      } else {
-        const pts = makeArticulatedFootprint(x, z, w, d, rot, shapeKind);
-        appendHaioBuildingToBuffers(wb, rb, pts, 0, h, styleCode, accentRgb, 1 + (variant % 5), variant);
-      }
-    }
-
+    // Rebuilds Block 1 · 2 stacks (stack 01 & stack 02) inside the Z-up Local ENU scene (ev / tower-dressing in haio.sg)
     function rebuildThreeHeroScene() {
-      if (!three3DLayer || !three3DLayer.scene) return;
-      const scene = three3DLayer.scene;
-      if (three3DLayer.cityGroup) {
-        scene.remove(three3DLayer.cityGroup);
-      }
+      if (!three3DLayer || !three3DLayer.scene || typeof THREE === "undefined") return;
 
       const p = DATA.projects.find(x => x.project_id === selected3DProjectId) || DATA.projects[0];
       const [lat, lon] = parseCoord(p.coordinates);
       three3DLayer.originLonLat = [lon, lat];
-      const spec = getProject3DSpec(p);
 
       const calloutTxtEl = document.getElementById("hero3DRoofCalloutText");
       if (calloutTxtEl) {
-        calloutTxtEl.textContent = `Block 1 · 2 stacks`;
+        calloutTxtEl.textContent = "Block 1 · 2 stacks";
       }
 
-      const cityGroup = new THREE.Group();
-      // Align local axes with NE 60° camera view so (-x = Left, +x = Right, -z = Background, +z = Foreground)
-      cityGroup.rotation.y = -THREE.MathUtils.degToRad(60);
+      if (three3DLayer.heroGroup) {
+        three3DLayer.scene.remove(three3DLayer.heroGroup);
+      }
 
-      // Subtle landscaped green park belt & architectural plaza apron under the Hero Tower & Podium
-      const parkBeltGeo = new THREE.PlaneGeometry(58, 150);
-      const parkBeltMat = new THREE.MeshStandardMaterial({ color: 0x3b6e38, roughness: 0.92, metalness: 0.0, transparent: true, opacity: 0.82 });
-      const parkBeltMesh = new THREE.Mesh(parkBeltGeo, parkBeltMat);
-      parkBeltMesh.rotation.x = -Math.PI / 2;
-      parkBeltMesh.rotation.z = 0.16;
-      parkBeltMesh.position.set(34, 0.12, -4);
-      parkBeltMesh.receiveShadow = true;
-      cityGroup.add(parkBeltMesh);
+      const heroGroup = new THREE.Group();
+      const posArr = [];
+      const normArr = [];
+      const colArr = [];
 
-      const siteApronGeo = new THREE.PlaneGeometry(116, 90);
-      const siteApronMat = new THREE.MeshStandardMaterial({ color: 0xdad5cc, roughness: 0.85, metalness: 0.05, transparent: true, opacity: 0.78 });
-      const siteApronMesh = new THREE.Mesh(siteApronGeo, siteApronMat);
-      siteApronMesh.rotation.x = -Math.PI / 2;
-      siteApronMesh.position.set(-12, 0.16, 16);
-      siteApronMesh.receiveShadow = true;
-      cityGroup.add(siteApronMesh);
-
-      // -----------------------------------------------------------------------
-      // 1. HERO ACTIVE PROJECT: ARTICULATED MULTI-BAND 3D RESIDENTIAL TOWER (Block 1)
-      //    With physical 3D floor slabs, cantilevered glass-railing balconies,
-      //    champagne vertical fins & spires, and double-height sky-garden terraces
-      // -----------------------------------------------------------------------
-      const heroBaseH = 78;
-      three3DLayer.heroRoofLocalVec = new THREE.Vector3(-36, heroBaseH + 7, 4);
-
-      const wingSpecs = [
-        { w: 14.5, d: 14.5, h: heroBaseH * 1.00, x: -49, z: 0 },
-        { w: 16.5, d: 13.8, h: heroBaseH * 0.98, x: -37, z: -3 },
-        { w: 14.8, d: 15.5, h: heroBaseH * 0.95, x: -40, z: 12 },
-        { w: 15.8, d: 14.8, h: heroBaseH * 1.03, x: -23, z: -2 },
-        { w: 14.8, d: 15.5, h: heroBaseH * 0.96, x: -22, z: 11 },
-        { w: 13.2, d: 13.8, h: heroBaseH * 0.91, x: -52, z: 13 }
+      const offsets = [
+        { ring: HAIO_STACK_01_RING, dx: -12.0, dy: -6.0, is4BR: true,  stId: "S1" },
+        { ring: HAIO_STACK_02_RING, dx: -18.0, dy: 12.0, is4BR: false, stId: "S2" },
+        { ring: HAIO_STACK_01_RING, dx: -34.0, dy: 8.0,  is4BR: true,  stId: "S1" },
+        { ring: HAIO_STACK_02_RING, dx: -42.0, dy: 24.0, is4BR: false, stId: "S2" },
+        { ring: HAIO_STACK_01_RING, dx: -58.0, dy: 20.0, is4BR: true,  stId: "S1" },
+        { ring: HAIO_STACK_02_RING, dx: -66.0, dy: 34.0, is4BR: false, stId: "S2" }
       ];
-      buildHeroArticulatedTower3D(cityGroup, wingSpecs, spec.storeys, active3DShowMe, active3DFloor, active3DStack);
 
-      // -----------------------------------------------------------------------
-      // 2. HERO ACTIVE PROJECT: 3D TERRACOTTA & SMOKED-GLASS PODIUM + ROOFTOP SKY-GARDEN
-      //    With physical 3D vertical terracotta louvers, warm retail shopfronts,
-      //    reflective smoked-glass upper box, and 3D rooftop trees & pergola
-      // -----------------------------------------------------------------------
-      const podGroup = new THREE.Group();
-      podGroup.position.set(16, 0, 18);
-      podGroup.rotation.y = -0.16;
+      const storeys = 14;
+      const storeyM = 3.45;
+      const topZ = storeys * storeyM; // 48.3m
+      three3DLayer.heroRoofLocalVec = new THREE.Vector3(-36.0, 12.0, topZ + 4.2);
 
-      const terraMat = new THREE.MeshStandardMaterial({ color: 0x6b2822, roughness: 0.65, metalness: 0.12 });
-      const terraFinMat = new THREE.MeshStandardMaterial({ color: 0x85352d, roughness: 0.52, metalness: 0.18 });
-      const warmShopMat = new THREE.MeshStandardMaterial({ color: 0xffedd5, emissive: 0xf59e0b, emissiveIntensity: 0.42, roughness: 0.25 });
-      const travertineMat = new THREE.MeshStandardMaterial({ color: 0xe7e0d6, roughness: 0.60, metalness: 0.08 });
-      const midGreenMat = new THREE.MeshStandardMaterial({ color: 0x2f6f3e, roughness: 0.88, metalness: 0.0 });
-      const smokedGlassMat = new THREE.MeshStandardMaterial({
-        color: 0x132638,
-        emissive: 0x0c1926,
-        emissiveIntensity: 0.15,
-        metalness: 0.48,
-        roughness: 0.14,
-        envMapIntensity: 0.96
-      });
-      const darkMullionMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, metalness: 0.45, roughness: 0.32 });
+      const isDefaultMode = (active3DShowMe === "all" && active3DFloor === "ALL" && active3DStack === "ALL" && active3DBlock === "ALL");
+      const rgbWallBase = [0.985, 0.980, 0.968];
+      const rgbSlabShadow = [0.80, 0.78, 0.75];
+      const rgbRoofTop = [0.99, 0.99, 0.985];
+      const rgbCrown = [0.92, 0.905, 0.88];
+      const rgb4BR = hexToRgb01("#F3B749");
+      const rgb5BR = hexToRgb01("#58B87D");
+      const rgbBlue = hexToRgb01("#3B82F6");
 
-      // Level 1: Sculpted Terracotta Podium Core (0..18m) + Ground-Floor Lit Retail Glazing
-      const podCore = new THREE.Mesh(new THREE.BoxGeometry(43.2, 18, 53.2), terraMat);
-      podCore.position.set(0, 9, 0);
-      podCore.castShadow = true;
-      podCore.receiveShadow = true;
-      podGroup.add(podCore);
+      function pushExtruded(ring2d, z0, z1, baseRgb, topRgb, isSlabLine) {
+        const openRing = (ring2d.length > 3 && Math.hypot(ring2d[0][0] - ring2d[ring2d.length - 1][0], ring2d[0][1] - ring2d[ring2d.length - 1][1]) < 1e-4)
+          ? ring2d.slice(0, -1)
+          : ring2d;
+        let cx = 0, cy = 0;
+        for (const [x, y] of openRing) { cx += x; cy += y; }
+        cx /= openRing.length; cy /= openRing.length;
 
-      const retailBand = new THREE.Mesh(new THREE.BoxGeometry(43.6, 4.2, 53.6), warmShopMat);
-      retailBand.position.set(0, 2.4, 0);
-      podGroup.add(retailBand);
+        for (let i = 0; i < openRing.length; i++) {
+          const [x0, y0] = openRing[i];
+          const [x1, y1] = openRing[(i + 1) % openRing.length];
+          const dx = x1 - x0, dy = y1 - y0;
+          const segLen = Math.hypot(dx, dy);
+          if (segLen < 0.05) continue;
+          let nx = dy / segLen, ny = -dx / segLen;
+          const mx = (x0 + x1) * 0.5 - cx, my = (y0 + y1) * 0.5 - cy;
+          if (nx * mx + ny * my < 0) { nx = -nx; ny = -ny; }
 
-      // Physical 3D Vertical Terracotta Architectural Louver Fins around all 4 Podium facades
-      for (let fx = -20; fx <= 20; fx += 2.5) {
-        for (const fz of [-26.8, 26.8]) {
-          const fin = new THREE.Mesh(new THREE.BoxGeometry(0.38, 17.6, 0.85), terraFinMat);
-          fin.position.set(fx, 9.0, fz);
-          fin.castShadow = true;
-          podGroup.add(fin);
+          const sunDot = nx * (-0.45) + ny * (0.89);
+          let shade;
+          if (isSlabLine) {
+            shade = 0.88 + 0.06 * sunDot;
+          } else if (sunDot > 0.25) {
+            shade = 1.00;
+          } else if (sunDot > -0.15) {
+            shade = 0.925;
+          } else {
+            shade = 0.84;
+          }
+          const r = Math.min(1, Math.max(0, baseRgb[0] * shade));
+          const g = Math.min(1, Math.max(0, baseRgb[1] * shade));
+          const b = Math.min(1, Math.max(0, baseRgb[2] * shade));
+
+          const quad = [
+            [x0, y0, z0], [x1, y1, z0], [x1, y1, z1],
+            [x0, y0, z0], [x1, y1, z1], [x0, y0, z1]
+          ];
+          for (const [vx, vy, vz] of quad) {
+            posArr.push(vx, vy, vz);
+            normArr.push(nx, ny, 0);
+            colArr.push(r, g, b);
+          }
         }
-      }
-      for (let fz = -24; fz <= 24; fz += 2.5) {
-        for (const fx of [-21.8, 21.8]) {
-          const fin = new THREE.Mesh(new THREE.BoxGeometry(0.85, 17.6, 0.38), terraFinMat);
-          fin.position.set(fx, 9.0, fz);
-          fin.castShadow = true;
-          podGroup.add(fin);
+
+        if (topRgb && typeof THREE !== "undefined" && typeof THREE.ShapeUtils !== "undefined") {
+          const contour = openRing.map(([x, y]) => new THREE.Vector2(x, y));
+          const tris = THREE.ShapeUtils.triangulateShape(contour, []);
+          for (const [i0, i1, i2] of tris) {
+            const a = openRing[i0], b = openRing[i1], c = openRing[i2];
+            posArr.push(a[0], a[1], z1, b[0], b[1], z1, c[0], c[1], z1);
+            normArr.push(0, 0, 1, 0, 0, 1, 0, 0, 1);
+            colArr.push(topRgb[0], topRgb[1], topRgb[2], topRgb[0], topRgb[1], topRgb[2], topRgb[0], topRgb[1], topRgb[2]);
+          }
         }
       }
 
-      // Horizontal Travertine Cornices at y = 5.0m, 11.5m, 18.0m
-      for (const cy of [5.0, 11.5, 18.0]) {
-        const cornice = new THREE.Mesh(new THREE.BoxGeometry(44.8, 0.55, 54.8), travertineMat);
-        cornice.position.set(0, cy, 0);
-        cornice.castShadow = true;
-        cornice.receiveShadow = true;
-        podGroup.add(cornice);
-      }
+      for (const w of offsets) {
+        const ring = w.ring.map(([ln, lt]) => {
+          const [x, y] = haioLonLatToTileEnu(ln, lt);
+          return [x + w.dx, y + w.dy];
+        });
+        const ledgeRing = expandEnuRing(ring, 0.18);
+        const crownRing = expandEnuRing(ring, 0.12);
+        for (let f = 1; f <= storeys; f++) {
+          const z0 = (f - 1) * storeyM;
+          const z1 = f * storeyM;
+          let wallRgb = rgbWallBase;
+          if (!isDefaultMode) {
+            if (active3DShowMe === "4br" && w.is4BR) wallRgb = rgb4BR;
+            else if (active3DShowMe === "5br" && !w.is4BR) wallRgb = rgb5BR;
+            else if (active3DShowMe === "4br_5br_mix") wallRgb = w.is4BR ? rgb4BR : rgb5BR;
+            else if (active3DShowMe === "hgv") wallRgb = (f <= 5) ? rgb4BR : rgbBlue;
 
-      // Level 2: Mid-Level Lush Planted Green Terrace Ledge (18..21.2m)
-      const midGreenMesh = new THREE.Mesh(new THREE.BoxGeometry(45.2, 3.0, 55.2), midGreenMat);
-      midGreenMesh.position.set(0, 19.6, 0);
-      midGreenMesh.castShadow = true;
-      midGreenMesh.receiveShadow = true;
-      podGroup.add(midGreenMesh);
+            if (active3DFloor === "LOW" && f <= 5) wallRgb = rgbBlue;
+            else if (active3DFloor === "MID" && f > 5 && f <= 10) wallRgb = rgb4BR;
+            else if (active3DFloor === "HIGH" && f > 10) wallRgb = rgb5BR;
 
-      // Level 3: Sleek Dark Smoked-Glass Upper Podium Box (21.2..46m) with 3D Floor Spandrels & Mullions
-      const upperBox = new THREE.Mesh(new THREE.BoxGeometry(37.0, 24.8, 48.0), smokedGlassMat);
-      upperBox.position.set(2.2, 33.6, -1.0);
-      upperBox.castShadow = true;
-      upperBox.receiveShadow = true;
-      podGroup.add(upperBox);
-
-      for (let sy = 25.0; sy <= 46.0; sy += 4.2) {
-        const spandrel = new THREE.Mesh(new THREE.BoxGeometry(37.6, 0.35, 48.6), darkMullionMat);
-        spandrel.position.set(2.2, sy, -1.0);
-        podGroup.add(spandrel);
-      }
-      for (let mx = -14; mx <= 18; mx += 4.0) {
-        for (const mz of [-25.1, 23.1]) {
-          const mul = new THREE.Mesh(new THREE.BoxGeometry(0.22, 24.8, 0.28), darkMullionMat);
-          mul.position.set(mx, 33.6, mz);
-          podGroup.add(mul);
+            if (active3DStack === "S1" && w.stId === "S1") wallRgb = rgb4BR;
+            else if (active3DStack === "S2" && w.stId === "S2") wallRgb = rgb5BR;
+          }
+          pushExtruded(ring, z0, z1 - 0.20, wallRgb, f === storeys ? rgbRoofTop : null, false);
+          pushExtruded(ledgeRing, z1 - 0.20, z1, rgbSlabShadow, rgbRoofTop, true);
         }
+        pushExtruded(crownRing, topZ, topZ + 0.85, rgbCrown, rgbRoofTop, false);
       }
 
-      // Level 4: 3D Rooftop Sky-Garden Deck, Perimeter Parapets, Timber Lounge & 12 3D Botanical Trees (y = 46m)
-      const roofDeck = new THREE.Mesh(new THREE.BoxGeometry(36.6, 0.5, 47.6), travertineMat);
-      roofDeck.position.set(2.2, 46.1, -1.0);
-      roofDeck.receiveShadow = true;
-      podGroup.add(roofDeck);
-
-      const roofLawn = new THREE.Mesh(new THREE.BoxGeometry(28.0, 0.35, 38.0), midGreenMat);
-      roofLawn.position.set(2.2, 46.4, -1.0);
-      roofLawn.receiveShadow = true;
-      podGroup.add(roofLawn);
-
-      const pWall1 = new THREE.Mesh(new THREE.BoxGeometry(37.6, 1.8, 0.9), darkMullionMat);
-      pWall1.position.set(2.2, 46.9, -24.6);
-      podGroup.add(pWall1);
-      const pWall2 = pWall1.clone();
-      pWall2.position.set(2.2, 46.9, 22.6);
-      podGroup.add(pWall2);
-      const pWall3 = new THREE.Mesh(new THREE.BoxGeometry(0.9, 1.8, 48.0), darkMullionMat);
-      pWall3.position.set(-16.2, 46.9, -1.0);
-      podGroup.add(pWall3);
-      const pWall4 = pWall3.clone();
-      pWall4.position.set(20.6, 46.9, -1.0);
-      podGroup.add(pWall4);
-
-      const roofTreeCoords = [
-        [-9, -17], [0, -18], [10, -17], [14, -9], [14, 2], [13, 12],
-        [-9, 13], [2, 14], [-10, 0], [-4, -7], [7, 6], [0, 3]
-      ];
-      roofTreeCoords.forEach(([tx, tz]) => {
-        addTreeCanopyCluster(podGroup, tx, 46.5, tz, 0.68);
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute("position", new THREE.Float32BufferAttribute(posArr, 3));
+      geo.setAttribute("normal", new THREE.Float32BufferAttribute(normArr, 3));
+      geo.setAttribute("color", new THREE.Float32BufferAttribute(colArr, 3));
+      const mat = new THREE.MeshBasicMaterial({
+        vertexColors: true,
+        side: THREE.DoubleSide,
+        depthTest: true,
+        depthWrite: true
       });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.frustumCulled = false;
+      heroGroup.add(mesh);
 
-      cityGroup.add(podGroup);
-
-      // 3D Resort Amenity Grounds (Swimming Pool, Tennis Court & Pavilion) beside the Podium
-      buildHaioCondoGrounds3D(cityGroup, 58, 0, 14, -0.16);
-
-      // -----------------------------------------------------------------------
-      // 3. ICONIC 3D RIBBED CYLINDRICAL SKYSCRAPER (AXA Tower Style on the Left)
-      //    Built with real 3D protruding limestone spandrel rings, vertical ribs,
-      //    reflective bronze-tinted glass core, and stepped 3D mechanical crown
-      // -----------------------------------------------------------------------
-      const axaGroup = new THREE.Group();
-      axaGroup.position.set(-112, 0, 38);
-      axaGroup.rotation.y = THREE.MathUtils.degToRad(48);
-
-      const axaH = 212;
-      const axaGlassMat = new THREE.MeshStandardMaterial({
-        color: 0x1e293b,
-        metalness: 0.45,
-        roughness: 0.16,
-        envMapIntensity: 0.92
-      });
-      const axaStoneMat = new THREE.MeshStandardMaterial({
-        color: 0xe5dfd5,
-        roughness: 0.58,
-        metalness: 0.08
-      });
-      const axaCrownMat = new THREE.MeshStandardMaterial({
-        color: 0xcbc4b8,
-        roughness: 0.62,
-        metalness: 0.12
-      });
-
-      // Inner Reflective Curtain-Wall Cylinder Core
-      const axaCore = new THREE.Mesh(new THREE.CylinderGeometry(26.4, 26.4, axaH, 40), axaGlassMat);
-      axaCore.position.y = axaH * 0.5;
-      axaCore.castShadow = true;
-      axaCore.receiveShadow = true;
-      axaGroup.add(axaCore);
-
-      // 52 Physical 3D Protruding Limestone Spandrel Rings stacked up the cylinder
-      for (let ry = 4.0; ry <= axaH; ry += 4.0) {
-        const ring = new THREE.Mesh(new THREE.CylinderGeometry(27.5, 27.5, 1.38, 40), axaStoneMat);
-        ring.position.y = ry;
-        ring.castShadow = true;
-        ring.receiveShadow = true;
-        axaGroup.add(ring);
-      }
-
-      // 16 Full-Height Physical 3D Vertical Limestone Pilasters around the perimeter
-      for (let pi = 0; pi < 16; pi++) {
-        const ang = (pi / 16) * Math.PI * 2;
-        const rib = new THREE.Mesh(new THREE.BoxGeometry(0.95, axaH, 1.25), axaStoneMat);
-        rib.position.set(Math.cos(ang) * 26.8, axaH * 0.5, Math.sin(ang) * 26.8);
-        rib.rotation.y = -ang;
-        axaGroup.add(rib);
-      }
-
-      // Royal-Blue Sky-Sign Architectural Logo Plates near the Crown (y = 185m, facing camera)
-      const badgeMat = new THREE.MeshStandardMaterial({ color: 0x1d4ed8, emissive: 0x1e40af, emissiveIntensity: 0.42, roughness: 0.25 });
-      const stripeMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, emissive: 0xb91c1c, emissiveIntensity: 0.42, roughness: 0.25 });
-      for (const bAng of [1.82, 0.15]) {
-        const badge = new THREE.Mesh(new THREE.BoxGeometry(10.5, 8.6, 1.4), badgeMat);
-        badge.position.set(Math.cos(bAng) * 27.4, 185, Math.sin(bAng) * 27.4);
-        badge.rotation.y = -bAng + Math.PI * 0.5;
-        axaGroup.add(badge);
-        const stripe = new THREE.Mesh(new THREE.BoxGeometry(10.7, 1.5, 1.55), stripeMat);
-        stripe.position.set(Math.cos(bAng) * 27.45, 182.0, Math.sin(bAng) * 27.45);
-        stripe.rotation.y = -bAng + Math.PI * 0.5;
-        axaGroup.add(stripe);
-      }
-
-      // Stepped 3D Mechanical Crown & Helipad Ring on top of the Cylindrical Tower
-      const axaParapet = new THREE.Mesh(new THREE.CylinderGeometry(27.8, 27.8, 2.6, 40), axaStoneMat);
-      axaParapet.position.y = axaH + 1.3;
-      axaGroup.add(axaParapet);
-
-      const axaCrown1 = new THREE.Mesh(new THREE.CylinderGeometry(20.5, 20.5, 9.5, 32), axaCrownMat);
-      axaCrown1.position.y = axaH + 4.8;
-      axaCrown1.castShadow = true;
-      axaGroup.add(axaCrown1);
-
-      const axaCrown2 = new THREE.Mesh(new THREE.CylinderGeometry(13.5, 13.5, 6.0, 24), darkMullionMat);
-      axaCrown2.position.y = axaH + 11.5;
-      axaCrown2.castShadow = true;
-      axaGroup.add(axaCrown2);
-
-      cityGroup.add(axaGroup);
-
-      // -----------------------------------------------------------------------
-      // 4. SURROUNDING SKYLINE & URBAN CONTEXT BLOCKS (Built with haio.sg's
-      //    hdb-facade-v25 GLSL Shader + 3-Tier Setbacks + 3D Rooftop Structures)
-      // -----------------------------------------------------------------------
-      const wb = createHaioWallBuffer();
-      const rb = createHaioRoofBuffer();
-
-      // Foreground Sculpted Bronze/Terracotta Setback Tower at bottom-center edge (x = -58, z = 192, h = 62m)
-      // Built with hdb-facade-v25 GLSL shader + projecting terracotta cornice + recessed mechanical well & red/silver HVAC units
-      const brzPts1 = makeArticulatedFootprint(-58, 192, 40, 34, 0.14, 1);
-      appendHaioBuildingToBuffers(wb, rb, brzPts1, 0, 60, 1200, [0.76, 0.44, 0.30], "office", 1);
-      const brzCorniceMat = new THREE.MeshStandardMaterial({ color: 0x9e5b42, roughness: 0.48, metalness: 0.16 });
-      const brzWellMat = new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.72 });
-      const redHvacMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, emissive: 0x991b1b, emissiveIntensity: 0.28, roughness: 0.4 });
-      const silHvacMat = new THREE.MeshStandardMaterial({ color: 0xe2e8f0, roughness: 0.35, metalness: 0.3 });
-
-      const brzCorniceMesh = new THREE.Mesh(new THREE.BoxGeometry(42, 4.2, 35), brzCorniceMat);
-      brzCorniceMesh.position.set(-58, 61.2, 192);
-      brzCorniceMesh.rotation.y = 0.14;
-      brzCorniceMesh.castShadow = true;
-      cityGroup.add(brzCorniceMesh);
-
-      const brzWellMesh = new THREE.Mesh(new THREE.BoxGeometry(31, 1.5, 25), brzWellMat);
-      brzWellMesh.position.set(-58, 62.8, 192);
-      brzWellMesh.rotation.y = 0.14;
-      cityGroup.add(brzWellMesh);
-
-      const hvacRedMesh = new THREE.Mesh(new THREE.BoxGeometry(6.8, 3.8, 5.4), redHvacMat);
-      hvacRedMesh.position.set(-62, 64.5, 190);
-      hvacRedMesh.rotation.y = 0.14;
-      cityGroup.add(hvacRedMesh);
-      const hvacSilMesh = new THREE.Mesh(new THREE.BoxGeometry(7.6, 3.5, 6.0), silHvacMat);
-      hvacSilMesh.position.set(-53, 64.4, 194);
-      hvacSilMesh.rotation.y = 0.14;
-      cityGroup.add(hvacSilMesh);
-
-      const contextTowers = [
-        // Background Twin Curtain-Wall Skyscrapers (Upper-Center Behind Block 1 & Podium)
-        { x: -30, z: -96, w: 38, d: 28, h: 178, rot: -0.18, styleCode: 800, accentRgb: [0.58, 0.66, 0.76], variant: 2, shapeKind: 1 },
-        { x: 26, z: -100, w: 36, d: 27, h: 174, rot: -0.22, styleCode: 802, accentRgb: [0.64, 0.70, 0.78], variant: 3, shapeKind: 0 },
-        { x: 84, z: -108, w: 34, d: 26, h: 156, rot: -0.15, styleCode: 801, accentRgb: [0.60, 0.72, 0.84], variant: 1, shapeKind: 3 },
-
-        // Left-Side Skyline Continuation & Business Bay Towers
-        { x: -138, z: -42, w: 33, d: 28, h: 184, rot: 0.22, styleCode: 801, accentRgb: [0.60, 0.72, 0.84], variant: 1, shapeKind: 3 },
-        { x: -84, z: -54, w: 29, d: 25, h: 192, rot: 0.08, styleCode: 102, accentRgb: [0.76, 0.68, 0.56], variant: 4, shapeKind: 0 },
-        { x: -172, z: -4, w: 30, d: 28, h: 146, rot: 0.15, styleCode: 1201, accentRgb: [0.80, 0.72, 0.60], variant: 0, shapeKind: 1 },
-        { x: -164, z: 56, w: 32, d: 28, h: 86, rot: 0.12, styleCode: 105, accentRgb: [0.82, 0.76, 0.68], variant: 2, shapeKind: 2 },
-        { x: -158, z: 112, w: 32, d: 30, h: 112, rot: 0.20, styleCode: 1200, accentRgb: [0.74, 0.52, 0.38], variant: 3, shapeKind: 0 },
-
-        // Far-Left & Upper-Left High-Rise Skyline
-        { x: -228, z: 62, w: 36, d: 30, h: 164, rot: 0.16, styleCode: 800, accentRgb: [0.62, 0.72, 0.82], variant: 2, shapeKind: 0 },
-        { x: -224, z: -36, w: 34, d: 28, h: 186, rot: -0.12, styleCode: 802, accentRgb: [0.58, 0.66, 0.74], variant: 3, shapeKind: 3 },
-        { x: -286, z: 16, w: 38, d: 32, h: 148, rot: 0.18, styleCode: 104, accentRgb: [0.80, 0.74, 0.65], variant: 4, shapeKind: 1 },
-        { x: -295, z: 98, w: 32, d: 28, h: 136, rot: 0.10, styleCode: 1200, accentRgb: [0.72, 0.48, 0.36], variant: 0, shapeKind: 0 },
-        { x: -198, z: -88, w: 36, d: 30, h: 172, rot: 0.08, styleCode: 801, accentRgb: [0.64, 0.74, 0.84], variant: 1, shapeKind: 2 },
-
-        // Right-Side & Background Context Towers (Kept at z <= -55 so Podium & Resort Grounds are 100% unobstructed!)
-        { x: 138, z: -72, w: 36, d: 28, h: 128, rot: -0.18, styleCode: 800, accentRgb: [0.64, 0.74, 0.84], variant: 4, shapeKind: 0 },
-        { x: 138, z: -145, w: 36, d: 30, h: 148, rot: -0.12, styleCode: 1200, accentRgb: [0.72, 0.56, 0.44], variant: 0, shapeKind: 3 },
-        { x: 196, z: -115, w: 36, d: 28, h: 132, rot: -0.16, styleCode: 106, accentRgb: [0.78, 0.72, 0.64], variant: 2, shapeKind: 1 },
-        { x: 245, z: -165, w: 38, d: 30, h: 142, rot: -0.14, styleCode: 801, accentRgb: [0.62, 0.72, 0.82], variant: 1, shapeKind: 0 },
-
-        // Low-Rise Architectural Pavilions & Campus Blocks in Foreground of Hero Plot (h = 14..18m so zero occlusion!)
-        { x: -64, z: 58, w: 26, d: 22, h: 15, rot: -0.14, styleCode: 300, accentRgb: [0.86, 0.82, 0.75], variant: 1, shapeKind: 2 },
-        { x: 14, z: 88, w: 32, d: 24, h: 16, rot: -0.18, styleCode: 301, accentRgb: [0.84, 0.78, 0.70], variant: 2, shapeKind: 4 },
-        { x: 72, z: 96, w: 34, d: 24, h: 16, rot: -0.22, styleCode: 302, accentRgb: [0.82, 0.76, 0.68], variant: 3, shapeKind: 2 },
-        { x: 48, z: 148, w: 36, d: 26, h: 18, rot: -0.16, styleCode: 300, accentRgb: [0.85, 0.80, 0.72], variant: 0, shapeKind: 2 },
-        { x: 108, z: 132, w: 34, d: 24, h: 17, rot: -0.20, styleCode: 301, accentRgb: [0.83, 0.77, 0.69], variant: 1, shapeKind: 4 }
-      ];
-
-      contextTowers.forEach(t => appendMultiTierTowerToBuffers(wb, rb, t));
-
-      const wallMesh = buildHaioWallMesh(wb);
-      if (wallMesh) cityGroup.add(wallMesh);
-      const roofMesh = buildHaioRoofMesh(rb);
-      if (roofMesh) cityGroup.add(roofMesh);
-
-      // 3D Botanical Street & Plaza Trees around the Plot
-      const streetTrees = [
-        [-82, 74], [-74, 82], [-58, 78], [-44, 86], [-18, 68], [-8, 74],
-        [36, 58], [44, 48], [50, 34], [56, 20], [60, 4], [64, -12],
-        [48, -24], [40, -36], [54, -44], [72, 26], [80, 42], [90, 58],
-        [104, 72], [52, 88], [42, 102], [28, 116], [12, 124], [-78, 128],
-        [-92, 86], [-72, -18], [-58, -32], [-14, -42], [8, -38], [24, -46],
-        [88, -10], [96, 4], [108, -18], [116, 12], [68, 78], [58, 92]
-      ];
-      streetTrees.forEach(([tx, tz], idx) => {
-        const sc = 0.90 + (idx % 4) * 0.22;
-        addTreeCanopyCluster(cityGroup, tx, 0, tz, sc);
-      });
-
-      three3DLayer.cityGroup = cityGroup;
-      scene.add(cityGroup);
-
-      // Extrude all OpenStreetMap buildings across the entire map + all 37 UAE Construction Project clusters
-      rebuildAllProjectsAndOsmCity3D();
+      three3DLayer.heroGroup = heroGroup;
+      three3DLayer.scene.add(heroGroup);
       if (map3d) map3d.triggerRepaint();
     }
 
-    let osmRebuildTimer = null;
-    function scheduleOsmCityRebuild() {
-      if (osmRebuildTimer) clearTimeout(osmRebuildTimer);
-      osmRebuildTimer = setTimeout(() => {
-        rebuildAllProjectsAndOsmCity3D();
-      }, 140);
-    }
-
-    // Extrudes ALL real OpenStreetMap building footprints across the entire visible map using haio.sg's
-    // hdb-facade-v25 GLSL architectural shader + 3D rooftop structures, PLUS all 37 UAE Project sites
-    function rebuildAllProjectsAndOsmCity3D() {
-      if (!three3DLayer || !three3DLayer.scene || !map3d || !map3dLoaded) return;
-      if (typeof THREE.ShapeUtils === "undefined") return;
-
-      const originLonLat = three3DLayer.originLonLat;
-      const originMerc = maplibregl.MercatorCoordinate.fromLngLat(originLonLat, 0);
-      const scale = originMerc.meterInMercatorCoordinateUnits();
-
-      let feats = [];
-      try {
-        feats = map3d.querySourceFeatures("openmaptiles", { sourceLayer: "building" }) || [];
-      } catch (err) {
-        feats = [];
-      }
-
-      const wb = createHaioWallBuffer();
-      const rb = createHaioRoofBuffer();
-      const seen = new Set();
-
-      const stylePalette = [
-        { code: 800, rgb: [0.62, 0.72, 0.82] },
-        { code: 801, rgb: [0.58, 0.70, 0.80] },
-        { code: 802, rgb: [0.64, 0.70, 0.78] },
-        { code: 1200, rgb: [0.76, 0.62, 0.48] },
-        { code: 1201, rgb: [0.80, 0.72, 0.60] },
-        { code: 100, rgb: [0.84, 0.79, 0.71] },
-        { code: 102, rgb: [0.78, 0.71, 0.62] },
-        { code: 105, rgb: [0.82, 0.76, 0.68] },
-        { code: 108, rgb: [0.76, 0.68, 0.58] },
-        { code: 111, rgb: [0.80, 0.74, 0.66] }
-      ];
-
-      for (const f of feats) {
-        if (!f.geometry) continue;
-        const rawH = Number(f.properties?.render_height) || 22;
-        const rawMinH = Math.max(0, Number(f.properties?.render_min_height) || 0);
-        if (rawH <= rawMinH + 1.5) continue;
-        // Ground elevated building parts (rawMinH > 8) so no building part ever floats in mid-air
-        const minH = (rawMinH <= 8) ? rawMinH : 0;
-
-        const polys = f.geometry.type === "Polygon" ? [f.geometry.coordinates] :
-                      (f.geometry.type === "MultiPolygon" ? f.geometry.coordinates : []);
-
-        for (const poly of polys) {
-          const ring = poly[0];
-          if (!ring || ring.length < 4) continue;
-
-          const pts = [];
-          let cx = 0, cz = 0;
-          let minX = Infinity, maxX = -Infinity, minZ = Infinity, maxZ = -Infinity;
-          for (let i = 0; i < ring.length - 1; i++) {
-            const m = maplibregl.MercatorCoordinate.fromLngLat(ring[i], 0);
-            const vx = (m.x - originMerc.x) / scale;
-            const vz = (m.y - originMerc.y) / scale;
-            pts.push({ x: vx, z: vz });
-            cx += vx;
-            cz += vz;
-            if (vx < minX) minX = vx;
-            if (vx > maxX) maxX = vx;
-            if (vz < minZ) minZ = vz;
-            if (vz > maxZ) maxZ = vz;
-          }
-          if (pts.length < 3) continue;
-          cx /= pts.length;
-          cz /= pts.length;
-
-          // Transform (cx, cz) into cityGroup's NE 60° camera-aligned coordinates (inverse of rotation.y = -60°):
-          // localX: - is screen-left, + is screen-right; localZ: - is background, + is foreground toward camera
-          const localX = cx * 0.5 + cz * 0.8660254;
-          const localZ = -cx * 0.8660254 + cz * 0.5;
-
-          // Reserve the Hero Development Plot so Block 1, Terracotta Podium, Resort Grounds & AXA Tower stand cleanly
-          if (localX > -145 && localX < 118 && localZ > -72 && localZ < 85) continue;
-          // Also reserve the immediate spot of the Foreground Terracotta Setback Tower (localX ~ -58, localZ ~ 192)
-          if (Math.hypot(localX + 58, localZ - 192) < 34) continue;
-
-          const key = `${Math.round(cx * 0.25)}_${Math.round(cz * 0.25)}_${Math.round(rawH)}`;
-          if (seen.has(key)) continue;
-          seen.add(key);
-
-          const spanX = maxX - minX;
-          const spanZ = maxZ - minZ;
-          if ((spanX > 220 || spanZ > 220) && rawH < 14) continue;
-
-          const hash = Math.abs(Math.round(cx * 1.37 + cz * 2.19));
-          let h = rawH;
-          if (localX > -88 && localX < 175 && localZ >= 85 && localZ < 340) {
-            // Keep foreground sightline in front of Block 1, Podium & Resort Pool at low-rise campus height (14..21m) like haio.sg
-            h = 14 + (hash % 8);
-          } else if (h <= 12 && minH === 0 && spanX > 12 && spanZ > 12 && spanX < 95 && spanZ < 95) {
-            h = 28 + (hash % 68);
-          } else if (Math.abs(h - 45) < 8 && spanX < 46 && spanZ < 46) {
-            // Vary uniform mid-rise row blocks (e.g. Bay Square) so they form an articulated stepped skyline
-            h = 32 + (hash % 54);
-          } else if (h < 28 && minH === 0 && spanX > 18 && spanZ > 18 && (hash % 3 !== 0)) {
-            h = h * 1.55;
-          }
-
-          let styleCode = 800;
-          let accentRgb = [0.76, 0.72, 0.65];
-          if (h < 16 && spanX < 28 && spanZ < 28) {
-            styleCode = 630 + (hash % 14);
-            accentRgb = [0.86, 0.82, 0.76];
-          } else if (h < 28 && (spanX > 42 || spanZ > 42)) {
-            styleCode = 300 + (hash % 3);
-            accentRgb = [0.80, 0.75, 0.68];
-          } else {
-            const pick = stylePalette[hash % stylePalette.length];
-            styleCode = pick.code;
-            accentRgb = pick.rgb;
-          }
-
-          const roofKind = 1 + (hash % 5);
-          if (h >= 34 && minH === 0 && spanX > 14 && spanZ > 14) {
-            // Extrude main shaft + articulated setback upper crown tier so OSM buildings never look like flat boxes
-            const shaftTop = Math.round(h * 0.84);
-            appendHaioBuildingToBuffers(wb, rb, pts, 0, shaftTop, styleCode, accentRgb, 5, hash);
-            const crownPts = pts.map(p => ({
-              x: cx + (p.x - cx) * 0.74,
-              z: cz + (p.z - cz) * 0.74
-            }));
-            appendHaioBuildingToBuffers(wb, rb, crownPts, shaftTop, h, styleCode, accentRgb, roofKind, hash + 1);
-          } else {
-            appendHaioBuildingToBuffers(wb, rb, pts, minH, h, styleCode, accentRgb, roofKind, hash);
-          }
-        }
-      }
-
-      // Also build articulated 3-tier skyscraper clusters at all other 36 active UAE Construction Projects & Sub-Clusters
-      const allSites = [
-        ...DATA.projects.map(p => ({ id: p.project_id, coords: parseCoord(p.coordinates), h: 96 })),
-        ...DATA.subdevs.map(s => ({ id: s.subdev_id, coords: [s.latitude, s.longitude], h: 78 }))
-      ];
-      allSites.forEach((site, sIdx) => {
-        if (site.id === selected3DProjectId) return;
-        const [sLat, sLon] = site.coords;
-        const sm = maplibregl.MercatorCoordinate.fromLngLat([sLon, sLat], 0);
-        const sx = (sm.x - originMerc.x) / scale;
-        const sz = (sm.y - originMerc.y) / scale;
-        const sLocalX = sx * 0.5 + sz * 0.8660254;
-        const sLocalZ = -sx * 0.8660254 + sz * 0.5;
-        if (Math.hypot(sx, sz) > 38000 || Math.hypot(sx, sz) < 280) return;
-        if (sLocalX > -150 && sLocalX < 190 && sLocalZ > -85 && sLocalZ < 360) return;
-
-        const pick1 = stylePalette[sIdx % stylePalette.length];
-        const pick2 = stylePalette[(sIdx + 3) % stylePalette.length];
-        const pick3 = stylePalette[(sIdx + 6) % stylePalette.length];
-
-        appendMultiTierTowerToBuffers(wb, rb, {
-          x: sx - 14, z: sz, w: 28, d: 24, h: site.h * 1.15, rot: 0.15,
-          styleCode: 100 + (sIdx % 12), accentRgb: [0.86, 0.82, 0.75], variant: sIdx, shapeKind: 1
-        });
-        appendMultiTierTowerToBuffers(wb, rb, {
-          x: sx + 18, z: sz - 10, w: 24, d: 22, h: site.h * 0.96, rot: -0.12,
-          styleCode: pick1.code, accentRgb: pick1.rgb, variant: sIdx + 1, shapeKind: 0
-        });
-        appendMultiTierTowerToBuffers(wb, rb, {
-          x: sx - 54, z: sz - 38, w: 32, d: 28, h: site.h * 1.32, rot: 0.22,
-          styleCode: pick2.code, accentRgb: pick2.rgb, variant: sIdx + 2, shapeKind: 3
-        });
-        appendMultiTierTowerToBuffers(wb, rb, {
-          x: sx + 58, z: sz + 34, w: 30, d: 26, h: site.h * 1.18, rot: -0.18,
-          styleCode: pick3.code, accentRgb: pick3.rgb, variant: sIdx + 3, shapeKind: 2
-        });
-      });
-
-      if (three3DLayer.osmCityGroup) {
-        three3DLayer.scene.remove(three3DLayer.osmCityGroup);
-      }
-      const osmGroup = new THREE.Group();
-      const osmWallMesh = buildHaioWallMesh(wb);
-      if (osmWallMesh) osmGroup.add(osmWallMesh);
-      const osmRoofMesh = buildHaioRoofMesh(rb);
-      if (osmRoofMesh) osmGroup.add(osmRoofMesh);
-
-      three3DLayer.osmCityGroup = osmGroup;
-      three3DLayer.scene.add(osmGroup);
-      map3d.triggerRepaint();
-    }
-
-    // Updates 3D Sun direction, warmth & shadow angle dynamically when user switches AM / Midday / PM / Night
-    function sync3DSunLighting(windowStr) {
-      if (!three3DLayer || !three3DLayer.sunLight || !three3DLayer.hemiLight) return;
-      const w = String(windowStr || activeWindow || "").toLowerCase();
-      if (w.includes("morning") || w.includes("am")) {
-        three3DLayer.sunLight.position.set(260, 290, 140);
-        three3DLayer.sunLight.color.setHex(0xfff4d6);
-        three3DLayer.sunLight.intensity = 1.65;
-        three3DLayer.hemiLight.intensity = 0.95;
-      } else if (w.includes("midday")) {
-        three3DLayer.sunLight.position.set(45, 420, 95);
-        three3DLayer.sunLight.color.setHex(0xffffff);
-        three3DLayer.sunLight.intensity = 1.75;
-        three3DLayer.hemiLight.intensity = 1.05;
-      } else if (w.includes("night")) {
-        three3DLayer.sunLight.position.set(-180, 260, -140);
-        three3DLayer.sunLight.color.setHex(0x93c5fd);
-        three3DLayer.sunLight.intensity = 0.95;
-        three3DLayer.hemiLight.intensity = 0.68;
-      } else {
-        // Evening Peak (Golden-Hour Sun from West/Northwest)
-        three3DLayer.sunLight.position.set(-240, 280, 210);
-        three3DLayer.sunLight.color.setHex(0xffedd5);
-        three3DLayer.sunLight.intensity = 1.68;
-        three3DLayer.hemiLight.intensity = 0.92;
-      }
+    function scheduleOsmCityRebuild() {}
+    function sync3DSunLighting() {
       if (map3d) map3d.triggerRepaint();
     }
 
     function createPhotorealistic3DCustomLayer() {
+      const clipVecs = HAIO_CLIP_RING_LONLAT.slice(0, 16).map(([ln, lt]) => {
+        const [ex, ey] = haioLonLatToTileEnu(ln, lt);
+        return new THREE.Vector2(ex, ey);
+      });
+      while (clipVecs.length < 16) clipVecs.push(new THREE.Vector2(0, 0));
+
+      const gtUniforms = {
+        gtRing: { value: clipVecs },
+        gtN: { value: Math.min(16, HAIO_CLIP_RING_LONLAT.length) },
+        gtAbove: { value: 1.5 }
+      };
+
       const layer = {
         id: "haio-photoreal-3d-layer",
         type: "custom",
         renderingMode: "3d",
         originLonLat: [55.2798, 25.1844],
-        heroRoofLocalVec: new THREE.Vector3(-36, 85, 4),
+        groundM: HAIO_DEFAULT_GROUND_M,
+        calibratedGround: false,
+        heroRoofLocalVec: new THREE.Vector3(-1.2, -3.5, 45.2),
         onAdd: function (mapInstance, gl) {
           this.map = mapInstance;
-          this.camera = new THREE.Camera();
           this.scene = new THREE.Scene();
-
-          // Pillar 1B: haio.sg's Hemisphere + Directional Sun with PCFSoftShadowMap + Shadow Ground Plane
-          const hemiLight = new THREE.HemisphereLight(0xf3f7ff, 0xd8cfc2, 0.95);
-          hemiLight.position.set(0, 400, 0);
-          this.scene.add(hemiLight);
-          this.hemiLight = hemiLight;
-
-          const sunLight = new THREE.DirectionalLight(0xfff5e4, 1.68);
-          sunLight.position.set(-220, 340, 210);
-          sunLight.castShadow = true;
-          sunLight.shadow.mapSize.set(2048, 2048);
-          sunLight.shadow.camera.near = 10;
-          sunLight.shadow.camera.far = 1400;
-          sunLight.shadow.camera.left = -620;
-          sunLight.shadow.camera.right = 620;
-          sunLight.shadow.camera.top = 620;
-          sunLight.shadow.camera.bottom = -620;
-          sunLight.shadow.bias = -0.00035;
-          sunLight.shadow.normalBias = 0.45;
-          this.scene.add(sunLight);
-          this.scene.add(sunLight.target);
-          this.sunLight = sunLight;
-
-          const fillLight = new THREE.DirectionalLight(0xdbeafe, 0.52);
-          fillLight.position.set(220, 190, -180);
-          this.scene.add(fillLight);
-
-          // Transparent Shadow-Receiving Ground Plane so 3D towers cast crisp real-time sun shadows onto satellite earth
-          const groundShadowGeo = new THREE.PlaneGeometry(2400, 2400);
-          const groundShadowMat = new THREE.ShadowMaterial({ opacity: 0.34, depthWrite: false });
-          const groundShadowMesh = new THREE.Mesh(groundShadowGeo, groundShadowMat);
-          groundShadowMesh.rotation.x = -Math.PI / 2;
-          groundShadowMesh.position.y = 0.08;
-          groundShadowMesh.receiveShadow = true;
-          this.scene.add(groundShadowMesh);
+          this.renderCamera = new THREE.Camera();
+          this.cullCamera = new THREE.PerspectiveCamera(40, 1, 1, 200000);
+          this.eulerTmp = new THREE.Euler();
+          this.mat4Tmp = new THREE.Matrix4();
+          this.localScaleMat = new THREE.Matrix4();
 
           this.renderer = new THREE.WebGLRenderer({
             canvas: mapInstance.getCanvas(),
@@ -4396,50 +2942,154 @@ float hdbCov(float x, float a, float b, float p) {
             antialias: true
           });
           this.renderer.autoClear = false;
-          this.renderer.shadowMap.enabled = true;
-          this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-          // Build & attach haio.sg's PMREM HDR Sky & Area-Light Environment Map
-          const envTex = buildHaioEnvMap(this.renderer, [0.35, 0.93]);
-          if (envTex) {
-            this.scene.environment = envTex;
-          }
+          const tilesetUrl = new URL("./tiles3d/tileset.json", window.location.href).href;
+          const tiles = new window.TilesRenderer(tilesetUrl);
+          tiles.errorTarget = 4;
+          tiles.maxDepth = 24;
+          tiles.downloadQueue.maxJobs = 6;
+          tiles.parseQueue.maxJobs = 6;
+
+          tiles.group.matrixAutoUpdate = false;
+          tiles.group.matrix.fromArray(
+            haioLocalEnuToEcefArray(HAIO_TILE_ORIGIN[0], HAIO_TILE_ORIGIN[1], this.groundM)
+          ).invert();
+          tiles.group.updateMatrixWorld(true);
+
+          this.scene.add(tiles.group);
+          tiles.setCamera(this.cullCamera);
+          this.tiles = tiles;
+
+          const trigger = () => {
+            if (this.map) this.map.triggerRepaint();
+          };
+          tiles.addEventListener("needs-update", trigger);
+          tiles.addEventListener("needs-render", trigger);
+          tiles.addEventListener("load-model", (ev) => {
+            if (ev.scene) {
+              ev.scene.traverse((obj) => {
+                if (obj.material && gtUniforms.gtN.value && !obj.material.userData.gtClip) {
+                  const m = obj.material;
+                  m.userData.gtClip = true;
+                  m.customProgramCacheKey = () => "gt-clip";
+                  m.onBeforeCompile = (shader) => {
+                    Object.assign(shader.uniforms, gtUniforms);
+                    shader.vertexShader = "varying vec3 vGtW;\n" + shader.vertexShader.replace(
+                      "#include <project_vertex>",
+                      "#include <project_vertex>\nvGtW = (modelMatrix * vec4(transformed, 1.0)).xyz;"
+                    );
+                    shader.fragmentShader = "varying vec3 vGtW;\nuniform vec2 gtRing[16];\nuniform int gtN;\nuniform float gtAbove;\n" + shader.fragmentShader.replace(
+                      "void main() {",
+                      `void main() {
+  if (vGtW.z > gtAbove) {
+    bool inside = false;
+    for (int i = 0, j = 15; i < 16; j = i++) {
+      if (i >= gtN) break;
+      vec2 a = gtRing[i], b = gtRing[j == 15 ? gtN - 1 : j];
+      if ((a.y > vGtW.y) != (b.y > vGtW.y) && vGtW.x < (b.x - a.x) * (vGtW.y - a.y) / (b.y - a.y) + a.x) inside = !inside;
+    }
+    if (inside) discard;
+  }`
+                    );
+                  };
+                  m.needsUpdate = true;
+                }
+              });
+            }
+            trigger();
+          });
 
           rebuildThreeHeroScene();
-          sync3DSunLighting(activeWindow);
+          trigger();
+        },
+        groundAt: function (ex, ey) {
+          if (!this.tiles) return null;
+          const rc = new THREE.Raycaster(new THREE.Vector3(ex, ey, 2000), new THREE.Vector3(0, 0, -1));
+          const hit = rc.intersectObject(this.tiles.group, true)[0];
+          return hit ? hit.point.z : null;
+        },
+        calibrateGroundIfReady: function () {
+          if (this.calibratedGround || !this.tiles) return;
+          const st = this.tiles.stats;
+          if (!st || st.visible < 12 || (st.queued + st.downloading + st.parsing) > 0) return;
+          this.calibratedGround = true;
+          const samples = [];
+          for (const rad of [70, 110, 160]) {
+            for (let k = 0; k < 16; k++) {
+              const ang = (k * Math.PI) / 8;
+              const hz = this.groundAt(Math.cos(ang) * rad, Math.sin(ang) * rad);
+              if (hz !== null && hz > -60 && hz < 40) samples.push(hz);
+            }
+          }
+          if (samples.length >= 6) {
+            samples.sort((a, b) => a - b);
+            const q20 = samples[Math.floor(samples.length * 0.2)];
+            this.groundM = HAIO_DEFAULT_GROUND_M + q20;
+            this.tiles.group.matrix.fromArray(
+              haioLocalEnuToEcefArray(HAIO_TILE_ORIGIN[0], HAIO_TILE_ORIGIN[1], this.groundM)
+            ).invert();
+            this.tiles.group.updateMatrixWorld(true);
+          }
         },
         render: function (gl, matrix) {
-          if (!is3DBlocksEnabled || !this.scene || !this.renderer) return;
+          if (!is3DBlocksEnabled || !this.renderer || !this.tiles || !this.scene) return;
           const zNow = this.map.getZoom();
           const calloutEl = document.getElementById("hero3DRoofCallout");
-          if (zNow < 11.2) {
+          if (zNow < 13.8) {
             if (calloutEl) calloutEl.style.display = "none";
             return;
           }
 
-          const merc = maplibregl.MercatorCoordinate.fromLngLat(this.originLonLat, 0);
-          const scale = merc.meterInMercatorCoordinateUnits();
+          const rawMat = (!Array.isArray(matrix) && matrix?.defaultProjectionData?.mainMatrix) || matrix;
+          const p0 = haioProjectMerc(this.originLonLat[0], this.originLonLat[1]);
+          const h0 = 1 / (HAIO_EARTH_CIRC * Math.cos((this.originLonLat[1] * Math.PI) / 180));
+          this.localScaleMat.makeTranslation(p0[0], p0[1], 0).scale(new THREE.Vector3(h0, -h0, h0));
 
-          const rotX = new THREE.Matrix4().makeRotationAxis(new THREE.Vector3(1, 0, 0), Math.PI / 2);
-          const m = new THREE.Matrix4().fromArray(matrix);
-          const l = new THREE.Matrix4()
-            .makeTranslation(merc.x, merc.y, merc.z)
-            .scale(new THREE.Vector3(scale, -scale, scale))
-            .multiply(rotX);
+          this.renderCamera.projectionMatrix.copy(this.mat4Tmp.fromArray(rawMat).multiply(this.localScaleMat));
+          this.renderCamera.projectionMatrixInverse.copy(this.renderCamera.projectionMatrix).invert();
 
-          this.camera.projectionMatrix = m.multiply(l);
+          const canvas = this.map.getCanvas();
+          const center = this.map.getCenter();
+          const fovDeg = typeof this.map.getVerticalFieldOfView === "function"
+            ? this.map.getVerticalFieldOfView()
+            : (this.map.transform?.fov || 36.87);
+          const pitchRad = (this.map.getPitch() * Math.PI) / 180;
+          const bearingRad = (this.map.getBearing() * Math.PI) / 180;
+          const pxPerMeter = (512 * Math.pow(2, zNow)) / (HAIO_EARTH_CIRC * Math.cos((center.lat * Math.PI) / 180));
+          const camDistM = (0.5 / Math.tan((fovDeg * Math.PI) / 360)) * (canvas.clientHeight / pxPerMeter);
 
-          // Clear depth buffer so Three.js photorealistic 3D buildings cleanly occlude underlying flat layers
-          gl.clear(gl.DEPTH_BUFFER_BIT);
+          const cMerc = haioProjectMerc(center.lng, center.lat);
+          const cxEnu = (cMerc[0] - p0[0]) / h0;
+          const cyEnu = -(cMerc[1] - p0[1]) / h0;
+          const horizDist = Math.sin(pitchRad) * camDistM;
+
+          this.cullCamera.position.set(
+            cxEnu - Math.sin(bearingRad) * horizDist,
+            cyEnu - Math.cos(bearingRad) * horizDist,
+            Math.cos(pitchRad) * camDistM
+          );
+          this.cullCamera.quaternion.setFromEuler(this.eulerTmp.set(pitchRad, 0, -bearingRad, "ZYX"));
+          this.cullCamera.aspect = canvas.clientWidth / Math.max(1, canvas.clientHeight);
+          this.cullCamera.fov = 1.25 * fovDeg;
+          this.cullCamera.updateProjectionMatrix();
+          this.cullCamera.updateMatrixWorld(true);
+
+          this.tiles.setResolution(this.cullCamera, canvas.clientWidth, canvas.clientHeight);
+          this.tiles.update();
+          this.calibrateGroundIfReady();
+
           this.renderer.resetState();
-          this.renderer.render(this.scene, this.camera);
+          gl.enable(gl.DEPTH_TEST);
+          gl.depthFunc(gl.LEQUAL);
+          gl.depthMask(true);
+          gl.clear(gl.DEPTH_BUFFER_BIT);
+          this.renderer.setViewport(0, 0, gl.drawingBufferWidth, gl.drawingBufferHeight);
+          this.renderer.render(this.scene, this.renderCamera);
+          this.renderer.resetState();
 
-          // Project the exact 3D roof coordinate of the Hero Tower ("Block 1 · 2 stacks") onto screen pixels
-          if (calloutEl && this.cityGroup && zNow >= 14.5) {
-            const worldRoof = this.heroRoofLocalVec.clone().applyMatrix4(this.cityGroup.matrixWorld);
-            const ndc = worldRoof.applyMatrix4(this.camera.projectionMatrix);
+          if (calloutEl && zNow >= 14.5) {
+            const ndc = this.heroRoofLocalVec.clone().applyMatrix4(this.renderCamera.projectionMatrix);
             if (ndc.z >= -1 && ndc.z <= 1) {
-              const canvas = this.map.getCanvas();
               const px = (ndc.x * 0.5 + 0.5) * canvas.clientWidth;
               const py = (-ndc.y * 0.5 + 0.5) * canvas.clientHeight;
               calloutEl.style.transform = `translate3d(${Math.round(px)}px, ${Math.round(py)}px, 0) translate(-50%, -100%)`;
@@ -4464,12 +3114,12 @@ float hdbCov(float x, float a, float b, float p) {
 
       map3d = new maplibregl.Map({
         container: "map3dCanvas",
-        center: [initLon, initLat],
-        zoom: window.innerWidth <= 768 ? 15.6 : 16.25,
+        center: [initLon + 0.00030, initLat - 0.00016],
+        zoom: window.innerWidth <= 768 ? 15.9 : 16.72,
         pitch: 58,
         bearing: 60,
         minZoom: 8.5,
-        maxZoom: 17.6,
+        maxZoom: 17.8,
         maxBounds: [[51.0, 22.4], [56.8, 26.5]],
         antialias: true,
         attributionControl: false,
@@ -4520,13 +3170,13 @@ float hdbCov(float x, float a, float b, float p) {
             {
               id: "bg-dark-layer",
               type: "background",
-              paint: { "background-color": "#0b1320" }
+              paint: { "background-color": "#dfe8f2" }
             },
             {
               id: "sat-raster-layer",
               type: "raster",
               source: "sat-tiles",
-              layout: { visibility: "visible" },
+              layout: { visibility: "none" },
               paint: { "raster-opacity": 1.0, "raster-contrast": 0.14, "raster-saturation": 0.16 }
             },
             {
@@ -4559,7 +3209,7 @@ float hdbCov(float x, float a, float b, float p) {
               id: "projects-zone-fill-3d",
               type: "fill",
               source: "projects-zones-3d",
-              maxzoom: 14.5,
+              maxzoom: 13.8,
               paint: {
                 "fill-color": ["get", "color"],
                 "fill-opacity": ["get", "fillOpacity"]
@@ -4569,7 +3219,7 @@ float hdbCov(float x, float a, float b, float p) {
               id: "projects-zone-line-3d",
               type: "line",
               source: "projects-zones-3d",
-              maxzoom: 14.5,
+              maxzoom: 13.8,
               paint: {
                 "line-color": ["get", "color"],
                 "line-width": ["get", "lineWidth"],
@@ -4580,6 +3230,7 @@ float hdbCov(float x, float a, float b, float p) {
               id: "roads-casing-3d",
               type: "line",
               source: "roads-3d",
+              maxzoom: 13.8,
               layout: {
                 "line-cap": "round",
                 "line-join": "round"
@@ -4589,8 +3240,7 @@ float hdbCov(float x, float a, float b, float p) {
                 "line-width": [
                   "interpolate", ["exponential", 1.35], ["zoom"],
                   9, ["*", ["get", "casingWidth"], 0.75],
-                  13, ["*", ["get", "casingWidth"], 1.15],
-                  16.5, ["*", ["get", "casingWidth"], 1.85]
+                  13, ["*", ["get", "casingWidth"], 1.15]
                 ],
                 "line-opacity": 0.86
               }
@@ -4599,6 +3249,7 @@ float hdbCov(float x, float a, float b, float p) {
               id: "roads-traffic-3d",
               type: "line",
               source: "roads-3d",
+              maxzoom: 13.8,
               layout: {
                 "line-cap": "round",
                 "line-join": "round"
@@ -4608,8 +3259,7 @@ float hdbCov(float x, float a, float b, float p) {
                 "line-width": [
                   "interpolate", ["exponential", 1.35], ["zoom"],
                   9, ["*", ["get", "trafficWidth"], 0.75],
-                  13, ["*", ["get", "trafficWidth"], 1.15],
-                  16.5, ["*", ["get", "trafficWidth"], 1.85]
+                  13, ["*", ["get", "trafficWidth"], 1.15]
                 ],
                 "line-opacity": 0.94
               }
@@ -4618,7 +3268,7 @@ float hdbCov(float x, float a, float b, float p) {
               id: "impacts-line-3d",
               type: "line",
               source: "impacts-3d",
-              maxzoom: 14.8,
+              maxzoom: 13.8,
               paint: {
                 "line-color": "#fbbf24",
                 "line-width": 2.2,
@@ -4632,26 +3282,14 @@ float hdbCov(float x, float a, float b, float p) {
               source: "openmaptiles",
               "source-layer": "building",
               minzoom: 12.0,
+              maxzoom: 13.8,
               filter: ["!", ["has", "hide_3d"]],
               paint: {
                 "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
                 "fill-extrusion-height": ["coalesce", ["get", "render_height"], 16],
-                "fill-extrusion-color": [
-                  "step",
-                  ["coalesce", ["get", "render_height"], 16],
-                  "#dcd6cc",
-                  22, "#c8bfb2",
-                  48, "#8c624c",
-                  95, "#475569",
-                  160, "#334155",
-                  240, "#cfc8bc"
-                ],
+                "fill-extrusion-color": "#dcd6cc",
                 "fill-extrusion-vertical-gradient": true,
-                "fill-extrusion-opacity": [
-                  "interpolate", ["linear"], ["zoom"],
-                  12.0, 0.88,
-                  13.5, 0.005
-                ]
+                "fill-extrusion-opacity": 0.85
               }
             },
             {
@@ -4659,13 +3297,13 @@ float hdbCov(float x, float a, float b, float p) {
               type: "symbol",
               source: "openmaptiles",
               "source-layer": "transportation_name",
-              minzoom: 12,
-              maxzoom: 15.2,
+              minzoom: 11,
+              maxzoom: 13.8,
               layout: {
                 "symbol-placement": "line",
                 "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
                 "text-font": ["Noto Sans Regular"],
-                "text-size": ["interpolate", ["linear"], ["zoom"], 12, 10, 15, 12]
+                "text-size": 11
               },
               paint: {
                 "text-color": "#f8fafc",
@@ -4679,11 +3317,11 @@ float hdbCov(float x, float a, float b, float p) {
               source: "openmaptiles",
               "source-layer": "place",
               minzoom: 10,
-              maxzoom: 14.8,
+              maxzoom: 13.8,
               layout: {
                 "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
                 "text-font": ["Noto Sans Bold"],
-                "text-size": ["interpolate", ["linear"], ["zoom"], 10, 11, 14, 14]
+                "text-size": 12
               },
               paint: {
                 "text-color": "#ffffff",
@@ -4700,24 +3338,18 @@ float hdbCov(float x, float a, float b, float p) {
         updateCompassUI();
         if (map3d) map3d.triggerRepaint();
       });
-      map3d.on("moveend", scheduleOsmCityRebuild);
-      map3d.on("idle", scheduleOsmCityRebuild);
-      map3d.on("sourcedata", (e) => {
-        if (e.sourceId === "openmaptiles" && e.isSourceLoaded) {
-          scheduleOsmCityRebuild();
-        }
+      map3d.on("zoom", () => {
+        syncPhotorealistic3DVisibility();
       });
       map3d.on("zoomend", sync3DMapLayers);
 
       map3d.on("load", () => {
         map3dLoaded = true;
-        if (typeof THREE !== "undefined") {
-          map3d.addLayer(createPhotorealistic3DCustomLayer(), "osm-road-labels");
+        if (typeof THREE !== "undefined" && typeof window.TilesRenderer !== "undefined") {
+          map3d.addLayer(createPhotorealistic3DCustomLayer());
         }
+        syncPhotorealistic3DVisibility();
         sync3DMapLayers();
-        scheduleOsmCityRebuild();
-        setTimeout(scheduleOsmCityRebuild, 900);
-        setTimeout(scheduleOsmCityRebuild, 2200);
         updateCompassUI();
       });
 
@@ -4741,11 +3373,40 @@ float hdbCov(float x, float a, float b, float p) {
       });
     }
 
+    // Ensures zero overlapping between flat 2D satellite/GIS layers and the 4K Google Photorealistic 3D Tileset
+    function syncPhotorealistic3DVisibility() {
+      if (!map3d || !map3dLoaded) return;
+      const zNow = map3d.getZoom();
+      const inPhotoreal3D = (zNow >= 13.8 && is3DBlocksEnabled && currentBasemapMode === "sat");
+
+      if (map3d.getLayer("sat-raster-layer")) {
+        map3d.setLayoutProperty(
+          "sat-raster-layer",
+          "visibility",
+          (!inPhotoreal3D && currentBasemapMode === "sat") ? "visible" : "none"
+        );
+      }
+      if (map3d.getLayer("light-raster-layer")) {
+        map3d.setLayoutProperty(
+          "light-raster-layer",
+          "visibility",
+          (!inPhotoreal3D && currentBasemapMode === "light") ? "visible" : "none"
+        );
+      }
+      if (map3d.getLayer("bg-dark-layer")) {
+        map3d.setPaintProperty(
+          "bg-dark-layer",
+          "background-color",
+          inPhotoreal3D ? "#dfe8f2" : (currentBasemapMode === "dark" ? "#0b1320" : "#dfe8f2")
+        );
+      }
+    }
+
     function sync3DMapLayers() {
       if (!map3d || !map3dLoaded) return;
 
       rebuildThreeHeroScene();
-      sync3DSunLighting(activeWindow);
+      syncPhotorealistic3DVisibility();
 
       const emFilter = document.getElementById("emirateSelect") ? document.getElementById("emirateSelect").value : "ALL";
       const q = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
@@ -5051,8 +3712,8 @@ float hdbCov(float x, float a, float b, float p) {
         btnEl.classList.add("active");
       }
       if (map3d && map3dLoaded) {
-        map3d.setLayoutProperty("sat-raster-layer", "visibility", mode === "sat" ? "visible" : "none");
-        map3d.setLayoutProperty("light-raster-layer", "visibility", mode === "light" ? "visible" : "none");
+        syncPhotorealistic3DVisibility();
+        map3d.triggerRepaint();
       }
       const mc = document.getElementById("mapCanvas");
       if (mc) mc.classList.toggle("basemap-dark", mode === "dark" || !mode);
@@ -5553,9 +4214,9 @@ float hdbCov(float x, float a, float b, float p) {
       if (p && map3d) {
         const [lat, lon] = parseCoord(p.coordinates);
         map3d.flyTo({
-          center: [lon, lat],
-          zoom: active3DBlock === "ALL" ? 16.25 : 16.85,
-          pitch: 60,
+          center: [lon + 0.00030, lat - 0.00016],
+          zoom: active3DBlock === "ALL" ? 16.72 : 17.05,
+          pitch: 58,
           bearing: active3DBlock === "ALL" ? 60 : 48,
           duration: 900
         });
@@ -5580,7 +4241,7 @@ float hdbCov(float x, float a, float b, float p) {
 
       sync3DMapLayers();
       if (fly) {
-        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 15.6 : 16.25, 58, 60);
+        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 15.9 : 16.72, 58, 60);
         document.getElementById("hudScope").textContent = `${p.project_id}: ${p.project_name.split('(')[0].trim()}`;
       }
 
@@ -6360,7 +5021,18 @@ float hdbCov(float x, float a, float b, float p) {
       if (btnEl) btnEl.classList.add("active");
     }
 
-    window.addEventListener("DOMContentLoaded", initMap);
+    function bootHaioPlatform() {
+      if (window.__haioPlatformBooted) return;
+      if (!window.__haioVendorReady || typeof window.THREE === "undefined" || typeof window.TilesRenderer === "undefined") return;
+      window.__haioPlatformBooted = true;
+      initMap();
+    }
+    window.addEventListener("DOMContentLoaded", () => {
+      if (window.__haioVendorReady) bootHaioPlatform();
+    });
+    window.addEventListener("haio-vendor-ready", () => {
+      if (document.readyState !== "loading") bootHaioPlatform();
+    });
   </script>
 </body>
 </html>
