@@ -301,12 +301,21 @@ def main():
   <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" crossorigin=""/>
   <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin=""></script>
   <script type="module">
-    import * as THREE_NS from "./vendor/three-0.170.0/three.module.js";
-    import {{ TilesRenderer }} from "./vendor/3d-tiles-renderer-0.4.28/index.three.js";
-    window.THREE = Object.assign({{}}, THREE_NS);
-    window.TilesRenderer = TilesRenderer;
-    window.__haioVendorReady = true;
-    window.dispatchEvent(new CustomEvent("haio-vendor-ready"));
+    (async () => {{
+      try {{
+        const THREE_NS = await import("./vendor/three-0.170.0/three.module.js");
+        window.THREE = Object.assign({{}}, THREE_NS);
+      }} catch (localErr) {{
+        try {{
+          const THREE_CDN = await import("https://unpkg.com/three@0.170.0/build/three.module.js");
+          window.THREE = Object.assign({{}}, THREE_CDN);
+        }} catch (cdnErr) {{
+          console.warn("Three.js 3D architectural layer fallback to native MapLibre/2D:", cdnErr);
+        }}
+      }}
+      window.__haioVendorReady = true;
+      window.dispatchEvent(new CustomEvent("haio-vendor-ready"));
+    }})();
   </script>
   <style>
     :root {{
@@ -2067,19 +2076,33 @@ def main():
       }}
     }}
     @media print {{
-      .exec-header, .map-stage, .sidebar-right, .aw-sticky-bar button {{
+      .exec-header, .map-stage, .sidebar-right, .aw-sticky-bar button, .evidence-section {{
         display: none !important;
       }}
-      .workbench {{
+      html, body, .workbench {{
         height: auto !important;
+        min-height: 0 !important;
         overflow: visible !important;
         background: #ffffff !important;
+        color: #0f172a !important;
       }}
       .analytical-workspace {{
         display: block !important;
         position: static !important;
+        inset: auto !important;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
         background: #ffffff !important;
         overflow: visible !important;
+      }}
+      .aw-container, .aw-panel-card, .t2-table-wrap, div[style*="max-height"] {{
+        max-height: none !important;
+        overflow: visible !important;
+        break-inside: auto;
+      }}
+      .aw-kpi-card, .kv-row {{
+        break-inside: avoid;
       }}
     }}
   </style>
@@ -2207,7 +2230,7 @@ def main():
       </div>
 
       <!-- Photorealistic 3D Attribution & Explicit Procedural vs. Sourced Massing Disclosure Badge -->
-      <div id="photoreal3DAttribution" style="position:absolute; left:16px; bottom:62px; z-index:780; display:flex; align-items:center; gap:8px; pointer-events:none;">
+      <div id="photoreal3DAttribution" style="position:absolute; left:16px; bottom:96px; z-index:780; display:flex; align-items:center; gap:8px; pointer-events:none;">
         <div style="background:rgba(15,23,42,0.78); backdrop-filter:blur(8px); color:#f8fafc; padding:5px 11px; border-radius:8px; font-size:0.65rem; font-weight:600; line-height:1.3; text-align:left; border:1px solid rgba(255,255,255,0.16);">
           <strong style="font-size:0.72rem; display:block; color:#38bdf8;">4K Satellite · Dataset #05B Architectural 3D · Haio GLSL City</strong>
           <span>Selected Tower: Dataset #05B Floorplate &amp; Elevation Spec · City: OSM 3D + Rooftops</span>
@@ -2418,7 +2441,7 @@ def main():
         </div>
 
         <span id="hudTime" style="display:none;">Evening Peak (17:00–20:00)</span>
-        <span id="hudHgvStatus" style="display:none;">🚫 HGV Ban 17:00–20:00 (E11/E44/D61)</span>
+        <span id="hudHgvStatus" style="background:rgba(15,23,42,0.92); color:#fca5a5; border:1px solid #ef4444; padding:5px 10px; border-radius:999px; font-weight:700; font-size:0.70rem; box-shadow:0 4px 12px rgba(15,23,42,0.22);">🚫 HGV Ban 17:00–20:00 (E11/E44/D61)</span>
         <div style="display:none;">
           <button id="qpill-projects" onclick="quickToggle('projects', 'chk-L1', this)"></button>
           <button id="qpill-communities" onclick="quickToggle('communities', 'chk-L3', this)"></button>
@@ -2798,7 +2821,7 @@ def main():
           hgvBadge: "🚫 HGV Ban 06:30–08:30 (E11/E44/D61)",
           text: "🚫 HGVs Banned on E11/E44/D61 (06:30–08:30 AM Rush) — Commuter Queue Window",
           color: "#fca5a5",
-          hgvStyle: "background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem;",
+          hgvStyle: "background:rgba(15,23,42,0.92); color:#fca5a5; border:1px solid #ef4444; padding:5px 10px; border-radius:999px; font-weight:700; font-size:0.70rem; box-shadow:0 4px 12px rgba(15,23,42,0.22);",
           narrative: "Morning commuter wave toward Business Bay, DIFC & Dubai/Sharjah employment hubs. Heavy construction trucks are restricted on primary passenger arterials; commuter queues dominate Hessa St (29 km/h) and E311 Southbound (28 km/h)."
         };
       }
@@ -2808,7 +2831,7 @@ def main():
           hgvBadge: "🚛 HGV Haulage Active (08:30–16:30)",
           text: "🚛 ACTIVE HGV CONCRETE & REBAR HAULAGE WINDOW (08:30–16:30 Permitted)",
           color: "#fde68a",
-          hgvStyle: "background:rgba(245,158,11,0.24); color:#fde68a; border:1px solid #f59e0b; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem;",
+          hgvStyle: "background:rgba(15,23,42,0.92); color:#fde68a; border:1px solid #f59e0b; padding:5px 10px; border-radius:999px; font-weight:700; font-size:0.70rem; box-shadow:0 4px 12px rgba(15,23,42,0.22);",
           narrative: "Passenger commuter peaks subside (Hessa St rises to 48 km/h; Al Khail Rd rises to 78 km/h), while active daytime HGV concrete mixers, rebar trailers, and earthworks tippers operate across JVC, Business Bay, Creek Harbour & Dubai South."
         };
       }
@@ -2818,7 +2841,7 @@ def main():
           hgvBadge: "🌙 Night Concrete Pours (22:00–05:00)",
           text: "🌙 NIGHT MASS CONCRETE POUR & HEAVY FREIGHT WINDOW (22:00–05:00 Free-Flow)",
           color: "#6ee7b7",
-          hgvStyle: "background:rgba(16,185,129,0.22); color:#6ee7b7; border:1px solid #10b981; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem;",
+          hgvStyle: "background:rgba(15,23,42,0.92); color:#6ee7b7; border:1px solid #10b981; padding:5px 10px; border-radius:999px; font-weight:700; font-size:0.70rem; box-shadow:0 4px 12px rgba(15,23,42,0.22);",
           narrative: "Free-flow passenger conditions across all corridors (Hessa St 68 km/h; SZR 88 km/h; Al Khail 92 km/h). Continuous nocturnal raft-foundation concrete pours and oversized structural steel deliveries operate unimpeded."
         };
       }
@@ -2827,7 +2850,7 @@ def main():
         hgvBadge: "🚫 HGV Ban 17:00–20:00 (E11/E44/D61)",
         text: "🚫 HGVs Banned on E11/E44/D61 (17:00–20:00 PM Rush) — Peak Commuter Bottlenecks",
         color: "#fca5a5",
-        hgvStyle: "background:rgba(239,68,68,0.22); color:#fca5a5; border:1px solid #ef4444; padding:1px 6px; border-radius:4px; font-weight:700; font-size:0.68rem;",
+        hgvStyle: "background:rgba(15,23,42,0.92); color:#fca5a5; border:1px solid #ef4444; padding:5px 10px; border-radius:999px; font-weight:700; font-size:0.70rem; box-shadow:0 4px 12px rgba(15,23,42,0.22);",
         narrative: "Highest diurnal congestion across the network. Return commuter flows create severe bottlenecks on Hessa St West (25 km/h), JVC Circle Blvd (21 km/h), Financial Centre Rd (22 km/h), and SZR (44 km/h)."
       };
     }
@@ -2835,8 +2858,13 @@ def main():
     // =========================================================================
     // HAIO.SG-GRADE 3D ARCHITECTURAL MASSING, STACK & FLOOR ENGINE (MAPLIBRE GL)
     // =========================================================================
+    const IS_SAFARI_WEBKIT = (
+      /^((?!chrome|android).)*safari/i.test(navigator.userAgent || "") ||
+      (/AppleWebKit/.test(navigator.userAgent || "") && !/Chrome\/|Chromium\/|Edg\//.test(navigator.userAgent || ""))
+    );
     let map3d = null;
     let map3dLoaded = false;
+    let map3dContextLost = false;
     let map3dMarkers = [];
     let is3DBlocksEnabled = true;
     let currentCameraDim = "3D";
@@ -2981,6 +3009,19 @@ def main():
 
     // Generates Interactive Scaled Typical Floor Plan + Vertical Building Elevation Section SVG from Dataset #05B
     function buildArchitecturalBlueprintSvg(p, spec) {
+      if (spec.typology === "civic_infra_campus") {
+        const assetCat = p.project_category || p.project_type || "Civil & Civic Infrastructure";
+        return `
+          <div class="kv-row" style="margin:8px 0 10px; background:#f8fafc; border:1px dashed #cbd5e1;">
+            <div class="kv-lbl"><span class="badge-missing">Residential Floorplate Not Applicable · Engineering BIM/CAD Restricted</span></div>
+            <div class="kv-val">
+              <strong>${spec.pid}</strong> is classified under <strong>${assetCat}</strong>. Residential apartment stack schematics (4BR/5BR) do not apply.<br/>
+              • <strong>Published Functional Capacity / Scope:</strong> ${p.apartments_and_villas_count || "Civic Utility / Infrastructure Network"}<br/>
+              • <strong>Published Structural Envelope:</strong> ${p.floors_and_height || `${spec.storeys} structural levels`}
+            </div>
+          </div>
+        `;
+      }
       const arch = spec.arch || (DATA.arch_intel && DATA.arch_intel[spec.pid]) || null;
       const selBlk = active3DBlock === "ALL" ? spec.blocks[0] : (spec.blocks.find(b => b.id === active3DBlock) || spec.blocks[0]);
       const is4BrOnly = active3DShowMe === "4br";
@@ -3002,7 +3043,7 @@ def main():
         <div style="background:#0f172a; border:1px solid #1e293b; border-radius:12px; padding:10px; margin:8px 0 10px; color:#f8fafc;">
           <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:4px; margin-bottom:6px;">
             <span style="font-size:0.68rem; font-weight:800; letter-spacing:0.04em; color:#38bdf8; text-transform:uppercase;">
-              📐 Real Architectural Floorplate &amp; Elevation Section (${arch ? arch.arch_id : spec.pid})
+              📐 Illustrative Structural Floorplate &amp; Massing Schematic (${arch ? arch.arch_id : spec.pid})
             </span>
             <span style="font-size:0.65rem; background:rgba(16,185,129,0.18); color:#6ee7b7; border:1px solid rgba(16,185,129,0.4); padding:1px 6px; border-radius:999px; font-weight:700;">
               ${spec.plateSqm.toLocaleString()} m² Plate · ${spec.efficiencyPct}% Eff · ${spec.floorToFloorM}m F2F
@@ -3151,41 +3192,47 @@ def main():
       const features = [];
       const emFilter = document.getElementById("emirateSelect") ? document.getElementById("emirateSelect").value : "ALL";
       const q = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
+      const showProjs = document.getElementById("chk-L1")?.checked ?? true;
+      const showSubdevs = document.getElementById("chk-L2")?.checked ?? false;
 
-      DATA.projects.forEach(p => {
-        if (emFilter !== "ALL" && p.emirate !== emFilter) return;
-        if (q && !JSON.stringify(p).toLowerCase().includes(q)) return;
-        const [lat, lon] = parseCoord(p.coordinates);
-        const st = projectScaleStyle(p);
-        const isSel = (p.project_id === selected3DProjectId);
-        const radM = st.radius >= 11 ? 320 : (st.radius >= 8 ? 220 : 150);
+      if (showProjs) {
+        DATA.projects.forEach(p => {
+          if (emFilter !== "ALL" && p.emirate !== emFilter) return;
+          if (q && !JSON.stringify(p).toLowerCase().includes(q)) return;
+          const [lat, lon] = parseCoord(p.coordinates);
+          const st = projectScaleStyle(p);
+          const isSel = (p.project_id === selected3DProjectId);
+          const radM = st.radius >= 11 ? 320 : (st.radius >= 8 ? 220 : 150);
 
-        features.push({
-          type: "Feature",
-          properties: {
-            project_id: p.project_id,
-            color: isSel ? "#2563eb" : st.fillColor,
-            fillOpacity: isSel ? 0.28 : 0.16,
-            lineWidth: isSel ? 3.0 : 1.8
-          },
-          geometry: { type: "Polygon", coordinates: [makeSiteCircleRing(lon, lat, radM)] }
+          features.push({
+            type: "Feature",
+            properties: {
+              project_id: p.project_id,
+              color: isSel ? "#2563eb" : st.fillColor,
+              fillOpacity: isSel ? 0.28 : 0.16,
+              lineWidth: isSel ? 3.0 : 1.8
+            },
+            geometry: { type: "Polygon", coordinates: [makeSiteCircleRing(lon, lat, radM)] }
+          });
         });
-      });
+      }
 
-      DATA.subdevs.forEach(sd => {
-        if (emFilter !== "ALL" && sd.emirate !== emFilter) return;
-        if (q && !JSON.stringify(sd).toLowerCase().includes(q)) return;
-        features.push({
-          type: "Feature",
-          properties: {
-            project_id: sd.subdev_id,
-            color: "#a855f7",
-            fillOpacity: 0.18,
-            lineWidth: 1.8
-          },
-          geometry: { type: "Polygon", coordinates: [makeSiteCircleRing(sd.longitude, sd.latitude, 160)] }
+      if (showSubdevs) {
+        DATA.subdevs.forEach(sd => {
+          if (emFilter !== "ALL" && sd.emirate !== emFilter) return;
+          if (q && !JSON.stringify(sd).toLowerCase().includes(q)) return;
+          features.push({
+            type: "Feature",
+            properties: {
+              project_id: sd.subdev_id,
+              color: "#a855f7",
+              fillOpacity: 0.22,
+              lineWidth: 2.0
+            },
+            geometry: { type: "Polygon", coordinates: [makeSiteCircleRing(sd.longitude, sd.latitude, 175)] }
+          });
         });
-      });
+      }
 
       return { type: "FeatureCollection", features };
     }
@@ -3198,31 +3245,135 @@ def main():
     }
 
     function updateCompassUI() {
-      if (!map3d) return;
-      const { deg, label } = formatBearingCompass(map3d.getBearing());
       const lblEl = document.getElementById("compassLabel");
-      if (lblEl) lblEl.textContent = label;
       const svgEl = document.getElementById("compassSvg");
+      if (currentCameraDim === "2D" || !map3d) {
+        if (lblEl) lblEl.textContent = "N 0° (2D)";
+        if (svgEl) svgEl.style.transform = "rotate(0deg)";
+        return;
+      }
+      const { deg, label } = formatBearingCompass(map3d.getBearing());
+      if (lblEl) lblEl.textContent = label;
       if (svgEl) svgEl.style.transform = `rotate(${-deg}deg)`;
     }
 
     function orbitCameraStep() {
+      if (currentCameraDim === "2D") {
+        setCameraDimension("3D");
+      }
       if (!map3d) return;
       const nextBearing = (Math.round(map3d.getBearing() / 45) * 45 + 45) % 360;
       map3d.easeTo({ bearing: nextBearing, pitch: currentCameraDim === "3D" ? 60 : 0, duration: 650 });
     }
 
-    function setCameraDimension(dim) {
-      currentCameraDim = dim;
-      document.getElementById("btnDim2D").classList.toggle("active", dim === "2D");
-      document.getElementById("btnDim3D").classList.toggle("active", dim === "3D");
-      if (map3d) {
-        map3d.easeTo({
-          pitch: dim === "3D" ? 60 : 0,
-          bearing: dim === "3D" ? 60 : 0,
-          duration: 800
+    function ensureLeafletBaseTiles() {
+      if (!map) return;
+      if (baseTileLayer && map.hasLayer(baseTileLayer)) return;
+      if (baseTileLayer) {
+        try { map.removeLayer(baseTileLayer); } catch (_) {}
+      }
+      if (currentBasemapMode === "sat") {
+        const satScale = IS_SAFARI_WEBKIT ? "1" : "2";
+        baseTileLayer = L.tileLayer(`https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=${satScale}`, {
+          subdomains: ["0", "1", "2", "3"],
+          minZoom: 9, maxZoom: 19, noWrap: true
+        });
+      } else {
+        baseTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+          minZoom: 9, maxZoom: 19, noWrap: true, className: currentBasemapMode === "dark" ? "gis-dark-tiles" : ""
         });
       }
+      baseTileLayer.addTo(map);
+      baseTileLayer.bringToBack();
+    }
+
+    function setCameraDimension(dim) {
+      const stageEl = document.getElementById("mapStage");
+      const calloutEl = document.getElementById("hero3DRoofCallout");
+      const attrEl = document.getElementById("photoreal3DAttribution");
+
+      if (dim === "2D") {
+        currentCameraDim = "2D";
+        document.getElementById("btnDim2D")?.classList.add("active");
+        document.getElementById("btnDim3D")?.classList.remove("active");
+        if (stageEl) stageEl.classList.add("mode-2d-leaflet");
+        if (calloutEl) calloutEl.style.display = "none";
+        if (attrEl) attrEl.style.display = "none";
+
+        if (map) {
+          try { map.stop(); } catch (_) {}
+          map.invalidateSize({ pan: false });
+          if (map3d && !map3dContextLost) {
+            try {
+              const c = map3d.getCenter();
+              const z = Math.min(18, Math.max(9, Math.round(map3d.getZoom())));
+              map.setView([c.lat, c.lng], z, { animate: false, reset: true });
+            } catch (_) {}
+          }
+          ensureLeafletBaseTiles();
+          if (baseTileLayer && typeof baseTileLayer.redraw === "function") {
+            baseTileLayer.redraw();
+          }
+          setTimeout(() => {
+            if (map) {
+              map.invalidateSize({ pan: false });
+              if (baseTileLayer && typeof baseTileLayer.redraw === "function") baseTileLayer.redraw();
+            }
+          }, 90);
+        }
+        updateCompassUI();
+        return;
+      }
+
+      // Switching to 3D
+      if ((!map3d || map3dContextLost) && typeof maplibregl !== "undefined") {
+        try {
+          if (map3d) {
+            try { map3d.remove(); } catch (_) {}
+            map3d = null;
+            map3dLoaded = false;
+          }
+          map3dContextLost = false;
+          init3DMap();
+        } catch (err) {
+          console.warn("3D WebGL unavailable; staying on 2D GIS canvas:", err);
+        }
+      }
+
+      if (!map3d || map3dContextLost) {
+        // Graceful fallback if WebGL is completely disabled in browser
+        currentCameraDim = "2D";
+        document.getElementById("btnDim2D")?.classList.add("active");
+        document.getElementById("btnDim3D")?.classList.remove("active");
+        if (stageEl) stageEl.classList.add("mode-2d-leaflet");
+        ensureLeafletBaseTiles();
+        if (map) map.invalidateSize();
+        return;
+      }
+
+      currentCameraDim = "3D";
+      document.getElementById("btnDim2D")?.classList.remove("active");
+      document.getElementById("btnDim3D")?.classList.add("active");
+      if (stageEl) stageEl.classList.remove("mode-2d-leaflet");
+      if (attrEl) attrEl.style.display = "flex";
+
+      try {
+        if (map) {
+          const c2 = map.getCenter();
+          const z2 = Math.min(18.5, Math.max(9.0, map.getZoom()));
+          const c3 = map3d.getCenter();
+          if (Math.hypot(c2.lat - c3.lat, c2.lng - c3.lng) > 0.002) {
+            map3d.jumpTo({ center: [c2.lng, c2.lat], zoom: Math.max(z2, map3d.getZoom()) });
+          }
+        }
+        map3d.resize();
+        map3d.easeTo({
+          pitch: 58,
+          bearing: 60,
+          duration: 750
+        });
+      } catch (_) {}
+      updateCompassUI();
     }
 
     function toggle3DBlocksMassing() {
@@ -3274,7 +3425,13 @@ def main():
       function flyBothMaps(lat, lon, zoom, pitch = 58, bearing = 60) {
       const clampedZoom = Math.min(17.6, Math.max(9.0, zoom));
       if (map) {
-        map.flyTo([lat, lon], Math.min(18, Math.max(9, Math.round(clampedZoom))), { duration: 0.8 });
+        const z2 = Math.min(18, Math.max(9, Math.round(clampedZoom)));
+        if (currentCameraDim === "2D") {
+          map.flyTo([lat, lon], z2, { duration: 0.75 });
+        } else {
+          try { map.stop(); } catch (_) {}
+          map.setView([lat, lon], z2, { animate: false });
+        }
       }
       if (map3d) {
         const isClose3D = clampedZoom >= 15.2 && currentCameraDim === "3D";
@@ -3502,22 +3659,27 @@ def main():
       return t;
     }
 
-    function ensureHaioEnvironmentAndLights() {
+    function ensureHaioEnvironmentAndLights(inRenderPass = false) {
       if (!three3DLayer || !three3DLayer.scene || !three3DLayer.renderer) return;
-      if (three3DLayer.lightsInitialized) return;
-      three3DLayer.lightsInitialized = true;
+      if (!three3DLayer.lightsInitialized) {
+        three3DLayer.lightsInitialized = true;
 
-      const hemi = new THREE.HemisphereLight(0xf2f6fb, 0x7a7062, 0.56);
-      hemi.position.set(0, 0, 1);
-      three3DLayer.scene.add(hemi);
+        const hemi = new THREE.HemisphereLight(0xf2f6fb, 0x7a7062, IS_SAFARI_WEBKIT ? 0.72 : 0.56);
+        hemi.position.set(0, 0, 1);
+        three3DLayer.scene.add(hemi);
 
-      const sun = new THREE.DirectionalLight(0xfff5e8, 0.86);
-      sun.position.set(165, -145, 260);
-      three3DLayer.scene.add(sun);
+        const sun = new THREE.DirectionalLight(0xfff5e8, IS_SAFARI_WEBKIT ? 0.94 : 0.86);
+        sun.position.set(165, -145, 260);
+        three3DLayer.scene.add(sun);
 
-      const fill = new THREE.DirectionalLight(0xcfe2ff, 0.28);
-      fill.position.set(-140, 120, 150);
-      three3DLayer.scene.add(fill);
+        const fill = new THREE.DirectionalLight(0xcfe2ff, IS_SAFARI_WEBKIT ? 0.36 : 0.28);
+        fill.position.set(-140, 120, 150);
+        three3DLayer.scene.add(fill);
+      }
+
+      // Never allocate offscreen PMREM float render targets outside render() or on Safari/WebKit (prevents shared WebGL FBO corruption & GPU memory eviction)
+      if (!inRenderPass || IS_SAFARI_WEBKIT || three3DLayer.envInitialized) return;
+      three3DLayer.envInitialized = true;
 
       try {
         if (typeof THREE.PMREMGenerator !== "undefined") {
@@ -3547,6 +3709,7 @@ def main():
           three3DLayer.envRT = envRT;
           skyGeo.dispose();
           pmrem.dispose();
+          three3DLayer.renderer.resetState();
         }
       } catch (err) {
         // Fallback if PMREMGenerator is unavailable
@@ -4820,10 +4983,12 @@ def main():
         }
       }
 
-      // Sort by distance from project/camera center so nearest 950 buildings get haio.sg GLSL facades & 3D rooftops while outer buildings retain MapLibre native 3D fill-extrusion fallback
+      // Sort by distance from project/camera center so nearest buildings get haio.sg GLSL facades & 3D rooftops while outer buildings retain MapLibre native 3D fill-extrusion fallback
       candidates.sort((a, b) => a.distFromOrigin - b.distFromOrigin);
-      const maxBuildings = Math.min(950, candidates.length);
-      three3DLayer.osmCityTruncated = (candidates.length > 950);
+      const baseMaxBuildings = Math.min(950, candidates.length);
+      const cityCap = IS_SAFARI_WEBKIT ? 550 : 950;
+      const maxBuildings = Math.min(cityCap, baseMaxBuildings);
+      three3DLayer.osmCityTruncated = (candidates.length > cityCap);
       if (maxBuildings === 0) {
         three3DLayer.osmCityBuildingCount = 0;
         three3DLayer.osmCityTruncated = false;
@@ -5033,7 +5198,7 @@ def main():
           this.renderer = new THREE.WebGLRenderer({
             canvas: mapInstance.getCanvas(),
             context: gl,
-            antialias: true
+            antialias: !IS_SAFARI_WEBKIT
           });
           this.renderer.autoClear = false;
 
@@ -5048,9 +5213,12 @@ def main():
           disposeAllThreeGpuResources();
         },
         render: function (gl, matrix) {
-          if (!is3DBlocksEnabled || !this.renderer || !this.scene) return;
-          const zNow = this.map.getZoom();
           const calloutEl = document.getElementById("hero3DRoofCallout");
+          if (!is3DBlocksEnabled || currentCameraDim === "2D" || map3dContextLost || !this.renderer || !this.scene) {
+            if (calloutEl) calloutEl.style.display = "none";
+            return;
+          }
+          const zNow = this.map.getZoom();
           if (zNow < 13.8) {
             if (calloutEl) calloutEl.style.display = "none";
             return;
@@ -5065,6 +5233,7 @@ def main():
           this.renderCamera.projectionMatrixInverse.copy(this.renderCamera.projectionMatrix).invert();
 
           this.renderer.resetState();
+          ensureHaioEnvironmentAndLights(true);
           gl.enable(gl.DEPTH_TEST);
           gl.depthFunc(gl.LEQUAL);
           gl.depthMask(true);
@@ -5093,279 +5262,441 @@ def main():
       return layer;
     }
 
+    function attachThree3DLayerIfReady() {
+      if (!map3d || !map3dLoaded || map3dContextLost) return;
+      if (typeof THREE === "undefined") return;
+      if (!map3d.getLayer("haio-photoreal-3d-layer")) {
+        try {
+          map3d.addLayer(createPhotorealistic3DCustomLayer());
+          if (!is3DBlocksEnabled && map3d.getLayer("haio-photoreal-3d-layer")) {
+            map3d.setLayoutProperty("haio-photoreal-3d-layer", "visibility", "none");
+          }
+        } catch (err) {
+          console.warn("Three.js custom layer mount skipped:", err);
+        }
+      }
+    }
+
     function init3DMap() {
-      if (typeof maplibregl === "undefined") return;
+      if (typeof maplibregl === "undefined") {
+        setCameraDimension("2D");
+        return;
+      }
+      if (typeof maplibregl.supported === "function" && !maplibregl.supported()) {
+        map3dContextLost = true;
+        setCameraDimension("2D");
+        return;
+      }
 
       const defaultProj = DATA.projects.find(x => x.project_id === selected3DProjectId) || DATA.projects[0];
       const [initLat, initLon] = parseCoord(defaultProj.coordinates);
+      const satScale = IS_SAFARI_WEBKIT ? "1" : "2";
+      const safeDpr = Math.min(window.devicePixelRatio || 1, IS_SAFARI_WEBKIT ? 1.5 : 2.0);
 
-      map3d = new maplibregl.Map({
-        container: "map3dCanvas",
-        center: [initLon + 0.00014, initLat + 0.00004],
-        zoom: window.innerWidth <= 768 ? 15.8 : 16.55,
-        pitch: 58,
-        bearing: 60,
-        minZoom: 8.5,
-        maxZoom: 19.2,
-        maxBounds: [[51.0, 22.4], [56.8, 26.5]],
-        antialias: true,
-        attributionControl: false,
-        style: {
-          version: 8,
-          glyphs: "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
-          light: {
-            anchor: "viewport",
-            color: "#fffbeb",
-            intensity: 0.62,
-            position: [1.45, 215, 48]
-          },
-          sources: {
-            "sat-tiles": {
-              type: "raster",
-              tiles: [
-                "https://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=2",
-                "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=2",
-                "https://mt2.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=2",
-                "https://mt3.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=2"
-              ],
-              tileSize: 256,
-              maxzoom: 20
+      try {
+        map3d = new maplibregl.Map({
+          container: "map3dCanvas",
+          center: [initLon + 0.00014, initLat + 0.00004],
+          zoom: window.innerWidth <= 768 ? 15.8 : 16.55,
+          pitch: 58,
+          bearing: 60,
+          minZoom: 8.5,
+          maxZoom: 19.2,
+          maxBounds: [[51.0, 22.4], [56.8, 26.5]],
+          pixelRatio: safeDpr,
+          maxTileCacheSize: IS_SAFARI_WEBKIT ? 75 : 110,
+          antialias: !IS_SAFARI_WEBKIT,
+          attributionControl: false,
+          style: {
+            version: 8,
+            glyphs: "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
+            light: {
+              anchor: "viewport",
+              color: "#fffbeb",
+              intensity: 0.62,
+              position: [1.45, 215, 48]
             },
-            "light-tiles": {
-              type: "raster",
-              tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
-              tileSize: 256,
-              maxzoom: 19
-            },
-            "openmaptiles": {
-              type: "vector",
-              url: "https://tiles.openfreemap.org/planet"
-            },
-            "communities-3d": {
-              type: "geojson",
-              data: { type: "FeatureCollection", features: [] }
-            },
-            "roads-3d": {
-              type: "geojson",
-              data: { type: "FeatureCollection", features: [] }
-            },
-            "impacts-3d": {
-              type: "geojson",
-              data: { type: "FeatureCollection", features: [] }
-            },
-            "projects-zones-3d": {
-              type: "geojson",
-              data: buildProjectSiteZonesGeoJSON()
-            },
-            "projects-heat-source-3d": {
-              type: "geojson",
-              data: { type: "FeatureCollection", features: [] }
-            }
-          },
-          layers: [
-            {
-              id: "bg-dark-layer",
-              type: "background",
-              paint: { "background-color": "#dfe8f2" }
-            },
-            {
-              id: "sat-raster-layer",
-              type: "raster",
-              source: "sat-tiles",
-              layout: { visibility: "visible" },
-              paint: { "raster-opacity": 1.0, "raster-contrast": -0.06, "raster-brightness-min": 0.08, "raster-saturation": 0.04 }
-            },
-            {
-              id: "light-raster-layer",
-              type: "raster",
-              source: "light-tiles",
-              layout: { visibility: "none" },
-              paint: { "raster-opacity": 0.96 }
-            },
-            {
-              id: "communities-fill-3d",
-              type: "fill",
-              source: "communities-3d",
-              maxzoom: 14.5,
-              paint: {
-                "fill-color": ["get", "color"],
-                "fill-opacity": 0.08
-              }
-            },
-            {
-              id: "communities-line-3d",
-              type: "line",
-              source: "communities-3d",
-              maxzoom: 14.5,
-              paint: {
-                "line-color": ["get", "color"],
-                "line-width": 1.4,
-                "line-opacity": 0.65
-              }
-            },
-            {
-              id: "projects-heatmap-3d",
-              type: "heatmap",
-              source: "projects-heat-source-3d",
-              maxzoom: 16.5,
-              layout: { visibility: "none" },
-              paint: {
-                "heatmap-weight": ["coalesce", ["get", "heatWeight"], 0.6],
-                "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 8, 1.1, 14, 2.6],
-                "heatmap-color": [
-                  "interpolate", ["linear"], ["heatmap-density"],
-                  0, "rgba(37, 99, 235, 0)",
-                  0.2, "rgba(56, 189, 248, 0.55)",
-                  0.45, "rgba(52, 211, 153, 0.72)",
-                  0.7, "rgba(251, 191, 36, 0.85)",
-                  1.0, "rgba(239, 68, 68, 0.95)"
+            sources: {
+              "sat-tiles": {
+                type: "raster",
+                tiles: [
+                  `https://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=${satScale}`,
+                  `https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=${satScale}`,
+                  `https://mt2.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=${satScale}`,
+                  `https://mt3.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=${satScale}`
                 ],
-                "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 8, 22, 13, 44, 16, 62],
-                "heatmap-opacity": 0.86
-              }
-            },
-            {
-              id: "projects-zone-fill-3d",
-              type: "fill",
-              source: "projects-zones-3d",
-              maxzoom: 14.6,
-              paint: {
-                "fill-color": ["get", "color"],
-                "fill-opacity": ["get", "fillOpacity"]
-              }
-            },
-            {
-              id: "projects-zone-line-3d",
-              type: "line",
-              source: "projects-zones-3d",
-              maxzoom: 14.6,
-              paint: {
-                "line-color": ["get", "color"],
-                "line-width": ["get", "lineWidth"],
-                "line-opacity": 0.92
-              }
-            },
-            {
-              id: "roads-casing-3d",
-              type: "line",
-              source: "roads-3d",
-              maxzoom: 14.8,
-              layout: {
-                "line-cap": "round",
-                "line-join": "round"
+                tileSize: 256,
+                maxzoom: 20
               },
-              paint: {
-                "line-color": "#0f172a",
-                "line-width": [
-                  "interpolate", ["exponential", 1.35], ["zoom"],
-                  9, ["*", ["get", "casingWidth"], 0.75],
-                  14, ["*", ["get", "casingWidth"], 1.25]
-                ],
-                "line-opacity": 0.86
-              }
-            },
-            {
-              id: "roads-traffic-3d",
-              type: "line",
-              source: "roads-3d",
-              maxzoom: 14.8,
-              layout: {
-                "line-cap": "round",
-                "line-join": "round"
+              "light-tiles": {
+                type: "raster",
+                tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+                tileSize: 256,
+                maxzoom: 19
               },
-              paint: {
-                "line-color": ["get", "color"],
-                "line-width": [
-                  "interpolate", ["exponential", 1.35], ["zoom"],
-                  9, ["*", ["get", "trafficWidth"], 0.75],
-                  14, ["*", ["get", "trafficWidth"], 1.25]
-                ],
-                "line-opacity": 0.94
-              }
-            },
-            {
-              id: "impacts-line-3d",
-              type: "line",
-              source: "impacts-3d",
-              maxzoom: 14.8,
-              paint: {
-                "line-color": "#fbbf24",
-                "line-width": 2.2,
-                "line-dasharray": [2, 2],
-                "line-opacity": 0.88
-              }
-            },
-            {
-              id: "osm-3d-buildings",
-              type: "fill-extrusion",
-              source: "openmaptiles",
-              "source-layer": "building",
-              minzoom: 12.0,
-              maxzoom: 22.0,
-              filter: ["!", ["has", "hide_3d"]],
-              paint: {
-                "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
-                "fill-extrusion-height": ["coalesce", ["get", "render_height"], 16],
-                "fill-extrusion-color": [
-                  "interpolate", ["linear"], ["coalesce", ["get", "render_height"], 16],
-                  0, "#e8e3d9",
-                  40, "#dcd5c7",
-                  110, "#c5d2e0"
-                ],
-                "fill-extrusion-vertical-gradient": true,
-                "fill-extrusion-opacity": 0.82
-              }
-            },
-            {
-              id: "osm-road-labels",
-              type: "symbol",
-              source: "openmaptiles",
-              "source-layer": "transportation_name",
-              minzoom: 11,
-              maxzoom: 18.5,
-              layout: {
-                "symbol-placement": "line",
-                "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
-                "text-font": ["Noto Sans Regular"],
-                "text-size": 11
+              "openmaptiles": {
+                type: "vector",
+                url: "https://tiles.openfreemap.org/planet"
               },
-              paint: {
-                "text-color": "#f8fafc",
-                "text-halo-color": "#0f172a",
-                "text-halo-width": 1.6
+              "communities-3d": {
+                type: "geojson",
+                data: { type: "FeatureCollection", features: [] }
+              },
+              "roads-3d": {
+                type: "geojson",
+                data: { type: "FeatureCollection", features: [] }
+              },
+              "impacts-3d": {
+                type: "geojson",
+                data: { type: "FeatureCollection", features: [] }
+              },
+              "projects-zones-3d": {
+                type: "geojson",
+                data: buildProjectSiteZonesGeoJSON()
+              },
+              "projects-heat-source-3d": {
+                type: "geojson",
+                data: { type: "FeatureCollection", features: [] }
+              },
+              "intersections-3d": {
+                type: "geojson",
+                data: { type: "FeatureCollection", features: [] }
+              },
+              "incidents-3d": {
+                type: "geojson",
+                data: { type: "FeatureCollection", features: [] }
+              },
+              "transit-lines-3d": {
+                type: "geojson",
+                data: { type: "FeatureCollection", features: [] }
+              },
+              "transit-stations-3d": {
+                type: "geojson",
+                data: { type: "FeatureCollection", features: [] }
+              },
+              "facilities-3d": {
+                type: "geojson",
+                data: { type: "FeatureCollection", features: [] }
+              },
+              "parking-3d": {
+                type: "geojson",
+                data: { type: "FeatureCollection", features: [] }
               }
             },
-            {
-              id: "osm-place-labels",
-              type: "symbol",
-              source: "openmaptiles",
-              "source-layer": "place",
-              minzoom: 10,
-              maxzoom: 16.5,
-              layout: {
-                "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
-                "text-font": ["Noto Sans Bold"],
-                "text-size": 12
+            layers: [
+              {
+                id: "bg-dark-layer",
+                type: "background",
+                paint: { "background-color": "#dfe8f2" }
               },
-              paint: {
-                "text-color": "#ffffff",
-                "text-halo-color": "rgba(15, 23, 42, 0.9)",
-                "text-halo-width": 2.0
+              {
+                id: "sat-raster-layer",
+                type: "raster",
+                source: "sat-tiles",
+                layout: { visibility: "visible" },
+                paint: { "raster-opacity": 1.0, "raster-contrast": -0.06, "raster-brightness-min": 0.08, "raster-saturation": 0.04 }
+              },
+              {
+                id: "light-raster-layer",
+                type: "raster",
+                source: "light-tiles",
+                layout: { visibility: "none" },
+                paint: { "raster-opacity": 0.96 }
+              },
+              {
+                id: "communities-fill-3d",
+                type: "fill",
+                source: "communities-3d",
+                maxzoom: 22,
+                paint: {
+                  "fill-color": ["get", "color"],
+                  "fill-opacity": 0.08
+                }
+              },
+              {
+                id: "communities-line-3d",
+                type: "line",
+                source: "communities-3d",
+                maxzoom: 22,
+                paint: {
+                  "line-color": ["get", "color"],
+                  "line-width": 1.6,
+                  "line-opacity": 0.72
+                }
+              },
+              {
+                id: "projects-heatmap-3d",
+                type: "heatmap",
+                source: "projects-heat-source-3d",
+                maxzoom: 17.5,
+                layout: { visibility: "none" },
+                paint: {
+                  "heatmap-weight": ["coalesce", ["get", "heatWeight"], 0.6],
+                  "heatmap-intensity": ["interpolate", ["linear"], ["zoom"], 8, 1.1, 14, 2.6],
+                  "heatmap-color": [
+                    "interpolate", ["linear"], ["heatmap-density"],
+                    0, "rgba(37, 99, 235, 0)",
+                    0.2, "rgba(56, 189, 248, 0.55)",
+                    0.45, "rgba(52, 211, 153, 0.72)",
+                    0.7, "rgba(251, 191, 36, 0.85)",
+                    1.0, "rgba(239, 68, 68, 0.95)"
+                  ],
+                  "heatmap-radius": ["interpolate", ["linear"], ["zoom"], 8, 22, 13, 44, 16, 62],
+                  "heatmap-opacity": 0.86
+                }
+              },
+              {
+                id: "projects-zone-fill-3d",
+                type: "fill",
+                source: "projects-zones-3d",
+                maxzoom: 16.0,
+                paint: {
+                  "fill-color": ["get", "color"],
+                  "fill-opacity": ["get", "fillOpacity"]
+                }
+              },
+              {
+                id: "projects-zone-line-3d",
+                type: "line",
+                source: "projects-zones-3d",
+                maxzoom: 16.0,
+                paint: {
+                  "line-color": ["get", "color"],
+                  "line-width": ["get", "lineWidth"],
+                  "line-opacity": 0.92
+                }
+              },
+              {
+                id: "transit-line-3d",
+                type: "line",
+                source: "transit-lines-3d",
+                maxzoom: 22,
+                paint: {
+                  "line-color": ["get", "color"],
+                  "line-width": 3.0,
+                  "line-opacity": 0.88
+                }
+              },
+              {
+                id: "roads-casing-3d",
+                type: "line",
+                source: "roads-3d",
+                maxzoom: 22,
+                layout: {
+                  "line-cap": "round",
+                  "line-join": "round"
+                },
+                paint: {
+                  "line-color": "#0f172a",
+                  "line-width": [
+                    "interpolate", ["exponential", 1.35], ["zoom"],
+                    9, ["*", ["get", "casingWidth"], 0.75],
+                    14, ["*", ["get", "casingWidth"], 1.25],
+                    17, ["*", ["get", "casingWidth"], 1.45]
+                  ],
+                  "line-opacity": ["interpolate", ["linear"], ["zoom"], 14, 0.86, 16.5, 0.62]
+                }
+              },
+              {
+                id: "roads-traffic-3d",
+                type: "line",
+                source: "roads-3d",
+                maxzoom: 22,
+                layout: {
+                  "line-cap": "round",
+                  "line-join": "round"
+                },
+                paint: {
+                  "line-color": ["get", "color"],
+                  "line-width": [
+                    "interpolate", ["exponential", 1.35], ["zoom"],
+                    9, ["*", ["get", "trafficWidth"], 0.75],
+                    14, ["*", ["get", "trafficWidth"], 1.25],
+                    17, ["*", ["get", "trafficWidth"], 1.45]
+                  ],
+                  "line-opacity": ["interpolate", ["linear"], ["zoom"], 14, 0.94, 16.5, 0.74]
+                }
+              },
+              {
+                id: "impacts-line-3d",
+                type: "line",
+                source: "impacts-3d",
+                maxzoom: 22,
+                paint: {
+                  "line-color": "#fbbf24",
+                  "line-width": 2.4,
+                  "line-dasharray": [2, 2],
+                  "line-opacity": 0.90
+                }
+              },
+              {
+                id: "transit-station-3d",
+                type: "circle",
+                source: "transit-stations-3d",
+                maxzoom: 22,
+                paint: {
+                  "circle-radius": 4.8,
+                  "circle-color": ["get", "color"],
+                  "circle-stroke-color": "#ffffff",
+                  "circle-stroke-width": 1.4
+                }
+              },
+              {
+                id: "facilities-circle-3d",
+                type: "circle",
+                source: "facilities-3d",
+                maxzoom: 22,
+                paint: {
+                  "circle-radius": 5.0,
+                  "circle-color": "#10b981",
+                  "circle-stroke-color": "#064e3b",
+                  "circle-stroke-width": 1.4
+                }
+              },
+              {
+                id: "parking-circle-3d",
+                type: "circle",
+                source: "parking-3d",
+                maxzoom: 22,
+                paint: {
+                  "circle-radius": 5.6,
+                  "circle-color": "#14b8a6",
+                  "circle-stroke-color": "#ffffff",
+                  "circle-stroke-width": 1.5
+                }
+              },
+              {
+                id: "intersections-circle-3d",
+                type: "circle",
+                source: "intersections-3d",
+                maxzoom: 22,
+                paint: {
+                  "circle-radius": 6.0,
+                  "circle-color": "#f43f5e",
+                  "circle-stroke-color": "#ffffff",
+                  "circle-stroke-width": 1.6
+                }
+              },
+              {
+                id: "incidents-circle-3d",
+                type: "circle",
+                source: "incidents-3d",
+                maxzoom: 22,
+                paint: {
+                  "circle-radius": 7.0,
+                  "circle-color": "#ea580c",
+                  "circle-stroke-color": "#fed7aa",
+                  "circle-stroke-width": 1.8
+                }
+              },
+              {
+                id: "osm-3d-buildings",
+                type: "fill-extrusion",
+                source: "openmaptiles",
+                "source-layer": "building",
+                minzoom: 12.0,
+                maxzoom: 22.0,
+                filter: ["!", ["has", "hide_3d"]],
+                paint: {
+                  "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
+                  "fill-extrusion-height": ["coalesce", ["get", "render_height"], 16],
+                  "fill-extrusion-color": [
+                    "interpolate", ["linear"], ["coalesce", ["get", "render_height"], 16],
+                    0, "#e8e3d9",
+                    40, "#dcd5c7",
+                    110, "#c5d2e0"
+                  ],
+                  "fill-extrusion-vertical-gradient": true,
+                  "fill-extrusion-opacity": 0.82
+                }
+              },
+              {
+                id: "osm-road-labels",
+                type: "symbol",
+                source: "openmaptiles",
+                "source-layer": "transportation_name",
+                minzoom: 11,
+                maxzoom: 18.5,
+                layout: {
+                  "symbol-placement": "line",
+                  "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
+                  "text-font": ["Noto Sans Regular"],
+                  "text-size": 11
+                },
+                paint: {
+                  "text-color": "#f8fafc",
+                  "text-halo-color": "#0f172a",
+                  "text-halo-width": 1.6
+                }
+              },
+              {
+                id: "osm-place-labels",
+                type: "symbol",
+                source: "openmaptiles",
+                "source-layer": "place",
+                minzoom: 10,
+                maxzoom: 16.5,
+                layout: {
+                  "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
+                  "text-font": ["Noto Sans Bold"],
+                  "text-size": 12
+                },
+                paint: {
+                  "text-color": "#ffffff",
+                  "text-halo-color": "rgba(15, 23, 42, 0.9)",
+                  "text-halo-width": 2.0
+                }
               }
-            }
-          ]
+            ]
+          }
+        });
+      } catch (err) {
+        console.warn("MapLibre WebGL initialization failed; activating 2D GIS canvas:", err);
+        map3d = null;
+        map3dContextLost = true;
+        setCameraDimension("2D");
+        return;
+      }
+
+      const canvas3d = map3d.getCanvas();
+      canvas3d.addEventListener("webglcontextlost", (ev) => {
+        ev.preventDefault();
+        map3dContextLost = true;
+        disposeAllThreeGpuResources();
+        // Automatically switch to synchronized 2D Leaflet GIS so Safari never displays a black canvas
+        setCameraDimension("2D");
+      });
+      canvas3d.addEventListener("webglcontextrestored", () => {
+        map3dContextLost = false;
+        if (map3dLoaded) {
+          attachThree3DLayerIfReady();
+          syncPhotorealistic3DVisibility();
+          sync3DMapLayers();
+          scheduleOsmCityRebuild(180);
         }
       });
+
+      const finalize3DMapReady = () => {
+        if (map3dLoaded || !map3d || map3dContextLost) return;
+        if (!map3d.getSource("roads-3d")) return;
+        map3dLoaded = true;
+        attachThree3DLayerIfReady();
+        syncPhotorealistic3DVisibility();
+        sync3DMapLayers();
+        scheduleOsmCityRebuild(150);
+        updateCompassUI();
+      };
 
       map3d.on("rotate", updateCompassUI);
       map3d.on("move", () => {
         updateCompassUI();
-        if (map3d) map3d.triggerRepaint();
+        if (map3d && !map3dContextLost) map3d.triggerRepaint();
       });
       map3d.on("moveend", () => {
         scheduleOsmCityRebuild(140);
       });
       map3d.on("idle", () => {
+        if (!map3dLoaded) finalize3DMapReady();
         if (!three3DLayer || three3DLayer.osmCityBuildingCount === 0) {
           scheduleOsmCityRebuild(120);
         }
@@ -5380,16 +5711,8 @@ def main():
         if (typeof updateZoomLevelIndicator === "function") updateZoomLevelIndicator();
       });
 
-      map3d.on("load", () => {
-        map3dLoaded = true;
-        if (typeof THREE !== "undefined") {
-          map3d.addLayer(createPhotorealistic3DCustomLayer());
-        }
-        syncPhotorealistic3DVisibility();
-        sync3DMapLayers();
-        scheduleOsmCityRebuild(150);
-        updateCompassUI();
-      });
+      map3d.on("load", finalize3DMapReady);
+      setTimeout(finalize3DMapReady, 4200);
 
       map3d.on("click", "projects-zone-fill-3d", (e) => {
         if (e.features && e.features.length > 0) {
@@ -5409,9 +5732,17 @@ def main():
           if (rId) showRoadInspector(rId, true);
         }
       });
+
+      map3d.on("click", "intersections-circle-3d", (e) => {
+        if (e.features && e.features.length > 0) {
+          const iid = e.features[0].properties.intersection_id;
+          const inter = DATA.intersections.find(x => x.intersection_id === iid);
+          if (inter) showIntersectionInspector(inter, true);
+        }
+      });
     }
 
-    // Keeps 4K Google Satellite visible across all UAE locations and seamlessly transitions OSM 3D Buildings
+    // Keeps 4K Google Satellite, Street, and Dark cartographic basemaps visible across all UAE locations and transitions OSM 3D Buildings
     function syncPhotorealistic3DVisibility() {
       if (!map3d || !map3dLoaded) return;
       const zNow = map3d.getZoom();
@@ -5424,11 +5755,25 @@ def main():
         );
       }
       if (map3d.getLayer("light-raster-layer")) {
+        const useOsmRaster = (currentBasemapMode === "light" || currentBasemapMode === "dark");
         map3d.setLayoutProperty(
           "light-raster-layer",
           "visibility",
-          currentBasemapMode === "light" ? "visible" : "none"
+          useOsmRaster ? "visible" : "none"
         );
+        if (currentBasemapMode === "dark") {
+          map3d.setPaintProperty("light-raster-layer", "raster-brightness-max", 0.34);
+          map3d.setPaintProperty("light-raster-layer", "raster-brightness-min", 0.03);
+          map3d.setPaintProperty("light-raster-layer", "raster-contrast", 0.28);
+          map3d.setPaintProperty("light-raster-layer", "raster-saturation", -0.72);
+          map3d.setPaintProperty("light-raster-layer", "raster-opacity", 0.94);
+        } else {
+          map3d.setPaintProperty("light-raster-layer", "raster-brightness-max", 1.0);
+          map3d.setPaintProperty("light-raster-layer", "raster-brightness-min", 0.0);
+          map3d.setPaintProperty("light-raster-layer", "raster-contrast", 0.0);
+          map3d.setPaintProperty("light-raster-layer", "raster-saturation", 0.0);
+          map3d.setPaintProperty("light-raster-layer", "raster-opacity", 0.96);
+        }
       }
       if (map3d.getLayer("bg-dark-layer")) {
         map3d.setPaintProperty(
@@ -5439,7 +5784,6 @@ def main():
       }
       if (map3d.getLayer("osm-3d-buildings")) {
         const hasThreeCity = (three3DLayer && three3DLayer.osmCityBuildingCount > 0 && zNow >= 14.0);
-        // If candidates.length > 950 at intermediate zoom (< 14.8), keep MapLibre native fill-extrusion visible at 0.55 opacity so outer buildings beyond the 950 nearest Three.js meshes still render in 3D with zero geographic gaps!
         const showFallbackExtrusion = Boolean(three3DLayer && three3DLayer.osmCityTruncated && zNow < 14.8);
         const fillExtOpacity = !is3DBlocksEnabled
           ? 0.0
@@ -5455,16 +5799,23 @@ def main():
     function sync3DMapLayers() {
       if (!map3d || !map3dLoaded) return;
 
+      attachThree3DLayerIfReady();
       rebuildThreeHeroScene();
       syncPhotorealistic3DVisibility();
 
       const emFilter = document.getElementById("emirateSelect") ? document.getElementById("emirateSelect").value : "ALL";
       const q = (document.getElementById("searchInput")?.value || "").toLowerCase().trim();
+      const showProjs = document.getElementById("chk-L1")?.checked ?? true;
+      const showSubdevs = document.getElementById("chk-L2")?.checked ?? false;
       const showComm = document.getElementById("chk-L3")?.checked ?? true;
       const showRoads = document.getElementById("chk-L4")?.checked ?? true;
+      const showInts = document.getElementById("chk-L5")?.checked ?? false;
       const showTraffic = document.getElementById("chk-L6")?.checked ?? true;
+      const showIncidents = document.getElementById("chk-L7")?.checked ?? false;
+      const showTransit = document.getElementById("chk-L8")?.checked ?? false;
+      const showFacilities = document.getElementById("chk-L9")?.checked ?? false;
+      const showParking = document.getElementById("chk-L10")?.checked ?? false;
       const showImpacts = document.getElementById("chk-L11")?.checked ?? false;
-      const showProjs = document.getElementById("chk-L1")?.checked ?? true;
 
       // 1. Communities GeoJSON
       const commFeats = [];
@@ -5505,12 +5856,14 @@ def main():
       }
       map3d.getSource("roads-3d")?.setData({ type: "FeatureCollection", features: roadFeats });
 
-      // 3. Impact Vectors GeoJSON
+      // 3. Impact Vectors GeoJSON (Projects + Sub-Clusters)
       const impFeats = [];
       DATA.impact_links.forEach(l => {
         if (!showImpacts && l.project_id !== selected3DProjectId) return;
+        if (emFilter !== "ALL" && l.emirate !== emFilter) return;
         if (l.nearest_road_vertex_lat !== undefined && l.nearest_road_vertex_lon !== undefined) {
           const p = DATA.projects.find(x => x.project_id === l.project_id);
+          const sd = !p ? DATA.subdevs.find(x => x.subdev_id === l.project_id) : null;
           if (p) {
             const [lat, lon] = parseCoord(p.coordinates);
             impFeats.push({
@@ -5518,13 +5871,94 @@ def main():
               properties: { project_id: l.project_id },
               geometry: { type: "LineString", coordinates: [[lon, lat], [l.nearest_road_vertex_lon, l.nearest_road_vertex_lat]] }
             });
+          } else if (sd) {
+            impFeats.push({
+              type: "Feature",
+              properties: { project_id: l.project_id },
+              geometry: { type: "LineString", coordinates: [[sd.longitude, sd.latitude], [l.nearest_road_vertex_lon, l.nearest_road_vertex_lat]] }
+            });
           }
         }
       });
       map3d.getSource("impacts-3d")?.setData({ type: "FeatureCollection", features: impFeats });
 
       // 4. Active Construction Site Perimeter Zones & Concentration Heatmap Source
-      map3d.getSource("projects-zones-3d")?.setData(showProjs ? buildProjectSiteZonesGeoJSON() : { type: "FeatureCollection", features: [] });
+      map3d.getSource("projects-zones-3d")?.setData((showProjs || showSubdevs) ? buildProjectSiteZonesGeoJSON() : { type: "FeatureCollection", features: [] });
+
+      // 4B. Intersections (Layer 5), Roadworks (Layer 7), Transit (Layer 8), Facilities (Layer 9), Parking Hubs (Layer 10)
+      const intFeats = [];
+      if (showInts) {
+        DATA.intersections.forEach(i => {
+          if (emFilter !== "ALL" && i.emirate !== emFilter) return;
+          intFeats.push({
+            type: "Feature",
+            properties: { intersection_id: i.intersection_id },
+            geometry: { type: "Point", coordinates: [i.longitude, i.latitude] }
+          });
+        });
+      }
+      map3d.getSource("intersections-3d")?.setData({ type: "FeatureCollection", features: intFeats });
+
+      const incFeats = [];
+      if (showIncidents) {
+        DATA.incidents.forEach(inc => {
+          if (emFilter !== "ALL" && inc.emirate !== emFilter) return;
+          incFeats.push({
+            type: "Feature",
+            properties: { incident_id: inc.incident_id, road_id: inc.road_id },
+            geometry: { type: "Point", coordinates: [inc.longitude, inc.latitude] }
+          });
+        });
+      }
+      map3d.getSource("incidents-3d")?.setData({ type: "FeatureCollection", features: incFeats });
+
+      const trLineFeats = [];
+      const trStatFeats = [];
+      if (showTransit) {
+        DATA.transit_lines.forEach(t => {
+          trLineFeats.push({
+            type: "Feature",
+            properties: { transit_id: t.transit_id, color: t.color },
+            geometry: { type: "LineString", coordinates: t.coords }
+          });
+          t.stations.forEach(st => {
+            trStatFeats.push({
+              type: "Feature",
+              properties: { name: st.name, color: t.color },
+              geometry: { type: "Point", coordinates: [st.lon, st.lat] }
+            });
+          });
+        });
+      }
+      map3d.getSource("transit-lines-3d")?.setData({ type: "FeatureCollection", features: trLineFeats });
+      map3d.getSource("transit-stations-3d")?.setData({ type: "FeatureCollection", features: trStatFeats });
+
+      const facFeats = [];
+      if (showFacilities) {
+        DATA.facilities.forEach(f => {
+          if (emFilter !== "ALL" && f.emirate !== emFilter) return;
+          const [lat, lon] = parseCoord(f.coordinates);
+          facFeats.push({
+            type: "Feature",
+            properties: { feature_name: f.feature_name },
+            geometry: { type: "Point", coordinates: [lon, lat] }
+          });
+        });
+      }
+      map3d.getSource("facilities-3d")?.setData({ type: "FeatureCollection", features: facFeats });
+
+      const prkFeats = [];
+      if (showParking) {
+        DATA.parking.forEach(pk => {
+          if (emFilter !== "ALL" && pk.emirate !== emFilter) return;
+          prkFeats.push({
+            type: "Feature",
+            properties: { parking_id: pk.parking_id },
+            geometry: { type: "Point", coordinates: [pk.longitude, pk.latitude] }
+          });
+        });
+      }
+      map3d.getSource("parking-3d")?.setData({ type: "FeatureCollection", features: prkFeats });
 
       const heatFeats = [];
       DATA.projects.forEach(p => {
@@ -5591,6 +6025,27 @@ def main():
         });
       }
 
+      if (showSubdevs && zNow < 15.2) {
+        DATA.subdevs.forEach(sd => {
+          if (emFilter !== "ALL" && sd.emirate !== emFilter) return;
+          if (q && !JSON.stringify(sd).toLowerCase().includes(q)) return;
+          const el = document.createElement("div");
+          el.className = "haio-3d-block-callout";
+          el.style.padding = "3px 8px";
+          el.style.fontSize = "0.67rem";
+          el.style.borderLeft = "3px solid #a855f7";
+          el.innerHTML = `<span style="width:6px;height:6px;border-radius:50%;background:#a855f7;display:inline-block;"></span><span><strong>${sd.subdev_id}</strong></span>`;
+          el.onclick = (ev) => {
+            ev.stopPropagation();
+            showSubdevInspector(sd, true);
+          };
+          const mk = new maplibregl.Marker({ element: el, anchor: "bottom", offset: [0, -5] })
+            .setLngLat([sd.longitude, sd.latitude])
+            .addTo(map3d);
+          map3dMarkers.push(mk);
+        });
+      }
+
       if (showTraffic && zNow < 14.8) {
         const roadPillSpecs = [
           { id: "RD-DXB-01", code: "E11 SZR" },
@@ -5642,6 +6097,9 @@ def main():
 
       init3DMap();
       setBasemap("sat", document.querySelector(".bm-btn.active"));
+      if (!map3d || map3dContextLost) {
+        setCameraDimension("2D");
+      }
 
       populateCommunityDropdown();
       renderAllMapLayers();
@@ -5752,6 +6210,7 @@ def main():
         setLayerSet(["communities", "devbounds", "projects", "roads", "impacts"]);
         flyBothMaps(25.0585, 55.2090, 14.1, 56, 38);
       }
+      renderAllMapLayers();
     }
 
     // =========================================================================
@@ -5761,17 +6220,18 @@ def main():
       document.querySelectorAll("#layerPresetGrid .preset-btn").forEach(b => b.classList.remove("active"));
       if (btnEl) btnEl.classList.add("active");
 
-      if (presetName === "construction") {
+      const p = String(presetName || "").toLowerCase();
+      if (p === "construction" || p === "construction_overview") {
         setLayerSet(["projects", "devbounds", "communities", "roads"]);
-      } else if (presetName === "traffic") {
+      } else if (p === "traffic" || p === "traffic_overview") {
         setLayerSet(["roads", "traffic", "intersections", "communities"]);
-      } else if (presetName === "logistics") {
-        setLayerSet(["roads", "traffic", "parking", "impacts", "projects"]);
-      } else if (presetName === "disruptions") {
+      } else if (p === "logistics") {
+        setLayerSet(["roads", "traffic", "facilities", "parking", "impacts", "projects"]);
+      } else if (p === "disruptions") {
         setLayerSet(["roads", "traffic", "incidents", "intersections"]);
-      } else if (presetName === "impact") {
+      } else if (p === "impact" || p === "project_impact") {
         setLayerSet(["projects", "devbounds", "roads", "traffic", "impacts", "intersections"]);
-      } else if (presetName === "all") {
+      } else if (p === "all" || p === "all_layers") {
         setLayerSet(["projects", "devbounds", "communities", "roads", "intersections", "traffic", "incidents", "transit", "facilities", "parking", "impacts"]);
       }
     }
@@ -5897,6 +6357,60 @@ def main():
       URL.revokeObjectURL(url);
     }
 
+    function exportTask2JsonBundle() {
+      const emFilter = document.getElementById("emirateSelect") ? document.getElementById("emirateSelect").value : "ALL";
+      const allNational = DATA.uae_projects_summary || [];
+      const bundle = {
+        metadata: {
+          platform: "UAE Construction Activity, Geographic Intelligence & Traffic Impact Analysis Platform (Task 2)",
+          active_emirate_filter: emFilter,
+          active_time_window: currentTimeWindow,
+          generated_at_iso: new Date().toISOString(),
+          counts: {
+            national_flagships_7_emirates: allNational.length,
+            deep_gis_flagships_dubai_sharjah: DATA.projects.length,
+            national_only_other_5_emirates: Math.max(0, allNational.length - DATA.projects.length),
+            jvc_subdevelopments: DATA.subdevs.length,
+            total_task2_spatial_entities: DATA.projects.length + DATA.subdevs.length,
+            communities: DATA.communities.length,
+            road_corridors: DATA.roads.length,
+            intersections: DATA.intersections.length,
+            traffic_observations: DATA.observations.length,
+            nearby_facilities_09b: DATA.facilities.length,
+            parking_mobility_hubs_20: DATA.parking.length,
+            project_road_impact_links: DATA.impact_links.length
+          }
+        },
+        uae_national_projects_filtered: allNational.filter(r => emFilter === "ALL" || r.emirate === emFilter),
+        task2_deep_gis_projects: DATA.projects.filter(p => emFilter === "ALL" || p.emirate === emFilter),
+        jvc_subdevelopments: DATA.subdevs.filter(s => emFilter === "ALL" || s.emirate === emFilter),
+        communities: DATA.communities.filter(c => emFilter === "ALL" || c.emirate === emFilter),
+        road_corridors: DATA.roads.filter(r => emFilter === "ALL" || r.emirate === emFilter),
+        intersections: DATA.intersections.filter(i => emFilter === "ALL" || i.emirate === emFilter),
+        traffic_observations: DATA.observations,
+        nearby_facilities_09b: DATA.facilities.filter(f => emFilter === "ALL" || f.emirate === emFilter),
+        parking_and_staging_hubs_20: DATA.parking.filter(pk => emFilter === "ALL" || pk.emirate === emFilter),
+        project_road_impact_links: DATA.impact_links.filter(l => emFilter === "ALL" || l.emirate === emFilter)
+      };
+      const blob = new Blob([JSON.stringify(bundle, null, 2)], { type: "application/json;charset=utf-8;" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `uae_task2_intelligence_${emFilter.toLowerCase()}_bundle.json`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+
+    function printExecutiveReport() {
+      const aw = document.getElementById("analyticalWorkspaceModal");
+      if (aw && !aw.classList.contains("open")) {
+        setPlatformMode("overview");
+      }
+      setTimeout(() => { window.print(); }, 80);
+    }
+
     function buildWorkspaceStickyHeader(badgeText, titleText, subtitleText) {
       return `
         <div class="aw-sticky-bar">
@@ -5910,7 +6424,7 @@ def main():
           </div>
           <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
             <button class="ctrl-btn" onclick="toggleAnalyticalSplitMode()" title="View Analytical Dashboard Side-by-Side with 3D GIS Map">${analyticalSplitView ? '🗖 Full Width View' : '◫ Split Screen with 3D Map'}</button>
-            <button class="ctrl-btn" onclick="window.print()" title="Print / Save PDF Executive Report">🖨️ Print PDF</button>
+            <button class="ctrl-btn" onclick="printExecutiveReport()" title="Print / Save PDF Executive Report">🖨️ Print PDF</button>
             <button class="ctrl-btn" style="background:#0f172a; color:#fff; border-color:#0f172a;" onclick="closeAnalyticalWorkspace()">🗺️ Return to 3D GIS Map ✕</button>
           </div>
         </div>
@@ -6065,21 +6579,43 @@ def main():
       if (aw) renderConstructionIntelligenceModule(aw);
     }
 
+    function filterConstructionEmirate(em) {
+      const emSel = document.getElementById("emirateSelect");
+      if (emSel) emSel.value = em;
+      const matchingComms = DATA.communities.filter(c => em === "ALL" || c.emirate === em);
+      if (matchingComms.length && !matchingComms.some(c => c.community_id === activeWorkspaceCommunityId)) {
+        activeWorkspaceCommunityId = matchingComms[0].community_id;
+      }
+      onEmirateChange();
+      const aw = document.getElementById("analyticalWorkspaceModal");
+      if (aw && aw.classList.contains("open") && currentPlatformMode === "construction") {
+        renderConstructionIntelligenceModule(aw);
+      }
+    }
+
     function renderConstructionIntelligenceModule(container) {
+      const activeEmFilter = document.getElementById("emirateSelect") ? document.getElementById("emirateSelect").value : "ALL";
       const summaryRows = (DATA.uae_projects_summary || []).filter(r => r.emirate === "Dubai" || r.emirate === "Sharjah");
       const pubProjs = summaryRows.filter(r => !r.is_estimated_gdv);
       const estProjs = summaryRows.filter(r => r.is_estimated_gdv);
 
-      // Developer aggregation
+      const filteredProjs = DATA.projects.filter(p => activeEmFilter === "ALL" || p.emirate === activeEmFilter);
+      const filteredSubdevs = DATA.subdevs.filter(s => activeEmFilter === "ALL" || s.emirate === activeEmFilter);
+      const filteredComms = DATA.communities.filter(c => activeEmFilter === "ALL" || c.emirate === activeEmFilter);
+
+      // Developer aggregation (respects Emirate filter)
       const devMap = {};
-      DATA.projects.forEach(p => {
+      filteredProjs.forEach(p => {
         const dName = p.developer.split("(")[0].trim();
         devMap[dName] = (devMap[dName] || 0) + 1;
       });
       const devSorted = Object.entries(devMap).sort((a, b) => b[1] - a[1]).slice(0, 10);
 
       // Selected community deep intelligence
-      const selComm = DATA.communities.find(c => c.community_id === activeWorkspaceCommunityId) || DATA.communities[0];
+      const selComm = filteredComms.find(c => c.community_id === activeWorkspaceCommunityId)
+        || DATA.communities.find(c => c.community_id === activeWorkspaceCommunityId)
+        || filteredComms[0]
+        || DATA.communities[0];
       const commFlagshipIds = (selComm.flagship_project_ids || "").split(",").map(s => s.trim()).filter(Boolean);
       const commProjs = DATA.projects.filter(p => commFlagshipIds.some(fid => p.project_id === fid.split("(")[0].trim()) || p.city_district_community.toLowerCase().includes(selComm.community_name.split("(")[0].trim().toLowerCase().slice(0, 8)));
       const commSubdevs = selComm.community_id === "COM-DXB-01" ? DATA.subdevs : [];
@@ -6093,6 +6629,18 @@ def main():
 
       container.innerHTML = `
         ${buildWorkspaceStickyHeader("MODULE 02 — CONSTRUCTION INTELLIGENCE", "Construction Activity Dashboard, Published CAPEX/GDV vs. Estimated GDV & Community Explorer", "Strict separation of Combined Published Official Value (AED 765.9B = AED 176.0B Infrastructure/Civil CAPEX across 3 projects + AED 589.9B Real Estate GDV across 24 projects) from Estimated Masterplan GDV (AED 253.0B across 5 projects) and Modelled Hard Construction Cost (AED 595.8B).")}
+
+        <!-- EMIRATE SCOPE FILTER BAR -->
+        <div class="aw-panel-card" style="padding:10px 14px; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; background:#f8fafc;">
+          <div style="font-size:0.78rem; color:#334155;">
+            <strong>Emirate Intelligence Scope:</strong> Showing <strong>${filteredProjs.length + filteredSubdevs.length}</strong> active Task 2 spatial entities (<strong>${filteredProjs.length}</strong> Flagships + <strong>${filteredSubdevs.length}</strong> JVC Sub-Clusters across <strong>${filteredComms.length}</strong> Hotspot Communities; synced with GIS Map filter)
+          </div>
+          <div style="display:flex; gap:6px; flex-wrap:wrap;">
+            <button id="cmod-em-all" class="ctrl-btn ${activeEmFilter === 'ALL' ? 'primary' : ''}" onclick="filterConstructionEmirate('ALL')">All Dubai &amp; Sharjah (37 Sites · 10 Communities)</button>
+            <button id="cmod-em-dxb" class="ctrl-btn ${activeEmFilter === 'Dubai' ? 'primary' : ''}" onclick="filterConstructionEmirate('Dubai')">Dubai Only (25 Sites · 7 Communities)</button>
+            <button id="cmod-em-shj" class="ctrl-btn ${activeEmFilter === 'Sharjah' ? 'primary' : ''}" onclick="filterConstructionEmirate('Sharjah')">Sharjah Only (12 Sites · 3 Communities)</button>
+          </div>
+        </div>
 
         <!-- 3.1 CONSTRUCTION ACTIVITY OVERVIEW KPIs -->
         <div class="aw-kpi-grid">
@@ -6558,7 +7106,7 @@ def main():
       const roadExposure = DATA.roads.map(r => {
         const links = DATA.impact_links.filter(l => l.primary_road_id === r.road_id || l.secondary_road_id === r.road_id);
         const totalHgv = links.reduce((s, l) => s + (l.total_hgv_round_trips_day || 0), 0);
-        const amObs = getCorridorProfileForWindow(r, "Morning Peak (07:30-09:30)").obs;
+        const amObs = getCorridorProfileForWindow(r, "Morning Peak (07:30–09:30)").obs;
         return { road: r, linkCount: links.length, totalHgv, amSpeed: amObs ? amObs.average_speed_kmh : 50, amVc: amObs ? amObs.vc_ratio : 0.7 };
       }).sort((a, b) => (b.linkCount * 100 + b.totalHgv) - (a.linkCount * 100 + a.totalHgv)).slice(0, 8);
 
@@ -6635,6 +7183,33 @@ def main():
                 </tbody>
               </table>
             </div>
+            <details class="tech-accordion" style="margin-top:10px;" open>
+              <summary>🏭 Inspect All 30 Dubai &amp; Sharjah Urban &amp; Industrial Facility Clusters (<code>09b_nearby_facilities_dataset.csv</code> — 18 Dubai + 12 Sharjah)</summary>
+              <div class="tech-body" style="max-height:290px; overflow-y:auto; padding:6px;">
+                <table class="ev-table">
+                  <thead>
+                    <tr>
+                      <th>Facility ID</th>
+                      <th>Emirate</th>
+                      <th>Category</th>
+                      <th>Facility / Industrial Cluster Name</th>
+                      <th>Dist to Projects</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    ${DATA.facilities.map(f => `
+                      <tr>
+                        <td><code>${f.facility_id || f.id || 'FAC'}</code></td>
+                        <td><strong>${f.emirate}</strong></td>
+                        <td>${f.facility_category}</td>
+                        <td><strong>${f.feature_name}</strong></td>
+                        <td>${f.distance_to_projects_km} km</td>
+                      </tr>
+                    `).join("")}
+                  </tbody>
+                </table>
+              </div>
+            </details>
           </div>
 
           <!-- 6.2 4-COMPONENT HGV LOAD BREAKDOWN & TOP GENERATORS -->
@@ -6754,10 +7329,11 @@ def main():
               <div style="font-size:0.75rem; color:#475569;">Download filtered CSV tables, the unified GeoJSON GIS bundle, the 30-object Spatial SQLite database, or print a formatted Executive PDF Report:</div>
             </div>
             <div style="display:flex; gap:8px; flex-wrap:wrap;">
-              <button class="ctrl-btn primary" onclick="exportFilteredProjectsCsv()">📥 Export Filtered Projects CSV</button>
-              <button class="ctrl-btn" onclick="window.print()">🖨️ Print Executive Report (PDF)</button>
-              <a class="ctrl-btn" style="text-decoration:none;" href="datasets/dubai_sharjah_gis_bundle.geojson" download="dubai_sharjah_gis_bundle.geojson">🗺️ GeoJSON Bundle (123 Features)</a>
-              <a class="ctrl-btn" style="text-decoration:none;" href="datasets/21_task2_spatial_database.sqlite" download="21_task2_spatial_database.sqlite">🗄️ Spatial SQLite DB (30 Objects)</a>
+              <button id="btnExportCsv" class="ctrl-btn primary" onclick="exportFilteredProjectsCsv()">📥 Export Filtered Projects CSV</button>
+              <button id="btnExportJson" class="ctrl-btn" onclick="exportTask2JsonBundle()">📄 Export Task 2 JSON Bundle</button>
+              <a id="btnExportGeojson" class="ctrl-btn" style="text-decoration:none;" href="datasets/dubai_sharjah_gis_bundle.geojson" download="dubai_sharjah_gis_bundle.geojson">🗺️ GeoJSON Bundle (123 Features)</a>
+              <a id="btnExportSqlite" class="ctrl-btn" style="text-decoration:none;" href="datasets/21_task2_spatial_database.sqlite" download="21_task2_spatial_database.sqlite">🗄️ Spatial SQLite DB (30 Objects)</a>
+              <button id="btnPrintPdf" class="ctrl-btn" onclick="printExecutiveReport()">🖨️ Print Executive Report (PDF)</button>
             </div>
           </div>
         </div>
@@ -6993,19 +7569,12 @@ def main():
       }
       const mc = document.getElementById("mapCanvas");
       if (mc) mc.classList.toggle("basemap-dark", mode === "dark" || !mode);
-      if (baseTileLayer && map) map.removeLayer(baseTileLayer);
-      if (map) {
-        if (mode === "sat") {
-          baseTileLayer = L.tileLayer("https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=2", {
-            minZoom: 9, maxZoom: 19, noWrap: true
-          });
-        } else {
-          baseTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-            minZoom: 9, maxZoom: 19, noWrap: true, className: mode === "dark" ? "gis-dark-tiles" : ""
-          });
-        }
-        baseTileLayer.addTo(map);
-        baseTileLayer.bringToBack();
+      if (baseTileLayer && map) {
+        try { map.removeLayer(baseTileLayer); } catch (_) {}
+        baseTileLayer = null;
+      }
+      if (map && currentCameraDim === "2D") {
+        ensureLeafletBaseTiles();
       }
     }
 
@@ -7031,6 +7600,14 @@ def main():
         document.getElementById("hudScope").textContent = "All UAE 3D";
       }
       applyMapFilters();
+      const aw = document.getElementById("analyticalWorkspaceModal");
+      if (aw && aw.classList.contains("open")) {
+        if (currentPlatformMode === "construction") renderConstructionIntelligenceModule(aw);
+        else if (currentPlatformMode === "traffic") renderTrafficIntelligenceModule(aw);
+        else if (currentPlatformMode === "impact") renderImpactAndLogisticsModule(aw);
+        else if (currentPlatformMode === "overview") renderExecutiveOverviewModule(aw);
+        else if (currentPlatformMode === "evidence") renderDataAndEvidenceModule(aw);
+      }
     }
 
     function zoomToSelectedCommunity() {
@@ -7136,12 +7713,14 @@ def main():
         const latlngs = c.polygon_wgs84.map(pt => [pt[1], pt[0]]);
         const col = c.observed_congestion_severity.includes("Severe") ? "#ef4444" :
                     (c.observed_congestion_severity.includes("High") ? "#f97316" : "#a855f7");
+        const isBoundMode = currentConcentrationMode === "boundaries";
         const poly = L.polygon(latlngs, {
           color: col,
-          weight: 0,
-          opacity: 0,
+          weight: isBoundMode ? 2.8 : 1.5,
+          opacity: isBoundMode ? 0.90 : 0.65,
+          dashArray: isBoundMode ? null : "5,4",
           fillColor: col,
-          fillOpacity: 0
+          fillOpacity: isBoundMode ? 0.24 : 0.08
         });
         poly.bindTooltip(`<strong>${c.community_name}</strong><br/>Active Devs: ${c.active_developments_count} | Active Towers: ${c.active_towers_and_buildings}<br/>Hotspot Score: ${c.construction_activity_index_score}`, { sticky: true });
         poly.on("click", () => showCommunityInspector(c));
@@ -7387,9 +7966,17 @@ def main():
           vecLine.addTo(layerGroups.impacts);
         }
 
-        // Project Marker (Layer 1 — Scaled by Investment Tier)
+        // Project Marker (Layer 1 — Scaled by Investment Tier, plus 2D Heatmap Halo when in Heatmap Mode)
         const st = projectScaleStyle(p);
-        if (st.radius >= 10) {
+        if (currentConcentrationMode === "heatmap") {
+          L.circle([lat, lon], {
+            radius: st.radius >= 10 ? 2800 : 1900,
+            stroke: false,
+            fillColor: st.radius >= 10 ? "#ef4444" : "#f59e0b",
+            fillOpacity: 0.24,
+            interactive: false
+          }).addTo(layerGroups.projects);
+        } else if (st.radius >= 10) {
           L.circleMarker([lat, lon], {
             radius: st.radius + 4,
             color: st.fillColor,
@@ -7487,8 +8074,9 @@ def main():
         active3DShowMe = "all";
       }
       const p = DATA.projects.find(x => x.project_id === selected3DProjectId);
-      if (p && map3d) {
-        const [lat, lon] = parseCoord(p.coordinates);
+      const sd = !p ? DATA.subdevs.find(x => x.subdev_id === selected3DProjectId) : null;
+      if ((p || sd) && map3d && !map3dContextLost) {
+        const [lat, lon] = p ? parseCoord(p.coordinates) : [sd.latitude, sd.longitude];
         map3d.flyTo({
           center: [lon + 0.00030, lat - 0.00016],
           zoom: active3DBlock === "ALL" ? 16.72 : 17.05,
@@ -7506,53 +8094,130 @@ def main():
     // =========================================================================
     function showProjectInspector(pid, fly = true) {
       selected3DProjectId = pid;
-      currentInspState = { type: "project", id: pid };
       switchDrawerTab("insp");
-      const p = DATA.projects.find(x => x.project_id === pid);
-      if (!p) return;
+      const rawProj = DATA.projects.find(x => x.project_id === pid);
+      const rawSubdev = !rawProj ? DATA.subdevs.find(x => x.subdev_id === pid) : null;
+      if (!rawProj && !rawSubdev) return;
+
+      const isSubdev = Boolean(rawSubdev);
+      currentInspState = isSubdev ? { type: "subdev", obj: rawSubdev } : { type: "project", id: pid };
+
+      // Normalize entity record so both 32 PRJ-* Flagships and 5 SUB-JVC-* Clusters render the complete 5-Section Profile
+      const p = rawProj || {
+        project_id: rawSubdev.subdev_id,
+        project_name: rawSubdev.development_name,
+        emirate: rawSubdev.emirate,
+        city_district_community: rawSubdev.community_district,
+        developer: rawSubdev.developer,
+        project_category: "JVC Multi-Tower Residential Sub-Cluster (DLD Active Registry)",
+        lifecycle_status: rawSubdev.construction_status,
+        timeline_milestones: `Task 1 Cross-Ref: ${rawSubdev.linked_task1_ref} · Active 2025–2026 Superstructure & Handover Window`,
+        coordinates: `${rawSubdev.latitude.toFixed(4)}, ${rawSubdev.longitude.toFixed(4)}`,
+        land_plot_area: "",
+        published_investment_value: "",
+        estimated_hard_cost_and_rate: "",
+        gross_floor_area: `${rawSubdev.active_gfa_sqm.toLocaleString()} m² Active Structural GFA (${rawSubdev.building_count} Active Towers)`,
+        floors_and_height: rawSubdev.floors_range,
+        apartments_and_villas_count: `${rawSubdev.total_units.toLocaleString()} residential units`,
+        towers_and_buildings_count: `${rawSubdev.building_count} active towers`,
+        main_contractor_and_consultants: "",
+        confidence_classification: rawSubdev.confidence || "Estimated",
+        source_id: rawSubdev.source_id || "SRC-020",
+        publisher: "Dubai Land Department (dld_projects-open) & RTA Corridor Releases",
+        publication_date: "2025–2026",
+        source_url: "https://www.dubaipulse.gov.ae/data/dld-registration/dld_projects-open"
+      };
+
       const link = DATA.impact_links.find(x => x.project_id === pid);
       const docs = DATA.documents.filter(d => d.project_id === pid);
       const summaryRow = (DATA.uae_projects_summary || []).find(x => x.project_id === pid);
-      const [lat, lon] = parseCoord(p.coordinates);
-      const spec = getProject3DSpec(p);
+      const [lat, lon] = isSubdev ? [rawSubdev.latitude, rawSubdev.longitude] : parseCoord(p.coordinates);
+      const spec = getProject3DSpec(rawProj || rawSubdev);
+      const isCivicInfra = spec.typology === "civic_infra_campus";
 
       sync3DMapLayers();
       if (fly) {
-        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 15.9 : 16.72, 58, 60);
+        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 15.9 : (isSubdev ? 16.35 : 16.72), 58, isSubdev ? 52 : 60);
         document.getElementById("hudScope").textContent = `${p.project_id}: ${p.project_name.split('(')[0].trim()}`;
       }
 
-      const primRoadObs = link ? getRoadObsForWindow(link.primary_road_id, currentTimeWindow) : null;
-      const st = projectScaleStyle(p);
+      const primRoadId = link ? link.primary_road_id : (rawSubdev ? rawSubdev.primary_access_road_id : null);
+      const primRoadObs = primRoadId ? getRoadObsForWindow(primRoadId, currentTimeWindow) : null;
       const cleanTitle = p.project_name.split("(")[0].trim();
       const u4br = Math.max(16, Math.round(spec.homes * 0.50));
       const u5br = Math.max(16, spec.homes - u4br);
 
-      const isEstGdv = summaryRow ? summaryRow.is_estimated_gdv : (p.published_investment_value || "").toLowerCase().includes("est.");
-      const valBadge = isEstGdv
-        ? `<span class="badge-missing" title="Masterplan GDV Estimate with Partial Contract Awards">ESTIMATED MASTERPLAN GDV</span>`
-        : `<span class="ep-pill-pub" title="Officially Published Value">PUBLISHED VALUE</span>`;
+      const isEstGdv = isSubdev
+        ? false
+        : (summaryRow ? summaryRow.is_estimated_gdv : (p.published_investment_value || "").toLowerCase().includes("est."));
+      const valBadge = isSubdev
+        ? `<span class="badge-missing" title="Multi-Parcel Sub-Cluster — Tracked by GFA & Units">NO STANDALONE GDV</span>`
+        : (isEstGdv
+          ? `<span class="badge-missing" title="Masterplan GDV Estimate with Partial Contract Awards">ESTIMATED MASTERPLAN GDV</span>`
+          : `<span class="ep-pill-pub" title="Officially Published Value">PUBLISHED VALUE</span>`);
       const confVal = p.confidence_classification || p.confidence || "Verified";
       const projType = p.project_category || p.project_type || "Mixed-Use Development";
-      const timelineTxt = p.timeline_milestones || p.status_evidence_and_history || '<span class="badge-missing">Timeline Unavailable</span>';
-      const plotAreaTxt = p.land_plot_area || p.site_area || '<span class="badge-missing">Plot Area Unavailable</span>';
-      const hardCostTxt = (p.estimated_hard_cost_and_rate || "").split("[")[0].trim() || (summaryRow && summaryRow.hard_construction_cost_aed_b ? `AED ${summaryRow.hard_construction_cost_aed_b}B` : '<span class="badge-missing">Unavailable</span>');
+      const timelineTxt = p.timeline_milestones || p.status_evidence_and_history || '<span class="badge-missing">Unavailable / Not Published</span>';
+      const plotAreaTxt = p.land_plot_area || p.site_area || (isSubdev ? '<span class="badge-missing">Unavailable — Multi-Parcel JVC District Cluster</span>' : '<span class="badge-missing">Plot Area Unavailable</span>');
+      const investLabel = isSubdev ? "Standalone Cluster GDV" : (isEstGdv ? "Est. Masterplan GDV" : "Published Investment");
+      const investValHtml = isSubdev
+        ? `<span class="badge-missing">Unavailable (No Standalone GDV)</span>`
+        : ((p.published_investment_value || "").split("[")[0].trim() || '<span class="badge-missing">Unavailable</span>');
+      const hardCostTxt = isSubdev
+        ? `<span class="badge-missing">Tracked via JVC Master-Community GFA</span>`
+        : ((p.estimated_hard_cost_and_rate || "").split("[")[0].trim() || (summaryRow && summaryRow.hard_construction_cost_aed_b ? `AED ${summaryRow.hard_construction_cost_aed_b}B` : '<span class="badge-missing">Unavailable</span>'));
+      const contractorHtml = p.main_contractor_and_consultants
+        ? p.main_contractor_and_consultants
+        : (isSubdev
+          ? `<span class="badge-missing">Plot-Level Contractor Filings Aggregated Across ${rawSubdev.building_count} DLD Escrow Plots</span> (Developer: <strong>${rawSubdev.developer}</strong>)`
+          : '<span class="badge-missing">Unavailable / Restricted</span>');
       const secRoadObj = link && link.secondary_road_id ? DATA.roads.find(r => r.road_id === link.secondary_road_id) : null;
       const secRoadLabel = secRoadObj ? `${secRoadObj.road_name.split('(')[0].trim()} (${secRoadObj.road_id})` : (link && link.secondary_road_id ? link.secondary_road_id : '<span class="badge-missing">None</span>');
 
       const docsHtml = docs.map(d =>
         `<div style="margin-bottom:4px;">• <a href="${d.source_url || d.document_url || d.secondary_portal_url}" target="_blank" rel="noopener">${d.document_title} ↗</a> <span style="color:#64748b;">(${d.document_type} | ${d.availability_status})</span></div>`
-      ).join("") || `<span class="badge-missing">No Standalone Filing Linked</span>`;
+      ).join("") || `<span class="badge-missing">No Standalone Plot-Level Document Linked — Verified via DLD Open Registry (${p.source_id || 'SRC-020'})</span>`;
 
-      const projOptionsHtml = DATA.projects.map(pr => {
-        return `<option value="${pr.project_id}" ${pr.project_id === pid ? 'selected' : ''}>${pr.project_id}: ${pr.project_name.split('(')[0].trim()} (${pr.emirate} · ${pr.city_district_community.split('/')[0].trim()})</option>`;
-      }).join("");
+      const projOptionsHtml =
+        `<optgroup label="Flagship Developments — Dubai &amp; Sharjah (${DATA.projects.length})">` +
+        DATA.projects.map(pr => `<option value="${pr.project_id}" ${pr.project_id === pid ? 'selected' : ''}>${pr.project_id}: ${pr.project_name.split('(')[0].trim()} (${pr.emirate} · ${pr.city_district_community.split('/')[0].trim()})</option>`).join("") +
+        `</optgroup>` +
+        `<optgroup label="JVC Multi-Tower Sub-Clusters (${DATA.subdevs.length})">` +
+        DATA.subdevs.map(sd => `<option value="${sd.subdev_id}" ${sd.subdev_id === pid ? 'selected' : ''}>${sd.subdev_id}: ${sd.development_name.split('(')[0].trim()} (${sd.building_count} Towers · ${sd.total_units.toLocaleString()} Units)</option>`).join("") +
+        `</optgroup>`;
+
+      const subHeaderSummary = isCivicInfra
+        ? `${p.apartments_and_villas_count || 'Civil / Civic Infrastructure Asset'} · ${spec.blocksCount} campus zones · ${p.project_id}`
+        : `${spec.homes.toLocaleString()} homes · ${spec.stacksPerBlock * spec.blocksCount} stacks · ${spec.blocksCount} blocks · ${p.project_id}`;
+
+      const unitControlsHtml = isCivicInfra ? `
+          <div class="kv-row" style="margin-bottom:8px; background:#fffbeb; border-color:#fde68a;">
+            <div class="kv-lbl"><span class="badge-missing">Residential Unit Mix Not Applicable — ${projType}</span></div>
+            <div class="kv-val">Published Functional Capacity / Program: <strong>${p.apartments_and_villas_count || 'Civic Infrastructure Network'}</strong></div>
+          </div>
+      ` : `
+          <!-- SHOW ME PILLS -->
+          <label class="haio-field-lbl">SHOW ME</label>
+          <div class="haio-showme-row">
+            <button class="haio-showme-pill ${active3DShowMe === 'all' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, 'all')">All homes</button>
+            <button class="haio-showme-pill ${active3DShowMe === '4br' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, '4br')">4 bedrooms</button>
+            <button class="haio-showme-pill ${active3DShowMe === '5br' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, '5br')">5 bedrooms</button>
+          </div>
+
+          <!-- UNIT TYPES · HOMES SUMMARY BAR -->
+          <div class="haio-unit-bar" style="margin-bottom:8px;">
+            <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:9px;height:9px;border-radius:50%;background:#fbbf24;display:inline-block;"></span> 4BR</span>
+            <strong>${u4br}</strong>
+            <span style="display:inline-flex; align-items:center; gap:6px; margin-left:8px;"><span style="width:9px;height:9px;border-radius:50%;background:#34d399;display:inline-block;"></span> 5BR</span>
+            <strong>${u5br}</strong>
+          </div>
+      `;
 
       document.getElementById("inspectorContainer").innerHTML = `
         <div style="padding:2px 2px 10px;">
-          <!-- Compact Project Switcher at Top -->
+          <!-- Compact Project & Sub-Cluster Switcher at Top -->
           <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:10px;">
-            <select class="haio-select" style="padding:6px 10px; font-size:0.75rem; background:#f8fafc; border-color:#e2e8f0;" onchange="showProjectInspector(this.value, true)" aria-label="Select Active Construction Project">
+            <select id="projectExplorerSelect" class="haio-select" style="padding:6px 10px; font-size:0.75rem; background:#f8fafc; border-color:#e2e8f0;" onchange="showProjectInspector(this.value, true)" aria-label="Select Active Construction Project">
               ${projOptionsHtml}
             </select>
             <button class="mobile-back-map-btn" onclick="document.getElementById('mapStage').scrollIntoView({behavior:'smooth',block:'center'})">🗺️ ↑ Map</button>
@@ -7560,13 +8225,13 @@ def main():
 
           <!-- HAIO.SG EXACT CLEAN HEADER & SUBTITLE -->
           <h3 class="haio-card-title">${cleanTitle}</h3>
-          <div class="haio-card-sub">${spec.homes.toLocaleString()} homes · ${spec.stacksPerBlock * spec.blocksCount} stacks · ${spec.blocksCount} blocks · ${p.project_id}</div>
+          <div class="haio-card-sub">${subHeaderSummary}</div>
 
           <!-- 01. PROJECT INFORMATION -->
           <div class="prof-sec-hdr"><span>01. Project Information</span><span class="conf-pill ${confVal === 'Verified' ? 'b-ver' : 'b-est'}">${confVal}</span></div>
           <div class="kv-grid" style="margin-bottom:10px;">
             <div class="kv-row">
-              <div class="kv-lbl">Project ID · Developer · Type</div>
+              <div class="kv-lbl">Entity ID · Developer · Type</div>
               <div class="kv-val"><strong>${p.project_id}</strong> · <strong style="color:#059669;">${p.developer}</strong><br/>Category: <strong>${projType}</strong></div>
             </div>
             <div class="kv-row">
@@ -7594,8 +8259,8 @@ def main():
           <div class="prof-sec-hdr"><span>03. Construction Activity &amp; 3D Massing</span>${valBadge}</div>
           <div class="exec-metric-grid" style="margin-top:6px;">
             <div class="exec-metric-box">
-              <div class="em-lbl">${isEstGdv ? 'Est. Masterplan GDV' : 'Published Investment'}</div>
-              <div class="em-val" style="color:${isEstGdv ? '#b45309' : '#2563eb'};">${(p.published_investment_value || '').split('[')[0].trim()}</div>
+              <div class="em-lbl">${investLabel}</div>
+              <div class="em-val" style="color:${isEstGdv || isSubdev ? '#b45309' : '#2563eb'}; font-size:${isSubdev ? '0.74rem' : '0.92rem'};">${investValHtml}</div>
               <div class="em-sub">Hard Cost: ${hardCostTxt}</div>
             </div>
             <div class="exec-metric-box">
@@ -7620,36 +8285,22 @@ def main():
                 <option value="ALL" ${active3DFloor === 'ALL' ? 'selected' : ''}>Select a block / All</option>
                 <option value="LOW" ${active3DFloor === 'LOW' ? 'selected' : ''}>Low-Rise (F01–F${Math.round(spec.storeys*0.35)})</option>
                 <option value="MID" ${active3DFloor === 'MID' ? 'selected' : ''}>Mid-Rise (F${Math.round(spec.storeys*0.35)+1}–F${Math.round(spec.storeys*0.72)})</option>
-                <option value="HIGH" ${active3DFloor === 'HIGH' ? 'selected' : ''}>Sky Suites (F${Math.round(spec.storeys*0.72)+1}–F${spec.storeys})</option>
+                <option value="HIGH" ${active3DFloor === 'HIGH' ? 'selected' : ''}>Upper Levels (F${Math.round(spec.storeys*0.72)+1}–F${spec.storeys})</option>
               </select>
             </div>
             <div>
-              <label class="haio-field-lbl">STACK</label>
+              <label class="haio-field-lbl">STACK / ZONE</label>
               <select class="haio-select" onchange="update3DBlockControls(undefined, undefined, this.value, undefined)" aria-label="Select Stack">
                 <option value="ALL" ${active3DStack === 'ALL' ? 'selected' : ''}>Select floor first / All</option>
-                <option value="S1" ${active3DStack === 'S1' ? 'selected' : ''}>Stack 01 (North Wing)</option>
-                <option value="S2" ${active3DStack === 'S2' ? 'selected' : ''}>Stack 02 (South Wing)</option>
+                <option value="S1" ${active3DStack === 'S1' ? 'selected' : ''}>Zone 01 (North Wing)</option>
+                <option value="S2" ${active3DStack === 'S2' ? 'selected' : ''}>Zone 02 (South Wing)</option>
               </select>
             </div>
           </div>
 
-          <!-- SHOW ME PILLS -->
-          <label class="haio-field-lbl">SHOW ME</label>
-          <div class="haio-showme-row">
-            <button class="haio-showme-pill ${active3DShowMe === 'all' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, 'all')">All homes</button>
-            <button class="haio-showme-pill ${active3DShowMe === '4br' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, '4br')">4 bedrooms</button>
-            <button class="haio-showme-pill ${active3DShowMe === '5br' ? 'active' : ''}" onclick="update3DBlockControls(undefined, undefined, undefined, '5br')">5 bedrooms</button>
-          </div>
+          ${unitControlsHtml}
 
-          <!-- UNIT TYPES · HOMES SUMMARY BAR -->
-          <div class="haio-unit-bar" style="margin-bottom:8px;">
-            <span style="display:inline-flex; align-items:center; gap:6px;"><span style="width:9px;height:9px;border-radius:50%;background:#fbbf24;display:inline-block;"></span> 4BR</span>
-            <strong>${u4br}</strong>
-            <span style="display:inline-flex; align-items:center; gap:6px; margin-left:8px;"><span style="width:9px;height:9px;border-radius:50%;background:#34d399;display:inline-block;"></span> 5BR</span>
-            <strong>${u5br}</strong>
-          </div>
-
-          <!-- REAL ARCHITECTURAL FLOORPLAN, ELEVATION SECTION & FACADE BLUEPRINT (DATASET #05B) -->
+          <!-- ILLUSTRATIVE FLOORPLATE / INFRASTRUCTURE NOTICE -->
           ${buildArchitecturalBlueprintSvg(p, spec)}
 
           <!-- OR PICK A BLOCK -->
@@ -7713,7 +8364,7 @@ def main():
           <div class="kv-grid">
             <div class="kv-row">
               <div class="kv-lbl">Contractors &amp; Engineering Consultants</div>
-              <div class="kv-val">${p.main_contractor_and_consultants || '<span class="badge-missing">Unavailable</span>'}</div>
+              <div class="kv-val">${contractorHtml}</div>
             </div>
             <div class="kv-row">
               <div class="kv-lbl">Official Documents &amp; Regulatory Filings (${docs.length})</div>
@@ -7732,46 +8383,8 @@ def main():
     }
 
     function showSubdevInspector(sd, fly = true) {
-      selected3DProjectId = sd.subdev_id;
-      currentInspState = { type: "subdev", obj: sd };
-      switchDrawerTab("insp");
-      sync3DMapLayers();
-      if (fly) flyBothMaps(sd.latitude, sd.longitude, 16.3, 58, 52);
-      const primObs = getRoadObsForWindow(sd.primary_access_road_id, currentTimeWindow);
-      document.getElementById("inspectorContainer").innerHTML = `
-        <div class="detail-card">
-          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-            <span class="brand-badge">${sd.subdev_id} • JVC 3D Sub-Cluster</span>
-            <span class="conf-pill b-est">${sd.confidence}</span>
-          </div>
-          <h4>${sd.development_name}</h4>
-          <div style="font-size:0.78rem; color:#2563eb; font-weight:700; margin-bottom:10px;">${sd.developer} • ${sd.community_district}</div>
-          ${primObs ? `
-          <div class="live-window-banner">
-            <div style="display:flex; justify-content:space-between; align-items:center;">
-              <strong style="color:#2563eb;">⏱️ ${currentTimeWindow}</strong>
-              <span style="color:${congestionColor(primObs.congestion_level)}; font-weight:800;">~${primObs.average_speed_kmh} km/h on ${sd.primary_access_road_id}</span>
-            </div>
-            <div style="margin-top:2px; color:#334155;">${primObs.congestion_level} (${primObs.travel_time_min_per_10km} min/10km)</div>
-          </div>` : ""}
-          <div class="exec-metric-grid">
-            <div class="exec-metric-box"><div class="em-lbl">Active Towers</div><div class="em-val">${sd.building_count} Towers</div><div class="em-sub">${sd.floors_range}</div></div>
-            <div class="exec-metric-box"><div class="em-lbl">Total Units</div><div class="em-val" style="color:#2563eb;">${sd.total_units.toLocaleString()}</div><div class="em-sub">${sd.active_gfa_sqm.toLocaleString()} m² GFA</div></div>
-          </div>
-          <div style="margin-bottom:8px;"><span class="ep-badge ep-t3">${sd.epistemic_impact_tier}</span></div>
-          <div class="kv-grid">
-            <div class="kv-row"><div class="kv-lbl">Construction Status &amp; Primary Corridor</div><div class="kv-val">${sd.construction_status}<br/>Corridor: <a href="javascript:void(0)" onclick="showRoadInspector('${sd.primary_access_road_id}')">${sd.primary_access_road_id}</a> (<strong>${sd.distance_to_road_km} km</strong> to vertex)</div></div>
-          </div>
-          <details class="tech-accordion">
-            <summary>Technical Details: Vertex Coordinates &amp; HGV Modelling Assumptions</summary>
-            <div class="tech-body">
-              <div style="margin-bottom:5px;"><strong>Task 1 Cross-Reference:</strong> ${sd.linked_task1_ref}</div>
-              <div style="margin-bottom:5px;"><strong>Nearest-Vertex Geometry:</strong> Centroid [${sd.latitude.toFixed(4)}, ${sd.longitude.toFixed(4)}] → Vertex [${sd.nearest_road_vertex_wgs84}] (${sd.distance_to_road_km} km Haversine).</div>
-              <div><strong>Scenario HGV Movements:</strong> ${sd.estimated_midday_hgv_trips_per_day}<br/><span style="color:#b45309;">${sd.hgv_modelling_assumptions_and_sensitivity}</span></div>
-            </div>
-          </details>
-        </div>
-      `;
+      const subId = typeof sd === "string" ? sd : (sd && sd.subdev_id ? sd.subdev_id : "SUB-JVC-01");
+      showProjectInspector(subId, fly);
     }
 
     // =========================================================================
@@ -8359,15 +8972,22 @@ def main():
 
     function bootHaioPlatform() {
       if (window.__haioPlatformBooted) return;
-      if (!window.__haioVendorReady || typeof window.THREE === "undefined" || typeof window.TilesRenderer === "undefined") return;
       window.__haioPlatformBooted = true;
       initMap();
     }
-    window.addEventListener("DOMContentLoaded", () => {
-      if (window.__haioVendorReady) bootHaioPlatform();
-    });
+    if (document.readyState === "loading") {
+      window.addEventListener("DOMContentLoaded", bootHaioPlatform);
+    } else {
+      bootHaioPlatform();
+    }
     window.addEventListener("haio-vendor-ready", () => {
-      if (document.readyState !== "loading") bootHaioPlatform();
+      if (!window.__haioPlatformBooted) {
+        bootHaioPlatform();
+      } else if (map3d && map3dLoaded && !map3dContextLost) {
+        attachThree3DLayerIfReady();
+        sync3DMapLayers();
+        scheduleOsmCityRebuild(120);
+      }
     });
   </script>
 </body>
