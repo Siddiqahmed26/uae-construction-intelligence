@@ -4429,8 +4429,8 @@ def main():
       const prevOrigin = three3DLayer.originLonLat || [0, 0];
       const originChanged = Math.hypot(lon - prevOrigin[0], lat - prevOrigin[1]) > 1e-5;
       three3DLayer.originLonLat = [lon, lat];
-      // Exclude OSM footprints inside the hero parcel while covering the entire parcel with our 3D site plinth!
-      three3DLayer.heroExcludeRadiusM = 92.0;
+      // Exclude OSM footprints strictly inside the 106m × 88m hero parcel plinth so adjacent city towers remain 100% intact
+      three3DLayer.heroExcludeRadiusM = 56.0;
 
       const calloutTxtEl = document.getElementById("hero3DRoofCalloutText");
       if (calloutTxtEl) {
@@ -4774,9 +4774,10 @@ def main():
       pushExtrudedToBucket("rail", expandEnuRing(siteCourtRing, 0.15), 1.25, 3.2, false);
 
       if (spec.typology === "supertall_diamond") {
-        // Sculpted Supertall Tower (Block 1) + Luxury Terracotta/Timber/Glass Sky-Garden Podium (Block 2)
-        const visFloors = Math.min(68, Math.max(44, Math.round(spec.storeys * 0.62)));
-        const fH = 3.45;
+        // Sculpted Supertall Tower (Block 1) at Full Architectural Height + Luxury Terracotta/Timber/Glass Sky-Garden Podium (Block 2)
+        const visFloors = Math.min(125, Math.max(44, spec.storeys || 68));
+        const targetShaftH = Math.max(visFloors * 3.45, (spec.heightM || visFloors * 3.8) - 31.2);
+        const fH = Math.min(5.25, Math.max(3.45, targetShaftH / visFloors));
         const tier1F = Math.round(visFloors * 0.56);
         const tier2F = Math.round(visFloors * 0.26);
         const tier3F = Math.max(6, visFloors - tier1F - tier2F);
@@ -4818,8 +4819,8 @@ def main():
         roofCalloutXY = [-6.0, 1.0];
       } else if (spec.typology === "organic_terraced") {
         // Cascading Organic Terraced Waterfront Tower (Bugatti / Como / Maryam Island / Sharjah Waterfront)
-        const visFloors = Math.min(48, Math.max(24, Math.round(spec.storeys * 0.68)));
-        const fH = 3.4;
+        const visFloors = Math.min(85, Math.max(24, spec.storeys || 36));
+        const fH = 3.45;
         const podBase = makeArchFootprint("organic_oval", 2.0, -4.0, 78, 56, rotRad);
         pushExtrudedToBucket("podium", podBase, 1.10, 6.5, true);
         pushExtrudedToBucket("timber", scaleEnuRing(podBase, 0.94), 6.5, 10.2, true);
@@ -4837,7 +4838,7 @@ def main():
         roofCalloutXY = [-7.0, 4.0];
       } else if (spec.typology === "twin_triple_highrise") {
         // 3 Articulated High-Rise Residential Towers on Shared Landscaped Resort Podium
-        const f1 = Math.min(42, Math.max(18, Math.round(spec.storeys * 0.68)));
+        const f1 = Math.min(80, Math.max(18, spec.storeys || 32));
         const f2 = Math.max(14, Math.round(f1 * 0.82));
         const f3 = Math.max(12, Math.round(f1 * 0.66));
         const fH = 3.35;
@@ -4973,7 +4974,7 @@ def main():
     // Rebuilds All Surrounding Real OpenStreetMap 3D City Buildings Across the Viewport using haio.sg's GLSL Metric Architectural Shader (hdb-facade-v25) & 3D Rooftops
     function rebuildOsmCityScene() {
       if (!three3DLayer || !three3DLayer.scene || !map3d || !map3dLoaded || typeof THREE === "undefined") return;
-      if (map3d.getZoom() < 13.9) return;
+      if (map3d.getZoom() < 13.0) return;
       if (!map3d.getLayer("osm-3d-buildings")) return;
       ensureHaioEnvironmentAndLights();
 
@@ -4994,8 +4995,11 @@ def main():
       }
 
       const [originLon, originLat] = three3DLayer.originLonLat || [55.2650, 25.1850];
+      const camCenter = map3d.getCenter();
+      const [camX, camY] = lonLatToOriginEnu(camCenter.lng, camCenter.lat, originLon, originLat);
+      three3DLayer.lastCityBuildCenter = [camCenter.lng, camCenter.lat];
       const excludeRad = three3DLayer.heroExcludeRadiusM || 56.0;
-      const isHighRiseDistrict = (originLat >= 25.06 && originLat <= 25.24 && originLon >= 55.13 && originLon <= 55.36);
+      const isHighRiseDistrict = (camCenter.lat >= 25.05 && camCenter.lat <= 25.35 && camCenter.lng >= 55.12 && camCenter.lng <= 55.42);
 
       // Single merged metric shader wall buffer (with hdbBand & hdbWall attributes) + 3D roof/trellis/plant/tree buffer
       const wallPos = [];
@@ -5009,7 +5013,7 @@ def main():
       const roofNorm = [];
       const roofCol = [];
 
-      function pushMetricShaderWallRing(ring2d, z0, z1, baseRgb, bandRgb, schemeCode, topHeightM) {
+      function pushMetricShaderWallRing(ring2d, z0, z1, baseRgb, bandRgb, schemeCode, topHeightM, invertNormals = false) {
         const openRing = (ring2d.length > 3 && Math.hypot(ring2d[0][0] - ring2d[ring2d.length - 1][0], ring2d[0][1] - ring2d[ring2d.length - 1][1]) < 1e-4)
           ? ring2d.slice(0, -1)
           : ring2d;
@@ -5027,11 +5031,12 @@ def main():
           const [x1, y1] = openRing[(i + 1) % openRing.length];
           const dx = x1 - x0, dy = y1 - y0;
           const segLen = Math.hypot(dx, dy);
-          if (segLen < 0.35) continue;
+          if (segLen < 0.10) continue;
 
           let nx = dy / segLen, ny = -dx / segLen;
           const mx = (x0 + x1) * 0.5 - cx, my = (y0 + y1) * 0.5 - cy;
           if (nx * mx + ny * my < 0) { nx = -nx; ny = -ny; }
+          if (invertNormals) { nx = -nx; ny = -ny; }
 
           const isFront = (segLen >= 5.5) ? 1.0 : 0.0;
           const u0 = 0.0;
@@ -5062,7 +5067,7 @@ def main():
         }
       }
 
-      function pushSolidRoofPoly(ring2d, z0, z1, sideRgb, topRgb) {
+      function pushSolidRoofPoly(ring2d, z0, z1, sideRgb, topRgb, holes2d = null) {
         const openRing = (ring2d.length > 3 && Math.hypot(ring2d[0][0] - ring2d[ring2d.length - 1][0], ring2d[0][1] - ring2d[ring2d.length - 1][1]) < 1e-4)
           ? ring2d.slice(0, -1)
           : ring2d;
@@ -5072,16 +5077,17 @@ def main():
         for (const [x, y] of openRing) { cx += x; cy += y; }
         cx /= openRing.length; cy /= openRing.length;
 
-        if (z1 > z0 && sideRgb) {
-          for (let i = 0; i < openRing.length; i++) {
-            const [x0, y0] = openRing[i];
-            const [x1, y1] = openRing[(i + 1) % openRing.length];
+        const emitSideWalls = (rPts, flipInward) => {
+          for (let i = 0; i < rPts.length; i++) {
+            const [x0, y0] = rPts[i];
+            const [x1, y1] = rPts[(i + 1) % rPts.length];
             const dx = x1 - x0, dy = y1 - y0;
             const segLen = Math.hypot(dx, dy);
-            if (segLen < 0.08) continue;
+            if (segLen < 0.06) continue;
             let nx = dy / segLen, ny = -dx / segLen;
             const mx = (x0 + x1) * 0.5 - cx, my = (y0 + y1) * 0.5 - cy;
             if (nx * mx + ny * my < 0) { nx = -nx; ny = -ny; }
+            if (flipInward) { nx = -nx; ny = -ny; }
             roofPos.push(
               x0, y0, z0, x1, y1, z0, x1, y1, z1,
               x0, y0, z0, x1, y1, z1, x0, y0, z1
@@ -5095,16 +5101,30 @@ def main():
               roofCol.push(sr, sg, sb);
             }
           }
+        };
+
+        if (z1 > z0 && sideRgb) {
+          emitSideWalls(openRing, false);
+          if (holes2d && holes2d.length) {
+            for (const hr of holes2d) {
+              if (hr && hr.length >= 3) emitSideWalls(hr, true);
+            }
+          }
         }
 
-        if (topRgb && typeof THREE.ShapeUtils !== "undefined") {
+        if (topRgb && typeof THREE.ShapeUtils !== "undefined" && openRing.length <= 450) {
           const contour = openRing.map(([x, y]) => new THREE.Vector2(x, y));
-          const tris = THREE.ShapeUtils.triangulateShape(contour, []);
+          const holeVecs = (holes2d && holes2d.length)
+            ? holes2d.filter(hr => hr && hr.length >= 3).map(hr => hr.map(([x, y]) => new THREE.Vector2(x, y)))
+            : [];
+          const tris = THREE.ShapeUtils.triangulateShape(contour, holeVecs);
+          const allPts = holeVecs.length ? openRing.concat(...holes2d.filter(hr => hr && hr.length >= 3)) : openRing;
           const tr = Math.min(1.0, topRgb[0] * 0.92);
           const tg = Math.min(1.0, topRgb[1] * 0.92);
           const tb = Math.min(1.0, topRgb[2] * 0.92);
           for (const [i0, i1, i2] of tris) {
-            const a = openRing[i0], b = openRing[i1], c = openRing[i2];
+            const a = allPts[i0], b = allPts[i1], c = allPts[i2];
+            if (!a || !b || !c) continue;
             roofPos.push(a[0], a[1], z1, b[0], b[1], z1, c[0], c[1], z1);
             for (let k = 0; k < 3; k++) {
               roofNorm.push(0, 0, 1);
@@ -5150,7 +5170,7 @@ def main():
       for (const f of rawFeats) {
         if (!f || !f.geometry) continue;
         const props = f.properties || {};
-        if (props.hide_3d) continue;
+        if (props.hide_3d === true) continue;
 
         let rawH = parseFloat(props.render_height ?? props.height ?? 0);
         const minH = Math.max(0, parseFloat(props.render_min_height ?? props.min_height ?? 0));
@@ -5164,24 +5184,28 @@ def main():
           if (!outerLonLat || outerLonLat.length < 4) continue;
 
           const enuRing = [];
-          let cx = 0, cy = 0, minVertDist = Infinity;
+          let cx = 0, cy = 0, polyLon = 0, polyLat = 0, minVertDist = Infinity;
           for (let i = 0; i < outerLonLat.length - 1; i++) {
             const [ln, lt] = outerLonLat[i];
             const [ex, ey] = lonLatToOriginEnu(ln, lt, originLon, originLat);
             enuRing.push([ex, ey]);
             cx += ex;
             cy += ey;
+            polyLon += ln;
+            polyLat += lt;
             const vd = Math.hypot(ex, ey);
             if (vd < minVertDist) minVertDist = vd;
           }
           const nPts = enuRing.length;
-          if (nPts < 3 || nPts > 120) continue;
+          if (nPts < 3 || nPts > 1600) continue;
           cx /= nPts;
           cy /= nPts;
+          polyLon /= nPts;
+          polyLat /= nPts;
 
           const distFromOrigin = Math.hypot(cx, cy);
-          const inCameraApproach = (distFromOrigin < 142.0 && (cx * -0.55 + cy * -0.83) > 22.0);
-          if (distFromOrigin < excludeRad || minVertDist < excludeRad * 0.85 || inCameraApproach || distFromOrigin > 1850.0) continue;
+          const distFromCam = Math.hypot(cx - camX, cy - camY);
+          if (distFromOrigin < excludeRad || minVertDist < excludeRad * 0.80 || distFromCam > 5400.0) continue;
 
           let area2 = 0;
           for (let i = 0; i < nPts; i++) {
@@ -5191,45 +5215,58 @@ def main():
           }
           const areaM2 = Math.abs(area2 * 0.5);
           const effR = Math.sqrt(areaM2 / Math.PI);
-          if (effR < 2.8 || effR > 220.0) continue;
+          const minEffR = (rawH >= 24.0 || minH > 0) ? 0.15 : 1.25;
+          if (effR < minEffR || effR > 1600.0) continue;
 
-          const posHash = Math.abs(Math.round(cx * 17 + cy * 31));
-          let h = rawH;
-          if (!Number.isFinite(h) || h <= 4.2) {
-            // Contextual Dubai/Sharjah architectural height inference when OSM height tag is missing
-            if (areaM2 < 240.0) {
-              h = isHighRiseDistrict ? (14.0 + (posHash % 5) * 3.4) : (7.8 + (posHash % 3) * 3.2);
-            } else if (areaM2 < 950.0) {
-              h = isHighRiseDistrict
-                ? (48.0 + (posHash % 14) * 6.8)
-                : (22.0 + (posHash % 9) * 4.2);
-            } else if (areaM2 < 2800.0) {
-              h = isHighRiseDistrict
-                ? (72.0 + (posHash % 16) * 8.5)
-                : (34.0 + (posHash % 8) * 5.0);
-            } else {
-              // Large mall / podium footprint
-              h = 18.0 + (posHash % 4) * 4.5;
+          const holesEnu = [];
+          if (poly.length > 1) {
+            for (let hi = 1; hi < poly.length; hi++) {
+              const hLonLat = poly[hi];
+              if (!hLonLat || hLonLat.length < 4) continue;
+              const hRing = [];
+              for (let k = 0; k < hLonLat.length - 1; k++) {
+                const [hx, hy] = lonLatToOriginEnu(hLonLat[k][0], hLonLat[k][1], originLon, originLat);
+                hRing.push([hx, hy]);
+              }
+              if (hRing.length >= 3) holesEnu.push(hRing);
             }
-          } else {
-            // Preserve true Dubai/Sharjah skyscraper heights up to 380m (no * 0.56 squashing!)
-            h = Math.min(380.0, Math.max(minH + 5.0, h));
           }
 
-          const dedupKey = `${Math.round(cx / 2.8)}_${Math.round(cy / 2.8)}_${Math.round(h / 2.0)}`;
+          // World-anchored ~55m block hash so concentric building:parts of the same skyscraper share one unified palette
+          const blockHash = Math.abs(Math.round(polyLon * 1800) * 73 + Math.round(polyLat * 1800) * 137);
+          const posHash = Math.abs(Math.round(polyLon * 18000) * 17 + Math.round(polyLat * 18000) * 31);
+          let h = rawH;
+          if (!Number.isFinite(h) || h <= 3.2) {
+            if (areaM2 < 240.0) {
+              h = isHighRiseDistrict ? (12.0 + (blockHash % 4) * 3.2) : (7.8 + (blockHash % 3) * 3.0);
+            } else if (areaM2 < 950.0) {
+              h = isHighRiseDistrict ? (26.0 + (blockHash % 6) * 4.5) : (16.0 + (blockHash % 5) * 3.6);
+            } else {
+              h = 18.0 + (blockHash % 4) * 3.8;
+            }
+          } else {
+            // Preserve 100% of true Dubai/Sharjah supertall heights up to 1,100m (Burj Khalifa 828m full spire!)
+            h = Math.min(1100.0, Math.max(minH + 1.2, h));
+          }
+
+          const dedupKey = `${Math.round(cx * 2)}_${Math.round(cy * 2)}_${Math.round(minH * 2)}_${Math.round(h * 2)}_${Math.round(areaM2)}`;
           if (seenGrid.has(dedupKey)) continue;
           seenGrid.add(dedupKey);
 
-          candidates.push({ enuRing, cx, cy, h, minH, effR, areaM2, distFromOrigin, posHash });
+          const heightBoost = h >= 120.0 ? 2500.0 : (h >= 45.0 ? 1250.0 : ((h >= 18.0 || areaM2 >= 400.0) ? 550.0 : 0.0));
+          candidates.push({
+            enuRing, holesEnu, cx, cy, polyLon, polyLat, h, minH, effR, areaM2,
+            distFromOrigin, distFromCam, heightBoost, posHash, blockHash
+          });
         }
       }
 
-      // Sort by distance from project/camera center so nearest buildings get haio.sg GLSL facades & 3D rooftops while outer buildings retain MapLibre native 3D fill-extrusion fallback
-      candidates.sort((a, b) => a.distFromOrigin - b.distFromOrigin);
+      // Sort by camera distance with skyline priority so 100% of nearby blocks + all skyline towers/malls render completely
+      candidates.sort((a, b) => (a.distFromCam - a.heightBoost) - (b.distFromCam - b.heightBoost));
       const baseMaxBuildings = Math.min(950, candidates.length);
-      const cityCap = IS_SAFARI_WEBKIT ? 550 : 950;
-      const maxBuildings = Math.min(cityCap, baseMaxBuildings);
-      three3DLayer.osmCityTruncated = (candidates.length > cityCap);
+      const cityCap = IS_SAFARI_WEBKIT ? 6500 : 9500;
+      const maxBuildings = Math.min(cityCap, candidates.length);
+      three3DLayer.osmCityTruncated = (candidates.length > maxBuildings || candidates.length > baseMaxBuildings);
       if (maxBuildings === 0) {
         three3DLayer.osmCityBuildingCount = 0;
         three3DLayer.osmCityTruncated = false;
@@ -5237,7 +5274,7 @@ def main():
         return;
       }
 
-      // Haio.sg's 15 Condo Stone & Metallic Fin Palettes + 3 Office Skyscraper Palettes + 2 Hotel Palettes + 3 Mall Palettes + Villa Palettes
+      // Haio.sg's Condo Stone & Metallic Fin Palettes + Skyscraper Curtain-Wall Palettes + Hotel, Mall & Villa Palettes
       const CONDO_PALETTES = [
         { base: [0.92, 0.90, 0.86], band: [0.64, 0.45, 0.30] }, // Warm limestone + copper bronze fin
         { base: [0.89, 0.87, 0.83], band: [0.72, 0.63, 0.48] }, // Travertine + champagne gold fin
@@ -5248,18 +5285,18 @@ def main():
         { base: [0.88, 0.84, 0.78], band: [0.68, 0.52, 0.36] }  // Gulf sand stone + warm amber bronze fin
       ];
       const OFFICE_PALETTES = [
-        { base: [0.86, 0.83, 0.77], band: [0.44, 0.48, 0.52] }, // 800: Ribbed warm limestone & dark ribbon windows (like AXA tower in haio.sg)
-        { base: [0.26, 0.42, 0.54], band: [0.68, 0.78, 0.86] }, // 801: Sapphire-teal reflective curtain wall with silver mullions
-        { base: [0.22, 0.26, 0.30], band: [0.66, 0.54, 0.38] }  // 802: Charcoal-anthracite glass with deep champagne-bronze vertical fins
+        { base: [0.86, 0.83, 0.77], band: [0.44, 0.48, 0.52] }, // 800: Ribbed warm limestone & dark ribbon windows
+        { base: [0.28, 0.45, 0.58], band: [0.74, 0.82, 0.90] }, // 801: Sapphire-silver reflective curtain wall with stainless mullions
+        { base: [0.22, 0.28, 0.34], band: [0.68, 0.58, 0.42] }  // 802: Anthracite glass with champagne-bronze vertical fins
       ];
       const HOTEL_PALETTES = [
         { base: [0.30, 0.46, 0.58], band: [0.76, 0.68, 0.54] }, // 1200: Reflective azure curtain wall + champagne trim
         { base: [0.88, 0.83, 0.75], band: [0.56, 0.40, 0.30] }  // 1201: Warm travertine precast with recessed dark balconies
       ];
       const MALL_PALETTES = [
-        { base: [0.82, 0.79, 0.74], band: [0.55, 0.48, 0.40] }, // 300: Faceted greige panels over white finned retail podium
+        { base: [0.84, 0.81, 0.76], band: [0.55, 0.48, 0.40] }, // 300: Faceted greige panels over white finned retail podium
         { base: [0.86, 0.81, 0.73], band: [0.42, 0.54, 0.62] }, // 301: Natural stone courses with corner glass curtain wall
-        { base: [0.78, 0.74, 0.68], band: [0.62, 0.44, 0.30] }  // 302: Timber architectural fins & glass atrium
+        { base: [0.80, 0.76, 0.70], band: [0.62, 0.44, 0.30] }  // 302: Timber architectural fins & glass atrium
       ];
       const VILLA_PALETTES = [
         { base: [0.95, 0.92, 0.87], band: [0.35, 0.32, 0.28], roof: [0.58, 0.35, 0.26] },
@@ -5267,107 +5304,142 @@ def main():
         { base: [0.93, 0.89, 0.83], band: [0.48, 0.36, 0.26], roof: [0.52, 0.38, 0.28] }
       ];
 
+      const burjCurtainPal = { base: [0.68, 0.80, 0.90], band: [0.92, 0.96, 1.00] };
+      const burjSilverCapRgb = [0.80, 0.87, 0.94];
+      const burjSpireSteelRgb = [0.90, 0.94, 0.98];
       const roofStoneRgb = [0.78, 0.75, 0.71];
+      const mallRoofDeckRgb = [0.65, 0.64, 0.61];
       const roofSlabRgb = [0.54, 0.52, 0.49];
+      const skyParapetRgb = [0.76, 0.80, 0.85];
+      const skyRoofWellRgb = [0.50, 0.55, 0.60];
       const plantWallRgb = [0.48, 0.46, 0.43];
       const plantTopRgb = [0.64, 0.62, 0.58];
-      const gardenRgb = [0.22, 0.42, 0.18];
       const coolingRgb = [0.66, 0.69, 0.72];
 
+      const extrudeAllWalls = (outerR, holesArr, z0, z1, baseC, bandC, sCode, topHM) => {
+        pushMetricShaderWallRing(outerR, z0, z1, baseC, bandC, sCode, topHM, false);
+        if (holesArr && holesArr.length) {
+          for (const hr of holesArr) {
+            pushMetricShaderWallRing(hr, z0, z1, baseC, bandC, sCode, topHM, true);
+          }
+        }
+      };
+
       for (let idx = 0; idx < maxBuildings; idx++) {
-        const { enuRing, cx, cy, h, minH, effR, areaM2, posHash } = candidates[idx];
-        const bHash = Math.abs(posHash + Math.round(h * 7));
+        const { enuRing, holesEnu, cx, cy, polyLon, polyLat, h, minH, effR, areaM2, posHash, blockHash } = candidates[idx];
 
-        // 1. Low-Rise Villa / Townhouse (h <= 13.5m and area < 420 m²)
+        // 0. Iconic Landmark: Burj Khalifa (28 stepped Y-lobes + 828m telescopic titanium spire) & ultra-supertalls
+        const distToBurjM = Math.hypot((polyLon - 55.27418) * 100500.0, (polyLat - 25.19720) * 111320.0);
+        if ((distToBurjM < 78.0 && h >= 14.0) || h >= 390.0) {
+          extrudeAllWalls(enuRing, holesEnu, minH, h, burjCurtainPal.base, burjCurtainPal.band, 801, h);
+          pushSolidRoofPoly(enuRing, Math.max(minH, h - 0.55), h + 0.65, burjSilverCapRgb, burjSilverCapRgb, holesEnu);
+          if (h >= 800.0) {
+            // Seamlessly bridge the 710m hexagonal core up through the 828m telescopic structural titanium spire
+            const s1 = makeArchFootprint("chamfer_oct", cx, cy, 7.2, 7.2, 0);
+            const s2 = makeArchFootprint("chamfer_oct", cx, cy, 4.8, 4.8, 0);
+            const s3 = makeArchFootprint("chamfer_oct", cx, cy, 2.8, 2.8, 0);
+            const sTip = makeArchFootprint("chamfer_oct", cx, cy, 1.4, 1.4, 0);
+            pushMetricShaderWallRing(s1, 706.0, 744.0, burjCurtainPal.base, burjCurtainPal.band, 801, 828.0, false);
+            pushSolidRoofPoly(s1, 743.5, 744.5, burjSpireSteelRgb, burjSpireSteelRgb);
+            pushMetricShaderWallRing(s2, 744.0, 778.0, burjCurtainPal.base, burjCurtainPal.band, 801, 828.0, false);
+            pushSolidRoofPoly(s2, 777.5, 778.5, burjSpireSteelRgb, burjSpireSteelRgb);
+            pushSolidRoofPoly(s3, 778.0, 808.0, burjSpireSteelRgb, burjSpireSteelRgb);
+            pushSolidRoofPoly(sTip, 808.0, 828.5, [0.95, 0.97, 1.0], [0.98, 0.99, 1.0]);
+          }
+          continue;
+        }
+
+        // 1. Stepped Compound Skyscrapers, Skybridges (minH > 0), & Supertalls (Address Sky View, Emirates Towers, Index, Marina 101, etc.)
+        if (h >= 150.0 || minH > 0 || (h >= 62.0 && effR < 13.5)) {
+          const skyIdx = blockHash % 4;
+          const skyScheme = skyIdx < 3 ? (800 + skyIdx) : 1200;
+          const skyPal = skyIdx < 3 ? OFFICE_PALETTES[skyIdx] : HOTEL_PALETTES[0];
+          extrudeAllWalls(enuRing, holesEnu, minH, h, skyPal.base, skyPal.band, skyScheme, h);
+          pushSolidRoofPoly(enuRing, Math.max(minH, h - 0.45), h + 0.85, skyParapetRgb, skyParapetRgb, holesEnu);
+          if (holesEnu.length === 0 && effR >= 4.5 && enuRing.length <= 48) {
+            const wellR = scaleEnuRing(enuRing, 0.86);
+            pushSolidRoofPoly(wellR, h + 0.85, h + 0.95, null, skyRoofWellRgb);
+          }
+          continue;
+        }
+
+        // 2. Low-Rise Villa / Townhouse (h <= 13.5m and area < 420 m²)
         if (h <= 13.5 && areaM2 < 420.0 && minH === 0) {
-          const vp = VILLA_PALETTES[bHash % VILLA_PALETTES.length];
-          const vScheme = 610 + (bHash % 4) * 10 + (bHash % 3);
-          const lotRing = expandEnuRing(enuRing, 1.8);
-          pushSolidRoofPoly(lotRing, 0.0, 0.35, [0.74, 0.71, 0.66], [0.42, 0.56, 0.36]);
-          pushMetricShaderWallRing(enuRing, 0.35, h, vp.base, vp.band, vScheme, h);
-          pushPitchedVillaRoof(expandEnuRing(enuRing, 0.35), h, Math.min(2.8, Math.max(1.6, effR * 0.28)), vp.roof);
+          const vp = VILLA_PALETTES[posHash % VILLA_PALETTES.length];
+          const vScheme = 610 + (posHash % 4) * 10 + (posHash % 3);
+          const lotRing = expandEnuRing(enuRing, 1.4);
+          pushSolidRoofPoly(lotRing, 0.0, 0.30, [0.74, 0.71, 0.66], [0.44, 0.56, 0.38]);
+          extrudeAllWalls(enuRing, holesEnu, 0.30, h, vp.base, vp.band, vScheme, h);
+          if (holesEnu.length === 0 && enuRing.length <= 24) {
+            pushPitchedVillaRoof(expandEnuRing(enuRing, 0.30), h, Math.min(2.6, Math.max(1.5, effR * 0.26)), vp.roof);
+          } else {
+            pushSolidRoofPoly(enuRing, h - 0.3, h + 0.45, roofStoneRgb, vp.roof, holesEnu);
+          }
           continue;
         }
 
-        // 2. Large Shopping Mall / Retail Podium (h <= 26m and area >= 850 m²)
-        if (h <= 26.0 && areaM2 >= 850.0) {
-          const mp = MALL_PALETTES[bHash % MALL_PALETTES.length];
-          const mScheme = 300 + (bHash % 3);
-          pushMetricShaderWallRing(enuRing, minH, h, mp.base, mp.band, mScheme, h);
-          pushSolidRoofPoly(enuRing, h - 0.6, h + 0.9, roofStoneRgb, roofStoneRgb);
-          const insetRoof = scaleEnuRing(enuRing, 0.90);
-          pushSolidRoofPoly(insetRoof, h + 0.9, h + 1.0, null, roofSlabRgb);
-          // Rooftop Glass Atrium Skylight + HVAC Cooling Towers
-          const skylightRing = scaleEnuRing(enuRing, 0.45);
-          pushSolidRoofPoly(skylightRing, h + 1.0, h + 3.2, [0.35, 0.52, 0.64], [0.48, 0.68, 0.80]);
-          const ctRing = makeArchFootprint("rect", cx + effR * 0.35, cy - effR * 0.25, 6.5, 4.2, 0);
-          pushSolidRoofPoly(ctRing, h + 1.0, h + 3.8, coolingRgb, plantTopRgb);
+        // 3. Large Shopping Mall / Opera / Cultural & Retail Podium (Dubai Mall, Souk Al Bahar, Dubai Opera: h <= 34m and area >= 850 m²)
+        if (h <= 34.0 && areaM2 >= 850.0) {
+          const mp = MALL_PALETTES[blockHash % MALL_PALETTES.length];
+          const mScheme = 300 + (blockHash % 3);
+          extrudeAllWalls(enuRing, holesEnu, minH, h, mp.base, mp.band, mScheme, h);
+          pushSolidRoofPoly(enuRing, Math.max(minH, h - 0.6), h + 0.85, roofStoneRgb, mallRoofDeckRgb, holesEnu);
+          if (holesEnu.length === 0 && enuRing.length <= 44) {
+            const insetRoof = scaleEnuRing(enuRing, 0.90);
+            pushSolidRoofPoly(insetRoof, h + 0.85, h + 0.95, null, roofSlabRgb);
+            const skylightRing = scaleEnuRing(enuRing, 0.42);
+            pushSolidRoofPoly(skylightRing, h + 0.95, h + 3.0, [0.35, 0.52, 0.64], [0.48, 0.68, 0.80]);
+          }
           continue;
         }
 
-        // 3. Determine Scheme for High-Rise / Mid-Rise Buildings (Office 800..802, Hotel 1200..1201, or Condo 100..114)
-        let schemeCode = 100 + (bHash % 15);
-        let pal = CONDO_PALETTES[bHash % CONDO_PALETTES.length];
+        // 4. High-Rise / Mid-Rise Buildings (Office 800..802, Hotel 1200..1201, or Condo 100..114) — Complete Continuous Shafts
+        let schemeCode = 100 + (blockHash % 15);
+        let pal = CONDO_PALETTES[blockHash % CONDO_PALETTES.length];
         let isOffice = false;
 
-        if (h >= 52.0 && (bHash % 3 === 0)) {
-          const oIdx = bHash % 3;
+        if (h >= 50.0 && (blockHash % 3 === 0)) {
+          const oIdx = blockHash % 3;
           schemeCode = 800 + oIdx;
           pal = OFFICE_PALETTES[oIdx];
           isOffice = true;
-        } else if (h >= 36.0 && (bHash % 5 === 1)) {
-          const hIdx = bHash % 2;
+        } else if (h >= 34.0 && (blockHash % 5 === 1)) {
+          const hIdx = blockHash % 2;
           schemeCode = 1200 + hIdx;
           pal = HOTEL_PALETTES[hIdx];
         }
 
-        // Parcel ground apron / landscaped podium base under tall towers so 2D satellite shadows are softened
-        if (minH === 0 && effR >= 7.0) {
-          const apronRing = expandEnuRing(enuRing, 2.2);
-          pushSolidRoofPoly(apronRing, 0.0, 0.55, roofStoneRgb, [0.74, 0.71, 0.66]);
+        if (minH === 0 && effR >= 8.0 && holesEnu.length === 0 && enuRing.length <= 36) {
+          const apronRing = expandEnuRing(enuRing, 1.6);
+          pushSolidRoofPoly(apronRing, 0.0, 0.45, roofStoneRgb, [0.74, 0.71, 0.66]);
         }
 
-        let topRing = enuRing;
-        if (h >= 58.0 && effR >= 9.0 && minH === 0) {
-          // Articulated Podium + Setback Tower Shaft for Tall Skyscrapers
-          const podZ = Math.min(16.5, Math.max(10.5, Math.round(h * 0.14)));
-          const podRing = expandEnuRing(enuRing, 2.4);
-          pushMetricShaderWallRing(podRing, 0.55, podZ, pal.base, pal.band, schemeCode, h);
-          pushSolidRoofPoly(podRing, podZ - 0.35, podZ + 0.45, roofStoneRgb, (bHash % 2 === 0) ? gardenRgb : roofSlabRgb);
-
-          if (h >= 92.0 && (bHash % 2 === 0)) {
-            const splitZ = Math.round(h * 0.76);
-            pushMetricShaderWallRing(enuRing, podZ, splitZ, pal.base, pal.band, schemeCode, h);
-            pushSolidRoofPoly(enuRing, splitZ - 0.4, splitZ + 0.4, roofStoneRgb, gardenRgb);
-            topRing = scaleEnuRing(enuRing, 0.84);
-            pushMetricShaderWallRing(topRing, splitZ, h, pal.base, pal.band, schemeCode, h);
-          } else {
-            pushMetricShaderWallRing(enuRing, podZ, h, pal.base, pal.band, schemeCode, h);
-          }
+        if (h >= 65.0 && effR >= 13.5 && minH === 0 && holesEnu.length === 0 && enuRing.length <= 36) {
+          const podZ = Math.min(14.5, Math.max(9.5, Math.round(h * 0.12)));
+          const podRing = expandEnuRing(enuRing, 1.8);
+          pushMetricShaderWallRing(podRing, 0.45, podZ, pal.base, pal.band, schemeCode, h, false);
+          pushSolidRoofPoly(podRing, podZ - 0.35, podZ + 0.40, roofStoneRgb, roofSlabRgb);
+          pushMetricShaderWallRing(enuRing, podZ, h, pal.base, pal.band, schemeCode, h, false);
         } else {
-          pushMetricShaderWallRing(enuRing, minH, h, pal.base, pal.band, schemeCode, h);
+          extrudeAllWalls(enuRing, holesEnu, minH, h, pal.base, pal.band, schemeCode, h);
         }
 
-        // 4. Haio.sg 3D Rooftop Architecture: Perimeter Parapet + Recessed Roof Well + Crown Trellis Frame + Mechanical Plant + Sky-Garden
-        pushSolidRoofPoly(topRing, h - 0.45, h + 1.10, roofStoneRgb, roofStoneRgb);
-        const wellRing = scaleEnuRing(topRing, 0.88);
-        pushSolidRoofPoly(wellRing, h + 1.10, h + 1.18, null, roofSlabRgb);
-
-        if (effR >= 7.2 && h >= 18.0) {
-          // 3D Mechanical Plant Room / Elevator Overrun Core
-          const plantRing = scaleEnuRing(topRing, 0.42);
-          const plantH = Math.min(4.2, Math.max(2.8, h * 0.04));
-          pushSolidRoofPoly(plantRing, h + 1.18, h + 1.18 + plantH, plantWallRgb, plantTopRgb);
-
-          // Adjacent Rooftop Sky-Garden or Cooling Tower Bank
-          const featRing = scaleEnuRing(topRing, 0.68);
-          if (isOffice) {
-            pushSolidRoofPoly(featRing, h + 1.18, h + 2.6, coolingRgb, plantTopRgb);
-          } else {
-            pushSolidRoofPoly(featRing, h + 1.18, h + 1.75, roofStoneRgb, gardenRgb);
-            // Architectural Rooftop Crown Trellis / Pergola Frame on Condo/Hotel Towers
-            const crownFrameOuter = scaleEnuRing(topRing, 0.82);
-            pushSolidRoofPoly(crownFrameOuter, h + 2.8, h + 3.35, pal.band, pal.base);
+        // 5. Complete Architectural Rooftop: Perimeter Parapet + Recessed Roof Well + Mechanical Core
+        pushSolidRoofPoly(enuRing, Math.max(minH, h - 0.45), h + 1.05, roofStoneRgb, roofStoneRgb, holesEnu);
+        if (holesEnu.length === 0 && enuRing.length <= 48) {
+          const wellRing = scaleEnuRing(enuRing, 0.88);
+          pushSolidRoofPoly(wellRing, h + 1.05, h + 1.15, null, roofSlabRgb);
+          if (effR >= 7.5 && h >= 20.0) {
+            const plantRing = scaleEnuRing(enuRing, 0.40);
+            const plantH = Math.min(4.0, Math.max(2.6, h * 0.035));
+            pushSolidRoofPoly(plantRing, h + 1.15, h + 1.15 + plantH, plantWallRgb, plantTopRgb);
+            if (isOffice) {
+              const featRing = scaleEnuRing(enuRing, 0.64);
+              pushSolidRoofPoly(featRing, h + 1.15, h + 2.4, coolingRgb, plantTopRgb);
+            } else {
+              const crownFrameOuter = scaleEnuRing(enuRing, 0.80);
+              pushSolidRoofPoly(crownFrameOuter, h + 2.5, h + 3.05, pal.band, pal.base);
+            }
           }
         }
       }
@@ -5408,9 +5480,13 @@ def main():
       if (map3d) map3d.triggerRepaint();
     }
 
-    function scheduleOsmCityRebuild(delayMs = 220) {
-      if (osmCityRebuildTimer) clearTimeout(osmCityRebuildTimer);
+    function scheduleOsmCityRebuild(delayMs = 220, resetExisting = true) {
+      if (osmCityRebuildTimer) {
+        if (!resetExisting) return;
+        clearTimeout(osmCityRebuildTimer);
+      }
       osmCityRebuildTimer = setTimeout(() => {
+        osmCityRebuildTimer = null;
         rebuildOsmCityScene();
       }, delayMs);
     }
@@ -5425,7 +5501,8 @@ def main():
         type: "custom",
         renderingMode: "3d",
         originLonLat: [55.2650, 25.1850],
-        heroExcludeRadiusM: 48.0,
+        lastCityBuildCenter: null,
+        heroExcludeRadiusM: 56.0,
         osmCityBuildingCount: 0,
         osmCityTruncated: false,
         heroRoofLocalVec: new THREE.Vector3(0, 0, 68.0),
@@ -5460,7 +5537,7 @@ def main():
             return;
           }
           const zNow = this.map.getZoom();
-          if (zNow < 13.8) {
+          if (zNow < 13.0) {
             if (calloutEl) calloutEl.style.display = "none";
             return;
           }
@@ -5471,10 +5548,19 @@ def main():
           this.localScaleMat.makeTranslation(p0[0], p0[1], 0).scale(new THREE.Vector3(h0, -h0, h0));
 
           this.renderCamera.projectionMatrix.copy(this.mat4Tmp.fromArray(rawMat).multiply(this.localScaleMat));
+          // Expand clip-space Z range (without altering X/Y projection or monotonic depth order) so 828m Burj Khalifa & 557m supertalls never clip against MapLibre's close-zoom near plane
+          const pe = this.renderCamera.projectionMatrix.elements;
+          pe[2] *= 0.18;
+          pe[6] *= 0.18;
+          pe[10] *= 0.18;
+          pe[14] *= 0.18;
           this.renderCamera.projectionMatrixInverse.copy(this.renderCamera.projectionMatrix).invert();
 
           this.renderer.resetState();
           ensureHaioEnvironmentAndLights(true);
+          // MapLibre v4 enables gl.SCISSOR_TEST to clip ground tiles at the 3D horizon line; disable it here so 828m Burj Khalifa & all skyscrapers soar cleanly into the sky!
+          gl.disable(gl.SCISSOR_TEST);
+          this.renderer.setScissorTest(false);
           gl.enable(gl.DEPTH_TEST);
           gl.depthFunc(gl.LEQUAL);
           gl.depthMask(true);
@@ -5597,7 +5683,7 @@ def main():
             "source-layer": "building",
             minzoom: 12.0,
             maxzoom: 22.0,
-            filter: ["!", ["has", "hide_3d"]],
+            filter: ["!=", ["get", "hide_3d"], true],
             layout: { visibility: is3DBlocksEnabled ? "visible" : "none" },
             paint: {
               "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
@@ -5606,7 +5692,9 @@ def main():
                 "interpolate", ["linear"], ["coalesce", ["get", "render_height"], 16],
                 0, "#e8e3d9",
                 40, "#dcd5c7",
-                110, "#c5d2e0"
+                110, "#c5d2e0",
+                320, "#9ab6cf",
+                650, "#7ea3c4"
               ],
               "fill-extrusion-vertical-gradient": true,
               "fill-extrusion-opacity": is3DBlocksEnabled ? 0.82 : 0.0
@@ -5673,6 +5761,8 @@ def main():
 
       const defaultProj = DATA.projects.find(x => x.project_id === selected3DProjectId) || DATA.projects[0];
       const [initLat, initLon] = parseCoord(defaultProj.coordinates);
+      const initSpec = getProject3DSpec(defaultProj);
+      const initCam = getOptimalProject3DCamera(initLat, initLon, initSpec, false);
       const safeDpr = Math.min(window.devicePixelRatio || 1, IS_SAFARI_WEBKIT ? 1.25 : 2.0);
       const initMode = currentBasemapMode || "sat";
       const initBg = initMode === "dark" ? "#1a1d23" : (initMode === "light" ? "#e8e4d8" : "#162231");
@@ -5680,10 +5770,10 @@ def main():
       try {
         map3d = new maplibregl.Map({
           container: "map3dCanvas",
-          center: [initLon + 0.00014, initLat + 0.00004],
-          zoom: window.innerWidth <= 768 ? 15.8 : 16.55,
-          pitch: 58,
-          bearing: 60,
+          center: [initCam.lon, initCam.lat],
+          zoom: initCam.zoom,
+          pitch: initCam.pitch,
+          bearing: initCam.bearing,
           minZoom: 8.5,
           maxZoom: 19.2,
           maxBounds: [[51.0, 22.4], [56.8, 26.5]],
@@ -5696,6 +5786,11 @@ def main():
           style: {
             version: 8,
             glyphs: "https://tiles.openfreemap.org/fonts/{fontstack}/{range}.pbf",
+            sky: {
+              "sky-color": initMode === "dark" ? "#0b1324" : "#6ea3d4",
+              "horizon-color": initMode === "dark" ? "#1e293b" : "#dbe9f6",
+              "sky-horizon-blend": 0.55
+            },
             light: {
               anchor: "viewport",
               color: "#fffbeb",
@@ -6060,7 +6155,16 @@ def main():
       map3d.on("rotate", updateCompassUI);
       map3d.on("move", () => {
         updateCompassUI();
-        if (map3d && !map3dContextLost) map3d.triggerRepaint();
+        if (map3d && !map3dContextLost) {
+          if (three3DLayer && three3DLayer.lastCityBuildCenter && map3d.getZoom() >= 13.0) {
+            const mc = map3d.getCenter();
+            const dDeg = Math.hypot(mc.lng - three3DLayer.lastCityBuildCenter[0], mc.lat - three3DLayer.lastCityBuildCenter[1]);
+            if (dDeg > 0.0052) {
+              scheduleOsmCityRebuild(140, false);
+            }
+          }
+          map3d.triggerRepaint();
+        }
       });
       map3d.on("moveend", () => {
         scheduleOsmCityRebuild(140);
@@ -6152,9 +6256,18 @@ def main():
           mode === "dark" ? "#1a1d23" : (mode === "light" ? "#e8e4d8" : "#162231")
         );
       }
+      if (typeof map3d.setSky === "function") {
+        try {
+          map3d.setSky({
+            "sky-color": mode === "dark" ? "#0b1324" : "#6ea3d4",
+            "horizon-color": mode === "dark" ? "#1e293b" : "#dbe9f6",
+            "sky-horizon-blend": 0.55
+          });
+        } catch (_) {}
+      }
       if (map3d.getLayer("osm-3d-buildings")) {
-        const hasThreeCity = (three3DLayer && three3DLayer.osmCityBuildingCount > 0 && zNow >= 14.0);
-        const showFallbackExtrusion = Boolean(three3DLayer && three3DLayer.osmCityTruncated && zNow < 14.8);
+        const hasThreeCity = (three3DLayer && three3DLayer.osmCityBuildingCount > 0 && zNow >= 13.0);
+        const showFallbackExtrusion = Boolean(three3DLayer && three3DLayer.osmCityTruncated && zNow < 13.8);
         const fillExtOpacity = !is3DBlocksEnabled
           ? 0.0
           : (hasThreeCity ? (showFallbackExtrusion ? 0.55 : 0.002) : 0.82);
@@ -8563,16 +8676,54 @@ def main():
       const sd = !p ? DATA.subdevs.find(x => x.subdev_id === selected3DProjectId) : null;
       if ((p || sd) && map3d && !map3dContextLost) {
         const [lat, lon] = p ? parseCoord(p.coordinates) : [sd.latitude, sd.longitude];
+        const bSpec = getProject3DSpec(p || sd);
+        const optCam = getOptimalProject3DCamera(lat, lon, bSpec, Boolean(sd));
         map3d.flyTo({
-          center: [lon + 0.00030, lat - 0.00016],
-          zoom: active3DBlock === "ALL" ? 16.72 : 17.05,
-          pitch: 58,
-          bearing: active3DBlock === "ALL" ? 60 : 48,
+          center: [optCam.lon, optCam.lat],
+          zoom: active3DBlock === "ALL" ? optCam.zoom : Math.min(17.0, optCam.zoom + 0.35),
+          pitch: optCam.pitch,
+          bearing: active3DBlock === "ALL" ? optCam.bearing : (optCam.bearing - 10),
           duration: 900
         });
       }
       sync3DMapLayers();
       showProjectInspector(selected3DProjectId, false);
+    }
+
+    // Computes height-aware camera framing so even 557m–725m supertalls render 100% complete from ground plinth to crown spire inside the viewport
+    function getOptimalProject3DCamera(lat, lon, spec, isSubdev) {
+      const isMob = window.innerWidth <= 768;
+      const hM = (spec && spec.heightM) ? spec.heightM : 140;
+      const isBusBayDowntownView = (lat >= 25.175 && lat <= 25.195 && lon >= 55.255 && lon <= 55.278);
+      const bearing = isSubdev ? 52 : (isBusBayDowntownView ? 36 : 52);
+      const bRad = (bearing * Math.PI) / 180;
+      if (hM >= 450) {
+        const shiftDeg = 0.0024;
+        return {
+          lat: lat + Math.cos(bRad) * shiftDeg,
+          lon: lon + Math.sin(bRad) * shiftDeg,
+          zoom: isMob ? 15.05 : 15.42,
+          pitch: 54,
+          bearing
+        };
+      }
+      if (hM >= 250) {
+        const shiftDeg = 0.0012;
+        return {
+          lat: lat + Math.cos(bRad) * shiftDeg,
+          lon: lon + Math.sin(bRad) * shiftDeg,
+          zoom: isMob ? 15.45 : 15.85,
+          pitch: 56,
+          bearing
+        };
+      }
+      return {
+        lat: lat + 0.00018,
+        lon: lon + 0.00024,
+        zoom: isMob ? 15.85 : (isSubdev ? 16.28 : 16.52),
+        pitch: 57,
+        bearing
+      };
     }
 
     // =========================================================================
@@ -8623,7 +8774,8 @@ def main():
 
       sync3DMapLayers();
       if (fly) {
-        flyBothMaps(lat, lon, window.innerWidth <= 768 ? 15.9 : (isSubdev ? 16.35 : 16.72), 58, isSubdev ? 52 : 60);
+        const optCam = getOptimalProject3DCamera(lat, lon, spec, isSubdev);
+        flyBothMaps(optCam.lat, optCam.lon, optCam.zoom, optCam.pitch, optCam.bearing);
         document.getElementById("hudScope").textContent = `${p.project_id}: ${p.project_name.split('(')[0].trim()}`;
       }
 
