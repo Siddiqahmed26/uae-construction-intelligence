@@ -664,7 +664,10 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
         '23_traffic_impact_studies_tis.csv',
         '24_traffic_data_providers_evaluation.csv',
         'href="${d.document_url}"',
-        'burj-binghatti-jacob-co-residences',
+        'binghatti-developers/burj-binghatti-jacob-co-residences',
+        'binghatti.com/en/projects/burj-binghatti-jacob-and-co-residences',
+        'dubaisouth.ae/en/aviation-district',
+        'nakheel.com/en/communities/palm-jumeirah/como-residences',
     ):
         assert forbidden_ui_token not in html_text, f"Found stale/broken UI token '{forbidden_ui_token}' in task2_gis_intelligence.html"
 
@@ -694,14 +697,33 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
     assert total_task2_csv_rows == 157, f"Expected 157 total Task 2 CSV rows, got {total_task2_csv_rows}"
 
     # Verify all 205 project documents have non-empty https:// source_url syntax (prevents /undefined hrefs; does not claim live external HTTP reachability across WAF-protected third-party portals)
-    # Also verify DOC-D11-03 and SRC-195 point to the verified live Property Finder route
+    # Also verify canonical remediated routes across DOC-D1-02..DOC-D20-03 & DOC-D11-03 / SRC-195 and truthful WAF availability wording
     expected_d11_pf_url = "https://www.propertyfinder.ae/en/new-projects/binghatti-developers-fze/burj-binghatti-jacob-and-co"
+    expected_canonical_docs = {
+        "DOC-D1-02": "https://media.dubaiairports.ae/statement-on-phase-two-expansion-of-dwc-al-maktoum-international-airport/",
+        "DOC-D1-03": "https://www.mbraerospacehub.ae/",
+        "DOC-D2-03": "https://www.propertyfinder.ae/en/new-projects/lp/dubai/palm-jebel-ali",
+        "DOC-D9-02": "https://www.dm.gov.ae/dubai-municipality-and-dubai-south-launch-stormwater-tunnel-project-for-sustainable-infrastructure/",
+        "DOC-D10-02": "https://www.propertyfinder.ae/en/new-projects/azizi-developments/burj-azizi-tower",
+        "DOC-D11-01": "https://www.binghatti.com/en/branded-projects/burj-binghatti-jacob-co-residences",
+        "DOC-D11-03": expected_d11_pf_url,
+        "DOC-D13-02": "https://www.propertyfinder.ae/en/new-projects/london-gate/aeternitas",
+        "DOC-D14-02": "https://www.propertyfinder.ae/en/new-projects/nakheel/como-residences",
+        "DOC-D19-01": "https://www.tilalalghaf.com/en/about-us",
+        "DOC-D19-03": "https://www.ghafwoods.com/en",
+        "DOC-D20-03": "https://www.wam.ae/en/article/c10p0yg-difc-awards-aed3-billion-difc-heights-tower",
+    }
     docs_rows = json.loads((DATASETS_DIR / "05_project_documents.json").read_text(encoding="utf-8"))
     assert len(docs_rows) == 205
+    docs_by_id = {d["doc_id"]: d for d in docs_rows}
     for d in docs_rows:
-        assert str(d.get("source_url", "")).startswith("https://"), f"Missing/invalid https:// source_url syntax on {d.get('doc_id')}"
-    doc_d11_03 = next(d for d in docs_rows if d["doc_id"] == "DOC-D11-03")
-    assert doc_d11_03["source_url"] == expected_d11_pf_url, f"Stale DOC-D11-03 URL: {doc_d11_03['source_url']}"
+        su = str(d.get("source_url", ""))
+        assert su.startswith("https://"), f"Missing/invalid https:// source_url syntax on {d.get('doc_id')}"
+        if str(d.get("availability_status", "")).startswith("Available"):
+            for waf_dom in ("bayut.com", "azizidevelopments.com", "sobharealty.com", "gjproperties.ae", "alzahia.ae"):
+                assert waf_dom not in su.lower(), f"WAF-gated domain {waf_dom} must not be labelled unqualified Available on {d.get('doc_id')}"
+    for did, exp_u in expected_canonical_docs.items():
+        assert docs_by_id[did]["source_url"] == exp_u, f"Stale {did} URL: {docs_by_id[did]['source_url']}"
     assert prov_by_id["SRC-195"]["original_url"] == expected_d11_pf_url, f"Stale SRC-195 URL: {prov_by_id['SRC-195']['original_url']}"
 
     now_ist = datetime.now(timezone(timedelta(hours=5, minutes=30))).isoformat(timespec="seconds")
@@ -863,11 +885,12 @@ Enforces the `provenance-and-report-sync-auditor`, `geospatial-traffic-intellige
                     "4 zoom levels (L1-L4), 4 concentration modes (Points, Heatmap, Boundaries, Clusters), 7 layer groups, 6 layer presets, "
                     "5-section project profile, 11/11 CSV catalogue links (157 total rows), 123 GeoJSON feature label, "
                     "non-empty https:// document source_url syntax & template binding across all 205 records (establishes zero /undefined hrefs, "
-                    "not live external HTTP reachability across third-party WAF-protected domains; also asserts live Property Finder route on DOC-D11-03 / SRC-195), "
+                    "not continuous live external HTTP reachability across third-party WAF-protected domains; also asserts verified canonical routes "
+                    "across DOC-D1-02..DOC-D20-03 & DOC-D11-03 / SRC-195 and truthful WAF availability wording), "
                     "published supertall tower height parsing (PRJ-D11 = 557m), and interactive hypothetical scenario simulator."
                 ),
-                "assertions_executed": 78,
-                "result": "PASSED (78/78 required DOM, CSV catalogue, GeoJSON, document URL syntax/DOC-D11-03 & tower height tokens verified)",
+                "assertions_executed": 92,
+                "result": "PASSED (92/92 required DOM, CSV catalogue, GeoJSON, canonical document URL/availability & tower height tokens verified)",
             },
             "suite_e_webgl_gpu_disposal_and_zero_gap_fallback": {
                 "test_definition": "Verifies presence of disposeThreeGroup(grp, true), disposeAllThreeGpuResources(), CanvasTexture map.dispose(), renderer.renderLists.dispose(), 950-building cap with osmCityTruncated native fill-extrusion fallback (0.55 opacity), and 220ms rebuild throttling, plus 15-project 3D switch endurance walkthrough (23 active geometries, 4 textures, 0 leaks).",

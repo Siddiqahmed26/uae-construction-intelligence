@@ -296,10 +296,10 @@ def main():
   <meta http-equiv="Expires" content="0"/>
   <title>UAE Construction &amp; Traffic Intelligence — Executive GIS Platform</title>
   <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🗺️</text></svg>"/>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin=""/>
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
-  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" crossorigin=""/>
-  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js" crossorigin=""></script>
+  <link rel="stylesheet" href="./vendor/leaflet-1.9.4/leaflet.css" onerror="this.onerror=null;this.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css'"/>
+  <script src="./vendor/leaflet-1.9.4/leaflet.js" onerror="var s=document.createElement('script');s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';document.head.appendChild(s);"></script>
+  <link rel="stylesheet" href="./vendor/maplibre-gl-4.7.1/maplibre-gl.css" onerror="this.onerror=null;this.href='https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css'"/>
+  <script src="./vendor/maplibre-gl-4.7.1/maplibre-gl.js" onerror="var s=document.createElement('script');s.src='https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js';document.head.appendChild(s);"></script>
   <script type="module">
     (async () => {{
       try {{
@@ -558,7 +558,7 @@ def main():
       position: relative;
       width: 100%;
       height: 100%;
-      background: #0b1320;
+      background: #141e2e;
       overflow: hidden;
     }}
     /* Primary WebGL 3D MapLibre Canvas (Full-Bleed) */
@@ -568,6 +568,7 @@ def main():
       width: 100%;
       height: 100%;
       z-index: 2;
+      opacity: 1;
     }}
     /* Backing Synchronized 2D Leaflet Canvas */
     #mapCanvas {{
@@ -576,17 +577,33 @@ def main():
       width: 100%;
       height: 100%;
       z-index: 1;
-      opacity: 0;
+      opacity: 1;
       pointer-events: none;
+      background: #162231;
+    }}
+    #mapCanvas.basemap-sat {{
+      background: #162231;
+    }}
+    #mapCanvas.basemap-light {{
+      background: #e8e4d8;
+    }}
+    #mapCanvas.basemap-dark {{
+      background: #1a1d23;
+    }}
+    .gis-dark-tiles {{
+      filter: invert(1) hue-rotate(180deg) brightness(0.88) contrast(1.12) saturate(0.85);
     }}
     .map-stage.mode-2d-leaflet #mapCanvas {{
       opacity: 1;
       pointer-events: auto;
-      z-index: 3;
+      z-index: 4;
     }}
     .map-stage.mode-2d-leaflet #map3dCanvas {{
-      opacity: 0;
+      z-index: 1;
       pointer-events: none;
+    }}
+    .map-stage.mode-2d-leaflet #map3dCanvas .maplibregl-marker {{
+      display: none;
     }}
 
     /* HAIO.SG FLOATING PILL CONTROLS ON THE MAP CANVAS */
@@ -2250,7 +2267,7 @@ def main():
       <!-- Primary WebGL 3D MapLibre GL JS Canvas (Real OSM 3D Buildings + Satellite + Road Corridors) -->
       <div id="map3dCanvas"></div>
       <!-- Synchronized Backing 2D Leaflet Canvas -->
-      <div id="mapCanvas" class="basemap-dark"></div>
+      <div id="mapCanvas" class="basemap-sat"></div>
 
       <!-- Phase 4.2: Organized 7-Group Layer System & 6 Layer Presets Popover -->
       <div class="layers-drawer-popover" id="layersPopover" style="width:376px;">
@@ -3266,25 +3283,130 @@ def main():
       map3d.easeTo({ bearing: nextBearing, pitch: currentCameraDim === "3D" ? 60 : 0, duration: 650 });
     }
 
+    function syncMapCanvasBackdropClass() {
+      const mc = document.getElementById("mapCanvas");
+      if (!mc) return;
+      const mode = currentBasemapMode || "sat";
+      mc.classList.toggle("basemap-sat", mode === "sat");
+      mc.classList.toggle("basemap-light", mode === "light");
+      mc.classList.toggle("basemap-dark", mode === "dark");
+    }
+
+    function createResilientLeafletTileLayer(primaryUrl, fallbackUrls, opts) {
+      const layer = L.tileLayer(primaryUrl, Object.assign({
+        crossOrigin: "anonymous",
+        minZoom: 8,
+        maxZoom: 19,
+        maxNativeZoom: 18,
+        noWrap: true,
+        keepBuffer: 2,
+        updateWhenIdle: false,
+        updateWhenZooming: false
+      }, opts || {}));
+      if (Array.isArray(fallbackUrls) && fallbackUrls.length) {
+        layer.on("tileerror", function (ev) {
+          const img = ev && ev.tile;
+          const coords = ev && ev.coords;
+          if (!img || !coords) return;
+          const idx = (img._fbIdx || 0);
+          if (idx >= fallbackUrls.length) return;
+          img._fbIdx = idx + 1;
+          const z = Math.min(coords.z, (opts && opts.maxNativeZoom) || 18);
+          let tmpl = fallbackUrls[idx];
+          if (idx === fallbackUrls.length - 1 && opts && opts.fallbackDarkFilter) {
+            img.classList.add("gis-dark-tiles");
+          }
+          img.src = tmpl
+            .replace("{s}", ["a", "b", "c", "d"][(coords.x + coords.y) & 3])
+            .replace("{z}", String(z))
+            .replace("{x}", String(coords.x))
+            .replace("{y}", String(coords.y));
+        });
+      }
+      return layer;
+    }
+
     function ensureLeafletBaseTiles() {
       if (!map) return;
-      if (baseTileLayer && map.hasLayer(baseTileLayer)) return;
+      const mode = currentBasemapMode || "sat";
+      syncMapCanvasBackdropClass();
+      if (baseTileLayer && map.hasLayer(baseTileLayer) && baseTileLayer._basemapKey === mode) return;
       if (baseTileLayer) {
         try { map.removeLayer(baseTileLayer); } catch (_) {}
+        baseTileLayer = null;
       }
-      if (currentBasemapMode === "sat") {
-        const satScale = IS_SAFARI_WEBKIT ? "1" : "2";
-        baseTileLayer = L.tileLayer(`https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=${satScale}`, {
-          subdomains: ["0", "1", "2", "3"],
-          minZoom: 9, maxZoom: 19, noWrap: true
-        });
+      if (mode === "sat") {
+        baseTileLayer = createResilientLeafletTileLayer(
+          "https://mt{s}.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+          [
+            "https://services.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+          ],
+          { subdomains: "0123", maxNativeZoom: 19, zIndex: 1 }
+        );
+        baseTileLayer._basemapKey = mode;
+        baseTileLayer.addTo(map);
+        baseTileLayer.bringToBack();
+      } else if (mode === "dark") {
+        const darkBase = createResilientLeafletTileLayer(
+          "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
+          [
+            "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+          ],
+          { maxNativeZoom: 16, zIndex: 1, fallbackDarkFilter: true }
+        );
+        const darkRef = createResilientLeafletTileLayer(
+          "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}",
+          [],
+          { maxNativeZoom: 16, zIndex: 2 }
+        );
+        baseTileLayer = L.layerGroup([darkBase, darkRef]);
+        baseTileLayer._basemapKey = mode;
+        baseTileLayer.addTo(map);
+        darkBase.bringToBack();
       } else {
-        baseTileLayer = L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-          minZoom: 9, maxZoom: 19, noWrap: true, className: currentBasemapMode === "dark" ? "gis-dark-tiles" : ""
+        baseTileLayer = createResilientLeafletTileLayer(
+          "https://mt{s}.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+          [
+            "https://services.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}"
+          ],
+          { subdomains: "0123", maxNativeZoom: 19, zIndex: 1 }
+        );
+        baseTileLayer._basemapKey = mode;
+        baseTileLayer.addTo(map);
+        baseTileLayer.bringToBack();
+      }
+    }
+
+    function isMap3dGlAlive() {
+      if (!map3d || map3dContextLost) return false;
+      try {
+        const c = map3d.getCanvas && map3d.getCanvas();
+        if (!c) return false;
+        const gl = c.getContext("webgl2") || c.getContext("webgl");
+        return Boolean(gl && !gl.isContextLost());
+      } catch (_) {
+        return false;
+      }
+    }
+
+    function forceMap3dRepaintBurst() {
+      if (!map3d || map3dContextLost) return;
+      const tick = () => {
+        if (!map3d || map3dContextLost) return;
+        try {
+          map3d.resize();
+          map3d.triggerRepaint();
+        } catch (_) {}
+      };
+      tick();
+      if (typeof requestAnimationFrame === "function") {
+        requestAnimationFrame(() => {
+          tick();
+          requestAnimationFrame(tick);
         });
       }
-      baseTileLayer.addTo(map);
-      baseTileLayer.bringToBack();
+      setTimeout(tick, 120);
+      setTimeout(tick, 320);
     }
 
     function setCameraDimension(dim) {
@@ -3302,52 +3424,53 @@ def main():
 
         if (map) {
           try { map.stop(); } catch (_) {}
-          map.invalidateSize({ pan: false });
-          if (map3d && !map3dContextLost) {
+          map.invalidateSize({ pan: false, animate: false });
+          if (map3d && typeof map3d.getCenter === "function") {
             try {
               const c = map3d.getCenter();
-              const z = Math.min(18, Math.max(9, Math.round(map3d.getZoom())));
-              map.setView([c.lat, c.lng], z, { animate: false, reset: true });
+              const rawZ = map3d.getZoom();
+              const z = rawZ >= 16.0 ? 16 : Math.min(18, Math.max(9, Math.round(rawZ)));
+              map.setView([c.lat, c.lng], z, { animate: false });
             } catch (_) {}
           }
           ensureLeafletBaseTiles();
-          if (baseTileLayer && typeof baseTileLayer.redraw === "function") {
-            baseTileLayer.redraw();
-          }
           setTimeout(() => {
-            if (map) {
-              map.invalidateSize({ pan: false });
-              if (baseTileLayer && typeof baseTileLayer.redraw === "function") baseTileLayer.redraw();
+            if (map && currentCameraDim === "2D") {
+              map.invalidateSize({ pan: false, animate: false });
             }
-          }, 90);
+          }, 120);
         }
         updateCompassUI();
         return;
       }
 
-      // Switching to 3D
-      if ((!map3d || map3dContextLost) && typeof maplibregl !== "undefined") {
+      // Switching to 3D: verify live WebGL context (catches silent Safari CAMetalLayer eviction)
+      if (!isMap3dGlAlive() && typeof maplibregl !== "undefined") {
         try {
+          disposeAllThreeGpuResources();
           if (map3d) {
             try { map3d.remove(); } catch (_) {}
-            map3d = null;
-            map3dLoaded = false;
           }
+          three3DLayer = null;
+          map3d = null;
+          map3dLoaded = false;
           map3dContextLost = false;
+          const c3dEl = document.getElementById("map3dCanvas");
+          if (c3dEl) c3dEl.innerHTML = "";
           init3DMap();
         } catch (err) {
           console.warn("3D WebGL unavailable; staying on 2D GIS canvas:", err);
         }
       }
 
-      if (!map3d || map3dContextLost) {
+      if (!isMap3dGlAlive()) {
         // Graceful fallback if WebGL is completely disabled in browser
         currentCameraDim = "2D";
         document.getElementById("btnDim2D")?.classList.add("active");
         document.getElementById("btnDim3D")?.classList.remove("active");
         if (stageEl) stageEl.classList.add("mode-2d-leaflet");
         ensureLeafletBaseTiles();
-        if (map) map.invalidateSize();
+        if (map) map.invalidateSize({ pan: false, animate: false });
         return;
       }
 
@@ -3366,12 +3489,20 @@ def main():
             map3d.jumpTo({ center: [c2.lng, c2.lat], zoom: Math.max(z2, map3d.getZoom()) });
           }
         }
-        map3d.resize();
-        map3d.easeTo({
-          pitch: 58,
-          bearing: 60,
-          duration: 750
-        });
+        if (map3d.getPitch() < 45) {
+          map3d.easeTo({
+            pitch: 58,
+            bearing: 60,
+            duration: 550
+          });
+        }
+        syncPhotorealistic3DVisibility();
+        if (map3dLoaded) {
+          attachThree3DLayerIfReady();
+          sync3DMapLayers();
+          scheduleOsmCityRebuild(140);
+        }
+        forceMap3dRepaintBurst();
       } catch (_) {}
       updateCompassUI();
     }
@@ -3424,27 +3555,44 @@ def main():
 
       function flyBothMaps(lat, lon, zoom, pitch = 58, bearing = 60) {
       const clampedZoom = Math.min(17.6, Math.max(9.0, zoom));
-      if (map) {
-        const z2 = Math.min(18, Math.max(9, Math.round(clampedZoom)));
-        if (currentCameraDim === "2D") {
-          map.flyTo([lat, lon], z2, { duration: 0.75 });
-        } else {
+      if (map && currentCameraDim === "2D") {
+        const z2 = clampedZoom >= 16.0 ? 16 : Math.min(18, Math.max(9, Math.round(clampedZoom)));
+        const c2 = map.getCenter();
+        const dist2 = Math.hypot(lat - c2.lat, lon - c2.lng);
+        if (IS_SAFARI_WEBKIT || dist2 > 0.02) {
           try { map.stop(); } catch (_) {}
           map.setView([lat, lon], z2, { animate: false });
+        } else {
+          map.flyTo([lat, lon], z2, { duration: 0.75 });
         }
       }
-      if (map3d) {
+      if (map3d && !map3dContextLost) {
         const isClose3D = clampedZoom >= 15.2 && currentCameraDim === "3D";
         const targetLon = isClose3D ? (lon + 0.00014) : lon;
         const targetLat = isClose3D ? (lat + 0.00004) : lat;
-        map3d.flyTo({
-          center: [targetLon, targetLat],
-          zoom: clampedZoom,
-          pitch: currentCameraDim === "3D" ? pitch : 0,
-          bearing: currentCameraDim === "3D" ? bearing : 0,
-          duration: 1050,
-          essential: true
-        });
+        const c3 = map3d.getCenter();
+        const dist3 = Math.hypot(targetLat - c3.lat, targetLon - c3.lng);
+        if (IS_SAFARI_WEBKIT || dist3 > 0.02 || currentCameraDim !== "3D") {
+          map3d.jumpTo({
+            center: [targetLon, targetLat],
+            zoom: clampedZoom,
+            pitch: currentCameraDim === "3D" ? pitch : 0,
+            bearing: currentCameraDim === "3D" ? bearing : 0
+          });
+          if (currentCameraDim === "3D") {
+            scheduleOsmCityRebuild(120);
+            forceMap3dRepaintBurst();
+          }
+        } else {
+          map3d.flyTo({
+            center: [targetLon, targetLat],
+            zoom: clampedZoom,
+            pitch: currentCameraDim === "3D" ? pitch : 0,
+            bearing: currentCameraDim === "3D" ? bearing : 0,
+            duration: 1050,
+            essential: true
+          });
+        }
       }
     }
 
@@ -5277,6 +5425,86 @@ def main():
       }
     }
 
+    function attachOpenMapTilesVectorLayers() {
+      if (!map3d || map3dContextLost) return;
+      if (map3d.getSource("openmaptiles")) return;
+      try {
+        map3d.addSource("openmaptiles", {
+          type: "vector",
+          url: "https://tiles.openfreemap.org/planet"
+        });
+        const beforeHero = map3d.getLayer("haio-photoreal-3d-layer") ? "haio-photoreal-3d-layer" : undefined;
+        if (!map3d.getLayer("osm-3d-buildings")) {
+          map3d.addLayer({
+            id: "osm-3d-buildings",
+            type: "fill-extrusion",
+            source: "openmaptiles",
+            "source-layer": "building",
+            minzoom: 12.0,
+            maxzoom: 22.0,
+            filter: ["!", ["has", "hide_3d"]],
+            layout: { visibility: is3DBlocksEnabled ? "visible" : "none" },
+            paint: {
+              "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
+              "fill-extrusion-height": ["coalesce", ["get", "render_height"], 16],
+              "fill-extrusion-color": [
+                "interpolate", ["linear"], ["coalesce", ["get", "render_height"], 16],
+                0, "#e8e3d9",
+                40, "#dcd5c7",
+                110, "#c5d2e0"
+              ],
+              "fill-extrusion-vertical-gradient": true,
+              "fill-extrusion-opacity": is3DBlocksEnabled ? 0.82 : 0.0
+            }
+          }, beforeHero);
+        }
+        if (!map3d.getLayer("osm-road-labels")) {
+          map3d.addLayer({
+            id: "osm-road-labels",
+            type: "symbol",
+            source: "openmaptiles",
+            "source-layer": "transportation_name",
+            minzoom: 11,
+            maxzoom: 18.5,
+            layout: {
+              "symbol-placement": "line",
+              "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
+              "text-font": ["Noto Sans Regular"],
+              "text-size": 11
+            },
+            paint: {
+              "text-color": "#f8fafc",
+              "text-halo-color": "#0f172a",
+              "text-halo-width": 1.6
+            }
+          });
+        }
+        if (!map3d.getLayer("osm-place-labels")) {
+          map3d.addLayer({
+            id: "osm-place-labels",
+            type: "symbol",
+            source: "openmaptiles",
+            "source-layer": "place",
+            minzoom: 10,
+            maxzoom: 16.5,
+            layout: {
+              "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
+              "text-font": ["Noto Sans Bold"],
+              "text-size": 12
+            },
+            paint: {
+              "text-color": "#ffffff",
+              "text-halo-color": "rgba(15, 23, 42, 0.9)",
+              "text-halo-width": 2.0
+            }
+          });
+        }
+        syncPhotorealistic3DVisibility();
+      } catch (vecErr) {
+        console.warn("Vector city layer deferred; raster + Three.js 3D active:", vecErr);
+      }
+    }
+
     function init3DMap() {
       if (typeof maplibregl === "undefined") {
         setCameraDimension("2D");
@@ -5290,8 +5518,9 @@ def main():
 
       const defaultProj = DATA.projects.find(x => x.project_id === selected3DProjectId) || DATA.projects[0];
       const [initLat, initLon] = parseCoord(defaultProj.coordinates);
-      const satScale = IS_SAFARI_WEBKIT ? "1" : "2";
-      const safeDpr = Math.min(window.devicePixelRatio || 1, IS_SAFARI_WEBKIT ? 1.5 : 2.0);
+      const safeDpr = Math.min(window.devicePixelRatio || 1, IS_SAFARI_WEBKIT ? 1.25 : 2.0);
+      const initMode = currentBasemapMode || "sat";
+      const initBg = initMode === "dark" ? "#1a1d23" : (initMode === "light" ? "#e8e4d8" : "#162231");
 
       try {
         map3d = new maplibregl.Map({
@@ -5306,6 +5535,8 @@ def main():
           pixelRatio: safeDpr,
           maxTileCacheSize: IS_SAFARI_WEBKIT ? 75 : 110,
           antialias: !IS_SAFARI_WEBKIT,
+          preserveDrawingBuffer: true,
+          fadeDuration: 0,
           attributionControl: false,
           style: {
             version: 8,
@@ -5320,23 +5551,40 @@ def main():
               "sat-tiles": {
                 type: "raster",
                 tiles: [
-                  `https://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=${satScale}`,
-                  `https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=${satScale}`,
-                  `https://mt2.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=${satScale}`,
-                  `https://mt3.google.com/vt/lyrs=s&x={x}&y={y}&z={z}&scale=${satScale}`
+                  "https://mt0.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+                  "https://mt1.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+                  "https://mt2.google.com/vt/lyrs=s&x={x}&y={y}&z={z}",
+                  "https://mt3.google.com/vt/lyrs=s&x={x}&y={y}&z={z}"
                 ],
                 tileSize: 256,
-                maxzoom: 20
+                maxzoom: IS_SAFARI_WEBKIT ? 17 : 19
               },
               "light-tiles": {
                 type: "raster",
-                tiles: ["https://tile.openstreetmap.org/{z}/{x}/{y}.png"],
+                tiles: [
+                  "https://mt0.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+                  "https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+                  "https://mt2.google.com/vt/lyrs=m&x={x}&y={y}&z={z}",
+                  "https://mt3.google.com/vt/lyrs=m&x={x}&y={y}&z={z}"
+                ],
                 tileSize: 256,
-                maxzoom: 19
+                maxzoom: IS_SAFARI_WEBKIT ? 17 : 19
               },
-              "openmaptiles": {
-                type: "vector",
-                url: "https://tiles.openfreemap.org/planet"
+              "dark-tiles": {
+                type: "raster",
+                tiles: [
+                  "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+                ],
+                tileSize: 256,
+                maxzoom: 16
+              },
+              "dark-ref-tiles": {
+                type: "raster",
+                tiles: [
+                  "https://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Reference/MapServer/tile/{z}/{y}/{x}"
+                ],
+                tileSize: 256,
+                maxzoom: 16
               },
               "communities-3d": {
                 type: "geojson",
@@ -5387,20 +5635,34 @@ def main():
               {
                 id: "bg-dark-layer",
                 type: "background",
-                paint: { "background-color": "#dfe8f2" }
+                paint: { "background-color": initBg }
               },
               {
                 id: "sat-raster-layer",
                 type: "raster",
                 source: "sat-tiles",
-                layout: { visibility: "visible" },
-                paint: { "raster-opacity": 1.0, "raster-contrast": -0.06, "raster-brightness-min": 0.08, "raster-saturation": 0.04 }
+                layout: { visibility: initMode === "sat" ? "visible" : "none" },
+                paint: { "raster-opacity": 1.0, "raster-contrast": -0.04, "raster-brightness-min": 0.05, "raster-saturation": 0.04 }
               },
               {
                 id: "light-raster-layer",
                 type: "raster",
                 source: "light-tiles",
-                layout: { visibility: "none" },
+                layout: { visibility: initMode === "light" ? "visible" : "none" },
+                paint: { "raster-opacity": 1.0 }
+              },
+              {
+                id: "dark-raster-layer",
+                type: "raster",
+                source: "dark-tiles",
+                layout: { visibility: initMode === "dark" ? "visible" : "none" },
+                paint: { "raster-opacity": 1.0, "raster-contrast": 0.08 }
+              },
+              {
+                id: "dark-ref-raster-layer",
+                type: "raster",
+                source: "dark-ref-tiles",
+                layout: { visibility: initMode === "dark" ? "visible" : "none" },
                 paint: { "raster-opacity": 0.96 }
               },
               {
@@ -5512,7 +5774,7 @@ def main():
                     "interpolate", ["exponential", 1.35], ["zoom"],
                     9, ["*", ["get", "trafficWidth"], 0.75],
                     14, ["*", ["get", "trafficWidth"], 1.25],
-                    17, ["*", ["get", "trafficWidth"], 1.45]
+                    17, ["*", ["get", "casingWidth"], 1.15]
                   ],
                   "line-opacity": ["interpolate", ["linear"], ["zoom"], 14, 0.94, 16.5, 0.74]
                 }
@@ -5588,64 +5850,6 @@ def main():
                   "circle-stroke-color": "#fed7aa",
                   "circle-stroke-width": 1.8
                 }
-              },
-              {
-                id: "osm-3d-buildings",
-                type: "fill-extrusion",
-                source: "openmaptiles",
-                "source-layer": "building",
-                minzoom: 12.0,
-                maxzoom: 22.0,
-                filter: ["!", ["has", "hide_3d"]],
-                paint: {
-                  "fill-extrusion-base": ["coalesce", ["get", "render_min_height"], 0],
-                  "fill-extrusion-height": ["coalesce", ["get", "render_height"], 16],
-                  "fill-extrusion-color": [
-                    "interpolate", ["linear"], ["coalesce", ["get", "render_height"], 16],
-                    0, "#e8e3d9",
-                    40, "#dcd5c7",
-                    110, "#c5d2e0"
-                  ],
-                  "fill-extrusion-vertical-gradient": true,
-                  "fill-extrusion-opacity": 0.82
-                }
-              },
-              {
-                id: "osm-road-labels",
-                type: "symbol",
-                source: "openmaptiles",
-                "source-layer": "transportation_name",
-                minzoom: 11,
-                maxzoom: 18.5,
-                layout: {
-                  "symbol-placement": "line",
-                  "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
-                  "text-font": ["Noto Sans Regular"],
-                  "text-size": 11
-                },
-                paint: {
-                  "text-color": "#f8fafc",
-                  "text-halo-color": "#0f172a",
-                  "text-halo-width": 1.6
-                }
-              },
-              {
-                id: "osm-place-labels",
-                type: "symbol",
-                source: "openmaptiles",
-                "source-layer": "place",
-                minzoom: 10,
-                maxzoom: 16.5,
-                layout: {
-                  "text-field": ["coalesce", ["get", "name:en"], ["get", "name"]],
-                  "text-font": ["Noto Sans Bold"],
-                  "text-size": 12
-                },
-                paint: {
-                  "text-color": "#ffffff",
-                  "text-halo-color": "rgba(15, 23, 42, 0.9)",
-                  "text-halo-width": 2.0
-                }
               }
             ]
           }
@@ -5670,9 +5874,11 @@ def main():
         map3dContextLost = false;
         if (map3dLoaded) {
           attachThree3DLayerIfReady();
+          attachOpenMapTilesVectorLayers();
           syncPhotorealistic3DVisibility();
           sync3DMapLayers();
           scheduleOsmCityRebuild(180);
+          forceMap3dRepaintBurst();
         }
       });
 
@@ -5681,12 +5887,19 @@ def main():
         if (!map3d.getSource("roads-3d")) return;
         map3dLoaded = true;
         attachThree3DLayerIfReady();
+        attachOpenMapTilesVectorLayers();
         syncPhotorealistic3DVisibility();
         sync3DMapLayers();
         scheduleOsmCityRebuild(150);
         updateCompassUI();
+        forceMap3dRepaintBurst();
       };
 
+      map3d.on("sourcedata", (ev) => {
+        if (ev && ev.sourceId === "openmaptiles" && ev.isSourceLoaded) {
+          scheduleOsmCityRebuild(140);
+        }
+      });
       map3d.on("rotate", updateCompassUI);
       map3d.on("move", () => {
         updateCompassUI();
@@ -5712,7 +5925,7 @@ def main():
       });
 
       map3d.on("load", finalize3DMapReady);
-      setTimeout(finalize3DMapReady, 4200);
+      setTimeout(finalize3DMapReady, 1800);
 
       map3d.on("click", "projects-zone-fill-3d", (e) => {
         if (e.features && e.features.length > 0) {
@@ -5742,44 +5955,44 @@ def main():
       });
     }
 
-    // Keeps 4K Google Satellite, Street, and Dark cartographic basemaps visible across all UAE locations and transitions OSM 3D Buildings
+    // Keeps Satellite (3D Earth), Street, and Dark cartographic basemaps visible across all UAE locations and transitions OSM 3D Buildings
     function syncPhotorealistic3DVisibility() {
-      if (!map3d || !map3dLoaded) return;
+      if (!map3d || map3dContextLost) return;
+      if (!map3d.getLayer("sat-raster-layer")) return;
+      const mode = currentBasemapMode || "sat";
       const zNow = map3d.getZoom();
 
-      if (map3d.getLayer("sat-raster-layer")) {
-        map3d.setLayoutProperty(
-          "sat-raster-layer",
-          "visibility",
-          currentBasemapMode === "sat" ? "visible" : "none"
-        );
-      }
+      map3d.setLayoutProperty(
+        "sat-raster-layer",
+        "visibility",
+        mode === "sat" ? "visible" : "none"
+      );
       if (map3d.getLayer("light-raster-layer")) {
-        const useOsmRaster = (currentBasemapMode === "light" || currentBasemapMode === "dark");
         map3d.setLayoutProperty(
           "light-raster-layer",
           "visibility",
-          useOsmRaster ? "visible" : "none"
+          mode === "light" ? "visible" : "none"
         );
-        if (currentBasemapMode === "dark") {
-          map3d.setPaintProperty("light-raster-layer", "raster-brightness-max", 0.34);
-          map3d.setPaintProperty("light-raster-layer", "raster-brightness-min", 0.03);
-          map3d.setPaintProperty("light-raster-layer", "raster-contrast", 0.28);
-          map3d.setPaintProperty("light-raster-layer", "raster-saturation", -0.72);
-          map3d.setPaintProperty("light-raster-layer", "raster-opacity", 0.94);
-        } else {
-          map3d.setPaintProperty("light-raster-layer", "raster-brightness-max", 1.0);
-          map3d.setPaintProperty("light-raster-layer", "raster-brightness-min", 0.0);
-          map3d.setPaintProperty("light-raster-layer", "raster-contrast", 0.0);
-          map3d.setPaintProperty("light-raster-layer", "raster-saturation", 0.0);
-          map3d.setPaintProperty("light-raster-layer", "raster-opacity", 0.96);
-        }
+      }
+      if (map3d.getLayer("dark-raster-layer")) {
+        map3d.setLayoutProperty(
+          "dark-raster-layer",
+          "visibility",
+          mode === "dark" ? "visible" : "none"
+        );
+      }
+      if (map3d.getLayer("dark-ref-raster-layer")) {
+        map3d.setLayoutProperty(
+          "dark-ref-raster-layer",
+          "visibility",
+          mode === "dark" ? "visible" : "none"
+        );
       }
       if (map3d.getLayer("bg-dark-layer")) {
         map3d.setPaintProperty(
           "bg-dark-layer",
           "background-color",
-          currentBasemapMode === "dark" ? "#0b1320" : "#dfe8f2"
+          mode === "dark" ? "#1a1d23" : (mode === "light" ? "#e8e4d8" : "#162231")
         );
       }
       if (map3d.getLayer("osm-3d-buildings")) {
@@ -6083,12 +6296,17 @@ def main():
       map = L.map("mapCanvas", {
         center: [25.1844, 55.2798],
         zoom: window.innerWidth <= 768 ? 14 : 15,
-        minZoom: 9,
-        maxZoom: 18,
+        minZoom: 8,
+        maxZoom: 19,
         maxBounds: [[22.4, 51.0], [26.5, 56.8]],
         maxBoundsViscosity: 0.9,
+        fadeAnimation: false,
+        zoomAnimation: !IS_SAFARI_WEBKIT,
+        preferCanvas: true,
         zoomControl: false
       });
+
+      syncMapCanvasBackdropClass();
 
       // Enable only the 4 core executive layers by default (Clean Initial View)
       ["communities", "roads", "traffic", "projects"].forEach(k => {
@@ -6097,7 +6315,7 @@ def main():
 
       init3DMap();
       setBasemap("sat", document.querySelector(".bm-btn.active"));
-      if (!map3d || map3dContextLost) {
+      if (!isMap3dGlAlive()) {
         setCameraDimension("2D");
       }
 
@@ -7557,24 +7775,25 @@ def main():
 
     function setBasemap(mode, btnEl) {
       currentBasemapMode = mode || "sat";
-      if (btnEl) {
-        document.querySelectorAll(".bm-btn").forEach(b => {
-          if (b.id !== "btn3dTilt" && b.id !== "collapseRightBtn") b.classList.remove("active");
-        });
-        btnEl.classList.add("active");
-      }
-      if (map3d && map3dLoaded) {
+      document.querySelectorAll(".bm-btn").forEach(b => {
+        if (b.id !== "btn3dTilt" && b.id !== "collapseRightBtn") {
+          const oc = b.getAttribute("onclick") || "";
+          const matchMode = btnEl ? (b === btnEl) : oc.includes(`'${currentBasemapMode}'`);
+          b.classList.toggle("active", Boolean(matchMode));
+        }
+      });
+      syncMapCanvasBackdropClass();
+      if (isMap3dGlAlive()) {
         syncPhotorealistic3DVisibility();
-        map3d.triggerRepaint();
+        forceMap3dRepaintBurst();
       }
-      const mc = document.getElementById("mapCanvas");
-      if (mc) mc.classList.toggle("basemap-dark", mode === "dark" || !mode);
-      if (baseTileLayer && map) {
-        try { map.removeLayer(baseTileLayer); } catch (_) {}
-        baseTileLayer = null;
-      }
-      if (map && currentCameraDim === "2D") {
-        ensureLeafletBaseTiles();
+      if (map) {
+        if (currentCameraDim === "2D") {
+          ensureLeafletBaseTiles();
+        } else if (baseTileLayer) {
+          try { map.removeLayer(baseTileLayer); } catch (_) {}
+          baseTileLayer = null;
+        }
       }
     }
 
@@ -8987,6 +9206,7 @@ def main():
         attachThree3DLayerIfReady();
         sync3DMapLayers();
         scheduleOsmCityRebuild(120);
+        forceMap3dRepaintBurst();
       }
     });
   </script>
