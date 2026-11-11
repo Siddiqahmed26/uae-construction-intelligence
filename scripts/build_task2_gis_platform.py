@@ -2374,7 +2374,7 @@ def main():
           <div class="layer-group-hdr">Group 3 — Traffic Conditions &amp; Bottlenecks</div>
           <div class="layer-item" style="flex-direction:column; align-items:stretch;">
             <div style="display:flex; justify-content:space-between; align-items:center;">
-              <label><input type="checkbox" id="chk-L6" checked onchange="toggleLayerGroup('traffic', this.checked)"/><span class="layer-dot" style="background:#ef4444;"></span> 3. Modelled Corridor Speeds (4 Windows)</label>
+              <label><input type="checkbox" id="chk-L6" checked onchange="toggleLayerGroup('traffic', this.checked)"/><span class="layer-dot" style="background:#FF0018;"></span> 3. Modelled Corridor Speeds (4 Windows)</label>
               <span class="prov-tag prov-mod">Modelled</span>
             </div>
             <div class="layer-meta-sub">Source: Two-Term BPR + Bottleneck Model on RTA Cap (DS #17) · Nov 2026</div>
@@ -2450,10 +2450,10 @@ def main():
 
         <!-- Phase 5.3 Contextual Traffic Condition Heatmap Legend -->
         <div class="map-legend" id="contextualMapLegend" title="Traffic Condition Heatmap Legend (Ratio of Corridor Speed v to Free-Flow v₀)">
-          <span class="leg-row"><span class="layer-dot" style="background:#10b981;"></span>Low</span>
-          <span class="leg-row"><span class="layer-dot" style="background:#eab308;"></span>Mod</span>
-          <span class="leg-row"><span class="layer-dot" style="background:#f97316;"></span>High</span>
-          <span class="leg-row"><span class="layer-dot" style="background:#ef4444;"></span>Severe</span>
+          <span class="leg-row"><span class="layer-dot" style="background:#00E054;"></span>Low</span>
+          <span class="leg-row"><span class="layer-dot" style="background:#FFB800;"></span>Mod</span>
+          <span class="leg-row"><span class="layer-dot" style="background:#FF4500;"></span>High</span>
+          <span class="leg-row"><span class="layer-dot" style="background:#FF0018;"></span>Severe</span>
           <span class="leg-row"><span class="layer-dot" style="background:#64748b;"></span>N/A</span>
         </div>
 
@@ -2738,10 +2738,101 @@ def main():
     function congestionColor(levelStr) {
       const s = String(levelStr || "");
       if (s.includes("Unavailable")) return "#64748b";
-      if (s.includes("Severe")) return "#ef4444";
-      if (s.includes("High")) return "#f97316";
-      if (s.includes("Moderate")) return "#eab308";
-      return "#10b981";
+      if (s.includes("Severe")) return "#FF0018";
+      if (s.includes("High")) return "#FF4500";
+      if (s.includes("Moderate")) return "#FFB800";
+      return "#00E054";
+    }
+
+    function congestionCasingColor(levelStr) {
+      const s = String(levelStr || "");
+      if (s.includes("Unavailable")) return "#1e293b";
+      if (s.includes("Severe")) return "#5C0009";
+      if (s.includes("High")) return "#6E1B00";
+      if (s.includes("Moderate")) return "#664400";
+      return "#004D1C";
+    }
+
+    function getOsmStreetTrafficExprs(tp) {
+      const s = String(tp || "");
+      if (s.includes("Night")) {
+        return {
+          flow: "#00E054",
+          casing: "#004D1C"
+        };
+      }
+      if (s.includes("Midday")) {
+        return {
+          flow: [
+            "match", ["get", "class"],
+            ["motorway", "trunk"], "#FF4500",
+            ["primary", "secondary"], "#FFB800",
+            "#00E054"
+          ],
+          casing: [
+            "match", ["get", "class"],
+            ["motorway", "trunk"], "#6E1B00",
+            ["primary", "secondary"], "#664400",
+            "#004D1C"
+          ]
+        };
+      }
+      if (s.includes("Morning")) {
+        return {
+          flow: [
+            "match", ["get", "class"],
+            ["motorway", "trunk"], "#FF0018",
+            "primary", "#FF4500",
+            "secondary", "#FFB800",
+            "#00E054"
+          ],
+          casing: [
+            "match", ["get", "class"],
+            ["motorway", "trunk"], "#5C0009",
+            "primary", "#6E1B00",
+            "secondary", "#664400",
+            "#004D1C"
+          ]
+        };
+      }
+      // Evening Peak (17:00–20:00) — Pure Vivid Google-Maps Live Traffic Spectrum
+      return {
+        flow: [
+          "match", ["get", "class"],
+          ["motorway", "trunk", "primary"], "#FF0018",
+          "secondary", "#FF4500",
+          "tertiary", "#FFB800",
+          "#00E054"
+        ],
+        casing: [
+          "match", ["get", "class"],
+          ["motorway", "trunk", "primary"], "#5C0009",
+          "secondary", "#6E1B00",
+          "tertiary", "#664400",
+          "#004D1C"
+        ]
+      };
+    }
+
+    function getOsmClassColorsFor2D(roadClass, tp) {
+      const s = String(tp || "");
+      const cls = String(roadClass || "minor");
+      if (s.includes("Night")) return { flow: "#00E054", casing: "#004D1C" };
+      if (s.includes("Midday")) {
+        if (cls === "motorway" || cls === "trunk") return { flow: "#FF4500", casing: "#6E1B00" };
+        if (cls === "primary" || cls === "secondary") return { flow: "#FFB800", casing: "#664400" };
+        return { flow: "#00E054", casing: "#004D1C" };
+      }
+      if (s.includes("Morning")) {
+        if (cls === "motorway" || cls === "trunk") return { flow: "#FF0018", casing: "#5C0009" };
+        if (cls === "primary") return { flow: "#FF4500", casing: "#6E1B00" };
+        if (cls === "secondary") return { flow: "#FFB800", casing: "#664400" };
+        return { flow: "#00E054", casing: "#004D1C" };
+      }
+      if (cls === "motorway" || cls === "trunk" || cls === "primary") return { flow: "#FF0018", casing: "#5C0009" };
+      if (cls === "secondary") return { flow: "#FF4500", casing: "#6E1B00" };
+      if (cls === "tertiary") return { flow: "#FFB800", casing: "#664400" };
+      return { flow: "#00E054", casing: "#004D1C" };
     }
 
     function parseSpeedLimit(str) {
@@ -3434,9 +3525,11 @@ def main():
             } catch (_) {}
           }
           ensureLeafletBaseTiles();
+          renderAllMapLayers();
           setTimeout(() => {
             if (map && currentCameraDim === "2D") {
               map.invalidateSize({ pan: false, animate: false });
+              render2DZoomedStreetTraffic();
             }
           }, 120);
         }
@@ -5434,6 +5527,68 @@ def main():
           url: "https://tiles.openfreemap.org/planet"
         });
         const beforeHero = map3d.getLayer("haio-photoreal-3d-layer") ? "haio-photoreal-3d-layer" : undefined;
+        const beforePrimaryRoads = map3d.getLayer("roads-casing-3d") ? "roads-casing-3d" : beforeHero;
+        const showTrafficInit = document.getElementById("chk-L6")?.checked ?? true;
+        const osmTrafficExprs = getOsmStreetTrafficExprs(currentTimeWindow);
+        if (!map3d.getLayer("osm-city-traffic-casing")) {
+          map3d.addLayer({
+            id: "osm-city-traffic-casing",
+            type: "line",
+            source: "openmaptiles",
+            "source-layer": "transportation",
+            minzoom: 12.0,
+            maxzoom: 22.0,
+            filter: ["in", "class", "motorway", "trunk", "primary", "secondary", "tertiary", "minor"],
+            layout: {
+              visibility: showTrafficInit ? "visible" : "none",
+              "line-cap": "round",
+              "line-join": "round"
+            },
+            paint: {
+              "line-color": osmTrafficExprs.casing,
+              "line-width": [
+                "interpolate", ["exponential", 1.45], ["zoom"],
+                12.0, ["match", ["get", "class"], ["motorway", "trunk"], 3.8, "primary", 3.0, "secondary", 2.3, 0.0],
+                14.0, ["match", ["get", "class"], ["motorway", "trunk"], 6.6, "primary", 5.2, "secondary", 4.3, "tertiary", 3.4, 2.5],
+                16.0, ["match", ["get", "class"], ["motorway", "trunk"], 12.0, "primary", 9.8, "secondary", 8.2, "tertiary", 6.8, 5.4],
+                18.0, ["match", ["get", "class"], ["motorway", "trunk"], 19.2, "primary", 15.8, "secondary", 13.0, "tertiary", 10.8, 8.8]
+              ],
+              "line-opacity": [
+                "interpolate", ["linear"], ["zoom"],
+                12.0, 0.90,
+                13.8, 0.96,
+                17.0, 0.98
+              ]
+            }
+          }, beforePrimaryRoads);
+        }
+        if (!map3d.getLayer("osm-city-traffic-flow")) {
+          map3d.addLayer({
+            id: "osm-city-traffic-flow",
+            type: "line",
+            source: "openmaptiles",
+            "source-layer": "transportation",
+            minzoom: 12.0,
+            maxzoom: 22.0,
+            filter: ["in", "class", "motorway", "trunk", "primary", "secondary", "tertiary", "minor"],
+            layout: {
+              visibility: showTrafficInit ? "visible" : "none",
+              "line-cap": "round",
+              "line-join": "round"
+            },
+            paint: {
+              "line-color": osmTrafficExprs.flow,
+              "line-width": [
+                "interpolate", ["exponential", 1.45], ["zoom"],
+                12.0, ["match", ["get", "class"], ["motorway", "trunk"], 2.3, "primary", 1.8, "secondary", 1.3, 0.0],
+                14.0, ["match", ["get", "class"], ["motorway", "trunk"], 4.4, "primary", 3.5, "secondary", 2.9, "tertiary", 2.2, 1.6],
+                16.0, ["match", ["get", "class"], ["motorway", "trunk"], 8.6, "primary", 7.0, "secondary", 5.8, "tertiary", 4.7, 3.6],
+                18.0, ["match", ["get", "class"], ["motorway", "trunk"], 14.2, "primary", 11.6, "secondary", 9.6, "tertiary", 7.8, 6.2]
+              ],
+              "line-opacity": 1.0
+            }
+          }, beforePrimaryRoads);
+        }
         if (!map3d.getLayer("osm-3d-buildings")) {
           map3d.addLayer({
             id: "osm-3d-buildings",
@@ -5749,14 +5904,15 @@ def main():
                   "line-join": "round"
                 },
                 paint: {
-                  "line-color": "#0f172a",
+                  "line-color": ["coalesce", ["get", "casingColor"], "#0f172a"],
                   "line-width": [
-                    "interpolate", ["exponential", 1.35], ["zoom"],
-                    9, ["*", ["get", "casingWidth"], 0.75],
-                    14, ["*", ["get", "casingWidth"], 1.25],
-                    17, ["*", ["get", "casingWidth"], 1.45]
+                    "interpolate", ["exponential", 1.45], ["zoom"],
+                    9, ["*", ["get", "casingWidth"], 0.80],
+                    13, ["*", ["get", "casingWidth"], 1.32],
+                    15.5, ["*", ["get", "casingWidth"], 2.15],
+                    17.5, ["*", ["get", "casingWidth"], 3.35]
                   ],
-                  "line-opacity": ["interpolate", ["linear"], ["zoom"], 14, 0.86, 16.5, 0.62]
+                  "line-opacity": 0.98
                 }
               },
               {
@@ -5771,12 +5927,13 @@ def main():
                 paint: {
                   "line-color": ["get", "color"],
                   "line-width": [
-                    "interpolate", ["exponential", 1.35], ["zoom"],
-                    9, ["*", ["get", "trafficWidth"], 0.75],
-                    14, ["*", ["get", "trafficWidth"], 1.25],
-                    17, ["*", ["get", "casingWidth"], 1.15]
+                    "interpolate", ["exponential", 1.45], ["zoom"],
+                    9, ["*", ["get", "trafficWidth"], 0.88],
+                    13, ["*", ["get", "trafficWidth"], 1.50],
+                    15.5, ["*", ["get", "trafficWidth"], 2.50],
+                    17.5, ["*", ["get", "trafficWidth"], 3.95]
                   ],
-                  "line-opacity": ["interpolate", ["linear"], ["zoom"], 14, 0.94, 16.5, 0.74]
+                  "line-opacity": 1.0
                 }
               },
               {
@@ -6046,7 +6203,17 @@ def main():
       }
       map3d.getSource("communities-3d")?.setData({ type: "FeatureCollection", features: commFeats });
 
-      // 2. Roads & Traffic GeoJSON (All 23 Real OpenStreetMap Highway Geometries)
+      // 2. Roads & Traffic GeoJSON (All 23 Real OpenStreetMap Highway Geometries + Whole-City Zoomed-In OSM Street Flow)
+      const osmExprs = getOsmStreetTrafficExprs(currentTimeWindow);
+      if (map3d.getLayer("osm-city-traffic-casing")) {
+        map3d.setLayoutProperty("osm-city-traffic-casing", "visibility", showTraffic ? "visible" : "none");
+        map3d.setPaintProperty("osm-city-traffic-casing", "line-color", osmExprs.casing);
+      }
+      if (map3d.getLayer("osm-city-traffic-flow")) {
+        map3d.setLayoutProperty("osm-city-traffic-flow", "visibility", showTraffic ? "visible" : "none");
+        map3d.setPaintProperty("osm-city-traffic-flow", "line-color", osmExprs.flow);
+      }
+
       const roadFeats = [];
       if (showRoads || showTraffic) {
         DATA.roads.forEach(r => {
@@ -6054,14 +6221,16 @@ def main():
           const { obs } = getCorridorProfileForWindow(r, currentTimeWindow);
           const congLvl = obs ? obs.congestion_level : "Unavailable";
           const tCol = showTraffic ? congestionColor(congLvl) : "#64748b";
+          const cCol = showTraffic ? congestionCasingColor(congLvl) : "#0f172a";
           const isFwy = r.road_type.includes("Freeway") || r.road_type.includes("Express");
           roadFeats.push({
             type: "Feature",
             properties: {
               road_id: r.road_id,
               color: tCol,
-              casingWidth: isFwy ? 6.0 : 4.2,
-              trafficWidth: isFwy ? 3.8 : 2.6
+              casingColor: cCol,
+              casingWidth: isFwy ? 6.2 : 4.6,
+              trafficWidth: isFwy ? 4.2 : 3.0
             },
             geometry: { type: "LineString", coordinates: r.geometry_wgs84 }
           });
@@ -6311,6 +6480,17 @@ def main():
       // Enable only the 4 core executive layers by default (Clean Initial View)
       ["communities", "roads", "traffic", "projects"].forEach(k => {
         layerGroups[k].addTo(map);
+      });
+
+      map.on("zoomend", () => {
+        if (currentCameraDim === "2D") {
+          renderAllMapLayers();
+        }
+      });
+      map.on("moveend", () => {
+        if (currentCameraDim === "2D") {
+          render2DZoomedStreetTraffic();
+        }
       });
 
       init3DMap();
@@ -7917,6 +8097,84 @@ def main():
     }
 
 
+    let localStreetTraffic2DGroup = null;
+
+    function render2DZoomedStreetTraffic() {
+      if (!map || !layerGroups || !layerGroups.traffic) return;
+      if (!localStreetTraffic2DGroup) {
+        localStreetTraffic2DGroup = L.layerGroup();
+      }
+      localStreetTraffic2DGroup.clearLayers();
+      if (!layerGroups.traffic.hasLayer(localStreetTraffic2DGroup)) {
+        localStreetTraffic2DGroup.addTo(layerGroups.traffic);
+      }
+      const showTraffic = document.getElementById("chk-L6")?.checked ?? true;
+      const z2d = map.getZoom();
+      if (!showTraffic || z2d < 12.5) return;
+      if (!map3d || typeof map3d.querySourceFeatures !== "function" || !map3d.getSource || !map3d.getSource("openmaptiles")) return;
+
+      let feats = [];
+      try {
+        feats = map3d.querySourceFeatures("openmaptiles", { sourceLayer: "transportation" }) || [];
+      } catch (_) {
+        return;
+      }
+      if (!feats.length) return;
+
+      const b = map.getBounds().pad(0.18);
+      const minLat = b.getSouth(), maxLat = b.getNorth(), minLng = b.getWest(), maxLng = b.getEast();
+      const allowed = z2d >= 14.2
+        ? new Set(["motorway", "trunk", "primary", "secondary", "tertiary", "minor"])
+        : new Set(["motorway", "trunk", "primary", "secondary", "tertiary"]);
+      const zMul = z2d >= 17 ? 1.55 : (z2d >= 16 ? 1.25 : (z2d >= 14.5 ? 0.95 : 0.72));
+      const baseWeightByClass = { motorway: 6.4, trunk: 6.0, primary: 5.0, secondary: 4.2, tertiary: 3.4, minor: 2.7 };
+      let drawn = 0;
+      const seenKeys = new Set();
+
+      for (let i = 0; i < feats.length && drawn < 420; i++) {
+        const f = feats[i];
+        const cls = f && f.properties && f.properties.class;
+        if (!allowed.has(cls)) continue;
+        const g = f.geometry;
+        if (!g) continue;
+        const lines = g.type === "LineString" ? [g.coordinates] : (g.type === "MultiLineString" ? g.coordinates : []);
+        const cols = getOsmClassColorsFor2D(cls, currentTimeWindow);
+        const coreW = (baseWeightByClass[cls] || 2.8) * zMul;
+        const caseW = coreW + Math.max(1.8, 1.4 * zMul);
+
+        for (let j = 0; j < lines.length && drawn < 420; j++) {
+          const ring = lines[j];
+          if (!ring || ring.length < 2) continue;
+          const p0 = ring[0], pN = ring[ring.length - 1];
+          if ((p0[1] < minLat && pN[1] < minLat) || (p0[1] > maxLat && pN[1] > maxLat) ||
+              (p0[0] < minLng && pN[0] < minLng) || (p0[0] > maxLng && pN[0] > maxLng)) {
+            continue;
+          }
+          const key = `${cls}:${p0[0].toFixed(5)},${p0[1].toFixed(5)}-${pN[0].toFixed(5)},${pN[1].toFixed(5)}:${ring.length}`;
+          if (seenKeys.has(key)) continue;
+          seenKeys.add(key);
+          const latlngs = ring.map(pt => [pt[1], pt[0]]);
+          L.polyline(latlngs, {
+            color: cols.casing,
+            weight: caseW,
+            lineCap: "round",
+            lineJoin: "round",
+            opacity: 0.92,
+            interactive: false
+          }).addTo(localStreetTraffic2DGroup);
+          L.polyline(latlngs, {
+            color: cols.flow,
+            weight: coreW,
+            lineCap: "round",
+            lineJoin: "round",
+            opacity: 0.98,
+            interactive: false
+          }).addTo(localStreetTraffic2DGroup);
+          drawn++;
+        }
+      }
+    }
+
     function renderAllMapLayers() {
       Object.values(layerGroups).forEach(lg => lg.clearLayers());
 
@@ -7975,6 +8233,11 @@ def main():
         "RD-SHJ-02": [25.298, 55.588]
       };
       const isOverviewZoom = map && (map.getZoom() < 12);
+      const z2dNow = map ? map.getZoom() : 14;
+      const z2dScale = z2dNow >= 17 ? 2.65 : (z2dNow >= 16 ? 2.10 : (z2dNow >= 14.5 ? 1.55 : (z2dNow >= 13 ? 1.22 : 1.0)));
+
+      // 2a. Zoomed-in 2D Local Street Grid Traffic Layer (beneath primary corridors)
+      render2DZoomedStreetTraffic();
 
       // 2. Layer 4 & Layer 6: Road Network & Dynamic 4-Window Traffic Speed/Congestion Overlay + Floating Speed Pills
       DATA.roads.forEach(r => {
@@ -7994,28 +8257,32 @@ def main():
         }
 
         const latlngs = r.geometry_wgs84.map(pt => [pt[1], pt[0]]);
+        const isFwy2D = r.road_type.includes("Freeway") || r.road_type.includes("Express");
+        const tCol = congestionColor(congLvl);
+        const cCol = congestionCasingColor(congLvl);
 
-        // Base casing line (Layer 4 — Reduced weight for visual clarity)
+        // Base chromatic casing line (scales cleanly with zoom so zoomed-in corridors stay bold and crisp)
         const baseLine = L.polyline(latlngs, {
-          color: "#1e293b",
-          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 4.5 : 3.2,
-          opacity: 0.82
+          color: cCol,
+          weight: (isFwy2D ? 5.4 : 4.0) * z2dScale,
+          lineCap: "round",
+          lineJoin: "round",
+          opacity: 0.95
         });
         baseLine.on("click", () => showRoadInspector(r.road_id));
         baseLine.addTo(layerGroups.roads);
 
-        // Traffic color overlay line (Layer 6 — Clean 3.0px / 2.2px stroke)
-        const tCol = congestionColor(congLvl);
+        // Vivid Google-Maps-style traffic color overlay line
         const speedTxt = obs ? `${obs.average_speed_kmh} km/h (${obs.travel_time_min_per_10km} min/10km | V/C=${obs.vc_ratio})` : "Data Unavailable";
         const matchNote = exactMatch
           ? `[Primary Dataset #17 Record: ${obs.observation_id}] Source: ${obs.source_id}`
           : `[Diurnal BPR Profile for ${currentTimeWindow}] Source: ${r.source_id}`;
         const trafLine = L.polyline(latlngs, {
           color: tCol,
-          weight: r.road_type.includes("Freeway") || r.road_type.includes("Express") ? 3.2 : 2.4,
+          weight: (isFwy2D ? 3.8 : 2.8) * z2dScale,
           lineCap: "round",
           lineJoin: "round",
-          opacity: 0.95
+          opacity: 1.0
         });
         trafLine.bindTooltip(
           `<strong>${r.road_name} (${r.road_code})</strong><br/>` +
