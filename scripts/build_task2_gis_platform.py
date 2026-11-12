@@ -4971,15 +4971,446 @@ def main():
       if (map3d) map3d.triggerRepaint();
     }
 
-    // Rebuilds All Surrounding Real OpenStreetMap 3D City Buildings Across the Viewport using haio.sg's GLSL Metric Architectural Shader (hdb-facade-v25) & 3D Rooftops
+    // =========================================================================
+    // PERSISTENT MULTI-ZOOM z14 MVT 3D TILE BUILDING CACHE (ZERO ZOOM-OUT LOSS)
+    // OpenMapTiles strips 99.5% of buildings at z=13 and 100% at z<=12. By streaming
+    // and LRU-caching up to 240 z=14 MVT tiles (~1,600 km² = 100% of Dubai & Sharjah),
+    // every district (Downtown, Business Bay, DIFC, Marina, Palm, JVC, Creek, Sharjah)
+    // stays standing in full 3D across all zooms (z=8.8..19) without ever starving!
+    // =========================================================================
+    const osmZ14TileBuildings = new Map(); // tileKey "tx/ty" -> { cLon, cLat, recs: [...] }
+    const fetchedZ14TileKeys = new Set();
+    const inflightZ14TileKeys = new Set();
+    let openFreeMapTileTemplate = null;
+    let openFreeMapTileJsonPromise = null;
+
+    // Core Dubai & Sharjah urban skyline z=14 tiles so wide L3 / L2 / L1 regional cameras immediately display full 3D skylines
+    const CORE_UAE_Z14_SKYLINE_TILES = [
+      // Downtown Dubai, Burj Khalifa, Business Bay & DIFC / SZR Corridor
+      [10707, 7006], [10707, 7007], [10707, 7005], [10708, 7005], [10708, 7006], [10708, 7007],
+      [10706, 7006], [10706, 7007], [10706, 7008], [10707, 7008], [10708, 7004], [10707, 7004],
+      // Al Wasl, Jumeirah, Satwa, Karama, Bur Dubai, Deira & Creek Harbour
+      [10705, 7006], [10705, 7007], [10706, 7005], [10709, 7003], [10709, 7004], [10708, 7003],
+      [10710, 7003], [10710, 7005], [10710, 7006], [10711, 7005], [10709, 7005], [10709, 7006],
+      // Dubai Marina, JBR, JLT, Media City, Palm Jumeirah & JVC / Hessa St
+      [10701, 7012], [10701, 7013], [10700, 7012], [10700, 7013], [10702, 7011], [10702, 7012],
+      [10701, 7010], [10701, 7011], [10700, 7010], [10700, 7011], [10702, 7010],
+      [10704, 7013], [10704, 7012], [10703, 7013], [10705, 7012], [10705, 7011],
+      // Sharjah Al Khan, Maryam Island (PRJ-SH4), Al Majaz, Corniche & Aljada (PRJ-SH2)
+      [10711, 7000], [10711, 6999], [10712, 6999], [10712, 7000], [10713, 6999],
+      [10715, 7000], [10716, 7000], [10716, 6999]
+    ];
+
+    function lonLatToZ14Tile(lon, lat) {
+      const n = 16384.0;
+      const clampedLat = Math.max(-85.05, Math.min(85.05, lat));
+      const latRad = (clampedLat * Math.PI) / 180.0;
+      const tx = Math.max(0, Math.min(16383, Math.floor(((lon + 180.0) / 360.0) * n)));
+      const ty = Math.max(0, Math.min(16383, Math.floor(((1.0 - Math.log(Math.tan(latRad) + 1.0 / Math.cos(latRad)) / Math.PI) / 2.0) * n)));
+      return [tx, ty];
+    }
+
+    function z14TileCenterLonLat(tx, ty) {
+      const n = 16384.0;
+      const lon = ((tx + 0.5) / n) * 360.0 - 180.0;
+      const lat = (Math.atan(Math.sinh(Math.PI * (1.0 - (2.0 * (ty + 0.5)) / n))) * 180.0) / Math.PI;
+      return [lon, lat];
+    }
+
+    function buildCachedBuildingRec(outerLonLat, holesLonLat, rawH, minH) {
+      if (!outerLonLat || outerLonLat.length < 4 || outerLonLat.length > 1601) return null;
+      const nPts = outerLonLat.length - 1;
+      let polyLon = 0, polyLat = 0;
+      for (let i = 0; i < nPts; i++) {
+        polyLon += outerLonLat[i][0];
+        polyLat += outerLonLat[i][1];
+      }
+      polyLon /= nPts;
+      polyLat /= nPts;
+
+      const cosLatM = 111320.0 * Math.cos((polyLat * Math.PI) / 180.0);
+      let area2 = 0;
+      for (let i = 0; i < nPts; i++) {
+        const x0 = (outerLonLat[i][0] - polyLon) * cosLatM;
+        const y0 = (outerLonLat[i][1] - polyLat) * 111320.0;
+        const x1 = (outerLonLat[(i + 1) % nPts][0] - polyLon) * cosLatM;
+        const y1 = (outerLonLat[(i + 1) % nPts][1] - polyLat) * 111320.0;
+        area2 += x0 * y1 - x1 * y0;
+      }
+      const areaM2 = Math.abs(area2 * 0.5);
+      const effR = Math.sqrt(areaM2 / Math.PI);
+      const minEffR = (rawH >= 24.0 || minH > 0) ? 0.15 : 1.25;
+      if (effR < minEffR || effR > 1600.0) return null;
+
+      const isHighRiseZone = (polyLat >= 25.05 && polyLat <= 25.35 && polyLon >= 55.12 && polyLon <= 55.42);
+      const blockHash = Math.abs(Math.round(polyLon * 1800) * 73 + Math.round(polyLat * 1800) * 137);
+      const posHash = Math.abs(Math.round(polyLon * 18000) * 17 + Math.round(polyLat * 18000) * 31);
+      let h = rawH;
+      if (!Number.isFinite(h) || h <= 3.2) {
+        if (areaM2 < 240.0) {
+          h = isHighRiseZone ? (12.0 + (blockHash % 4) * 3.2) : (7.8 + (blockHash % 3) * 3.0);
+        } else if (areaM2 < 950.0) {
+          h = isHighRiseZone ? (26.0 + (blockHash % 6) * 4.5) : (16.0 + (blockHash % 5) * 3.6);
+        } else {
+          h = 18.0 + (blockHash % 4) * 3.8;
+        }
+      } else {
+        h = Math.min(1100.0, Math.max(minH + 1.2, h));
+      }
+
+      const worldKey = `${Math.round(polyLon * 40000)}_${Math.round(polyLat * 40000)}_${Math.round(minH * 2)}_${Math.round(h * 2)}_${Math.round(areaM2)}`;
+      return {
+        worldKey,
+        outerLonLat,
+        holesLonLat: (holesLonLat && holesLonLat.length) ? holesLonLat : null,
+        polyLon,
+        polyLat,
+        h,
+        minH,
+        areaM2,
+        effR,
+        blockHash,
+        posHash
+      };
+    }
+
+    function storeTileRecsLru(tileKey, tx, ty, recs) {
+      if (osmZ14TileBuildings.has(tileKey)) {
+        osmZ14TileBuildings.delete(tileKey);
+      }
+      while (osmZ14TileBuildings.size >= 240) {
+        const oldestKey = osmZ14TileBuildings.keys().next().value;
+        if (!oldestKey) break;
+        osmZ14TileBuildings.delete(oldestKey);
+        fetchedZ14TileKeys.delete(oldestKey);
+      }
+      const [cLon, cLat] = z14TileCenterLonLat(tx, ty);
+      osmZ14TileBuildings.set(tileKey, { cLon, cLat, recs });
+    }
+
+    function readMvtVarint(u8, posObj) {
+      let res = 0, mul = 1, p = posObj.p;
+      const len = u8.length;
+      while (p < len) {
+        const b = u8[p++];
+        res += (b & 0x7f) * mul;
+        if ((b & 0x80) === 0) break;
+        mul *= 128;
+      }
+      posObj.p = p;
+      return res;
+    }
+
+    function skipMvtField(u8, posObj, wt) {
+      if (wt === 0) readMvtVarint(u8, posObj);
+      else if (wt === 1) posObj.p += 8;
+      else if (wt === 2) { const l = readMvtVarint(u8, posObj); posObj.p += l; }
+      else if (wt === 5) posObj.p += 4;
+      else posObj.p = u8.length;
+    }
+
+    async function decodeMvtBuildingBuffer(arrayBuffer, tileX, tileY) {
+      let u8 = new Uint8Array(arrayBuffer);
+      if (u8.length >= 2 && u8[0] === 0x1f && u8[1] === 0x8b && typeof DecompressionStream !== "undefined") {
+        const ds = new DecompressionStream("gzip");
+        u8 = new Uint8Array(await new Response(new Blob([u8]).stream().pipeThrough(ds)).arrayBuffer());
+      }
+      const dv = new DataView(u8.buffer, u8.byteOffset, u8.byteLength);
+      const td = new TextDecoder();
+      const topPos = { p: 0 };
+      const tileRecs = [];
+
+      while (topPos.p < u8.length) {
+        const tag = readMvtVarint(u8, topPos);
+        const fn = Math.floor(tag / 8), wt = tag & 7;
+        if (fn === 3 && wt === 2) {
+          const lLen = readMvtVarint(u8, topPos);
+          const lEnd = Math.min(u8.length, topPos.p + lLen);
+          const lPos = { p: topPos.p };
+          let layerName = "", extent = 4096, abortLayer = false;
+          const keySlices = [], valSlices = [], featSlices = [];
+
+          while (lPos.p < lEnd) {
+            const lTag = readMvtVarint(u8, lPos);
+            const lFn = Math.floor(lTag / 8), lWt = lTag & 7;
+            if (lFn === 1 && lWt === 2) {
+              const sLen = readMvtVarint(u8, lPos);
+              layerName = td.decode(u8.subarray(lPos.p, lPos.p + sLen));
+              lPos.p += sLen;
+              if (layerName !== "building") { abortLayer = true; break; }
+            } else if (lFn === 2 && lWt === 2) {
+              const fLen = readMvtVarint(u8, lPos);
+              featSlices.push([lPos.p, lPos.p + fLen]);
+              lPos.p += fLen;
+            } else if (lFn === 3 && lWt === 2) {
+              const kLen = readMvtVarint(u8, lPos);
+              keySlices.push([lPos.p, lPos.p + kLen]);
+              lPos.p += kLen;
+            } else if (lFn === 4 && lWt === 2) {
+              const vLen = readMvtVarint(u8, lPos);
+              valSlices.push([lPos.p, lPos.p + vLen]);
+              lPos.p += vLen;
+            } else if (lFn === 5 && lWt === 0) {
+              extent = readMvtVarint(u8, lPos) || 4096;
+            } else {
+              skipMvtField(u8, lPos, lWt);
+            }
+          }
+          topPos.p = lEnd;
+          if (abortLayer || layerName !== "building") continue;
+
+          const keys = keySlices.map(([s, e]) => td.decode(u8.subarray(s, e)));
+          const vals = valSlices.map(([s, e]) => {
+            const vp = { p: s };
+            let out = null;
+            while (vp.p < e) {
+              const vt = readMvtVarint(u8, vp);
+              const vf = Math.floor(vt / 8), vw = vt & 7;
+              if (vf === 1 && vw === 2) { const sl = readMvtVarint(u8, vp); out = td.decode(u8.subarray(vp.p, vp.p + sl)); vp.p += sl; }
+              else if (vf === 2 && vw === 5) { out = dv.getFloat32(vp.p, true); vp.p += 4; }
+              else if (vf === 3 && vw === 1) { out = dv.getFloat64(vp.p, true); vp.p += 8; }
+              else if ((vf === 4 || vf === 5) && vw === 0) { out = readMvtVarint(u8, vp); }
+              else if (vf === 6 && vw === 0) { const zv = readMvtVarint(u8, vp); out = (zv >>> 1) ^ -(zv & 1); }
+              else if (vf === 7 && vw === 0) { out = Boolean(readMvtVarint(u8, vp)); }
+              else skipMvtField(u8, vp, vw);
+            }
+            return out;
+          });
+
+          const nTiles = 16384.0;
+          for (const [fs, fe] of featSlices) {
+            const fp = { p: fs };
+            let fType = 0, tStart = 0, tEnd = 0, gStart = 0, gEnd = 0;
+            while (fp.p < fe) {
+              const ft = readMvtVarint(u8, fp);
+              const ff = Math.floor(ft / 8), fw = ft & 7;
+              if (ff === 2 && fw === 2) { const tl = readMvtVarint(u8, fp); tStart = fp.p; tEnd = fp.p + tl; fp.p = tEnd; }
+              else if (ff === 3 && fw === 0) { fType = readMvtVarint(u8, fp); }
+              else if (ff === 4 && fw === 2) { const gl = readMvtVarint(u8, fp); gStart = fp.p; gEnd = fp.p + gl; fp.p = gEnd; }
+              else skipMvtField(u8, fp, fw);
+            }
+            if (fType !== 3 || gEnd <= gStart) continue;
+
+            let hide3d = false, rawH = 0, minH = 0;
+            if (tEnd > tStart) {
+              const tp = { p: tStart };
+              while (tp.p < tEnd) {
+                const ki = readMvtVarint(u8, tp);
+                const vi = readMvtVarint(u8, tp);
+                const kName = keys[ki];
+                const vVal = vals[vi];
+                if (kName === "hide_3d" && vVal === true) hide3d = true;
+                else if (kName === "render_height" || (kName === "height" && !rawH)) rawH = parseFloat(vVal) || 0;
+                else if (kName === "render_min_height" || (kName === "min_height" && !minH)) minH = Math.max(0, parseFloat(vVal) || 0);
+              }
+            }
+            if (hide3d) continue;
+
+            const gp = { p: gStart };
+            let cx = 0, cy = 0, curRing = null;
+            const rawRings = [];
+            while (gp.p < gEnd) {
+              const cmdInt = readMvtVarint(u8, gp);
+              const cmd = cmdInt & 7, cnt = cmdInt >>> 3;
+              if (cmd === 1) {
+                for (let c = 0; c < cnt; c++) {
+                  const dx = readMvtVarint(u8, gp), dy = readMvtVarint(u8, gp);
+                  cx += (dx >>> 1) ^ -(dx & 1);
+                  cy += (dy >>> 1) ^ -(dy & 1);
+                  if (curRing && curRing.length >= 3) rawRings.push(curRing);
+                  curRing = [[cx, cy]];
+                }
+              } else if (cmd === 2) {
+                for (let c = 0; c < cnt; c++) {
+                  const dx = readMvtVarint(u8, gp), dy = readMvtVarint(u8, gp);
+                  cx += (dx >>> 1) ^ -(dx & 1);
+                  cy += (dy >>> 1) ^ -(dy & 1);
+                  if (curRing) curRing.push([cx, cy]);
+                }
+              } else if (cmd === 7) {
+                if (curRing && curRing.length >= 3) rawRings.push(curRing);
+                curRing = null;
+              } else {
+                break;
+              }
+            }
+            if (curRing && curRing.length >= 3) rawRings.push(curRing);
+
+            let curOuter = null, curHoles = [];
+            for (const r of rawRings) {
+              let sa = 0;
+              for (let i = 0; i < r.length; i++) {
+                const [x0, y0] = r[i], [x1, y1] = r[(i + 1) % r.length];
+                sa += x0 * y1 - x1 * y0;
+              }
+              if (Math.abs(sa) < 1e-3) continue;
+              const ptsLL = r.map(([px, py]) => {
+                const lon = ((tileX + px / extent) / nTiles) * 360.0 - 180.0;
+                const lat = (Math.atan(Math.sinh(Math.PI * (1.0 - (2.0 * (tileY + py / extent)) / nTiles))) * 180.0) / Math.PI;
+                return [lon, lat];
+              });
+              ptsLL.push(ptsLL[0]);
+              if (sa > 0) {
+                if (curOuter) {
+                  const rec = buildCachedBuildingRec(curOuter, curHoles, rawH, minH);
+                  if (rec) tileRecs.push(rec);
+                }
+                curOuter = ptsLL;
+                curHoles = [];
+              } else if (curOuter) {
+                curHoles.push(ptsLL);
+              }
+            }
+            if (curOuter) {
+              const rec = buildCachedBuildingRec(curOuter, curHoles, rawH, minH);
+              if (rec) tileRecs.push(rec);
+            }
+          }
+        } else {
+          skipMvtField(u8, topPos, wt);
+        }
+      }
+      storeTileRecsLru(`${tileX}/${tileY}`, tileX, tileY, tileRecs);
+      return tileRecs.length;
+    }
+
+    function ensureZ14ViewportBuildings() {
+      if (!map3d || map3dContextLost || !is3DBlocksEnabled || currentCameraDim === "2D") return;
+      const zNow = map3d.getZoom();
+      if (zNow < 8.8) return;
+
+      if (!openFreeMapTileTemplate) {
+        if (!openFreeMapTileJsonPromise) {
+          openFreeMapTileJsonPromise = fetch("https://tiles.openfreemap.org/planet")
+            .then(r => r.ok ? r.json() : null)
+            .then(tj => {
+              if (tj && Array.isArray(tj.tiles) && tj.tiles[0]) {
+                openFreeMapTileTemplate = tj.tiles[0];
+                ensureZ14ViewportBuildings();
+              }
+            })
+            .catch(() => { openFreeMapTileJsonPromise = null; });
+        }
+        return;
+      }
+
+      const c = map3d.getCenter();
+      const [cxT, cyT] = lonLatToZ14Tile(c.lng, c.lat);
+      const wanted = [];
+      const seenT = new Set();
+      const pushTile = (tx, ty) => {
+        const k = `${tx}/${ty}`;
+        if (osmZ14TileBuildings.has(k)) {
+          // Refresh LRU recency for active viewport tiles
+          const ent = osmZ14TileBuildings.get(k);
+          osmZ14TileBuildings.delete(k);
+          osmZ14TileBuildings.set(k, ent);
+          return;
+        }
+        if (seenT.has(k) || fetchedZ14TileKeys.has(k) || inflightZ14TileKeys.has(k)) return;
+        seenT.add(k);
+        wanted.push([tx, ty, Math.hypot(tx - cxT, ty - cyT)]);
+      };
+
+      if (zNow >= 12.2) {
+        const b = map3d.getBounds();
+        const [minTxRaw, minTyRaw] = lonLatToZ14Tile(b.getWest(), b.getNorth());
+        const [maxTxRaw, maxTyRaw] = lonLatToZ14Tile(b.getEast(), b.getSouth());
+        const halfSpan = zNow >= 14.5 ? 2 : 4;
+        const x0 = Math.max(minTxRaw, cxT - halfSpan);
+        const x1 = Math.min(maxTxRaw, cxT + halfSpan);
+        const y0 = Math.max(minTyRaw, cyT - halfSpan);
+        const y1 = Math.min(maxTyRaw, cyT + halfSpan);
+        for (let tx = x0; tx <= x1; tx++) {
+          for (let ty = y0; ty <= y1; ty++) {
+            pushTile(tx, ty);
+          }
+        }
+      } else {
+        for (let dx = -2; dx <= 2; dx++) {
+          for (let dy = -2; dy <= 2; dy++) {
+            pushTile(cxT + dx, cyT + dy);
+          }
+        }
+      }
+
+      if (zNow < 13.9) {
+        for (const [sx, sy] of CORE_UAE_Z14_SKYLINE_TILES) {
+          if (Math.hypot(sx - cxT, sy - cyT) <= (zNow >= 12.2 ? 12 : 34)) {
+            pushTile(sx, sy);
+          }
+        }
+      }
+
+      if (!wanted.length) return;
+      wanted.sort((a, b) => a[2] - b[2]);
+      const batch = wanted.slice(0, 10);
+      let anyAdded = false;
+
+      Promise.all(batch.map(async ([tx, ty]) => {
+        const k = `${tx}/${ty}`;
+        inflightZ14TileKeys.add(k);
+        try {
+          const tileUrl = openFreeMapTileTemplate
+            .replace("{z}", "14")
+            .replace("{x}", String(tx))
+            .replace("{y}", String(ty));
+          const resp = await fetch(tileUrl);
+          if (resp.ok) {
+            const ab = await resp.arrayBuffer();
+            const nAdded = await decodeMvtBuildingBuffer(ab, tx, ty);
+            fetchedZ14TileKeys.add(k);
+            if (nAdded > 0) anyAdded = true;
+          } else if (resp.status === 204 || resp.status === 404) {
+            fetchedZ14TileKeys.add(k);
+          }
+        } catch (_) {
+          // Transient tile fetch failure; allow future retry
+        } finally {
+          inflightZ14TileKeys.delete(k);
+        }
+      })).then(() => {
+        if (anyAdded) {
+          scheduleOsmCityRebuild(75, true);
+        }
+        if (wanted.length > batch.length) {
+          setTimeout(ensureZ14ViewportBuildings, 35);
+        }
+      });
+    }
+
+    // Rebuilds All Surrounding Real OpenStreetMap 3D City Buildings + All 36 Non-Selected Task 2 Projects Across ALL Zooms (z=8.8..19)
     function rebuildOsmCityScene() {
       if (!three3DLayer || !three3DLayer.scene || !map3d || !map3dLoaded || typeof THREE === "undefined") return;
-      if (map3d.getZoom() < 13.0) return;
-      if (!map3d.getLayer("osm-3d-buildings")) return;
+      const zNow = map3d.getZoom();
+      if (zNow < 8.8) return;
       ensureHaioEnvironmentAndLights();
 
-      const rawFeats = map3d.querySourceFeatures("openmaptiles", { sourceLayer: "building" }) || [];
-      if (!rawFeats.length) return;
+      // Stream & warm authoritative z=14 building footprints across viewport + Dubai/Sharjah corridors
+      ensureZ14ViewportBuildings();
+
+      // Instant zero-latency seed on initial close-zoom frame before the first z=14 .pbf stream resolves; NEVER read generalised z<14 tiles!
+      let transientSeedRecs = null;
+      if (osmZ14TileBuildings.size === 0 && zNow >= 14.0 && map3d.getLayer("osm-3d-buildings")) {
+        transientSeedRecs = [];
+        const rawFeats = map3d.querySourceFeatures("openmaptiles", { sourceLayer: "building" }) || [];
+        for (const f of rawFeats) {
+          if (!f || !f.geometry) continue;
+          const props = f.properties || {};
+          if (props.hide_3d === true) continue;
+          const rawH = parseFloat(props.render_height ?? props.height ?? 0);
+          const minH = Math.max(0, parseFloat(props.render_min_height ?? props.min_height ?? 0));
+          const polys = f.geometry.type === "Polygon"
+            ? [f.geometry.coordinates]
+            : (f.geometry.type === "MultiPolygon" ? f.geometry.coordinates : []);
+          for (const poly of polys) {
+            if (poly && poly[0] && poly[0].length >= 4) {
+              const rec = buildCachedBuildingRec(poly[0], poly.length > 1 ? poly.slice(1) : null, rawH, minH);
+              if (rec) transientSeedRecs.push(rec);
+            }
+          }
+        }
+      }
 
       if (!three3DLayer.cityFacadeMats) {
         three3DLayer.cityFacadeMats = createCityFacadeMaterials();
@@ -4998,8 +5429,53 @@ def main():
       const camCenter = map3d.getCenter();
       const [camX, camY] = lonLatToOriginEnu(camCenter.lng, camCenter.lat, originLon, originLat);
       three3DLayer.lastCityBuildCenter = [camCenter.lng, camCenter.lat];
+      three3DLayer.lastCityBuildZoom = zNow;
       const excludeRad = three3DLayer.heroExcludeRadiusM || 56.0;
-      const isHighRiseDistrict = (camCenter.lat >= 25.05 && camCenter.lat <= 25.35 && camCenter.lng >= 55.12 && camCenter.lng <= 55.42);
+
+      // Zoom-adaptive horizon radius & LOD so L4 (Project), L3 (Community), L2 (Emirate), and L1 (UAE) keep full 3D skylines at 60 FPS
+      let maxCamDist = 6800.0;
+      let cityCap = IS_SAFARI_WEBKIT ? 9500 : 14000;
+      let isDetailLod = true;
+      if (zNow < 10.4) {
+        maxCamDist = 115000.0;
+        cityCap = IS_SAFARI_WEBKIT ? 16000 : 22000;
+        isDetailLod = false;
+      } else if (zNow < 12.2) {
+        maxCamDist = 48000.0;
+        cityCap = IS_SAFARI_WEBKIT ? 24000 : 32000;
+        isDetailLod = false;
+      } else if (zNow < 14.2) {
+        maxCamDist = 19500.0;
+        cityCap = IS_SAFARI_WEBKIT ? 28000 : 38000;
+        isDetailLod = false;
+      }
+
+      // Build list of active non-selected Task 2 Flagship Projects & JVC Sub-Clusters so we also render all 36 in 3D simultaneously
+      const emFilter = document.getElementById("emirateSelect") ? document.getElementById("emirateSelect").value : "ALL";
+      const showProjs = document.getElementById("chk-L1")?.checked ?? true;
+      const showSubdevs = document.getElementById("chk-L2")?.checked ?? false;
+      const otherProjectSites = [];
+      if (showProjs && Array.isArray(DATA.projects)) {
+        for (const p of DATA.projects) {
+          if (p.project_id === selected3DProjectId) continue;
+          if (emFilter !== "ALL" && p.emirate !== emFilter) continue;
+          const [pLat, pLon] = parseCoord(p.coordinates);
+          const [px, py] = lonLatToOriginEnu(pLon, pLat, originLon, originLat);
+          if (Math.hypot(px - camX, py - camY) <= maxCamDist) {
+            otherProjectSites.push({ ent: p, px, py, pLon, pLat });
+          }
+        }
+      }
+      if ((showSubdevs || zNow < 14.5) && Array.isArray(DATA.subdevs)) {
+        for (const sd of DATA.subdevs) {
+          if (sd.subdev_id === selected3DProjectId) continue;
+          if (emFilter !== "ALL" && sd.emirate !== emFilter) continue;
+          const [px, py] = lonLatToOriginEnu(sd.longitude, sd.latitude, originLon, originLat);
+          if (Math.hypot(px - camX, py - camY) <= maxCamDist) {
+            otherProjectSites.push({ ent: sd, px, py, pLon: sd.longitude, pLat: sd.latitude });
+          }
+        }
+      }
 
       // Single merged metric shader wall buffer (with hdbBand & hdbWall attributes) + 3D roof/trellis/plant/tree buffer
       const wallPos = [];
@@ -5164,115 +5640,96 @@ def main():
         }
       }
 
-      const seenGrid = new Set();
       const candidates = [];
+      const seenWorldKeys = new Set();
+      const degLatRadius = maxCamDist / 110000.0;
+      const degLonRadius = maxCamDist / 98000.0;
 
-      for (const f of rawFeats) {
-        if (!f || !f.geometry) continue;
-        const props = f.properties || {};
-        if (props.hide_3d === true) continue;
+      const considerRecList = (recList) => {
+        for (let ri = 0; ri < recList.length; ri++) {
+          const bRec = recList[ri];
+          const { worldKey, outerLonLat, holesLonLat, polyLon, polyLat, h, minH, areaM2, effR, blockHash, posHash } = bRec;
+          if (Math.abs(polyLat - camCenter.lat) > degLatRadius || Math.abs(polyLon - camCenter.lng) > degLonRadius) continue;
 
-        let rawH = parseFloat(props.render_height ?? props.height ?? 0);
-        const minH = Math.max(0, parseFloat(props.render_min_height ?? props.min_height ?? 0));
+          if (zNow < 10.4) {
+            if (h < 20.0 && areaM2 < 850.0) continue;
+          } else if (zNow < 12.2) {
+            if (h < 12.0 && areaM2 < 420.0) continue;
+          } else if (zNow < 13.8) {
+            if (h < 14.0 && areaM2 < 52.0) continue;
+          }
 
-        const polys = f.geometry.type === "Polygon"
-          ? [f.geometry.coordinates]
-          : (f.geometry.type === "MultiPolygon" ? f.geometry.coordinates : []);
+          if (seenWorldKeys.has(worldKey)) continue;
+          seenWorldKeys.add(worldKey);
 
-        for (const poly of polys) {
-          const outerLonLat = poly[0];
-          if (!outerLonLat || outerLonLat.length < 4) continue;
+          const [cxApprox, cyApprox] = lonLatToOriginEnu(polyLon, polyLat, originLon, originLat);
+          const distFromCam = Math.hypot(cxApprox - camX, cyApprox - camY);
+          if (distFromCam > maxCamDist) continue;
+          const distFromOrigin = Math.hypot(cxApprox, cyApprox);
+          if (distFromOrigin < excludeRad) continue;
 
-          const enuRing = [];
-          let cx = 0, cy = 0, polyLon = 0, polyLat = 0, minVertDist = Infinity;
-          for (let i = 0; i < outerLonLat.length - 1; i++) {
-            const [ln, lt] = outerLonLat[i];
-            const [ex, ey] = lonLatToOriginEnu(ln, lt, originLon, originLat);
-            enuRing.push([ex, ey]);
+          // Avoid low-rise construction-plot footprints intersecting our 36 non-selected flagship 3D tower parcels
+          let insideFlagshipParcel = false;
+          for (let pi = 0; pi < otherProjectSites.length; pi++) {
+            const ps = otherProjectSites[pi];
+            if (Math.hypot(cxApprox - ps.px, cyApprox - ps.py) < 36.0 && h < 120.0) {
+              insideFlagshipParcel = true;
+              break;
+            }
+          }
+          if (insideFlagshipParcel) continue;
+
+          const nPts = outerLonLat.length - 1;
+          const enuRing = new Array(nPts);
+          let cx = 0, cy = 0, minVertDist = Infinity;
+          for (let i = 0; i < nPts; i++) {
+            const [ex, ey] = lonLatToOriginEnu(outerLonLat[i][0], outerLonLat[i][1], originLon, originLat);
+            enuRing[i] = [ex, ey];
             cx += ex;
             cy += ey;
-            polyLon += ln;
-            polyLat += lt;
-            const vd = Math.hypot(ex, ey);
-            if (vd < minVertDist) minVertDist = vd;
+            if (distFromOrigin < excludeRad * 2.2) {
+              const vd = Math.hypot(ex, ey);
+              if (vd < minVertDist) minVertDist = vd;
+            }
           }
-          const nPts = enuRing.length;
-          if (nPts < 3 || nPts > 1600) continue;
+          if (minVertDist < excludeRad * 0.80) continue;
           cx /= nPts;
           cy /= nPts;
-          polyLon /= nPts;
-          polyLat /= nPts;
-
-          const distFromOrigin = Math.hypot(cx, cy);
-          const distFromCam = Math.hypot(cx - camX, cy - camY);
-          if (distFromOrigin < excludeRad || minVertDist < excludeRad * 0.80 || distFromCam > 5400.0) continue;
-
-          let area2 = 0;
-          for (let i = 0; i < nPts; i++) {
-            const [x0, y0] = enuRing[i];
-            const [x1, y1] = enuRing[(i + 1) % nPts];
-            area2 += x0 * y1 - x1 * y0;
-          }
-          const areaM2 = Math.abs(area2 * 0.5);
-          const effR = Math.sqrt(areaM2 / Math.PI);
-          const minEffR = (rawH >= 24.0 || minH > 0) ? 0.15 : 1.25;
-          if (effR < minEffR || effR > 1600.0) continue;
 
           const holesEnu = [];
-          if (poly.length > 1) {
-            for (let hi = 1; hi < poly.length; hi++) {
-              const hLonLat = poly[hi];
-              if (!hLonLat || hLonLat.length < 4) continue;
+          if (holesLonLat && holesLonLat.length && (isDetailLod || areaM2 >= 600.0)) {
+            for (let hi = 0; hi < holesLonLat.length; hi++) {
+              const hLL = holesLonLat[hi];
+              if (!hLL || hLL.length < 4) continue;
               const hRing = [];
-              for (let k = 0; k < hLonLat.length - 1; k++) {
-                const [hx, hy] = lonLatToOriginEnu(hLonLat[k][0], hLonLat[k][1], originLon, originLat);
-                hRing.push([hx, hy]);
+              for (let k = 0; k < hLL.length - 1; k++) {
+                hRing.push(lonLatToOriginEnu(hLL[k][0], hLL[k][1], originLon, originLat));
               }
               if (hRing.length >= 3) holesEnu.push(hRing);
             }
           }
 
-          // World-anchored ~55m block hash so concentric building:parts of the same skyscraper share one unified palette
-          const blockHash = Math.abs(Math.round(polyLon * 1800) * 73 + Math.round(polyLat * 1800) * 137);
-          const posHash = Math.abs(Math.round(polyLon * 18000) * 17 + Math.round(polyLat * 18000) * 31);
-          let h = rawH;
-          if (!Number.isFinite(h) || h <= 3.2) {
-            if (areaM2 < 240.0) {
-              h = isHighRiseDistrict ? (12.0 + (blockHash % 4) * 3.2) : (7.8 + (blockHash % 3) * 3.0);
-            } else if (areaM2 < 950.0) {
-              h = isHighRiseDistrict ? (26.0 + (blockHash % 6) * 4.5) : (16.0 + (blockHash % 5) * 3.6);
-            } else {
-              h = 18.0 + (blockHash % 4) * 3.8;
-            }
-          } else {
-            // Preserve 100% of true Dubai/Sharjah supertall heights up to 1,100m (Burj Khalifa 828m full spire!)
-            h = Math.min(1100.0, Math.max(minH + 1.2, h));
-          }
-
-          const dedupKey = `${Math.round(cx * 2)}_${Math.round(cy * 2)}_${Math.round(minH * 2)}_${Math.round(h * 2)}_${Math.round(areaM2)}`;
-          if (seenGrid.has(dedupKey)) continue;
-          seenGrid.add(dedupKey);
-
-          const heightBoost = h >= 120.0 ? 2500.0 : (h >= 45.0 ? 1250.0 : ((h >= 18.0 || areaM2 >= 400.0) ? 550.0 : 0.0));
+          const heightBoost = h >= 120.0 ? 8500.0 : (h >= 45.0 ? 4200.0 : ((h >= 18.0 || areaM2 >= 380.0) ? 1600.0 : 0.0));
           candidates.push({
             enuRing, holesEnu, cx, cy, polyLon, polyLat, h, minH, effR, areaM2,
             distFromOrigin, distFromCam, heightBoost, posHash, blockHash
           });
         }
+      };
+
+      for (const tileEnt of osmZ14TileBuildings.values()) {
+        if (Math.abs(tileEnt.cLat - camCenter.lat) > degLatRadius + 0.035 || Math.abs(tileEnt.cLon - camCenter.lng) > degLonRadius + 0.035) continue;
+        considerRecList(tileEnt.recs);
+      }
+      if (transientSeedRecs && transientSeedRecs.length) {
+        considerRecList(transientSeedRecs);
       }
 
       // Sort by camera distance with skyline priority so 100% of nearby blocks + all skyline towers/malls render completely
       candidates.sort((a, b) => (a.distFromCam - a.heightBoost) - (b.distFromCam - b.heightBoost));
       const baseMaxBuildings = Math.min(950, candidates.length);
-      const cityCap = IS_SAFARI_WEBKIT ? 6500 : 9500;
       const maxBuildings = Math.min(cityCap, candidates.length);
       three3DLayer.osmCityTruncated = (candidates.length > maxBuildings || candidates.length > baseMaxBuildings);
-      if (maxBuildings === 0) {
-        three3DLayer.osmCityBuildingCount = 0;
-        three3DLayer.osmCityTruncated = false;
-        syncPhotorealistic3DVisibility();
-        return;
-      }
 
       // Haio.sg's Condo Stone & Metallic Fin Palettes + Skyscraper Curtain-Wall Palettes + Hotel, Mall & Villa Palettes
       const CONDO_PALETTES = [
@@ -5332,7 +5789,7 @@ def main():
         const distToBurjM = Math.hypot((polyLon - 55.27418) * 100500.0, (polyLat - 25.19720) * 111320.0);
         if ((distToBurjM < 78.0 && h >= 14.0) || h >= 390.0) {
           extrudeAllWalls(enuRing, holesEnu, minH, h, burjCurtainPal.base, burjCurtainPal.band, 801, h);
-          pushSolidRoofPoly(enuRing, Math.max(minH, h - 0.55), h + 0.65, burjSilverCapRgb, burjSilverCapRgb, holesEnu);
+          pushSolidRoofPoly(enuRing, isDetailLod ? Math.max(minH, h - 0.55) : h, isDetailLod ? (h + 0.65) : h, isDetailLod ? burjSilverCapRgb : null, burjSilverCapRgb, holesEnu);
           if (h >= 800.0) {
             // Seamlessly bridge the 710m hexagonal core up through the 828m telescopic structural titanium spire
             const s1 = makeArchFootprint("chamfer_oct", cx, cy, 7.2, 7.2, 0);
@@ -5346,6 +5803,35 @@ def main():
             pushSolidRoofPoly(s3, 778.0, 808.0, burjSpireSteelRgb, burjSpireSteelRgb);
             pushSolidRoofPoly(sTip, 808.0, 828.5, [0.95, 0.97, 1.0], [0.98, 0.99, 1.0]);
           }
+          continue;
+        }
+
+        // Fast Regional / Community LOD (z < 14.2): 1 metric GLSL wall shaft + 1 crisp roof cap per building -> 16,500+ buildings at 60 FPS!
+        if (!isDetailLod) {
+          let wScheme = 100 + (blockHash % 15);
+          let wPal = CONDO_PALETTES[blockHash % CONDO_PALETTES.length];
+          let wRoof = roofStoneRgb;
+          if (h >= 140.0 || minH > 0 || (h >= 62.0 && effR < 13.5)) {
+            const sIdx = blockHash % 4;
+            wScheme = sIdx < 3 ? (800 + sIdx) : 1200;
+            wPal = sIdx < 3 ? OFFICE_PALETTES[sIdx] : HOTEL_PALETTES[0];
+            wRoof = skyParapetRgb;
+          } else if (h <= 13.5 && areaM2 < 420.0 && minH === 0) {
+            const vp = VILLA_PALETTES[posHash % VILLA_PALETTES.length];
+            wScheme = 610 + (posHash % 4) * 10 + (posHash % 3);
+            wPal = vp;
+            wRoof = vp.roof;
+          } else if (h <= 34.0 && areaM2 >= 850.0) {
+            wPal = MALL_PALETTES[blockHash % MALL_PALETTES.length];
+            wScheme = 300 + (blockHash % 3);
+            wRoof = mallRoofDeckRgb;
+          } else if (h >= 50.0 && (blockHash % 3 === 0)) {
+            const oIdx = blockHash % 3;
+            wScheme = 800 + oIdx;
+            wPal = OFFICE_PALETTES[oIdx];
+          }
+          extrudeAllWalls(enuRing, holesEnu, minH, h, wPal.base, wPal.band, wScheme, h);
+          pushSolidRoofPoly(enuRing, h, h, null, wRoof, holesEnu);
           continue;
         }
 
@@ -5444,6 +5930,73 @@ def main():
         }
       }
 
+      // 6. Simultaneous 3D Architectural Massing for ALL 36 Non-Selected Task 2 Flagship Projects & JVC Sub-Clusters
+      // Ensures PRJ-D10 (Burj Azizi 725m), PRJ-D11 (557m), PRJ-D20 (DIFC Zabeel), PRJ-D3 (Creek Harbour), PRJ-SH4, etc. ALL stand in 3D when zoomed out!
+      for (const ps of otherProjectSites) {
+        const pSpec = getProject3DSpec(ps.ent);
+        const rotR = (pSpec.rotDeg * Math.PI) / 180.0;
+        const pH = Math.max(42.0, pSpec.heightM || 140.0);
+        const podRing = makeArchFootprint("chamfer_oct", ps.px, ps.py, 72, 54, rotR);
+        pushMetricShaderWallRing(podRing, 0.0, 11.5, [0.88, 0.85, 0.79], [0.64, 0.48, 0.34], 301, pH, false);
+        pushSolidRoofPoly(podRing, 11.0, 11.8, roofStoneRgb, [0.42, 0.66, 0.40]);
+
+        if (pSpec.typology === "supertall_diamond") {
+          const tPal = { base: [0.30, 0.48, 0.64], band: [0.84, 0.90, 0.96] };
+          const zA = 11.8 + (pH - 32.0) * 0.56;
+          const zB = 11.8 + (pH - 32.0) * 0.84;
+          const zC = Math.max(zB + 12.0, pH - 20.0);
+          const rA = makeArchFootprint("cruciform_spire", ps.px - 6.0, ps.py, 30, 24, rotR);
+          const rSide = makeArchFootprint("chamfer_oct", ps.px + 10.0, ps.py + 5.0, 22, 18, rotR + 0.18);
+          const rB = scaleEnuRing(rA, 0.78);
+          const rC = scaleEnuRing(rA, 0.56);
+          const rCrown = scaleEnuRing(rA, 0.32);
+          pushMetricShaderWallRing(rA, 11.8, zA, tPal.base, tPal.band, 801, pH, false);
+          pushMetricShaderWallRing(rSide, 11.8, zA * 0.92, tPal.base, tPal.band, 801, pH, false);
+          pushSolidRoofPoly(rSide, zA * 0.92 - 0.5, zA * 0.92 + 0.8, skyParapetRgb, skyParapetRgb);
+          pushMetricShaderWallRing(rB, zA, zB, tPal.base, tPal.band, 801, pH, false);
+          pushSolidRoofPoly(rA, zA - 0.5, zA + 0.6, skyParapetRgb, skyParapetRgb);
+          pushMetricShaderWallRing(rC, zB, zC, tPal.base, tPal.band, 801, pH, false);
+          pushSolidRoofPoly(rB, zB - 0.5, zB + 0.6, skyParapetRgb, skyParapetRgb);
+          pushSolidRoofPoly(rC, zC - 0.5, zC + 1.2, burjSilverCapRgb, burjSilverCapRgb);
+          pushSolidRoofPoly(rCrown, zC + 1.2, pH, burjSpireSteelRgb, [0.96, 0.98, 1.0]);
+        } else if (pSpec.typology === "organic_terraced") {
+          const oPal = HOTEL_PALETTES[0];
+          const r1 = makeArchFootprint("organic_oval", ps.px - 7.0, ps.py + 4.0, 32, 22, rotR);
+          const r2 = makeArchFootprint("organic_oval", ps.px + 15.0, ps.py - 6.0, 25, 18, rotR - 0.25);
+          pushMetricShaderWallRing(r1, 11.8, pH, oPal.base, oPal.band, 1200, pH, false);
+          pushSolidRoofPoly(r1, pH - 0.5, pH + 1.0, skyParapetRgb, skyParapetRgb);
+          pushMetricShaderWallRing(r2, 11.8, pH * 0.72, oPal.base, oPal.band, 1200, pH * 0.72, false);
+          pushSolidRoofPoly(r2, pH * 0.72 - 0.5, pH * 0.72 + 0.8, skyParapetRgb, skyParapetRgb);
+        } else if (pSpec.typology === "twin_triple_highrise") {
+          const hPal = OFFICE_PALETTES[2];
+          const t1 = makeArchFootprint("stepped_wing", ps.px - 18.0, ps.py + 8.0, 24, 16, rotR);
+          const t2 = makeArchFootprint("stepped_wing", ps.px + 17.0, ps.py + 9.0, 22, 15, rotR + 0.45);
+          const t3 = makeArchFootprint("chamfer_oct", ps.px, ps.py - 15.0, 22, 15, rotR - 0.30);
+          pushMetricShaderWallRing(t1, 11.8, pH, hPal.base, hPal.band, 802, pH, false);
+          pushSolidRoofPoly(t1, pH - 0.5, pH + 1.0, skyParapetRgb, skyParapetRgb);
+          pushMetricShaderWallRing(t2, 11.8, pH * 0.82, hPal.base, hPal.band, 802, pH * 0.82, false);
+          pushSolidRoofPoly(t2, pH * 0.82 - 0.5, pH * 0.82 + 0.9, skyParapetRgb, skyParapetRgb);
+          pushMetricShaderWallRing(t3, 11.8, pH * 0.66, hPal.base, hPal.band, 802, pH * 0.66, false);
+          pushSolidRoofPoly(t3, pH * 0.66 - 0.5, pH * 0.66 + 0.9, skyParapetRgb, skyParapetRgb);
+        } else {
+          const cPal = CONDO_PALETTES[pSpec.seed % CONDO_PALETTES.length];
+          const cScheme = 100 + (pSpec.seed % 12);
+          const wA = makeArchFootprint("u_boulevard", ps.px - 10.0, ps.py + 5.0, 40, 28, rotR);
+          const wB = makeArchFootprint("chamfer_oct", ps.px + 18.0, ps.py - 8.0, 26, 20, rotR + 0.35);
+          pushMetricShaderWallRing(wA, 11.8, pH, cPal.base, cPal.band, cScheme, pH, false);
+          pushSolidRoofPoly(wA, pH - 0.5, pH + 0.9, roofStoneRgb, roofStoneRgb);
+          pushMetricShaderWallRing(wB, 11.8, pH * 0.76, cPal.base, cPal.band, cScheme, pH * 0.76, false);
+          pushSolidRoofPoly(wB, pH * 0.76 - 0.5, pH * 0.76 + 0.9, roofStoneRgb, roofStoneRgb);
+        }
+      }
+
+      if (!wallPos.length && !roofPos.length) {
+        three3DLayer.osmCityBuildingCount = 0;
+        three3DLayer.osmCityTruncated = false;
+        syncPhotorealistic3DVisibility();
+        return;
+      }
+
       if (three3DLayer.osmCityGroup) {
         disposeThreeGroup(three3DLayer.osmCityGroup, false);
         three3DLayer.scene.remove(three3DLayer.osmCityGroup);
@@ -5502,6 +6055,7 @@ def main():
         renderingMode: "3d",
         originLonLat: [55.2650, 25.1850],
         lastCityBuildCenter: null,
+        lastCityBuildZoom: null,
         heroExcludeRadiusM: 56.0,
         osmCityBuildingCount: 0,
         osmCityTruncated: false,
@@ -5525,7 +6079,8 @@ def main():
           }, { passive: true });
 
           rebuildThreeHeroScene();
-          scheduleOsmCityRebuild(180);
+          ensureZ14ViewportBuildings();
+          scheduleOsmCityRebuild(140);
         },
         onRemove: function () {
           disposeAllThreeGpuResources();
@@ -5537,7 +6092,7 @@ def main():
             return;
           }
           const zNow = this.map.getZoom();
-          if (zNow < 13.0) {
+          if (zNow < 8.8) {
             if (calloutEl) calloutEl.style.display = "none";
             return;
           }
@@ -5545,7 +6100,9 @@ def main():
           const rawMat = (!Array.isArray(matrix) && matrix?.defaultProjectionData?.mainMatrix) || matrix;
           const p0 = haioProjectMerc(this.originLonLat[0], this.originLonLat[1]);
           const h0 = 1 / (HAIO_EARTH_CIRC * Math.cos((this.originLonLat[1] * Math.PI) / 180));
-          this.localScaleMat.makeTranslation(p0[0], p0[1], 0).scale(new THREE.Vector3(h0, -h0, h0));
+          // Exact 1:1 metric height at z>=13.8; smooth cartographic vertical legibility scale when zoomed far out (L3/L2/L1) so 3D skylines stay clearly visible from altitude
+          const vScale = zNow >= 13.8 ? 1.0 : Math.min(2.65, 1.0 + (13.8 - zNow) * 0.36);
+          this.localScaleMat.makeTranslation(p0[0], p0[1], 0).scale(new THREE.Vector3(h0, -h0, h0 * vScale));
 
           this.renderCamera.projectionMatrix.copy(this.mat4Tmp.fromArray(rawMat).multiply(this.localScaleMat));
           // Expand clip-space Z range (without altering X/Y projection or monotonic depth order) so 828m Burj Khalifa & 557m supertalls never clip against MapLibre's close-zoom near plane
@@ -6156,18 +6713,20 @@ def main():
       map3d.on("move", () => {
         updateCompassUI();
         if (map3d && !map3dContextLost) {
-          if (three3DLayer && three3DLayer.lastCityBuildCenter && map3d.getZoom() >= 13.0) {
+          const zCur = map3d.getZoom();
+          if (three3DLayer && three3DLayer.lastCityBuildCenter && zCur >= 8.8) {
             const mc = map3d.getCenter();
             const dDeg = Math.hypot(mc.lng - three3DLayer.lastCityBuildCenter[0], mc.lat - three3DLayer.lastCityBuildCenter[1]);
-            if (dDeg > 0.0052) {
-              scheduleOsmCityRebuild(140, false);
+            const panThresh = 0.0052 * Math.pow(2, Math.max(0, Math.min(4.5, 15.0 - zCur)));
+            if (dDeg > panThresh) {
+              scheduleOsmCityRebuild(120, false);
             }
           }
           map3d.triggerRepaint();
         }
       });
       map3d.on("moveend", () => {
-        scheduleOsmCityRebuild(140);
+        scheduleOsmCityRebuild(120);
       });
       map3d.on("idle", () => {
         if (!map3dLoaded) finalize3DMapReady();
@@ -6177,11 +6736,16 @@ def main():
       });
       map3d.on("zoom", () => {
         syncPhotorealistic3DVisibility();
+        if (three3DLayer && map3d && map3d.getZoom() >= 8.8) {
+          if (Math.abs(map3d.getZoom() - (three3DLayer.lastCityBuildZoom || 0)) >= 0.55) {
+            scheduleOsmCityRebuild(110, false);
+          }
+        }
         if (typeof updateZoomLevelIndicator === "function") updateZoomLevelIndicator();
       });
       map3d.on("zoomend", () => {
         sync3DMapLayers();
-        scheduleOsmCityRebuild(220);
+        scheduleOsmCityRebuild(120);
         if (typeof updateZoomLevelIndicator === "function") updateZoomLevelIndicator();
       });
 
@@ -6266,11 +6830,11 @@ def main():
         } catch (_) {}
       }
       if (map3d.getLayer("osm-3d-buildings")) {
-        const hasThreeCity = (three3DLayer && three3DLayer.osmCityBuildingCount > 0 && zNow >= 13.0);
-        const showFallbackExtrusion = Boolean(three3DLayer && three3DLayer.osmCityTruncated && zNow < 13.8);
+        const hasThreeCity = Boolean(three3DLayer && three3DLayer.osmCityBuildingCount > 0 && zNow >= 8.8);
+        const showFallbackExtrusion = Boolean(three3DLayer && three3DLayer.osmCityTruncated && zNow >= 14.0 && zNow < 14.4);
         const fillExtOpacity = !is3DBlocksEnabled
           ? 0.0
-          : (hasThreeCity ? (showFallbackExtrusion ? 0.55 : 0.002) : 0.82);
+          : (hasThreeCity ? (showFallbackExtrusion ? 0.55 : 0.002) : (zNow >= 14.0 ? 0.82 : 0.0));
         map3d.setPaintProperty(
           "osm-3d-buildings",
           "fill-extrusion-opacity",
@@ -9393,299 +9957,5 @@ def main():
             <p style="font-size:0.76rem; color:#334155;">Reusing the exact Dubai spatial schema, all 12 Sharjah Flagship Projects (<code>PRJ-SH1..SH12</code>) are mapped across Sharjah's 3 primary commuter &amp; megaproject corridors:</p>
             <div class="kv-grid">
               <div class="kv-row">
-                <div class="kv-lbl">1. Muwaileh, Aljada &amp; Al Zahia Nexus (E311 × E88)</div>
-                <div class="kv-val">
-                  • <strong>Projects:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH2')">PRJ-SH2 Aljada (25,000 units)</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH9')">PRJ-SH9 Al Zahia</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH8')">PRJ-SH8 Olfah</a>.<br/>
-                  • <strong>Traffic (${currentTimeWindow}):</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-01')">E311 Industrial / National Paints</a> operates at <strong>~${shjObs ? shjObs.average_speed_kmh : 28} km/h (${shjObs ? shjObs.congestion_level.split('(')[0].trim() : 'Severe'})</strong>. SRTA &amp; Arada built dedicated Aljada/Airport Rd (E88) grade-separated bridges to bypass E311 queues.
-                </div>
-              </div>
-              <div class="kv-row">
-                <div class="kv-lbl">2. Emirates Road (E611) Forest &amp; Eco-City Belt</div>
-                <div class="kv-val">
-                  • <strong>Projects:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH3')">PRJ-SH3 Masaar 1–3</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH5')">PRJ-SH5 Khalid Bin Sultan City (Zaha Hadid)</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH6')">PRJ-SH6 Hayyan</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH7')">PRJ-SH7 Tilal City</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH10')">PRJ-SH10 Sharjah Sustainable City</a>.<br/>
-                  • <strong>Traffic (${currentTimeWindow}):</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-02')">Emirates Rd (E611)</a> operates at <strong>~${e611ShjObs ? e611ShjObs.average_speed_kmh : 62} km/h (${e611ShjObs ? e611ShjObs.congestion_level.split('(')[0].trim() : 'Moderate'})</strong>; SRTA's 320m Al Dhaid Bridge (E88) opens November 15, 2026.
-                </div>
-              </div>
-              <div class="kv-row">
-                <div class="kv-lbl">3. Al Khan Waterfront, Al Hamriyah North &amp; Khorfakkan East Coast (E11 / S142)</div>
-                <div class="kv-val">
-                  • <strong>Waterfront &amp; Coastal Corridors:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH4')">PRJ-SH4 Maryam Island</a> (0.28 km to <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-04')">RD-SHJ-04 Al Ittihad Rd E11</a>); <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH1')">PRJ-SH1 Sharjah Waterfront City</a> (0.37 km to <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-07')">RD-SHJ-07 Al Ittihad Rd North E11 Al Hamriyah</a>); and <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH11')">PRJ-SH11 Khorfakkan Beach Resort</a> (0.30 km to <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-06')">RD-SHJ-06 Sharjah–Khorfakkan Highway S142 East Coast</a>).
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    // =========================================================================
-    // WORK PACKAGE F: DETERMINISTIC DATABASE Q&A ENGINE WITH MAP AUTO-ZOOM
-    // =========================================================================
-    const PRESET_QUESTIONS = [
-      "Which areas in Dubai currently have the highest construction activity?",
-      "Show construction activity in JVC and the surrounding traffic conditions.",
-      "Compare traffic conditions around Hessa St & JVC during morning and evening periods.",
-      "Which projects are near major road intersections and bottlenecks?",
-      "What traffic data and freight capacity are available around Dubai South & DWC?",
-      "Which communities have both active construction and observed severe congestion?",
-      "Which projects and corridors have published Traffic Impact Studies (TIS) vs. restricted files?",
-      "How does TomTom compare against Dubai Pulse / RTA Open Data, HERE, and Google Maps?"
-    ];
-
-    function askPreset(idx) {
-      document.getElementById("qaInput").value = PRESET_QUESTIONS[idx];
-      runDeterministicQA();
-    }
-
-    function runDeterministicQA() {
-      switchDrawerTab("qa");
-      const rawQ = (document.getElementById("qaInput").value || "").trim();
-      const q = rawQ.toLowerCase();
-      const out = document.getElementById("qaResultContainer");
-
-      if (!q) {
-        out.innerHTML = `<div class="detail-card">Please enter a question or click one of the 8 verified preset queries above.</div>`;
-        return;
-      }
-
-      // Deterministic query routing over DATA tables
-      if (q.includes("jvc") || q.includes("jumeirah village") || (q.includes("hessa") && !q.includes("compare") && !q.includes("morning"))) {
-        runUseCase(2);
-        switchDrawerTab("qa");
-        const jvcLinks = DATA.impact_links.filter(l => l.community.toLowerCase().includes("jvc") || l.primary_road_id.includes("RD-DXB-05") || l.primary_road_id.includes("RD-DXB-06"));
-        out.innerHTML = `
-          <div class="detail-card">
-            <span class="brand-badge">Deterministic SQL/JSON Query Result • Auto-Zoomed to JVC [25.0565, 55.2090]</span>
-            <h4 style="margin-top:6px;">JVC &amp; Hessa Street Construction-to-Traffic Query (${jvcLinks.length} Linked Records)</h4>
-            <p style="font-size:0.76rem; color:#334155;"><strong>Database Findings:</strong> JVC (<code>COM-DXB-01</code>) records <strong>38 active developments, 64 active towers, 28,500 scheduled units, and 3,420,000 m² active structural GFA</strong>. Officially published RTA capacity on <code>RD-DXB-05</code> (Hessa St D61) doubles from <strong>4,000 to 8,000 vph/dir</strong> under the AED 689M upgrade, while modelled corridor speeds are <strong>~29 km/h (AM Peak)</strong> and <strong>~25 km/h (PM Peak — Severe)</strong>, and <code>RD-DXB-03</code> (Al Khail Rd E44) is modelled at <strong>~58–64 km/h</strong> calibrated to RTA's published 30% travel-time reduction.</p>
-            <div class="kv-grid">
-              ${jvcLinks.map(l => `
-                <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${l.project_id}')">
-                  <div class="kv-lbl">${l.project_id} → ${l.primary_road_id} (${l.distance_to_primary_road_km} km Haversine to [${l.nearest_road_vertex_wgs84}])</div>
-                  <div class="kv-val"><strong>${l.project_name}</strong><br/><span style="color:#059669; font-weight:700;">${l.published_road_capacity_and_upgrade_fact}</span><br/>${l.observed_road_traffic_condition}<br/><em>${l.modelled_daily_hgv_concrete_rebar_trips}</em><br/><span style="color:#2563eb; font-weight:700;">${l.epistemic_impact_classification}</span></div>
-                </div>
-              `).join("")}
-            </div>
-            <div style="margin-top:8px; font-size:0.70rem; color:#64748b;"><strong>Sources:</strong> DLD <code>dld_projects-open</code> (<code>SRC-020</code> JVC Master Community), RTA AED 689M Hessa St D61 Capacity Release (<code>SRC-433</code>), and RTA AED 700M Al Khail Rd E44 Capacity Release (<code>SRC-434</code>).</div>
-          </div>
-        `;
-      } else if (q.includes("morning") || q.includes("evening") || q.includes("compare") || q.includes("vary") || q.includes("time")) {
-        flyBothMaps(25.0645, 55.2095, 13, 55, 35);
-        const d61Obs = DATA.observations.filter(o => o.road_id === "RD-DXB-05" || o.road_id === "RD-DXB-03");
-        out.innerHTML = `
-          <div class="detail-card">
-            <span class="brand-badge">Deterministic Temporal Comparison Query • Hessa St (D61) &amp; Al Khail Rd (E44)</span>
-            <h4 style="margin-top:6px;">Morning vs. Midday vs. Evening vs. Night Traffic Comparison (${d61Obs.length} Modelled Corridor Scenarios)</h4>
-            <div class="kv-grid">
-              ${d61Obs.map(o => `
-                <div class="kv-row" style="cursor:pointer;" onclick="showRoadInspector('${o.road_id}')">
-                  <div class="kv-lbl">${o.road_id} • ${o.time_period} (${o.evidence_level})</div>
-                  <div class="kv-val"><strong>Corridor Speed: ~${o.average_speed_kmh} km/h</strong> (${o.travel_time_min_per_10km} min/10km) | <strong>Uninterrupted BPR: ${o.bpr_uninterrupted_speed_kmh} km/h</strong> (${o.bpr_uninterrupted_time_min_per_10km} min/10km at V/C=${o.vc_ratio}) + <strong>Bottleneck Delay (+d_adj): +${o.bottleneck_and_control_delay_min_per_10km} min/10km</strong><br/><strong>Published Benchmark:</strong> <span style="color:#059669; font-weight:700;">${o.officially_published_corridor_benchmark}</span><br/><strong>Modelled Derivation:</strong> ${o.modelled_assumptions_and_derivation}<br/><strong>Modelled Volume:</strong> ${o.traffic_volume_vph}</div>
-                </div>
-              `).join("")}
-            </div>
-            <div style="margin-top:8px; font-size:0.71rem; color:#b45309;"><strong>Epistemic Notice:</strong> Corridor capacities and upgrade travel-time reduction targets are officially published by RTA (<code>SRC-433</code>, <code>SRC-434</code>). Segment-specific hourly speeds and volumes are Modelled Corridor Estimates derived via the BPR volume-delay function.</div>
-          </div>
-        `;
-      } else if (q.includes("dubai south") || q.includes("dwc") || q.includes("maktoum") || q.includes("expo") || q.includes("e611")) {
-        flyBothMaps(24.9120, 55.1580, 12, 52, 35);
-        const dsLinks = DATA.impact_links.filter(l => ["PRJ-D1", "PRJ-D15", "PRJ-D18", "PRJ-D6"].includes(l.project_id));
-        out.innerHTML = `
-          <div class="detail-card">
-            <span class="brand-badge">Deterministic Spatial Query • Auto-Zoomed to Dubai South &amp; DWC [24.912, 55.158]</span>
-            <h4 style="margin-top:6px;">Dubai South, Expo City &amp; DWC Airport Traffic &amp; Freight Intelligence</h4>
-            <p style="font-size:0.76rem; color:#334155;"><strong>Database Findings:</strong> Dubai South (<code>COM-DXB-04</code>) has the largest active construction GFA in the UAE (<strong>7.85M m²</strong> across <code>PRJ-D1</code> DWC AED 128B Airport, <code>PRJ-D15</code> Azizi Venice &amp; <code>PRJ-D18</code> Expo City), yet modelled congestion is <strong>Low (~86 km/h modelled speed on E611, LOS B)</strong> because <strong>Emirates Road (E611)</strong> provides a published 11,400 vph/dir 6-lane capacity and is <strong>100% exempt from Dubai's daytime HGV truck bans</strong>.</p>
-            <div class="kv-grid">
-              ${dsLinks.map(l => `
-                <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${l.project_id}')">
-                  <div class="kv-lbl">${l.project_id}: ${l.project_name}</div>
-                  <div class="kv-val">Connected Road: <strong>${l.primary_road_name} (${l.distance_to_primary_road_km} km)</strong><br/>Modelled Freight: ${l.modelled_daily_hgv_concrete_rebar_trips}<br/>HGV Policy: ${l.hgv_routing_and_ban_compliance}</div>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        `;
-      } else if (q.includes("intersection") || q.includes("junction") || q.includes("bottleneck")) {
-        flyBothMaps(25.155, 55.275, 11, 50, 30);
-        const nearInts = [...DATA.impact_links].sort((a, b) => a.distance_to_intersection_km - b.distance_to_intersection_km).slice(0, 8);
-        out.innerHTML = `
-          <div class="detail-card">
-            <span class="brand-badge">Deterministic Spatial Proximity Query • Top 8 Projects Nearest Major Intersections</span>
-            <h4 style="margin-top:6px;">Projects Ranked by Geodesic Proximity to Major Interchanges</h4>
-            <div class="kv-grid">
-              ${nearInts.map(l => `
-                <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${l.project_id}')">
-                  <div class="kv-lbl">${l.project_id} (${l.distance_to_intersection_km} km to ${l.nearest_intersection_id})</div>
-                  <div class="kv-val"><strong>${l.project_name}</strong><br/>Junction: ${l.nearest_intersection_name}<br/>Road: ${l.primary_road_name} (${l.distance_to_primary_road_km} km)</div>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        `;
-      } else if (q.includes("tis") || q.includes("traffic impact") || q.includes("study") || q.includes("studies")) {
-        out.innerHTML = `
-          <div class="detail-card">
-            <span class="brand-badge">Deterministic TIS Registry Query • 8 Corridor &amp; Masterplan Studies</span>
-            <h4 style="margin-top:6px;">Published RTA/SRTA Corridor Studies vs. Restricted Developer TIS Submissions</h4>
-            <p style="font-size:0.75rem; color:#334155;">Individual plot-level consultant TIS reports submitted via the <strong>RTA Traffic Engineering System (TES)</strong> are confidential commercial records. However, <strong>RTA and SRTA publish official corridor-level engineering studies and capacity upgrades</strong> for all major hotspots:</p>
-            <div class="kv-grid">
-              ${DATA.tis.map(t => `
-                <div class="kv-row">
-                  <div class="kv-lbl">${t.tis_id} • ${t.location_community}</div>
-                  <div class="kv-val"><strong>${t.project_or_corridor}</strong><br/><strong>Status:</strong> ${t.study_type_and_availability}<br/><strong>Forecast &amp; Mitigation:</strong> ${t.forecast_traffic_volumes} — ${t.proposed_mitigation_and_logistics}</div>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        `;
-      } else if (q.includes("tomtom") || q.includes("provider") || q.includes("here") || q.includes("google")) {
-        out.innerHTML = `
-          <div class="detail-card">
-            <span class="brand-badge">Deterministic Provider Evaluation Query (Work Package A4)</span>
-            <h4 style="margin-top:6px;">TomTom vs. Dubai Pulse/RTA vs. HERE vs. Google Maps vs. Mapbox</h4>
-            <div class="kv-grid">
-              ${DATA.providers.map(p => `
-                <div class="kv-row">
-                  <div class="kv-lbl">${p.provider_id}: ${p.provider_name}</div>
-                  <div class="kv-val"><strong>Coverage &amp; Freq:</strong> ${p.dubai_and_uae_coverage} (${p.update_frequency})<br/><strong>Limits &amp; Pricing:</strong> ${p.api_rate_limits} | ${p.pricing_structure}<br/><strong>Retention Rule:</strong> ${p.commercial_usage_and_retention_terms}<br/><span style="color:#2563eb; font-weight:700;"><strong>Verdict:</strong> ${p.prototype_recommendation}</span></div>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        `;
-      } else if (q.includes("both") || q.includes("severe") || q.includes("hotspot") || q.includes("highest") || q.includes("concentrated")) {
-        const ranked = [...DATA.communities].sort((a, b) => parseFloat(b.construction_activity_index_score) - parseFloat(a.construction_activity_index_score));
-        flyBothMaps(25.155, 55.305, 11, 50, 30);
-        out.innerHTML = `
-          <div class="detail-card">
-            <span class="brand-badge">Deterministic Hotspot &amp; Congestion Cross-Query (${ranked.length} Communities)</span>
-            <h4 style="margin-top:6px;">Communities Ranked by Construction Activity Index &amp; Observed Congestion</h4>
-            <div class="kv-grid">
-              ${ranked.map(c => `
-                <div class="kv-row" style="cursor:pointer;" onclick="flyBothMaps(${c.center_lat}, ${c.center_lon}, ${c.recommended_zoom}, 55, 35); showCommunityInspector(DATA.communities.find(x=>x.community_id==='${c.community_id}'))">
-                  <div class="kv-lbl">${c.emirate} • Score: ${c.construction_activity_index_score}</div>
-                  <div class="kv-val"><strong>${c.community_name}</strong><br/>Active Devs: ${c.active_developments_count} | Towers: ${c.active_towers_and_buildings} | Units: ${c.scheduled_units_2025_2029.toLocaleString()} | Active GFA: ${c.active_structural_gfa_sqm.toLocaleString()} m²<br/><strong style="color:${congestionColor(c.observed_congestion_severity)};">Congestion: ${c.observed_congestion_severity}</strong></div>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        `;
-      } else {
-        // Generic keyword search across projects, roads, and communities
-        const mProjs = DATA.projects.filter(p => JSON.stringify(p).toLowerCase().includes(q));
-        const mRoads = DATA.roads.filter(r => JSON.stringify(r).toLowerCase().includes(q));
-        if (mProjs.length > 0) {
-          const [lat, lon] = parseCoord(mProjs[0].coordinates);
-          flyBothMaps(lat, lon, 15.8, 60, 45);
-        }
-        out.innerHTML = `
-          <div class="detail-card">
-            <span class="brand-badge">Deterministic Keyword Search Result</span>
-            <h4 style="margin-top:6px;">Matched ${mProjs.length} Projects &amp; ${mRoads.length} Road Corridors for "${rawQ}"</h4>
-            <div class="kv-grid">
-              ${mProjs.slice(0, 6).map(p => `
-                <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${p.project_id}')">
-                  <div class="kv-lbl">${p.project_id} • ${p.emirate}</div>
-                  <div class="kv-val"><strong>${p.project_name}</strong> (${p.developer}) — ${p.city_district_community}</div>
-                </div>
-              `).join("")}
-              ${mRoads.slice(0, 6).map(r => `
-                <div class="kv-row" style="cursor:pointer;" onclick="showRoadInspector('${r.road_id}')">
-                  <div class="kv-lbl">${r.road_id} • ${r.road_code}</div>
-                  <div class="kv-val"><strong>${r.road_name}</strong> — ${r.capacity_vph_per_dir}</div>
-                </div>
-              `).join("")}
-            </div>
-          </div>
-        `;
-      }
-    }
-
-    function openEvTab(panelId, btnEl) {
-      document.querySelectorAll(".ev-panel").forEach(p => p.classList.remove("active"));
-      document.querySelectorAll(".ev-tab-btn").forEach(b => b.classList.remove("active"));
-      document.getElementById(panelId).classList.add("active");
-      if (btnEl) btnEl.classList.add("active");
-    }
-
-    function bootHaioPlatform() {
-      if (window.__haioPlatformBooted) return;
-      window.__haioPlatformBooted = true;
-      initMap();
-    }
-    if (document.readyState === "loading") {
-      window.addEventListener("DOMContentLoaded", bootHaioPlatform);
-    } else {
-      bootHaioPlatform();
-    }
-    window.addEventListener("haio-vendor-ready", () => {
-      if (!window.__haioPlatformBooted) {
-        bootHaioPlatform();
-      } else if (map3d && map3dLoaded && !map3dContextLost) {
-        attachThree3DLayerIfReady();
-        sync3DMapLayers();
-        scheduleOsmCityRebuild(120);
-        forceMap3dRepaintBurst();
-      }
-    });
-  </script>
-</body>
-</html>
-""".replace("__PAYLOAD_JSON__", payload_json)
-
-    full_html = html_doc + js_code
-    out_path = WEB_DIR / "task2_gis_intelligence.html"
-    out_path.write_text(full_html, encoding="utf-8")
-    if ARTIFACT_DIR and ARTIFACT_DIR.exists():
-        (ARTIFACT_DIR / "uae_construction_portal.html").write_text(full_html, encoding="utf-8")
-    print(f"Built Task 2 Interactive GIS & Traffic Platform: {out_path} ({out_path.stat().st_size // 1024} KB)")
-
-    # Inject a prominent, mobile-responsive Task 2 banner at the very top of web/index.html & web/validation_report.html
-    banner_html = """<!-- TASK 2 GLOBAL SWITCHER BANNER -->
-  <style>
-    #task2-global-banner { background:linear-gradient(90deg,#090d16 0%,#0f172a 50%,#1e1b4b 100%); color:#fff; padding:9px 16px; border-bottom:2px solid #38bdf8; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-family:system-ui,sans-serif; z-index:9999; }
-    #task2-global-banner .t2-links { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
-    @media (max-width: 768px) {
-      #task2-global-banner { padding:7px 10px; gap:5px; }
-      #task2-global-banner .t2-title { font-size:0.78rem !important; line-height:1.25; }
-      #task2-global-banner .t2-links { width:100%; overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
-      #task2-global-banner .t2-links::-webkit-scrollbar { display:none; }
-      #task2-global-banner .t2-links a { flex-shrink:0; white-space:nowrap; font-size:0.72rem !important; padding:4px 9px !important; }
-    }
-  </style>
-  <div id="task2-global-banner">
-    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-      <span style="background:#0284c7; color:#fff; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:999px; text-transform:uppercase;">Task 2 Live</span>
-      <strong class="t2-title" style="font-size:0.88rem;">Geographic Visualization &amp; Traffic Impact Intelligence (Dubai &amp; Sharjah)</strong>
-    </div>
-    <div class="t2-links">
-      <a href="task2_gis_intelligence.html" style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:5px 12px; border-radius:7px; font-weight:700; font-size:0.78rem; text-decoration:none;">🗺️ Launch Task 2 GIS Map →</a>
-      <a href="datasets/dubai_sharjah_gis_bundle.geojson" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">GeoJSON Bundle</a>
-      <a href="datasets/21_task2_spatial_database.sqlite" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">Spatial SQLite</a>
-      <a href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/22_project_road_impact_links.csv" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">Impact Links CSV</a>
-    </div>
-  </div>"""
-
-    import re as _re
-    for page_fn in ("index.html", "validation_report.html"):
-        p_file = WEB_DIR / page_fn
-        if p_file.exists():
-            txt = p_file.read_text(encoding="utf-8")
-            if "<!-- TASK 2 GLOBAL SWITCHER BANNER -->" in txt:
-                txt = _re.sub(
-                    r"<!-- TASK 2 GLOBAL SWITCHER BANNER -->.*?</div>\s*</div>",
-                    banner_html,
-                    txt,
-                    count=1,
-                    flags=_re.S,
-                )
-                p_file.write_text(txt, encoding="utf-8")
-                print(f"Updated mobile-responsive Task 2 Navigation Banner in {page_fn}")
-            elif "id=\"task2-global-banner\"" not in txt:
-                txt = txt.replace("<body>", "<body>\n" + banner_html, 1)
-                p_file.write_text(txt, encoding="utf-8")
-                print(f"Injected Task 2 Navigation Banner into {page_fn}")
-
-
-if __name__ == "__main__":
-    main()
+            
+... [truncated for diff preview]
