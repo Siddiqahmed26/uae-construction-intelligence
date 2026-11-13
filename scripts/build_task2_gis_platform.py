@@ -2458,7 +2458,7 @@ def main():
         </div>
 
         <span id="hudTime" style="display:none;">Evening Peak (17:00–20:00)</span>
-        <span id="hudHgvStatus" style="background:rgba(15,23,42,0.92); color:#fca5a5; border:1px solid #ef4444; padding:5px 10px; border-radius:999px; font-weight:700; font-size:0.70rem; box-shadow:0 4px 12px rgba(15,23,42,0.22);">🚫 HGV Ban 17:00–20:00 (E11/E44/D61)</span>
+        <span id="hudHgvStatus" style="background:rgba(15,23,42,0.92); color:#fca5a5; border:1px solid #ef4444; padding:5px 10px; border-radius:999px; font-weight:700; font-size:0.70rem; box-shadow:0 4px 12px rgba(15,23,42,0.22);">🚫 HGV Ban 17:30–20:00 (E44/D61) · E11 06:00–22:00</span>
         <div style="display:none;">
           <button id="qpill-projects" onclick="quickToggle('projects', 'chk-L1', this)"></button>
           <button id="qpill-communities" onclick="quickToggle('communities', 'chk-L3', this)"></button>
@@ -2926,8 +2926,8 @@ def main():
       if (tp.includes("Morning")) {
         return {
           shortTp: "AM Peak (07:30–09:30)",
-          hgvBadge: "🚫 HGV Ban 06:30–08:30 (E11/E44/D61)",
-          text: "🚫 HGVs Banned on E11/E44/D61 (06:30–08:30 AM Rush) — Commuter Queue Window",
+          hgvBadge: "🚫 HGV Ban 06:30–08:30 (E44/D61) · E11 06:00–22:00",
+          text: "🚫 HGVs Banned on E44/D61 06:30–08:30 (AM Rush) · E11 central SZR banned 06:00–22:00 — Commuter Queue Window (RTA schedule, Dataset #16 / SRC-437)",
           color: "#fca5a5",
           hgvStyle: "background:rgba(15,23,42,0.92); color:#fca5a5; border:1px solid #ef4444; padding:5px 10px; border-radius:999px; font-weight:700; font-size:0.70rem; box-shadow:0 4px 12px rgba(15,23,42,0.22);",
           narrative: "Morning commuter wave toward Business Bay, DIFC & Dubai/Sharjah employment hubs. Heavy construction trucks are restricted on primary passenger arterials; commuter queues dominate Hessa St (29 km/h) and E311 Southbound (28 km/h)."
@@ -2936,8 +2936,8 @@ def main():
       if (tp.includes("Midday")) {
         return {
           shortTp: "Midday HGV (12:00–14:00)",
-          hgvBadge: "🚛 HGV Haulage Active (08:30–16:30)",
-          text: "🚛 ACTIVE HGV CONCRETE & REBAR HAULAGE WINDOW (08:30–16:30 Permitted)",
+          hgvBadge: "🚛 Midday HGV: D61 open · E44 ban 13:00–15:00 · E11 banned",
+          text: "🚛 MIDDAY HGV HAULAGE WINDOW — D61 permitted 08:30–17:30 · E44 banned 13:00–15:00 · E11 central SZR banned 06:00–22:00 (RTA schedule, Dataset #16 / SRC-437)",
           color: "#fde68a",
           hgvStyle: "background:rgba(15,23,42,0.92); color:#fde68a; border:1px solid #f59e0b; padding:5px 10px; border-radius:999px; font-weight:700; font-size:0.70rem; box-shadow:0 4px 12px rgba(15,23,42,0.22);",
           narrative: "Passenger commuter peaks subside (Hessa St rises to 48 km/h; Al Khail Rd rises to 78 km/h), while active daytime HGV concrete mixers, rebar trailers, and earthworks tippers operate across JVC, Business Bay, Creek Harbour & Dubai South."
@@ -2955,8 +2955,8 @@ def main():
       }
       return {
         shortTp: "PM Peak (17:00–20:00)",
-        hgvBadge: "🚫 HGV Ban 17:00–20:00 (E11/E44/D61)",
-        text: "🚫 HGVs Banned on E11/E44/D61 (17:00–20:00 PM Rush) — Peak Commuter Bottlenecks",
+        hgvBadge: "🚫 HGV Ban 17:30–20:00 (E44/D61) · E11 06:00–22:00",
+        text: "🚫 HGVs Banned on E44/D61 17:30–20:00 (PM Rush) · E11 central SZR banned 06:00–22:00 — Peak Commuter Bottlenecks (RTA schedule, Dataset #16 / SRC-437)",
         color: "#fca5a5",
         hgvStyle: "background:rgba(15,23,42,0.92); color:#fca5a5; border:1px solid #ef4444; padding:5px 10px; border-radius:999px; font-weight:700; font-size:0.70rem; box-shadow:0 4px 12px rgba(15,23,42,0.22);",
         narrative: "Highest diurnal congestion across the network. Return commuter flows create severe bottlenecks on Hessa St West (25 km/h), JVC Circle Blvd (21 km/h), Financial Centre Rd (22 km/h), and SZR (44 km/h)."
@@ -8148,6 +8148,7 @@ def main():
             <span class="badge-hyp">⚠️ HYPOTHETICAL SCENARIO SIMULATION — NOT OBSERVED LIVE TRAFFIC</span>
             <span style="font-size:0.74rem; color:#475569;">Corridor: <strong>${r.road_id} (${r.road_name})</strong> · Window: <strong>${currentTimeWindow}</strong></span>
           </div>
+          <div style="font-size:0.72rem; color:#475569; margin:0 0 8px;"><strong>RTA HGV rule for this corridor (Dataset #16):</strong> ${r.hgv_truck_ban_window || "Not specified"}</div>
           <div class="aw-kpi-grid" style="margin-bottom:6px;">
             <div class="aw-kpi-card">
               <div class="k-lbl">Baseline Modelled Speed &amp; V/C</div>
@@ -8213,7 +8214,7 @@ def main():
             <div>
               <label class="haio-field-lbl">RTA PEAK-WINDOW HGV BAN POLICY</label>
               <select id="simBanPolicy" class="haio-select" onchange="runHypotheticalScenario()">
-                <option value="enforced" selected>Statutory HGV Ban Enforced (06:30–08:30 &amp; 17:30–20:00)</option>
+                <option value="enforced" selected>Statutory HGV Bans Enforced (per corridor)</option>
                 <option value="unrestricted">Hypothetical Unrestricted HGV Access in Peak Hours</option>
               </select>
             </div>
@@ -9957,5 +9958,299 @@ def main():
             <p style="font-size:0.76rem; color:#334155;">Reusing the exact Dubai spatial schema, all 12 Sharjah Flagship Projects (<code>PRJ-SH1..SH12</code>) are mapped across Sharjah's 3 primary commuter &amp; megaproject corridors:</p>
             <div class="kv-grid">
               <div class="kv-row">
-            
-... [truncated for diff preview]
+                <div class="kv-lbl">1. Muwaileh, Aljada &amp; Al Zahia Nexus (E311 × E88)</div>
+                <div class="kv-val">
+                  • <strong>Projects:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH2')">PRJ-SH2 Aljada (25,000 units)</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH9')">PRJ-SH9 Al Zahia</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH8')">PRJ-SH8 Olfah</a>.<br/>
+                  • <strong>Traffic (${currentTimeWindow}):</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-01')">E311 Industrial / National Paints</a> operates at <strong>~${shjObs ? shjObs.average_speed_kmh : 28} km/h (${shjObs ? shjObs.congestion_level.split('(')[0].trim() : 'Severe'})</strong>. SRTA &amp; Arada built dedicated Aljada/Airport Rd (E88) grade-separated bridges to bypass E311 queues.
+                </div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">2. Emirates Road (E611) Forest &amp; Eco-City Belt</div>
+                <div class="kv-val">
+                  • <strong>Projects:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH3')">PRJ-SH3 Masaar 1–3</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH5')">PRJ-SH5 Khalid Bin Sultan City (Zaha Hadid)</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH6')">PRJ-SH6 Hayyan</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH7')">PRJ-SH7 Tilal City</a>, <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH10')">PRJ-SH10 Sharjah Sustainable City</a>.<br/>
+                  • <strong>Traffic (${currentTimeWindow}):</strong> <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-02')">Emirates Rd (E611)</a> operates at <strong>~${e611ShjObs ? e611ShjObs.average_speed_kmh : 62} km/h (${e611ShjObs ? e611ShjObs.congestion_level.split('(')[0].trim() : 'Moderate'})</strong>; SRTA's 320m Al Dhaid Bridge (E88) opens November 15, 2026.
+                </div>
+              </div>
+              <div class="kv-row">
+                <div class="kv-lbl">3. Al Khan Waterfront, Al Hamriyah North &amp; Khorfakkan East Coast (E11 / S142)</div>
+                <div class="kv-val">
+                  • <strong>Waterfront &amp; Coastal Corridors:</strong> <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH4')">PRJ-SH4 Maryam Island</a> (0.28 km to <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-04')">RD-SHJ-04 Al Ittihad Rd E11</a>); <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH1')">PRJ-SH1 Sharjah Waterfront City</a> (0.37 km to <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-07')">RD-SHJ-07 Al Ittihad Rd North E11 Al Hamriyah</a>); and <a href="javascript:void(0)" onclick="showProjectInspector('PRJ-SH11')">PRJ-SH11 Khorfakkan Beach Resort</a> (0.30 km to <a href="javascript:void(0)" onclick="showRoadInspector('RD-SHJ-06')">RD-SHJ-06 Sharjah–Khorfakkan Highway S142 East Coast</a>).
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    // =========================================================================
+    // WORK PACKAGE F: DETERMINISTIC DATABASE Q&A ENGINE WITH MAP AUTO-ZOOM
+    // =========================================================================
+    const PRESET_QUESTIONS = [
+      "Which areas in Dubai currently have the highest construction activity?",
+      "Show construction activity in JVC and the surrounding traffic conditions.",
+      "Compare traffic conditions around Hessa St & JVC during morning and evening periods.",
+      "Which projects are near major road intersections and bottlenecks?",
+      "What traffic data and freight capacity are available around Dubai South & DWC?",
+      "Which communities have both active construction and observed severe congestion?",
+      "Which projects and corridors have published Traffic Impact Studies (TIS) vs. restricted files?",
+      "How does TomTom compare against Dubai Pulse / RTA Open Data, HERE, and Google Maps?"
+    ];
+
+    function askPreset(idx) {
+      document.getElementById("qaInput").value = PRESET_QUESTIONS[idx];
+      runDeterministicQA();
+    }
+
+    function runDeterministicQA() {
+      switchDrawerTab("qa");
+      const rawQ = (document.getElementById("qaInput").value || "").trim();
+      const q = rawQ.toLowerCase();
+      const out = document.getElementById("qaResultContainer");
+
+      if (!q) {
+        out.innerHTML = `<div class="detail-card">Please enter a question or click one of the 8 verified preset queries above.</div>`;
+        return;
+      }
+
+      // Deterministic query routing over DATA tables
+      if (q.includes("jvc") || q.includes("jumeirah village") || (q.includes("hessa") && !q.includes("compare") && !q.includes("morning"))) {
+        runUseCase(2);
+        switchDrawerTab("qa");
+        const jvcLinks = DATA.impact_links.filter(l => l.community.toLowerCase().includes("jvc") || l.primary_road_id.includes("RD-DXB-05") || l.primary_road_id.includes("RD-DXB-06"));
+        out.innerHTML = `
+          <div class="detail-card">
+            <span class="brand-badge">Deterministic SQL/JSON Query Result • Auto-Zoomed to JVC [25.0565, 55.2090]</span>
+            <h4 style="margin-top:6px;">JVC &amp; Hessa Street Construction-to-Traffic Query (${jvcLinks.length} Linked Records)</h4>
+            <p style="font-size:0.76rem; color:#334155;"><strong>Database Findings:</strong> JVC (<code>COM-DXB-01</code>) records <strong>38 active developments, 64 active towers, 28,500 scheduled units, and 3,420,000 m² active structural GFA</strong>. Officially published RTA capacity on <code>RD-DXB-05</code> (Hessa St D61) doubles from <strong>4,000 to 8,000 vph/dir</strong> under the AED 689M upgrade, while modelled corridor speeds are <strong>~29 km/h (AM Peak)</strong> and <strong>~25 km/h (PM Peak — Severe)</strong>, and <code>RD-DXB-03</code> (Al Khail Rd E44) is modelled at <strong>~58–64 km/h</strong> calibrated to RTA's published 30% travel-time reduction.</p>
+            <div class="kv-grid">
+              ${jvcLinks.map(l => `
+                <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${l.project_id}')">
+                  <div class="kv-lbl">${l.project_id} → ${l.primary_road_id} (${l.distance_to_primary_road_km} km Haversine to [${l.nearest_road_vertex_wgs84}])</div>
+                  <div class="kv-val"><strong>${l.project_name}</strong><br/><span style="color:#059669; font-weight:700;">${l.published_road_capacity_and_upgrade_fact}</span><br/>${l.observed_road_traffic_condition}<br/><em>${l.modelled_daily_hgv_concrete_rebar_trips}</em><br/><span style="color:#2563eb; font-weight:700;">${l.epistemic_impact_classification}</span></div>
+                </div>
+              `).join("")}
+            </div>
+            <div style="margin-top:8px; font-size:0.70rem; color:#64748b;"><strong>Sources:</strong> DLD <code>dld_projects-open</code> (<code>SRC-020</code> JVC Master Community), RTA AED 689M Hessa St D61 Capacity Release (<code>SRC-433</code>), and RTA AED 700M Al Khail Rd E44 Capacity Release (<code>SRC-434</code>).</div>
+          </div>
+        `;
+      } else if (q.includes("morning") || q.includes("evening") || q.includes("compare") || q.includes("vary") || q.includes("time")) {
+        flyBothMaps(25.0645, 55.2095, 13, 55, 35);
+        const d61Obs = DATA.observations.filter(o => o.road_id === "RD-DXB-05" || o.road_id === "RD-DXB-03");
+        out.innerHTML = `
+          <div class="detail-card">
+            <span class="brand-badge">Deterministic Temporal Comparison Query • Hessa St (D61) &amp; Al Khail Rd (E44)</span>
+            <h4 style="margin-top:6px;">Morning vs. Midday vs. Evening vs. Night Traffic Comparison (${d61Obs.length} Modelled Corridor Scenarios)</h4>
+            <div class="kv-grid">
+              ${d61Obs.map(o => `
+                <div class="kv-row" style="cursor:pointer;" onclick="showRoadInspector('${o.road_id}')">
+                  <div class="kv-lbl">${o.road_id} • ${o.time_period} (${o.evidence_level})</div>
+                  <div class="kv-val"><strong>Corridor Speed: ~${o.average_speed_kmh} km/h</strong> (${o.travel_time_min_per_10km} min/10km) | <strong>Uninterrupted BPR: ${o.bpr_uninterrupted_speed_kmh} km/h</strong> (${o.bpr_uninterrupted_time_min_per_10km} min/10km at V/C=${o.vc_ratio}) + <strong>Bottleneck Delay (+d_adj): +${o.bottleneck_and_control_delay_min_per_10km} min/10km</strong><br/><strong>Published Benchmark:</strong> <span style="color:#059669; font-weight:700;">${o.officially_published_corridor_benchmark}</span><br/><strong>Modelled Derivation:</strong> ${o.modelled_assumptions_and_derivation}<br/><strong>Modelled Volume:</strong> ${o.traffic_volume_vph}</div>
+                </div>
+              `).join("")}
+            </div>
+            <div style="margin-top:8px; font-size:0.71rem; color:#b45309;"><strong>Epistemic Notice:</strong> Corridor capacities and upgrade travel-time reduction targets are officially published by RTA (<code>SRC-433</code>, <code>SRC-434</code>). Segment-specific hourly speeds and volumes are Modelled Corridor Estimates derived via the BPR volume-delay function.</div>
+          </div>
+        `;
+      } else if (q.includes("dubai south") || q.includes("dwc") || q.includes("maktoum") || q.includes("expo") || q.includes("e611")) {
+        flyBothMaps(24.9120, 55.1580, 12, 52, 35);
+        const dsLinks = DATA.impact_links.filter(l => ["PRJ-D1", "PRJ-D15", "PRJ-D18", "PRJ-D6"].includes(l.project_id));
+        out.innerHTML = `
+          <div class="detail-card">
+            <span class="brand-badge">Deterministic Spatial Query • Auto-Zoomed to Dubai South &amp; DWC [24.912, 55.158]</span>
+            <h4 style="margin-top:6px;">Dubai South, Expo City &amp; DWC Airport Traffic &amp; Freight Intelligence</h4>
+            <p style="font-size:0.76rem; color:#334155;"><strong>Database Findings:</strong> Dubai South (<code>COM-DXB-04</code>) has the largest active construction GFA in the UAE (<strong>7.85M m²</strong> across <code>PRJ-D1</code> DWC AED 128B Airport, <code>PRJ-D15</code> Azizi Venice &amp; <code>PRJ-D18</code> Expo City), yet modelled congestion is <strong>Low (~86 km/h modelled speed on E611, LOS B)</strong> because <strong>Emirates Road (E611)</strong> provides a published 11,400 vph/dir 6-lane capacity and is <strong>100% exempt from Dubai's daytime HGV truck bans</strong>.</p>
+            <div class="kv-grid">
+              ${dsLinks.map(l => `
+                <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${l.project_id}')">
+                  <div class="kv-lbl">${l.project_id}: ${l.project_name}</div>
+                  <div class="kv-val">Connected Road: <strong>${l.primary_road_name} (${l.distance_to_primary_road_km} km)</strong><br/>Modelled Freight: ${l.modelled_daily_hgv_concrete_rebar_trips}<br/>HGV Policy: ${l.hgv_routing_and_ban_compliance}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      } else if (q.includes("intersection") || q.includes("junction") || q.includes("bottleneck")) {
+        flyBothMaps(25.155, 55.275, 11, 50, 30);
+        const nearInts = [...DATA.impact_links].sort((a, b) => a.distance_to_intersection_km - b.distance_to_intersection_km).slice(0, 8);
+        out.innerHTML = `
+          <div class="detail-card">
+            <span class="brand-badge">Deterministic Spatial Proximity Query • Top 8 Projects Nearest Major Intersections</span>
+            <h4 style="margin-top:6px;">Projects Ranked by Geodesic Proximity to Major Interchanges</h4>
+            <div class="kv-grid">
+              ${nearInts.map(l => `
+                <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${l.project_id}')">
+                  <div class="kv-lbl">${l.project_id} (${l.distance_to_intersection_km} km to ${l.nearest_intersection_id})</div>
+                  <div class="kv-val"><strong>${l.project_name}</strong><br/>Junction: ${l.nearest_intersection_name}<br/>Road: ${l.primary_road_name} (${l.distance_to_primary_road_km} km)</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      } else if (q.includes("tis") || q.includes("traffic impact") || q.includes("study") || q.includes("studies")) {
+        out.innerHTML = `
+          <div class="detail-card">
+            <span class="brand-badge">Deterministic TIS Registry Query • 8 Corridor &amp; Masterplan Studies</span>
+            <h4 style="margin-top:6px;">Published RTA/SRTA Corridor Studies vs. Restricted Developer TIS Submissions</h4>
+            <p style="font-size:0.75rem; color:#334155;">Individual plot-level consultant TIS reports submitted via the <strong>RTA Traffic Engineering System (TES)</strong> are confidential commercial records. However, <strong>RTA and SRTA publish official corridor-level engineering studies and capacity upgrades</strong> for all major hotspots:</p>
+            <div class="kv-grid">
+              ${DATA.tis.map(t => `
+                <div class="kv-row">
+                  <div class="kv-lbl">${t.tis_id} • ${t.location_community}</div>
+                  <div class="kv-val"><strong>${t.project_or_corridor}</strong><br/><strong>Status:</strong> ${t.study_type_and_availability}<br/><strong>Forecast &amp; Mitigation:</strong> ${t.forecast_traffic_volumes} — ${t.proposed_mitigation_and_logistics}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      } else if (q.includes("tomtom") || q.includes("provider") || q.includes("here") || q.includes("google")) {
+        out.innerHTML = `
+          <div class="detail-card">
+            <span class="brand-badge">Deterministic Provider Evaluation Query (Work Package A4)</span>
+            <h4 style="margin-top:6px;">TomTom vs. Dubai Pulse/RTA vs. HERE vs. Google Maps vs. Mapbox</h4>
+            <div class="kv-grid">
+              ${DATA.providers.map(p => `
+                <div class="kv-row">
+                  <div class="kv-lbl">${p.provider_id}: ${p.provider_name}</div>
+                  <div class="kv-val"><strong>Coverage &amp; Freq:</strong> ${p.dubai_and_uae_coverage} (${p.update_frequency})<br/><strong>Limits &amp; Pricing:</strong> ${p.api_rate_limits} | ${p.pricing_structure}<br/><strong>Retention Rule:</strong> ${p.commercial_usage_and_retention_terms}<br/><span style="color:#2563eb; font-weight:700;"><strong>Verdict:</strong> ${p.prototype_recommendation}</span></div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      } else if (q.includes("both") || q.includes("severe") || q.includes("hotspot") || q.includes("highest") || q.includes("concentrated")) {
+        const ranked = [...DATA.communities].sort((a, b) => parseFloat(b.construction_activity_index_score) - parseFloat(a.construction_activity_index_score));
+        flyBothMaps(25.155, 55.305, 11, 50, 30);
+        out.innerHTML = `
+          <div class="detail-card">
+            <span class="brand-badge">Deterministic Hotspot &amp; Congestion Cross-Query (${ranked.length} Communities)</span>
+            <h4 style="margin-top:6px;">Communities Ranked by Construction Activity Index &amp; Observed Congestion</h4>
+            <div class="kv-grid">
+              ${ranked.map(c => `
+                <div class="kv-row" style="cursor:pointer;" onclick="flyBothMaps(${c.center_lat}, ${c.center_lon}, ${c.recommended_zoom}, 55, 35); showCommunityInspector(DATA.communities.find(x=>x.community_id==='${c.community_id}'))">
+                  <div class="kv-lbl">${c.emirate} • Score: ${c.construction_activity_index_score}</div>
+                  <div class="kv-val"><strong>${c.community_name}</strong><br/>Active Devs: ${c.active_developments_count} | Towers: ${c.active_towers_and_buildings} | Units: ${c.scheduled_units_2025_2029.toLocaleString()} | Active GFA: ${c.active_structural_gfa_sqm.toLocaleString()} m²<br/><strong style="color:${congestionColor(c.observed_congestion_severity)};">Congestion: ${c.observed_congestion_severity}</strong></div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      } else {
+        // Generic keyword search across projects, roads, and communities
+        const mProjs = DATA.projects.filter(p => JSON.stringify(p).toLowerCase().includes(q));
+        const mRoads = DATA.roads.filter(r => JSON.stringify(r).toLowerCase().includes(q));
+        if (mProjs.length > 0) {
+          const [lat, lon] = parseCoord(mProjs[0].coordinates);
+          flyBothMaps(lat, lon, 15.8, 60, 45);
+        }
+        out.innerHTML = `
+          <div class="detail-card">
+            <span class="brand-badge">Deterministic Keyword Search Result</span>
+            <h4 style="margin-top:6px;">Matched ${mProjs.length} Projects &amp; ${mRoads.length} Road Corridors for "${rawQ}"</h4>
+            <div class="kv-grid">
+              ${mProjs.slice(0, 6).map(p => `
+                <div class="kv-row" style="cursor:pointer;" onclick="showProjectInspector('${p.project_id}')">
+                  <div class="kv-lbl">${p.project_id} • ${p.emirate}</div>
+                  <div class="kv-val"><strong>${p.project_name}</strong> (${p.developer}) — ${p.city_district_community}</div>
+                </div>
+              `).join("")}
+              ${mRoads.slice(0, 6).map(r => `
+                <div class="kv-row" style="cursor:pointer;" onclick="showRoadInspector('${r.road_id}')">
+                  <div class="kv-lbl">${r.road_id} • ${r.road_code}</div>
+                  <div class="kv-val"><strong>${r.road_name}</strong> — ${r.capacity_vph_per_dir}</div>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `;
+      }
+    }
+
+    function openEvTab(panelId, btnEl) {
+      document.querySelectorAll(".ev-panel").forEach(p => p.classList.remove("active"));
+      document.querySelectorAll(".ev-tab-btn").forEach(b => b.classList.remove("active"));
+      document.getElementById(panelId).classList.add("active");
+      if (btnEl) btnEl.classList.add("active");
+    }
+
+    function bootHaioPlatform() {
+      if (window.__haioPlatformBooted) return;
+      window.__haioPlatformBooted = true;
+      initMap();
+    }
+    if (document.readyState === "loading") {
+      window.addEventListener("DOMContentLoaded", bootHaioPlatform);
+    } else {
+      bootHaioPlatform();
+    }
+    window.addEventListener("haio-vendor-ready", () => {
+      if (!window.__haioPlatformBooted) {
+        bootHaioPlatform();
+      } else if (map3d && map3dLoaded && !map3dContextLost) {
+        attachThree3DLayerIfReady();
+        sync3DMapLayers();
+        scheduleOsmCityRebuild(120);
+        forceMap3dRepaintBurst();
+      }
+    });
+  </script>
+</body>
+</html>
+""".replace("__PAYLOAD_JSON__", payload_json)
+
+    full_html = html_doc + js_code
+    out_path = WEB_DIR / "task2_gis_intelligence.html"
+    out_path.write_text(full_html, encoding="utf-8")
+    if ARTIFACT_DIR and ARTIFACT_DIR.exists():
+        (ARTIFACT_DIR / "uae_construction_portal.html").write_text(full_html, encoding="utf-8")
+    print(f"Built Task 2 Interactive GIS & Traffic Platform: {out_path} ({out_path.stat().st_size // 1024} KB)")
+
+    # Inject a prominent, mobile-responsive Task 2 banner at the very top of web/index.html & web/validation_report.html
+    banner_html = """<!-- TASK 2 GLOBAL SWITCHER BANNER -->
+  <style>
+    #task2-global-banner { background:linear-gradient(90deg,#090d16 0%,#0f172a 50%,#1e1b4b 100%); color:#fff; padding:9px 16px; border-bottom:2px solid #38bdf8; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; font-family:system-ui,sans-serif; z-index:9999; }
+    #task2-global-banner .t2-links { display:flex; gap:6px; flex-wrap:wrap; align-items:center; }
+    @media (max-width: 768px) {
+      #task2-global-banner { padding:7px 10px; gap:5px; }
+      #task2-global-banner .t2-title { font-size:0.78rem !important; line-height:1.25; }
+      #task2-global-banner .t2-links { width:100%; overflow-x:auto; flex-wrap:nowrap; -webkit-overflow-scrolling:touch; scrollbar-width:none; padding-bottom:2px; }
+      #task2-global-banner .t2-links::-webkit-scrollbar { display:none; }
+      #task2-global-banner .t2-links a { flex-shrink:0; white-space:nowrap; font-size:0.72rem !important; padding:4px 9px !important; }
+    }
+  </style>
+  <div id="task2-global-banner">
+    <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+      <span style="background:#0284c7; color:#fff; font-weight:800; font-size:0.68rem; padding:2px 8px; border-radius:999px; text-transform:uppercase;">Task 2 Live</span>
+      <strong class="t2-title" style="font-size:0.88rem;">Geographic Visualization &amp; Traffic Impact Intelligence (Dubai &amp; Sharjah)</strong>
+    </div>
+    <div class="t2-links">
+      <a href="task2_gis_intelligence.html" style="background:#0284c7; border:1px solid #38bdf8; color:#fff; padding:5px 12px; border-radius:7px; font-weight:700; font-size:0.78rem; text-decoration:none;">🗺️ Launch Task 2 GIS Map →</a>
+      <a href="datasets/dubai_sharjah_gis_bundle.geojson" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">GeoJSON Bundle</a>
+      <a href="datasets/21_task2_spatial_database.sqlite" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">Spatial SQLite</a>
+      <a href="https://raw.githubusercontent.com/Siddiqahmed26/uae-construction-intelligence/main/csv/22_project_road_impact_links.csv" style="background:rgba(255,255,255,0.1); border:1px solid rgba(255,255,255,0.25); color:#bae6fd; padding:5px 10px; border-radius:7px; font-weight:600; font-size:0.74rem; text-decoration:none;">Impact Links CSV</a>
+    </div>
+  </div>"""
+
+    import re as _re
+    for page_fn in ("index.html", "validation_report.html"):
+        p_file = WEB_DIR / page_fn
+        if p_file.exists():
+            txt = p_file.read_text(encoding="utf-8")
+            if "<!-- TASK 2 GLOBAL SWITCHER BANNER -->" in txt:
+                txt = _re.sub(
+                    r"<!-- TASK 2 GLOBAL SWITCHER BANNER -->.*?</div>\s*</div>",
+                    banner_html,
+                    txt,
+                    count=1,
+                    flags=_re.S,
+                )
+                p_file.write_text(txt, encoding="utf-8")
+                print(f"Updated mobile-responsive Task 2 Navigation Banner in {page_fn}")
+            elif "id=\"task2-global-banner\"" not in txt:
+                txt = txt.replace("<body>", "<body>\n" + banner_html, 1)
+                p_file.write_text(txt, encoding="utf-8")
+                print(f"Injected Task 2 Navigation Banner into {page_fn}")
+
+
+if __name__ == "__main__":
+    main()

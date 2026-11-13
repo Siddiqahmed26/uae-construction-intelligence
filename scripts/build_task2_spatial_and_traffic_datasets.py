@@ -921,7 +921,7 @@ COMMUNITIES_AND_HOTSPOTS = [
         "active_structural_gfa_sqm": 3420000,
         "primary_road_corridors": "RD-DXB-05 (Hessa St D61 West), RD-DXB-06 (Hessa St D61 East), RD-DXB-03 (Al Khail Rd E44), RD-DXB-07 (JVC Circle Blvd), RD-DXB-08 (E311)",
         "observed_congestion_severity": "Severe (AM Peak 07:30–09:30 & PM Peak 17:00–20:00 on Hessa St D61 & Al Khail Rd E44 slip ramps)",
-        "construction_activity_index_score": "94.5 / 100 (Rank #1 High-Density Mid-Rise/High-Rise Construction Hotspot in Dubai)",
+        "construction_activity_index_score": "94.5 / 100 (#1 Mid-Rise/High-Rise Residential Hotspot in Dubai; #2 Overall after Dubai South at 96.0)",
         "activity_index_formula_and_limitations": "Formula: CAI = 0.35*(Active_Units / 30,000) + 0.35*(Active_Structural_GFA_m2 / 4,000,000) + 0.30*(Active_Towers / 70) * 100. Limitation: Reflects spatial concentration of simultaneous multi-developer vertical construction; does not by itself prove causal share of Hessa St commuter congestion.",
         "source_id": "SRC-020; SRC-433",
         "confidence": "Verified"
