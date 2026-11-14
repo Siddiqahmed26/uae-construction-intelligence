@@ -186,6 +186,8 @@ def build_data_payload():
 def main():
     payload = build_data_payload()
     payload_json = json.dumps(payload, ensure_ascii=False)
+    archviz_path = (SCRIPT_DIR / "archviz_walkthrough_module.js") if (SCRIPT_DIR / "archviz_walkthrough_module.js").exists() else (SCRIPT_DIR / "scripts" / "archviz_walkthrough_module.js")
+    archviz_js = archviz_path.read_text(encoding="utf-8")
 
     # Render complete Milestone 1–6 HTML Evidence Tables for bottom tabs
     tbl_tds = render_table_html(payload["tds"], [
@@ -2125,409 +2127,181 @@ def main():
       }}
     }}
 
-    /* === MASTERPLAN SOCIETY, STREET & VILLA INTERIOR 3D WALKTHROUGH ENGINE === */
+    /* === UNREAL-STYLE THREE.JS PBR ARCHVIZ WALKTHROUGH & RIGHT-SIDE-UP CAD STUDIO === */
     body.wt-society-active #geoZoomLevelBar,
     body.wt-society-active #photoreal3DAttribution {{
       display: none !important;
     }}
-    body.wt-street-active .haio-floating-bottom-left {{
-      display: none !important;
-    }}
-    .wt-quick-dropdown {{
-      position: relative;
-      display: inline-block;
-    }}
+    .wt-quick-dropdown {{ position: relative; display: inline-block; }}
     .wt-quick-dropdown summary {{
-      list-style: none;
-      cursor: pointer;
+      list-style: none; cursor: pointer;
       background: linear-gradient(135deg, #0f172a 0%, #065f46 100%);
-      color: #ecfdf5;
-      border: 1px solid #10b981;
-      padding: 8px 14px;
-      border-radius: 999px;
-      font-size: 0.78rem;
-      font-weight: 800;
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.32);
-      user-select: none;
+      color: #ecfdf5; border: 1px solid #10b981;
+      padding: 8px 14px; border-radius: 999px;
+      font-size: 0.78rem; font-weight: 800;
+      display: inline-flex; align-items: center; gap: 6px;
+      box-shadow: 0 6px 20px rgba(16, 185, 129, 0.32); user-select: none;
     }}
     .wt-quick-dropdown summary::-webkit-details-marker {{ display: none; }}
     .wt-quick-menu {{
-      position: absolute;
-      top: calc(100% + 8px);
-      left: 0;
-      width: 320px;
-      background: rgba(15, 23, 42, 0.97);
-      backdrop-filter: blur(14px);
-      border: 1px solid rgba(56, 189, 248, 0.45);
-      border-radius: 14px;
-      padding: 10px;
-      box-shadow: 0 18px 42px rgba(2, 6, 23, 0.65);
-      z-index: 950;
-      color: #f8fafc;
+      position: absolute; top: calc(100% + 8px); left: 0; width: 330px;
+      background: rgba(15, 23, 42, 0.97); backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 189, 248, 0.45); border-radius: 14px;
+      padding: 10px; box-shadow: 0 18px 42px rgba(2, 6, 23, 0.65);
+      z-index: 950; color: #f8fafc;
     }}
     .wt-quick-item {{
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-      width: 100%;
-      text-align: left;
-      background: rgba(30, 41, 59, 0.85);
-      border: 1px solid rgba(148, 163, 184, 0.25);
-      border-radius: 10px;
-      padding: 9px 11px;
-      color: #f8fafc;
-      cursor: pointer;
-      margin-top: 6px;
-      transition: all 0.16s ease;
+      display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left;
+      background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(148, 163, 184, 0.25);
+      border-radius: 10px; padding: 9px 11px; color: #f8fafc; cursor: pointer;
+      margin-top: 6px; transition: all 0.16s ease;
     }}
-    .wt-quick-item:hover {{
-      background: rgba(16, 185, 129, 0.22);
-      border-color: #34d399;
-      transform: translateY(-1px);
-    }}
+    .wt-quick-item:hover {{ background: rgba(16, 185, 129, 0.22); border-color: #34d399; transform: translateY(-1px); }}
+
     #wtTopBanner {{
-      position: absolute;
-      top: 60px;
-      left: 16px;
-      z-index: 845;
+      position: absolute; top: 60px; left: 16px; z-index: 845;
       max-width: calc(100% - 452px);
-      background: rgba(15, 23, 42, 0.94);
-      backdrop-filter: blur(14px);
-      border: 1px solid rgba(56, 189, 248, 0.48);
-      border-radius: 14px;
-      padding: 8px 12px;
-      color: #f8fafc;
-      display: none;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(14px);
+      border: 1px solid rgba(56, 189, 248, 0.48); border-radius: 14px;
+      padding: 8px 12px; color: #f8fafc; display: none;
+      align-items: center; gap: 8px; flex-wrap: wrap;
       box-shadow: 0 14px 36px rgba(2, 6, 23, 0.55);
     }}
     .wt-exit-btn {{
-      background: #ef4444;
-      color: #ffffff;
-      border: none;
-      padding: 6px 12px;
-      border-radius: 999px;
-      font-size: 0.74rem;
-      font-weight: 800;
-      cursor: pointer;
-      white-space: nowrap;
+      background: #ef4444; color: #ffffff; border: none;
+      padding: 6px 12px; border-radius: 999px; font-size: 0.74rem; font-weight: 800;
+      cursor: pointer; white-space: nowrap;
     }}
     .wt-exit-btn:hover {{ background: #dc2626; }}
     .wt-soc-switch {{
-      background: rgba(30, 41, 59, 0.95);
-      color: #cbd5e1;
+      background: rgba(30, 41, 59, 0.95); color: #cbd5e1;
       border: 1px solid rgba(148, 163, 184, 0.35);
-      padding: 5px 11px;
-      border-radius: 999px;
-      font-size: 0.73rem;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
+      padding: 5px 11px; border-radius: 999px; font-size: 0.73rem; font-weight: 700;
+      cursor: pointer; white-space: nowrap;
     }}
-    .wt-soc-switch.active {{
-      background: #0284c7;
-      color: #ffffff;
-      border-color: #38bdf8;
-    }}
+    .wt-soc-switch.active {{ background: #0284c7; color: #ffffff; border-color: #38bdf8; }}
     .wt-mode-group {{
-      display: inline-flex;
-      background: rgba(2, 6, 23, 0.65);
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      border-radius: 999px;
-      padding: 2px;
-      gap: 2px;
+      display: inline-flex; background: rgba(2, 6, 23, 0.65);
+      border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 999px; padding: 2px; gap: 2px;
     }}
     .wt-mode-pill {{
-      background: transparent;
-      color: #cbd5e1;
-      border: none;
-      padding: 5px 11px;
-      border-radius: 999px;
-      font-size: 0.73rem;
-      font-weight: 700;
-      cursor: pointer;
-      white-space: nowrap;
+      background: transparent; color: #cbd5e1; border: none;
+      padding: 5px 11px; border-radius: 999px; font-size: 0.73rem; font-weight: 700;
+      cursor: pointer; white-space: nowrap;
     }}
     .wt-mode-pill.active {{
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #ffffff;
-      box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4);
-    }}
-    #wtStreetHud {{
-      position: absolute;
-      bottom: 16px;
-      left: 16px;
-      z-index: 850;
-      width: min(790px, calc(100% - 452px));
-      background: rgba(15, 23, 42, 0.95);
-      backdrop-filter: blur(16px);
-      border: 1px solid rgba(16, 185, 129, 0.55);
-      border-radius: 16px;
-      padding: 12px 15px;
-      color: #f8fafc;
-      display: none;
-      box-shadow: 0 18px 44px rgba(2, 6, 23, 0.68);
-    }}
-    .wt-hud-top {{
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 10px;
-      margin-bottom: 8px;
-      flex-wrap: wrap;
-    }}
-    .wt-contractor-grid {{
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 6px;
-      background: rgba(2, 6, 23, 0.55);
-      border: 1px solid rgba(148, 163, 184, 0.2);
-      border-radius: 10px;
-      padding: 7px 10px;
-      margin-bottom: 8px;
-      font-size: 0.71rem;
-    }}
-    .wt-contractor-grid div strong {{
-      display: block;
-      color: #38bdf8;
-      font-size: 0.65rem;
-      text-transform: uppercase;
-      letter-spacing: 0.03em;
-    }}
-    .wt-ctrl-row {{
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      flex-wrap: wrap;
+      color: #ffffff; box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4);
     }}
     .wt-btn {{
-      background: #1e293b;
-      color: #f8fafc;
-      border: 1px solid #475569;
-      padding: 6px 11px;
-      border-radius: 8px;
-      font-size: 0.73rem;
-      font-weight: 700;
-      cursor: pointer;
+      background: #1e293b; color: #f8fafc; border: 1px solid #475569;
+      padding: 6px 11px; border-radius: 8px; font-size: 0.73rem; font-weight: 700; cursor: pointer;
     }}
     .wt-btn:hover {{ background: #334155; border-color: #94a3b8; }}
-    .wt-btn.primary {{
-      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      border-color: #34d399;
-      color: #ffffff;
-    }}
-    .wt-btn.inside-cta {{
-      background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%);
-      border-color: #60a5fa;
-      color: #ffffff;
-      margin-left: auto;
-    }}
-    .wt-stop-dots {{
-      display: flex;
-      gap: 4px;
-      margin-top: 7px;
-      flex-wrap: wrap;
-      align-items: center;
-    }}
+    .wt-btn.primary {{ background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #34d399; color: #ffffff; }}
+    .wt-btn.inside-cta {{ background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); border-color: #60a5fa; color: #ffffff; }}
     .wt-stop-dot {{
-      background: rgba(30, 41, 59, 0.9);
-      color: #94a3b8;
-      border: 1px solid rgba(148, 163, 184, 0.3);
-      border-radius: 6px;
-      padding: 2px 7px;
-      font-size: 0.67rem;
-      font-weight: 700;
-      cursor: pointer;
+      background: rgba(30, 41, 59, 0.9); color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 6px;
+      padding: 3px 8px; font-size: 0.69rem; font-weight: 700; cursor: pointer;
     }}
-    .wt-stop-dot.active {{
-      background: #10b981;
-      color: #022c22;
-      border-color: #6ee7b7;
-    }}
+    .wt-stop-dot.active {{ background: #10b981; color: #022c22; border-color: #6ee7b7; }}
     .wt-zone-map-pill {{
-      background: rgba(15, 23, 42, 0.92);
-      color: #f8fafc;
-      border: 1.5px solid #38bdf8;
-      border-radius: 999px;
-      padding: 4px 10px;
-      font-size: 0.68rem;
-      font-weight: 800;
-      white-space: nowrap;
-      cursor: pointer;
-      box-shadow: 0 6px 16px rgba(2, 6, 23, 0.55);
-      transition: transform 0.14s ease;
+      background: rgba(15, 23, 42, 0.92); color: #f8fafc; border: 1.5px solid #38bdf8;
+      border-radius: 999px; padding: 4px 10px; font-size: 0.68rem; font-weight: 800;
+      white-space: nowrap; cursor: pointer; box-shadow: 0 6px 16px rgba(2, 6, 23, 0.55);
     }}
-    .wt-zone-map-pill:hover {{ transform: scale(1.06); z-index: 900; }}
-    .wt-zone-map-pill.frond-tag {{
-      padding: 2px 7px;
-      font-size: 0.62rem;
-      background: rgba(2, 6, 23, 0.88);
-    }}
+    .wt-zone-map-pill.frond-tag {{ padding: 2px 7px; font-size: 0.62rem; background: rgba(2, 6, 23, 0.88); }}
     .wt-zone-card {{
-      border: 1px solid #e2e8f0;
-      border-left: 4px solid #10b981;
-      border-radius: 10px;
-      padding: 9px 11px;
-      margin-bottom: 8px;
-      background: #ffffff;
-      cursor: pointer;
-      transition: all 0.15s ease;
+      border: 1px solid #e2e8f0; border-left: 4px solid #10b981; border-radius: 10px;
+      padding: 9px 11px; margin-bottom: 8px; background: #ffffff; cursor: pointer; transition: all 0.15s ease;
     }}
     .wt-zone-card:hover {{ background: #f8fafc; transform: translateX(2px); }}
-    .wt-zone-card.active {{
-      background: #eff6ff;
-      border-color: #3b82f6;
-      box-shadow: 0 4px 14px rgba(37, 99, 235, 0.14);
-    }}
+    .wt-zone-card.active {{ background: #eff6ff; border-color: #3b82f6; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.14); }}
 
-    /* FULL-SCREEN VILLA INTERIOR 3D DOLLHOUSE & CAD SVG FLOOR-PLAN STUDIO */
-    #villaInteriorModal {{
-      position: fixed;
-      inset: 0;
-      z-index: 9600;
-      background: rgba(2, 6, 23, 0.92);
-      backdrop-filter: blur(16px);
-      display: none;
-      flex-direction: column;
-      color: #f8fafc;
+    /* UNREAL ARCHVIZ STUDIO MODAL (FULL-VIEWPORT STREET + SPLIT/FULL VILLA + RIGHT-SIDE-UP CAD) */
+    #archvizStudioModal {{
+      position: fixed; inset: 0; z-index: 9600;
+      background: #020617; display: none; flex-direction: column; color: #f8fafc;
     }}
-    .vim-topbar {{
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      padding: 10px 18px;
-      background: rgba(15, 23, 42, 0.98);
-      border-bottom: 1px solid rgba(56, 189, 248, 0.35);
-      flex-wrap: wrap;
+    .avz-topbar {{
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      padding: 9px 16px; background: rgba(15, 23, 42, 0.98);
+      border-bottom: 1px solid rgba(56, 189, 248, 0.35); flex-wrap: wrap;
     }}
     .vim-floor-pills {{
-      display: inline-flex;
-      background: #020617;
-      border: 1px solid #334155;
-      border-radius: 999px;
-      padding: 3px;
-      gap: 3px;
+      display: inline-flex; background: #020617; border: 1px solid #334155;
+      border-radius: 999px; padding: 2px; gap: 2px;
     }}
     .vim-floor-btn {{
-      background: transparent;
-      color: #cbd5e1;
-      border: none;
-      padding: 5px 12px;
-      border-radius: 999px;
-      font-size: 0.74rem;
-      font-weight: 800;
-      cursor: pointer;
+      background: transparent; color: #cbd5e1; border: none;
+      padding: 5px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; cursor: pointer;
     }}
-    .vim-floor-btn.active {{
-      background: #0284c7;
-      color: #ffffff;
+    .vim-floor-btn.active {{ background: #0284c7; color: #ffffff; }}
+    .avz-tod-btn {{
+      background: #0f172a; color: #cbd5e1; border: 1px solid #334155;
+      padding: 4px 9px; border-radius: 999px; font-size: 0.69rem; font-weight: 700; cursor: pointer;
     }}
-    .vim-meta-strip {{
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      padding: 7px 18px;
-      background: rgba(30, 41, 59, 0.85);
-      border-bottom: 1px solid rgba(148, 163, 184, 0.2);
-      font-size: 0.73rem;
-      flex-wrap: wrap;
+    .avz-tod-btn.active {{ background: #f59e0b; color: #0f172a; border-color: #fde68a; font-weight: 900; }}
+    .avz-meta-strip {{
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      padding: 6px 16px; background: rgba(30, 41, 59, 0.92);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.22); font-size: 0.73rem; flex-wrap: wrap;
     }}
-    .vim-workspace {{
-      flex: 1;
-      min-height: 0;
-      display: grid;
-      grid-template-columns: 54% 46%;
+    .avz-body {{
+      flex: 1; min-height: 0; display: grid; grid-template-columns: 60% 40%;
     }}
-    .vim-left-3d {{
-      position: relative;
-      background: radial-gradient(circle at 50% 35%, #1e293b 0%, #090d16 100%);
-      border-right: 1px solid rgba(148, 163, 184, 0.22);
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
+    #archvizStudioModal.street-full-mode .avz-body,
+    #archvizStudioModal.villa-full3d .avz-body {{
+      grid-template-columns: 100% 0%;
     }}
-    #villaInterior3DCanvas {{
-      width: 100%;
-      height: 100%;
-      display: block;
-      cursor: grab;
+    #archvizStudioModal.street-full-mode .avz-right-cad,
+    #archvizStudioModal.villa-full3d .avz-right-cad {{
+      display: none !important;
     }}
-    #villaInterior3DCanvas:active {{ cursor: grabbing; }}
-    .vim-3d-overlay-hint {{
-      position: absolute;
-      bottom: 12px;
-      left: 14px;
-      right: 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      pointer-events: none;
-      font-size: 0.71rem;
-      color: #cbd5e1;
-      gap: 8px;
-      flex-wrap: wrap;
+    .avz-left-3d {{
+      position: relative; overflow: hidden; background: #090d16;
     }}
-    .vim-3d-overlay-hint > span {{
-      background: rgba(15, 23, 42, 0.84);
-      border: 1px solid rgba(148, 163, 184, 0.28);
-      padding: 4px 10px;
-      border-radius: 999px;
+    #archvizWebglCanvas {{
+      width: 100%; height: 100%; display: block; cursor: grab;
     }}
-    .vim-right-cad {{
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-      background: #f8fafc;
-      color: #0f172a;
+    #archvizWebglCanvas:active {{ cursor: grabbing; }}
+    .avz-walk-pad {{
+      position: absolute; top: 14px; right: 14px; z-index: 25;
+      display: flex; gap: 4px; align-items: center;
+      background: rgba(15, 23, 42, 0.84); backdrop-filter: blur(10px);
+      border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 999px; padding: 4px 10px;
+      font-size: 0.70rem; color: #e2e8f0;
+    }}
+    #avzStreetBottomHud {{
+      position: absolute; bottom: 16px; left: 16px; right: 16px; z-index: 30;
+      max-width: 960px; margin: 0 auto;
+      background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(16px);
+      border: 1px solid rgba(16, 185, 129, 0.55); border-radius: 14px;
+      padding: 11px 15px; box-shadow: 0 18px 44px rgba(0, 0, 0, 0.65); display: none;
+    }}
+    .avz-right-cad {{
+      display: flex; flex-direction: column; min-height: 0; background: #f8fafc; color: #0f172a;
+      border-left: 1px solid #334155;
     }}
     .vim-svg-stage {{
-      flex: 1 1 58%;
-      min-height: 260px;
-      background: #ffffff;
-      border-bottom: 1px solid #cbd5e1;
-      padding: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      overflow: auto;
+      flex: 1 1 60%; min-height: 280px; background: #ffffff;
+      border-bottom: 1px solid #cbd5e1; padding: 8px;
+      display: flex; align-items: center; justify-content: center; overflow: auto;
     }}
     .vim-room-schedule {{
-      flex: 1 1 42%;
-      min-height: 180px;
-      overflow-y: auto;
-      padding: 12px 14px;
-      background: #f1f5f9;
+      flex: 1 1 40%; min-height: 160px; overflow-y: auto; padding: 10px 12px; background: #f1f5f9;
     }}
     .vim-room-chip {{
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-      padding: 7px 10px;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
-      border-radius: 8px;
-      margin-bottom: 5px;
-      cursor: pointer;
-      font-size: 0.74rem;
+      display: flex; justify-content: space-between; align-items: center; gap: 8px;
+      padding: 6px 9px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;
+      margin-bottom: 5px; cursor: pointer; font-size: 0.73rem;
     }}
     .vim-room-chip:hover {{ border-color: #38bdf8; background: #f0f9ff; }}
-    .vim-room-chip.active {{
-      border-color: #2563eb;
-      background: #eff6ff;
-      box-shadow: 0 2px 8px rgba(37, 99, 235, 0.14);
-    }}
+    .vim-room-chip.active {{ border-color: #10b981; background: #ecfdf5; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.16); }}
     @media (max-width: 1024px) {{
-      #wtTopBanner, #wtStreetHud {{ max-width: calc(100% - 32px); width: calc(100% - 32px); }}
-      .vim-workspace {{ grid-template-columns: 1fr; overflow-y: auto; }}
-      .vim-left-3d {{ min-height: 360px; }}
+      .avz-body {{ grid-template-columns: 1fr; overflow-y: auto; }}
+      .avz-left-3d {{ min-height: 400px; }}
     }}
 
   </style>
@@ -2632,19 +2406,19 @@ def main():
           <span>⚙ Layers &amp; Presets (11)</span>
         </button>
         <details class="wt-quick-dropdown" id="wtQuickDropdown">
-          <summary title="Enter Full End-to-End 3D Society, Street &amp; Villa Interior Walkthrough">
-            <span>🏘️ Walkthroughs (2) ▾</span>
+          <summary title="Enter Full Unreal-Style 3D Society, Street &amp; Villa Interior Walkthrough">
+            <span>🏘️ 3D Walkthroughs (2) ▾</span>
           </summary>
           <div class="wt-quick-menu">
-            <div style="font-size:0.70rem; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.04em;">End-to-End 3D Society &amp; Villa Walkthroughs</div>
-            <div style="font-size:0.69rem; color:#94a3b8; margin-bottom:4px;">Click a masterplan on the map or launch directly below:</div>
+            <div style="font-size:0.70rem; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.04em;">Unreal-Style PBR 3D Society &amp; Villa Tours</div>
+            <div style="font-size:0.69rem; color:#94a3b8; margin-bottom:4px;">Click a masterplan on the map or launch below:</div>
             <button type="button" class="wt-quick-item" onclick="document.getElementById('wtQuickDropdown').removeAttribute('open'); enterSocietyWalkthrough('PRJ-D2', 'zones')">
               <strong style="font-size:0.80rem; color:#38bdf8;">🌴 PRJ-D2 · Palm Jebel Ali (13.4 km²)</strong>
-              <span style="font-size:0.69rem; color:#cbd5e1;">Nakheel · 16 Fronds A–P · Ginco, Shapoorji, UNEC, DBB, Jan De Nul · 3 Villa Collections</span>
+              <span style="font-size:0.69rem; color:#cbd5e1;">Nakheel · 16 Fronds A–P · Ginco, Shapoorji, UNEC, DBB, Jan De Nul · Real-Time 3D Walk</span>
             </button>
             <button type="button" class="wt-quick-item" onclick="document.getElementById('wtQuickDropdown').removeAttribute('open'); enterSocietyWalkthrough('PRJ-D19', 'zones')">
               <strong style="font-size:0.80rem; color:#34d399;">🌊 PRJ-D19 · Tilal Al Ghaf (3.0 km²)</strong>
-              <span style="font-size:0.69rem; color:#cbd5e1;">Majid Al Futtaim · 9 Enclaves · ASGC, Dutco, Innovo, UNEC · 523 Streets &amp; 5 Villa Plans</span>
+              <span style="font-size:0.69rem; color:#cbd5e1;">Majid Al Futtaim · 9 Enclaves · ASGC, Dutco, Innovo, UNEC · 3D Boulevard &amp; Villa Walk</span>
             </button>
           </div>
         </details>
@@ -2896,54 +2670,14 @@ def main():
       <!-- SOCIETY WALKTHROUGH TOP COMMAND BAR -->
       <div id="wtTopBanner" role="region" aria-label="Society Walkthrough Controls">
         <button type="button" class="wt-exit-btn" onclick="exitSocietyWalkthrough(true)">← Exit Society</button>
-        <button type="button" class="wt-soc-switch" id="wtSwitchD2" onclick="enterSocietyWalkthrough('PRJ-D2', wtState.mode || 'zones')">🌴 Palm Jebel Ali · 13.4 km²</button>
-        <button type="button" class="wt-soc-switch" id="wtSwitchD19" onclick="enterSocietyWalkthrough('PRJ-D19', wtState.mode || 'zones')">🌊 Tilal Al Ghaf · 3.0 km²</button>
+        <button type="button" class="wt-soc-switch" id="wtSwitchD2" onclick="enterSocietyWalkthrough('PRJ-D2', 'zones')">🌴 Palm Jebel Ali · 13.4 km²</button>
+        <button type="button" class="wt-soc-switch" id="wtSwitchD19" onclick="enterSocietyWalkthrough('PRJ-D19', 'zones')">🌊 Tilal Al Ghaf · 3.0 km²</button>
         <div class="wt-mode-group" role="tablist">
-          <button type="button" class="wt-mode-pill active" id="wtModeZonesBtn" onclick="setSocietyWalkMode('zones')">🗺️ 1. Contractor Zones</button>
-          <button type="button" class="wt-mode-pill" id="wtModeStreetBtn" onclick="setSocietyWalkMode('street')">🚶 2. Street Walk (Outside)</button>
-          <button type="button" class="wt-mode-pill" id="wtModeInsideBtn" onclick="openCurrentSocietyVillaModal()">🏠 3. Villa 3D &amp; Floor Plans (Inside)</button>
+          <button type="button" class="wt-mode-pill active" id="wtModeZonesBtn" onclick="setSocietyWalkMode('zones')">🗺️ 1. Masterplan &amp; Contractors</button>
+          <button type="button" class="wt-mode-pill" id="wtModeStreetBtn" onclick="setSocietyWalkMode('street')">🚶 2. Unreal 3D Street Walk</button>
+          <button type="button" class="wt-mode-pill" id="wtModeInsideBtn" onclick="setSocietyWalkMode('villa')">🏠 3. Inside 3D Villa &amp; CAD</button>
         </div>
         <span id="wtTopStatsChip" style="font-size:0.70rem; color:#93c5fd; font-weight:700; padding:0 4px;"></span>
-      </div>
-
-      <!-- STREET-BY-STREET WALKTHROUGH BOTTOM HUD -->
-      <div id="wtStreetHud" role="region" aria-label="Street-by-Street Walkthrough HUD">
-        <div class="wt-hud-top">
-          <div>
-            <div style="display:flex; align-items:center; gap:7px; flex-wrap:wrap;">
-              <span id="wtHudStopBadge" style="background:#10b981; color:#022c22; font-weight:900; font-size:0.68rem; padding:2px 8px; border-radius:999px;">STOP 1 / 10</span>
-              <strong id="wtHudTitle" style="font-size:0.90rem; color:#ffffff;">Street Checkpoint</strong>
-              <span id="wtHudStreetName" style="font-size:0.74rem; color:#38bdf8; font-weight:700;"></span>
-            </div>
-            <div id="wtHudNote" style="font-size:0.72rem; color:#cbd5e1; margin-top:3px;"></div>
-          </div>
-          <div style="display:flex; gap:5px; align-items:center;">
-            <span style="font-size:0.66rem; color:#94a3b8; background:rgba(2,6,23,0.65); padding:3px 8px; border-radius:6px; border:1px solid #334155;" title="Use W/A/S/D or Arrow Keys on keyboard to free-roam any street!">⌨️ W/A/S/D Free-Walk</span>
-            <button type="button" class="wt-btn" style="padding:3px 7px;" onclick="stepFreeRoamStreet(1, 0)" title="Step Forward 22m along street">⬆</button>
-            <button type="button" class="wt-btn" style="padding:3px 7px;" onclick="stepFreeRoamStreet(0, -18)" title="Turn Left 18°">↺</button>
-            <button type="button" class="wt-btn" style="padding:3px 7px;" onclick="stepFreeRoamStreet(0, 18)" title="Turn Right 18°">↻</button>
-            <button type="button" class="wt-btn" style="padding:3px 7px;" onclick="stepFreeRoamStreet(-1, 0)" title="Step Back 22m">⬇</button>
-          </div>
-        </div>
-
-        <div class="wt-contractor-grid">
-          <div><strong>Enclave / Zone</strong><span id="wtHudZoneName">—</span></div>
-          <div><strong>Main Contractor &amp; Award</strong><span id="wtHudContractor" style="color:#34d399; font-weight:700;">—</span></div>
-          <div><strong>Architect &amp; Interior</strong><span id="wtHudArchitect">—</span></div>
-        </div>
-
-        <div class="wt-ctrl-row">
-          <button type="button" class="wt-btn" onclick="stepStreetTour(-1)">⏮ Prev</button>
-          <button type="button" class="wt-btn primary" id="wtAutoWalkBtn" onclick="toggleStreetAutoWalk()">▶ Auto-Walk</button>
-          <button type="button" class="wt-btn" onclick="stepStreetTour(1)">Next ⏭</button>
-          <div style="display:flex; align-items:center; gap:6px; flex:1; min-width:150px;">
-            <span style="font-size:0.68rem; color:#94a3b8; white-space:nowrap;">0%</span>
-            <input type="range" id="wtStreetScrubber" min="0" max="1000" value="0" style="flex:1; accent-color:#10b981; cursor:pointer;" oninput="onStreetScrubberInput(this.value)" aria-label="Street Walkthrough Route Scrubber"/>
-            <span id="wtStreetPct" style="font-size:0.69rem; color:#34d399; font-weight:800; min-width:34px;">0%</span>
-          </div>
-          <button type="button" class="wt-btn inside-cta" onclick="openCurrentSocietyVillaModal()">🏠 Step Inside Villa →</button>
-        </div>
-        <div class="wt-stop-dots" id="wtStopDotsRow"></div>
       </div>
 
     </section>
@@ -3015,37 +2749,37 @@ def main():
     </aside>
   </main>
 
-  <!-- FULL-SCREEN VILLA INTERIOR 3D DOLLHOUSE & CAD ARCHITECTURAL FLOOR-PLAN STUDIO -->
-  <div id="villaInteriorModal" role="dialog" aria-modal="true" aria-label="Inside Villa 3D Cutaway and Floor Plan Studio">
-    <div class="vim-topbar">
-      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
-        <span style="background:linear-gradient(135deg,#10b981,#0284c7); color:#fff; font-size:0.69rem; font-weight:900; padding:4px 10px; border-radius:999px; letter-spacing:0.04em;">INSIDE VILLA 3D + CAD STUDIO</span>
-        <select id="vimTypologySelect" onchange="selectVillaTypology(this.value)" style="background:#0f172a; color:#f8fafc; border:1px solid #38bdf8; border-radius:8px; padding:6px 10px; font-size:0.78rem; font-weight:700;" aria-label="Select Villa Architectural Typology"></select>
-        <div class="vim-floor-pills" id="vimFloorPills"></div>
-      </div>
-      <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
-        <button type="button" class="wt-btn primary" id="vimAutoRoomBtn" onclick="toggleVillaRoomAutoTour()">▶ Auto-Tour Every Room</button>
-        <button type="button" class="wt-btn" onclick="resetVilla3DCamera()">↺ Reset 3D Orbit</button>
-        <button type="button" class="wt-exit-btn" onclick="closeVillaInteriorModal()">✕ Back to Society Map</button>
+  <!-- REAL-TIME THREE.JS r170 PBR UNREAL-STYLE STREET & VILLA ARCHVIZ STUDIO -->
+  <div id="archvizStudioModal" role="dialog" aria-modal="true" aria-label="Unreal 3D ArchViz Street and Villa Walkthrough Studio">
+    <div class="avz-topbar">
+      <div id="avzModeSpecificTop" style="display:flex; align-items:center; gap:7px; flex-wrap:wrap;"></div>
+      <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
+        <button type="button" class="avz-tod-btn active" data-tod="golden" onclick="setArchvizTimeOfDay('golden')">🌅 Golden Hour</button>
+        <button type="button" class="avz-tod-btn" data-tod="noon" onclick="setArchvizTimeOfDay('noon')">☀️ Noon</button>
+        <button type="button" class="avz-tod-btn" data-tod="dusk" onclick="setArchvizTimeOfDay('dusk')">🌆 Dusk</button>
+        <button type="button" class="avz-tod-btn" data-tod="night" onclick="setArchvizTimeOfDay('night')">🌙 Night</button>
+        <button type="button" class="wt-exit-btn" onclick="closeArchvizStudioModal(true)">✕ Back to GIS Map</button>
       </div>
     </div>
 
-    <div class="vim-meta-strip">
-      <div id="vimContractorSummary" style="display:flex; gap:14px; flex-wrap:wrap; align-items:center;"></div>
-      <span style="background:rgba(245,158,11,0.16); color:#fcd34d; border:1px solid rgba(245,158,11,0.45); padding:2px 9px; border-radius:999px; font-size:0.67rem; font-weight:700;" title="3D interior room layouts and CAD dimensions are modelled from published developer brochure programs and BUA specs, not private BIM/as-built files.">PROVENANCE: PUBLISHED BROCHURE PROGRAM &amp; BUA SPECS (SCHEMATIC 3D/CAD)</span>
-    </div>
+    <div class="avz-meta-strip" id="avzMetaStrip"></div>
 
-    <div class="vim-workspace">
-      <div class="vim-left-3d">
-        <canvas id="villaInterior3DCanvas"></canvas>
-        <div class="vim-3d-overlay-hint">
-          <span id="vim3DActiveLabel">🖱️ Drag to Orbit 360° · Scroll to Zoom · Click Any Room in 3D or Blueprint</span>
-          <span id="vim3DCameraReadout">Cutaway Perspective · 60 FPS</span>
+    <div class="avz-body">
+      <div class="avz-left-3d">
+        <canvas id="archvizWebglCanvas"></canvas>
+        <div class="avz-walk-pad">
+          <span>🖱️ Drag Look · ⌨️ W/A/S/D Walk</span>
+          <button type="button" class="wt-btn" style="padding:2px 7px;" onclick="stepArchvizPad(1, 0)">⬆</button>
+          <button type="button" class="wt-btn" style="padding:2px 7px;" onclick="stepArchvizPad(0, 1)">↺</button>
+          <button type="button" class="wt-btn" style="padding:2px 7px;" onclick="stepArchvizPad(0, -1)">↻</button>
+          <button type="button" class="wt-btn" style="padding:2px 7px;" onclick="stepArchvizPad(-1, 0)">⬇</button>
         </div>
+        <div id="avzStreetBottomHud"></div>
       </div>
-      <div class="vim-right-cad">
-        <div class="vim-svg-stage" id="villaSvgContainer"></div>
-        <div class="vim-room-schedule" id="villaRoomScheduleContainer"></div>
+
+      <div class="avz-right-cad">
+        <div class="vim-svg-stage" id="archvizSvgContainer"></div>
+        <div class="vim-room-schedule" id="archvizRoomSchedule"></div>
       </div>
     </div>
   </div>
@@ -4133,10 +3867,7 @@ def main():
     }
 
     function backToCityMapOverview() {
-      if (window.wtState && window.wtState.active) {
-        exitSocietyWalkthrough(true);
-        return;
-      }
+      if (window.wtState && window.wtState.active) { exitSocietyWalkthrough(true); return; }
       const zNow = map3d ? map3d.getZoom() : 16;
       if (zNow > 13.8) {
         switchDrawerTab("uc");
@@ -5489,9 +5220,7 @@ def main():
 
       three3DLayer.heroGroup = heroGroup;
       three3DLayer.scene.add(heroGroup);
-      if (typeof syncThreeSocietyWalkGroup === "function") {
-        syncThreeSocietyWalkGroup();
-      }
+      if (typeof syncThreeSocietyWalkGroup === 'function') syncThreeSocietyWalkGroup();
 
       if (originChanged) {
         scheduleOsmCityRebuild(60);
@@ -7284,11 +7013,8 @@ def main():
         if (e.features && e.features.length > 0) {
           const pid = e.features[0].properties.project_id;
           if (pid && String(pid).startsWith("PRJ-")) {
-            if (typeof hasSocietyWalkthrough === "function" && hasSocietyWalkthrough(pid)) {
-              enterSocietyWalkthrough(pid, "zones");
-            } else {
-              showProjectInspector(pid, true);
-            }
+            if (typeof hasSocietyWalkthrough === "function" && hasSocietyWalkthrough(pid)) enterSocietyWalkthrough(pid, "zones");
+            else showProjectInspector(pid, true);
           } else if (pid && String(pid).startsWith("SUB-")) {
             const sd = DATA.subdevs.find(x => x.subdev_id === pid);
             if (sd) showSubdevInspector(sd, true);
@@ -9829,9 +9555,7 @@ def main():
     // SECTION C3: HAIO.SG 3D BLOCK EXPLORER + 5-SECTION STRUCTURED PROJECT PROFILE
     // =========================================================================
     function showProjectInspector(pid, fly = true) {
-      if (window.wtState && window.wtState.active && window.wtState.projectId !== pid) {
-        exitSocietyWalkthrough(false);
-      }
+      if (window.wtState && window.wtState.active && window.wtState.projectId !== pid) exitSocietyWalkthrough(false);
       selected3DProjectId = pid;
       switchDrawerTab("insp");
       const rawProj = DATA.projects.find(x => x.project_id === pid);
@@ -9968,11 +9692,11 @@ def main():
           <div class="haio-card-sub">${subHeaderSummary}</div>
           ${(typeof hasSocietyWalkthrough === "function" && hasSocietyWalkthrough(p.project_id)) ? `
             <div style="background:linear-gradient(135deg,#0f172a 0%,#064e3b 100%); border:1.5px solid #10b981; border-radius:12px; padding:11px; margin:8px 0 12px; color:#f8fafc;">
-              <div style="font-size:0.68rem; font-weight:900; color:#34d399; text-transform:uppercase; letter-spacing:0.04em;">✨ End-to-End 3D Society &amp; Villa Walkthrough Available</div>
-              <div style="font-size:0.73rem; color:#e2e8f0; margin:3px 0 8px;">Explore every contractor enclave, walk street-by-street in 3D, and step inside full multi-floor villa floor plans.</div>
+              <div style="font-size:0.68rem; font-weight:900; color:#34d399; text-transform:uppercase;">✨ Unreal-Style PBR 3D Street &amp; Villa Walkthrough</div>
+              <div style="font-size:0.73rem; color:#e2e8f0; margin:3px 0 8px;">Walk down 3D streets at 1.70m eye-level, step inside furnished PBR 3D villas, and inspect right-side-up CAD plans.</div>
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                <button type="button" onclick="enterSocietyWalkthrough('${p.project_id}', 'zones')" style="background:#10b981; color:#022c22; border:none; border-radius:8px; padding:7px 8px; font-size:0.73rem; font-weight:900; cursor:pointer;">🏘️ Enter Society 3D</button>
-                <button type="button" onclick="enterSocietyWalkthrough('${p.project_id}', 'street')" style="background:#38bdf8; color:#082f49; border:none; border-radius:8px; padding:7px 8px; font-size:0.73rem; font-weight:900; cursor:pointer;">🚶 Walk Streets</button>
+                <button type="button" onclick="enterSocietyWalkthrough('${p.project_id}', 'street')" style="background:#10b981; color:#022c22; border:none; border-radius:8px; padding:7px 8px; font-size:0.73rem; font-weight:900; cursor:pointer;">🚶 3D Street Walk</button>
+                <button type="button" onclick="enterSocietyWalkthrough('${p.project_id}', 'villa')" style="background:#38bdf8; color:#082f49; border:none; border-radius:8px; padding:7px 8px; font-size:0.73rem; font-weight:900; cursor:pointer;">🏠 Inside 3D Villa</button>
               </div>
             </div>
           ` : ""}
@@ -10730,1611 +10454,7 @@ def main():
     } else {
       bootHaioPlatform();
     }
-
-    // =========================================================================
-    // SECTION WT: END-TO-END 3D SOCIETY, STREET & VILLA INTERIOR WALKTHROUGH ENGINE
-    // Covers PRJ-D2 (Palm Jebel Ali, 13.4 km²) & PRJ-D19 (Tilal Al Ghaf, 3.0 km²)
-    // =========================================================================
-    window.wtState = {
-      active: false,
-      projectId: null,
-      mode: "zones", // "zones" | "street"
-      selectedZoneId: null,
-      stopIndex: 0,
-      routeProgress: 0, // 0..1 across street_tour
-      autoWalkRaf: null,
-      lastAutoTs: 0,
-      walkerLatLon: null,
-      walkerBearing: 0,
-      domMarkers: [],
-      leafletGroup: null,
-      roverMesh: null
-    };
-
-    const vimState = {
-      open: false,
-      typologyId: "TYP-TAG-SERENITY-6BR",
-      floorKey: "ALL", // "ALL" or floor.level ("B", "G", "F1", "F2")
-      selectedRoomId: null,
-      yaw: -0.68,
-      pitch: 0.72,
-      zoom: 1.0,
-      targetX: 0,
-      targetY: 0,
-      targetZ: 0,
-      dragging: false,
-      lastMouseX: 0,
-      lastMouseY: 0,
-      roomHitBoxes: [],
-      autoTourTimer: null,
-      animRaf: null
-    };
-
-    function hasSocietyWalkthrough(pid) {
-      return Boolean(DATA.walkthroughs && DATA.walkthroughs.projects && DATA.walkthroughs.projects[pid]);
-    }
-
-    function getSocietyData(pid) {
-      return (DATA.walkthroughs && DATA.walkthroughs.projects) ? DATA.walkthroughs.projects[pid] : null;
-    }
-
-    function latLonRingToGeoJson(ringLatLon) {
-      if (!Array.isArray(ringLatLon) || ringLatLon.length < 3) return [];
-      const coords = ringLatLon.map(pt => [pt[1], pt[0]]);
-      const f = coords[0], l = coords[coords.length - 1];
-      if (f[0] !== l[0] || f[1] !== l[1]) coords.push([f[0], f[1]]);
-      return coords;
-    }
-
-    function pointInPolygonLatLon(lat, lon, ringLatLon) {
-      if (!Array.isArray(ringLatLon) || ringLatLon.length < 3) return false;
-      let inside = false;
-      for (let i = 0, j = ringLatLon.length - 1; i < ringLatLon.length; j = i++) {
-        const yi = ringLatLon[i][0], xi = ringLatLon[i][1];
-        const yj = ringLatLon[j][0], xj = ringLatLon[j][1];
-        const intersect = ((yi > lat) !== (yj > lat)) &&
-          (lon < ((xj - xi) * (lat - yi)) / ((yj - yi) || 1e-12) + xi);
-        if (intersect) inside = !inside;
-      }
-      return inside;
-    }
-
-    function detectZoneForLatLon(soc, lat, lon) {
-      if (!soc || !Array.isArray(soc.zones)) return null;
-      for (const z of soc.zones) {
-        if (z.polygon && pointInPolygonLatLon(lat, lon, z.polygon)) return z;
-      }
-      let best = soc.zones[0] || null, bestD = Infinity;
-      for (const z of soc.zones) {
-        if (!z.center) continue;
-        const d = Math.hypot(lat - z.center[0], lon - z.center[1]);
-        if (d < bestD) { bestD = d; best = z; }
-      }
-      return best;
-    }
-
-    function clearSocietyDomAndLeafletOverlays() {
-      if (wtState.domMarkers && wtState.domMarkers.length) {
-        wtState.domMarkers.forEach(m => { try { m.remove(); } catch (_) {} });
-        wtState.domMarkers = [];
-      }
-      if (wtState.leafletGroup && map) {
-        try { map.removeLayer(wtState.leafletGroup); } catch (_) {}
-        wtState.leafletGroup = null;
-      }
-      const emptyFC = { type: "FeatureCollection", features: [] };
-      if (map3d && map3dLoaded) {
-        ["wt-water-src", "wt-islands-src", "wt-zones-src", "wt-streets-src", "wt-route-src", "wt-walker-src"].forEach(sid => {
-          const s = map3d.getSource(sid);
-          if (s) s.setData(emptyFC);
-        });
-      }
-    }
-
-    function ensureSocietyMap3dLayers() {
-      if (!map3d || !map3dLoaded) return;
-      const emptyFC = { type: "FeatureCollection", features: [] };
-      const addSrc = (id) => {
-        if (!map3d.getSource(id)) map3d.addSource(id, { type: "geojson", data: emptyFC });
-      };
-      addSrc("wt-water-src");
-      addSrc("wt-islands-src");
-      addSrc("wt-zones-src");
-      addSrc("wt-streets-src");
-      addSrc("wt-route-src");
-      addSrc("wt-walker-src");
-
-      const beforeLayer = map3d.getLayer("haio-photoreal-3d-layer") ? "haio-photoreal-3d-layer" : undefined;
-
-      if (!map3d.getLayer("wt-water-fill")) {
-        map3d.addLayer({
-          id: "wt-water-fill",
-          type: "fill",
-          source: "wt-water-src",
-          paint: { "fill-color": "#06b6d4", "fill-opacity": 0.56 }
-        }, beforeLayer);
-        map3d.addLayer({
-          id: "wt-water-line",
-          type: "line",
-          source: "wt-water-src",
-          paint: { "line-color": "#67e8f9", "line-width": 2.0, "line-opacity": 0.9 }
-        }, beforeLayer);
-      }
-      if (!map3d.getLayer("wt-islands-fill")) {
-        map3d.addLayer({
-          id: "wt-islands-fill",
-          type: "fill",
-          source: "wt-islands-src",
-          paint: { "fill-color": "#fde68a", "fill-opacity": 0.20 }
-        }, beforeLayer);
-        map3d.addLayer({
-          id: "wt-islands-line",
-          type: "line",
-          source: "wt-islands-src",
-          paint: { "line-color": "#fbbf24", "line-width": 1.4, "line-opacity": 0.75 }
-        }, beforeLayer);
-      }
-      if (!map3d.getLayer("wt-zones-fill")) {
-        map3d.addLayer({
-          id: "wt-zones-fill",
-          type: "fill",
-          source: "wt-zones-src",
-          paint: {
-            "fill-color": ["get", "color"],
-            "fill-opacity": ["case", ["==", ["get", "selected"], 1], 0.36, 0.19]
-          }
-        }, beforeLayer);
-        map3d.addLayer({
-          id: "wt-zones-line",
-          type: "line",
-          source: "wt-zones-src",
-          paint: {
-            "line-color": ["case", ["==", ["get", "selected"], 1], "#ffffff", ["get", "color"]],
-            "line-width": ["case", ["==", ["get", "selected"], 1], 3.5, 2.0],
-            "line-opacity": 0.95
-          }
-        }, beforeLayer);
-        map3d.on("click", "wt-zones-fill", (ev) => {
-          if (!wtState.active || !ev.features || !ev.features.length) return;
-          const zid = ev.features[0].properties.zone_id;
-          if (zid) selectSocietyZone(zid, true);
-        });
-      }
-      if (!map3d.getLayer("wt-streets-line")) {
-        map3d.addLayer({
-          id: "wt-streets-casing",
-          type: "line",
-          source: "wt-streets-src",
-          paint: {
-            "line-color": "#0f172a",
-            "line-width": ["interpolate", ["linear"], ["zoom"], 13, 2.0, 17, 7.5],
-            "line-opacity": 0.65
-          }
-        }, beforeLayer);
-        map3d.addLayer({
-          id: "wt-streets-line",
-          type: "line",
-          source: "wt-streets-src",
-          paint: {
-            "line-color": ["match", ["get", "hw"],
-              "primary", "#fbbf24",
-              "secondary", "#fde047",
-              "tertiary", "#f8fafc",
-              "footway", "#34d399",
-              "cycleway", "#34d399",
-              "#e2e8f0"
-            ],
-            "line-width": ["interpolate", ["linear"], ["zoom"], 13, 1.1, 17, 4.4],
-            "line-opacity": 0.92
-          }
-        }, beforeLayer);
-      }
-      if (!map3d.getLayer("wt-route-line")) {
-        map3d.addLayer({
-          id: "wt-route-casing",
-          type: "line",
-          source: "wt-route-src",
-          paint: { "line-color": "#022c22", "line-width": 7, "line-opacity": 0.85 }
-        });
-        map3d.addLayer({
-          id: "wt-route-line",
-          type: "line",
-          source: "wt-route-src",
-          paint: { "line-color": "#10b981", "line-width": 4, "line-dasharray": [2, 1.4], "line-opacity": 0.98 }
-        });
-      }
-      if (!map3d.getLayer("wt-walker-circle")) {
-        map3d.addLayer({
-          id: "wt-walker-halo",
-          type: "circle",
-          source: "wt-walker-src",
-          paint: { "circle-radius": 15, "circle-color": "#10b981", "circle-opacity": 0.32, "circle-stroke-width": 2, "circle-stroke-color": "#6ee7b7" }
-        });
-        map3d.addLayer({
-          id: "wt-walker-circle",
-          type: "circle",
-          source: "wt-walker-src",
-          paint: { "circle-radius": 7, "circle-color": "#ffffff", "circle-stroke-width": 3, "circle-stroke-color": "#059669" }
-        });
-      }
-    }
-
-    function populateSocietyOverlays(soc) {
-      clearSocietyDomAndLeafletOverlays();
-      if (!soc) return;
-      ensureSocietyMap3dLayers();
-
-      const waterFeats = [];
-      (soc.water_polygons || []).forEach(ring => {
-        const c = latLonRingToGeoJson(ring);
-        if (c.length >= 4) waterFeats.push({ type: "Feature", properties: {}, geometry: { type: "Polygon", coordinates: [c] } });
-      });
-      (soc.pools_parks || []).forEach(pp => {
-        if (pp.kind === "water" && pp.pts && pp.pts.length >= 3) {
-          const c = latLonRingToGeoJson(pp.pts);
-          if (c.length >= 4) waterFeats.push({ type: "Feature", properties: {}, geometry: { type: "Polygon", coordinates: [c] } });
-        }
-      });
-
-      const islandFeats = [];
-      (soc.island_polygons || []).forEach(ring => {
-        const c = latLonRingToGeoJson(ring);
-        if (c.length >= 4) islandFeats.push({ type: "Feature", properties: {}, geometry: { type: "Polygon", coordinates: [c] } });
-      });
-
-      const zoneFeats = (soc.zones || []).map(z => ({
-        type: "Feature",
-        properties: {
-          zone_id: z.zone_id,
-          name: z.name,
-          color: z.color || "#10b981",
-          selected: z.zone_id === wtState.selectedZoneId ? 1 : 0
-        },
-        geometry: { type: "Polygon", coordinates: [latLonRingToGeoJson(z.polygon)] }
-      }));
-
-      const streetFeats = [];
-      (soc.osm_streets || []).forEach(st => {
-        if (st.pts && st.pts.length >= 2) {
-          streetFeats.push({
-            type: "Feature",
-            properties: { hw: st.hw || "residential", name: st.name || "" },
-            geometry: { type: "LineString", coordinates: st.pts.map(p => [p[1], p[0]]) }
-          });
-        }
-      });
-      (soc.fronds || []).forEach(fr => {
-        if (fr.pts && fr.pts.length >= 2) {
-          streetFeats.push({
-            type: "Feature",
-            properties: { hw: "secondary", name: fr.frond },
-            geometry: { type: "LineString", coordinates: fr.pts.map(p => [p[1], p[0]]) }
-          });
-        }
-      });
-
-      const routeCoords = (soc.street_tour || []).map(s => [s.lon, s.lat]);
-      const routeFeats = routeCoords.length >= 2
-        ? [{ type: "Feature", properties: {}, geometry: { type: "LineString", coordinates: routeCoords } }]
-        : [];
-
-      const wLL = wtState.walkerLatLon || (soc.street_tour && soc.street_tour[0] ? [soc.street_tour[0].lat, soc.street_tour[0].lon] : soc.center);
-      const walkerFeats = wLL
-        ? [{ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [wLL[1], wLL[0]] } }]
-        : [];
-
-      if (map3d && map3dLoaded) {
-        map3d.getSource("wt-water-src")?.setData({ type: "FeatureCollection", features: waterFeats });
-        map3d.getSource("wt-islands-src")?.setData({ type: "FeatureCollection", features: islandFeats });
-        map3d.getSource("wt-zones-src")?.setData({ type: "FeatureCollection", features: zoneFeats });
-        map3d.getSource("wt-streets-src")?.setData({ type: "FeatureCollection", features: streetFeats });
-        map3d.getSource("wt-route-src")?.setData({ type: "FeatureCollection", features: routeFeats });
-        map3d.getSource("wt-walker-src")?.setData({ type: "FeatureCollection", features: walkerFeats });
-
-        // Interactive Contractor Zone Callout Pills on 3D Map
-        (soc.zones || []).forEach(z => {
-          if (!z.center) return;
-          const el = document.createElement("div");
-          el.className = "wt-zone-map-pill";
-          el.style.borderColor = z.color || "#38bdf8";
-          if (z.zone_id === wtState.selectedZoneId) {
-            el.style.background = z.color || "#0284c7";
-            el.style.color = "#ffffff";
-          }
-          const shortContr = (z.main_contractor || "").split("(")[0].split("&")[0].trim().slice(0, 22);
-          el.innerHTML = `<span style="display:inline-block;width:7px;height:7px;border-radius:50%;background:${z.color};margin-right:5px;"></span>${z.short_label} · <span style="color:#6ee7b7;">${shortContr}</span>`;
-          el.onclick = (ev) => {
-            ev.stopPropagation();
-            selectSocietyZone(z.zone_id, true);
-          };
-          const mk = new maplibregl.Marker({ element: el, anchor: "center" })
-            .setLngLat([z.center[1], z.center[0]])
-            .addTo(map3d);
-          wtState.domMarkers.push(mk);
-        });
-
-        // For Palm Jebel Ali, add Frond A..P tip pills so every Frond is directly clickable
-        (soc.fronds || []).forEach(fr => {
-          if (!fr.pts || !fr.pts.length) return;
-          const tip = fr.pts[fr.pts.length - 1];
-          const zMatch = (soc.zones || []).find(z => z.zone_id === fr.zone_id);
-          const col = zMatch ? zMatch.color : "#38bdf8";
-          const el = document.createElement("div");
-          el.className = "wt-zone-map-pill frond-tag";
-          el.style.borderColor = col;
-          el.title = `${fr.frond} · ${fr.contractor} (${fr.package})`;
-          el.textContent = `Frond ${fr.letter}`;
-          el.onclick = (ev) => {
-            ev.stopPropagation();
-            selectSocietyZone(fr.zone_id, false);
-            wtFlyCamera(tip[0], tip[1], 16.3, 62, -25, 900);
-          };
-          const mk = new maplibregl.Marker({ element: el, anchor: "center" })
-            .setLngLat([tip[1], tip[0]])
-            .addTo(map3d);
-          wtState.domMarkers.push(mk);
-        });
-      }
-
-      // Synchronized 2D Leaflet layer group fallback
-      if (map && typeof L !== "undefined") {
-        const lg = L.layerGroup();
-        (soc.water_polygons || []).forEach(ring => {
-          L.polygon(ring, { color: "#06b6d4", fillColor: "#06b6d4", fillOpacity: 0.5, weight: 1.5 }).addTo(lg);
-        });
-        (soc.zones || []).forEach(z => {
-          if (!z.polygon) return;
-          const poly = L.polygon(z.polygon, {
-            color: z.zone_id === wtState.selectedZoneId ? "#ffffff" : (z.color || "#10b981"),
-            fillColor: z.color || "#10b981",
-            fillOpacity: z.zone_id === wtState.selectedZoneId ? 0.35 : 0.18,
-            weight: z.zone_id === wtState.selectedZoneId ? 3 : 2
-          });
-          poly.bindTooltip(`<strong>${z.name}</strong><br/>Contractor: ${z.main_contractor}<br/>Value: ${z.contract_value}`);
-          poly.on("click", () => selectSocietyZone(z.zone_id, true));
-          poly.addTo(lg);
-        });
-        if (soc.street_tour && soc.street_tour.length >= 2) {
-          L.polyline(soc.street_tour.map(s => [s.lat, s.lon]), { color: "#10b981", weight: 3.5, dashArray: "6,4" }).addTo(lg);
-        }
-        lg.addTo(map);
-        wtState.leafletGroup = lg;
-      }
-    }
-
-    // Builds real-scale 3D Villas, Mansions, Townhouses, Pools & 3D Street Rover in Three.js
-    function syncThreeSocietyWalkGroup() {
-      if (!three3DLayer || !three3DLayer.scene || typeof THREE === "undefined") return;
-      if (three3DLayer.societyWalkGroup) {
-        disposeThreeGroup(three3DLayer.societyWalkGroup, true);
-        three3DLayer.scene.remove(three3DLayer.societyWalkGroup);
-        three3DLayer.societyWalkGroup = null;
-        wtState.roverMesh = null;
-      }
-
-      if (!wtState.active || !wtState.projectId) {
-        if (three3DLayer.heroGroup) three3DLayer.heroGroup.visible = true;
-        three3DLayer.heroExcludeRadiusM = 56.0;
-        return;
-      }
-
-      const soc = getSocietyData(wtState.projectId);
-      if (!soc) return;
-
-      // Hide generic single-parcel high-rise tower so the Lagoon / Palm Spine renders authentically
-      if (three3DLayer.heroGroup) three3DLayer.heroGroup.visible = false;
-      three3DLayer.heroExcludeRadiusM = 2.0;
-
-      const [originLon, originLat] = three3DLayer.originLonLat || [soc.center[1], soc.center[0]];
-      const zoneColorMap = {};
-      (soc.zones || []).forEach(z => { zoneColorMap[z.zone_id] = new THREE.Color(z.color || "#e2e8f0"); });
-
-      const wallPos = [], wallNorm = [], wallCol = [];
-      const glassPos = [], glassNorm = [], glassCol = [];
-      const poolPos = [], poolNorm = [];
-
-      const pushQuad = (posArr, normArr, colArr, x0, y0, z0, x1, y1, z1, nx, ny, nz, r, g, b) => {
-        posArr.push(x0, y0, z0, x1, y1, z0, x1, y1, z1, x0, y0, z0, x1, y1, z1, x0, y0, z1);
-        for (let k = 0; k < 6; k++) {
-          normArr.push(nx, ny, nz);
-          if (colArr) colArr.push(r, g, b);
-        }
-      };
-
-      const pushHorizontalRect = (posArr, normArr, colArr, cx, cy, z, w, d, cosA, sinA, r, g, b) => {
-        const hw = w * 0.5, hd = d * 0.5;
-        const corners = [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]].map(([lx, ly]) => [
-          cx + lx * cosA - ly * sinA,
-          cy + lx * sinA + ly * cosA
-        ]);
-        posArr.push(
-          corners[0][0], corners[0][1], z,
-          corners[1][0], corners[1][1], z,
-          corners[2][0], corners[2][1], z,
-          corners[0][0], corners[0][1], z,
-          corners[2][0], corners[2][1], z,
-          corners[3][0], corners[3][1], z
-        );
-        for (let k = 0; k < 6; k++) {
-          normArr.push(0, 0, 1);
-          if (colArr) colArr.push(r, g, b);
-        }
-      };
-
-      const pushOrientedBox = (posArr, normArr, colArr, cx, cy, z0, z1, w, d, cosA, sinA, r, g, b) => {
-        const hw = w * 0.5, hd = d * 0.5;
-        const pts = [[-hw, -hd], [hw, -hd], [hw, hd], [-hw, hd]].map(([lx, ly]) => [
-          cx + lx * cosA - ly * sinA,
-          cy + lx * sinA + ly * cosA
-        ]);
-        for (let i = 0; i < 4; i++) {
-          const [x0, y0] = pts[i], [x1, y1] = pts[(i + 1) % 4];
-          const dx = x1 - x0, dy = y1 - y0;
-          const len = Math.hypot(dx, dy) || 1;
-          pushQuad(posArr, normArr, colArr, x0, y0, z0, x1, y1, z1, dy / len, -dx / len, 0, r * 0.94, g * 0.94, b * 0.94);
-        }
-        pushHorizontalRect(posArr, normArr, colArr, cx, cy, z1, w, d, cosA, sinA, r, g, b);
-      };
-
-      // 1. Extrude real OSM building footprints (926 footprints in Tilal Al Ghaf)
-      (soc.osm_buildings || []).forEach((ring, idx) => {
-        if (!ring || ring.length < 4) return;
-        const ptsEnu = ring.map(([lat, lon]) => lonLatToOriginEnu(lon, lat, originLon, originLat));
-        const h = 7.6 + (idx % 4) * 1.05;
-        const shade = 0.88 + (idx % 5) * 0.025;
-        const r = 0.96 * shade, g = 0.94 * shade, b = 0.89 * shade;
-        for (let i = 0; i < ptsEnu.length - 1; i++) {
-          const [x0, y0] = ptsEnu[i], [x1, y1] = ptsEnu[i + 1];
-          const dx = x1 - x0, dy = y1 - y0;
-          const len = Math.hypot(dx, dy);
-          if (len < 0.4) continue;
-          pushQuad(wallPos, wallNorm, wallCol, x0, y0, 0, x1, y1, h, dy / len, -dx / len, 0, r, g, b);
-        }
-        // Simple fan roof cap for convex/near-convex villa footprints
-        const [rx0, ry0] = ptsEnu[0];
-        for (let i = 1; i < ptsEnu.length - 2; i++) {
-          const [rx1, ry1] = ptsEnu[i], [rx2, ry2] = ptsEnu[i + 1];
-          wallPos.push(rx0, ry0, h, rx1, ry1, h, rx2, ry2, h);
-          for (let k = 0; k < 3; k++) {
-            wallNorm.push(0, 0, 1);
-            wallCol.push(r * 1.03, g * 1.02, b * 0.98);
-          }
-        }
-      });
-
-      // 2. Multi-volume Architectural 3D Villas & Waterfront Mansions + Private Pools
-      (soc.procedural_villas || []).forEach((v, idx) => {
-        const [cx, cy] = lonLatToOriginEnu(v.lon, v.lat, originLon, originLat);
-        const w = v.w || 16, d = v.d || 14, h = v.h || 9.5;
-        const angle = ((idx * 37) % 360) * (Math.PI / 180) * 0.08;
-        const cosA = Math.cos(angle), sinA = Math.sin(angle);
-        const zCol = zoneColorMap[v.zone] || new THREE.Color("#f8fafc");
-        // Warm architectural limestone blended lightly with zone signature tint
-        const wr = 0.84 + zCol.r * 0.14;
-        const wg = 0.82 + zCol.g * 0.14;
-        const wb = 0.78 + zCol.b * 0.14;
-
-        // Ground Floor Podium
-        const hG = Math.min(4.2, h * 0.44);
-        pushOrientedBox(wallPos, wallNorm, wallCol, cx, cy, 0, hG, w, d, cosA, sinA, wr, wg, wb);
-        // Glazed First-Floor Cantilevered Volume
-        const hF1 = h * 0.84;
-        pushOrientedBox(glassPos, glassNorm, glassCol, cx, cy, hG, hF1, w * 0.88, d * 0.82, cosA, sinA, 0.38, 0.68, 0.86);
-        // Upper Architectural Crown / Pergola Roof Slab
-        pushOrientedBox(wallPos, wallNorm, wallCol, cx + 0.6, cy - 0.5, hF1, h, w * 0.62, d * 0.58, cosA, sinA, wr * 0.92, wg * 0.90, wb * 0.85);
-        // Zone Color Roof Accent Strip
-        pushHorizontalRect(wallPos, wallNorm, wallCol, cx + 0.6, cy - 0.5, h + 0.12, w * 0.52, d * 0.14, cosA, sinA, zCol.r, zCol.g, zCol.b);
-
-        if (v.pool) {
-          const px = cx - sinA * (d * 0.66);
-          const py = cy + cosA * (d * 0.66);
-          pushHorizontalRect(poolPos, poolNorm, null, px, py, 0.28, w * 0.68, d * 0.34, cosA, sinA, 0, 0, 0);
-        }
-      });
-
-      const group = new THREE.Group();
-      group.name = "societyWalkGroup";
-
-      if (wallPos.length > 0) {
-        const gWall = new THREE.BufferGeometry();
-        gWall.setAttribute("position", new THREE.Float32BufferAttribute(wallPos, 3));
-        gWall.setAttribute("normal", new THREE.Float32BufferAttribute(wallNorm, 3));
-        gWall.setAttribute("color", new THREE.Float32BufferAttribute(wallCol, 3));
-        const mWall = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.62, metalness: 0.08, side: THREE.DoubleSide });
-        const meshWall = new THREE.Mesh(gWall, mWall);
-        meshWall.frustumCulled = false;
-        group.add(meshWall);
-      }
-
-      if (glassPos.length > 0) {
-        const gGlass = new THREE.BufferGeometry();
-        gGlass.setAttribute("position", new THREE.Float32BufferAttribute(glassPos, 3));
-        gGlass.setAttribute("normal", new THREE.Float32BufferAttribute(glassNorm, 3));
-        gGlass.setAttribute("color", new THREE.Float32BufferAttribute(glassCol, 3));
-        const mGlass = new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.18, metalness: 0.55, transparent: true, opacity: 0.84, side: THREE.DoubleSide });
-        const meshGlass = new THREE.Mesh(gGlass, mGlass);
-        meshGlass.frustumCulled = false;
-        group.add(meshGlass);
-      }
-
-      if (poolPos.length > 0) {
-        const gPool = new THREE.BufferGeometry();
-        gPool.setAttribute("position", new THREE.Float32BufferAttribute(poolPos, 3));
-        gPool.setAttribute("normal", new THREE.Float32BufferAttribute(poolNorm, 3));
-        const mPool = new THREE.MeshBasicMaterial({ color: 0x06b6d4, side: THREE.DoubleSide });
-        const meshPool = new THREE.Mesh(gPool, mPool);
-        meshPool.frustumCulled = false;
-        group.add(meshPool);
-      }
-
-      // 3. Live 3D Street-Walker Avatar / Rover Beacon
-      const roverGroup = new THREE.Group();
-      const coneGeo = new THREE.OctahedronGeometry(4.2, 0);
-      const coneMat = new THREE.MeshBasicMaterial({ color: 0x10b981 });
-      const coneMesh = new THREE.Mesh(coneGeo, coneMat);
-      coneMesh.position.set(0, 0, 9.5);
-      roverGroup.add(coneMesh);
-
-      const ringGeo = new THREE.RingGeometry(4.5, 7.5, 24);
-      const ringMat = new THREE.MeshBasicMaterial({ color: 0x6ee7b7, side: THREE.DoubleSide });
-      const ringMesh = new THREE.Mesh(ringGeo, ringMat);
-      ringMesh.position.set(0, 0, 0.6);
-      roverGroup.add(ringMesh);
-
-      const wLL = wtState.walkerLatLon || (soc.street_tour && soc.street_tour[0] ? [soc.street_tour[0].lat, soc.street_tour[0].lon] : soc.center);
-      if (wLL) {
-        const [rx, ry] = lonLatToOriginEnu(wLL[1], wLL[0], originLon, originLat);
-        roverGroup.position.set(rx, ry, 0);
-      }
-      roverGroup.frustumCulled = false;
-      group.add(roverGroup);
-      wtState.roverMesh = roverGroup;
-
-      three3DLayer.societyWalkGroup = group;
-      three3DLayer.scene.add(group);
-      if (map3d) map3d.triggerRepaint();
-    }
-
-    function updateStreetWalkerPosition(lat, lon, bearingDeg) {
-      wtState.walkerLatLon = [lat, lon];
-      wtState.walkerBearing = bearingDeg || 0;
-      if (map3d && map3dLoaded) {
-        map3d.getSource("wt-walker-src")?.setData({
-          type: "FeatureCollection",
-          features: [{ type: "Feature", properties: {}, geometry: { type: "Point", coordinates: [lon, lat] } }]
-        });
-      }
-      if (wtState.roverMesh && three3DLayer && three3DLayer.originLonLat) {
-        const [rx, ry] = lonLatToOriginEnu(lon, lat, three3DLayer.originLonLat[0], three3DLayer.originLonLat[1]);
-        wtState.roverMesh.position.set(rx, ry, 0);
-        wtState.roverMesh.rotation.z = -(bearingDeg || 0) * (Math.PI / 180);
-        if (map3d) map3d.triggerRepaint();
-      }
-    }
-
-    function wtFlyCamera(lat, lon, zoom, pitch, bearing, durationMs = 950) {
-      if (map3d && map3dLoaded && currentCameraDim === "3D") {
-        map3d.easeTo({
-          center: [lon, lat],
-          zoom: Math.min(18.3, Math.max(11.0, zoom)),
-          pitch: Math.min(72, Math.max(0, pitch)),
-          bearing: bearing || 0,
-          duration: durationMs,
-          essential: true
-        });
-      }
-      if (map) {
-        map.setView([lat, lon], Math.min(18, Math.max(11, Math.round(zoom))), { animate: false });
-      }
-    }
-
-    function enterSocietyWalkthrough(pid, initialMode = "zones") {
-      const soc = getSocietyData(pid);
-      if (!soc) {
-        showProjectInspector(pid, true);
-        return;
-      }
-      stopStreetAutoWalk();
-      closeAnalyticalWorkspace();
-      if (currentCameraDim === "2D" && !map3dContextLost) {
-        setCameraDimension("3D");
-      }
-
-      wtState.active = true;
-      wtState.projectId = pid;
-      wtState.mode = initialMode === "street" ? "street" : "zones";
-      wtState.selectedZoneId = soc.zones && soc.zones[0] ? soc.zones[0].zone_id : null;
-      wtState.stopIndex = 0;
-      wtState.routeProgress = 0;
-      if (soc.street_tour && soc.street_tour[0]) {
-        wtState.walkerLatLon = [soc.street_tour[0].lat, soc.street_tour[0].lon];
-        wtState.walkerBearing = soc.street_tour[0].bearing || 0;
-      } else {
-        wtState.walkerLatLon = [soc.center[0], soc.center[1]];
-      }
-
-      selected3DProjectId = pid;
-      document.body.classList.add("wt-society-active");
-      document.getElementById("wtTopBanner").style.display = "flex";
-      document.getElementById("wtSwitchD2").classList.toggle("active", pid === "PRJ-D2");
-      document.getElementById("wtSwitchD19").classList.toggle("active", pid === "PRJ-D19");
-
-      const bldgCount = (soc.osm_buildings ? soc.osm_buildings.length : 0) + (soc.procedural_villas ? soc.procedural_villas.length : 0);
-      document.getElementById("wtTopStatsChip").textContent =
-        `${soc.zones.length} Contractor Zones · ${(soc.osm_streets || []).length} Streets · ${bldgCount.toLocaleString()} 3D Villas`;
-      document.getElementById("hudScope").textContent = `Walkthrough: ${soc.name}`;
-
-      switchDrawerTab("insp");
-      rebuildThreeHeroScene();
-      sync3DMapLayers();
-      populateSocietyOverlays(soc);
-      renderSocietyInspectorPanel(soc);
-      setSocietyWalkMode(wtState.mode, true);
-    }
-
-    function exitSocietyWalkthrough(flyOverview = true) {
-      stopStreetAutoWalk();
-      closeVillaInteriorModal();
-      const prevPid = wtState.projectId || "PRJ-D11";
-      wtState.active = false;
-      wtState.projectId = null;
-      document.body.classList.remove("wt-society-active", "wt-street-active");
-      const tb = document.getElementById("wtTopBanner");
-      const sh = document.getElementById("wtStreetHud");
-      if (tb) tb.style.display = "none";
-      if (sh) sh.style.display = "none";
-
-      clearSocietyDomAndLeafletOverlays();
-      syncThreeSocietyWalkGroup();
-      sync3DMapLayers();
-
-      if (flyOverview) {
-        flyBothMaps(25.095, 55.165, 11.2, 50, 20);
-        showProjectInspector(prevPid, false);
-      }
-    }
-
-    function setSocietyWalkMode(mode, initialEnter = false) {
-      if (!wtState.active) return;
-      const soc = getSocietyData(wtState.projectId);
-      if (!soc) return;
-      stopStreetAutoWalk();
-      wtState.mode = mode;
-
-      document.getElementById("wtModeZonesBtn").classList.toggle("active", mode === "zones");
-      document.getElementById("wtModeStreetBtn").classList.toggle("active", mode === "street");
-      const hud = document.getElementById("wtStreetHud");
-
-      if (mode === "street") {
-        document.body.classList.add("wt-street-active");
-        hud.style.display = "block";
-        renderStreetStopDots(soc);
-        goToStreetStop(wtState.stopIndex || 0, initialEnter ? 1050 : 850);
-      } else {
-        document.body.classList.remove("wt-street-active");
-        hud.style.display = "none";
-        wtFlyCamera(soc.center[0], soc.center[1], soc.entry_zoom || 14.3, soc.entry_pitch || 56, soc.entry_bearing || -20, 1000);
-      }
-    }
-
-    function selectSocietyZone(zoneId, flyToZone = true) {
-      const soc = getSocietyData(wtState.projectId);
-      if (!soc) return;
-      const z = (soc.zones || []).find(x => x.zone_id === zoneId);
-      if (!z) return;
-      wtState.selectedZoneId = zoneId;
-      populateSocietyOverlays(soc);
-      renderSocietyInspectorPanel(soc);
-      if (flyToZone && z.center) {
-        wtFlyCamera(z.center[0], z.center[1], z.zoom || 15.8, z.pitch || 60, z.bearing || -20, 850);
-      }
-    }
-
-    function renderSocietyInspectorPanel(soc) {
-      const container = document.getElementById("inspectorContainer");
-      if (!container || !soc) return;
-      const selZ = (soc.zones || []).find(z => z.zone_id === wtState.selectedZoneId) || soc.zones[0];
-      const typologiesForProj = Object.values(DATA.walkthroughs.typologies || {}).filter(t => t.project_id === soc.project_id);
-
-      const zoneCardsHtml = (soc.zones || []).map(z => {
-        const isAct = selZ && z.zone_id === selZ.zone_id;
-        const buaClean = String(z.bua_range_sqft || "").replace(/\s*sq\.?ft\.?/ig, "").trim();
-        return `
-          <div class="wt-zone-card ${isAct ? 'active' : ''}" style="border-left-color:${z.color};" onclick="selectSocietyZone('${z.zone_id}', true)">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px;">
-              <strong style="font-size:0.78rem; color:#0f172a;">${z.name}</strong>
-              <span style="background:${z.color}22; color:#0f172a; border:1px solid ${z.color}; font-size:0.65rem; font-weight:800; padding:1px 7px; border-radius:999px; white-space:nowrap;">${z.units_count}</span>
-            </div>
-            <div style="font-size:0.72rem; color:#047857; font-weight:700; margin-top:3px;">🏗️ ${z.main_contractor}</div>
-            <div style="font-size:0.69rem; color:#475569; margin-top:2px;">💰 ${z.contract_value} · 📐 BUA ${buaClean} sq.ft.</div>
-            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:6px; gap:6px;">
-              <span style="font-size:0.66rem; color:#64748b;">${z.status}</span>
-              <button type="button" onclick="event.stopPropagation(); openVillaInteriorModal('${z.default_typology_id}')" style="background:#0f172a; color:#fff; border:none; border-radius:6px; padding:3px 8px; font-size:0.67rem; font-weight:700; cursor:pointer;">🏠 Floor Plan →</button>
-            </div>
-          </div>
-        `;
-      }).join("");
-
-      const frondTableHtml = (soc.fronds && soc.fronds.length) ? `
-        <div class="prof-sec-hdr" style="margin-top:10px;"><span>🌴 All 16 Fronds (A–P) Contractor Directory</span><span>Click to Fly</span></div>
-        <div style="display:grid; grid-template-columns:repeat(2,1fr); gap:5px; margin-bottom:10px;">
-          ${soc.fronds.map(fr => `
-            <button type="button" onclick="selectSocietyZone('${fr.zone_id}', false); wtFlyCamera(${fr.pts[1][0]}, ${fr.pts[1][1]}, 16.3, 62, -25, 850);" style="text-align:left; background:#f8fafc; border:1px solid #cbd5e1; border-radius:7px; padding:5px 7px; cursor:pointer; font-size:0.68rem;">
-              <strong style="color:#0f172a;">${fr.frond}</strong><br/>
-              <span style="color:#047857; font-weight:700;">${fr.contractor.split('(')[0].trim()}</span>
-            </button>
-          `).join("")}
-        </div>
-      ` : "";
-
-      container.innerHTML = `
-        <div style="padding:2px 2px 14px;">
-          <div style="background:linear-gradient(135deg,#0f172a 0%,#064e3b 100%); color:#fff; border-radius:12px; padding:12px; margin-bottom:10px; border:1px solid #10b981;">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:6px; margin-bottom:4px;">
-              <span style="background:#10b981; color:#022c22; font-size:0.65rem; font-weight:900; padding:2px 8px; border-radius:999px;">ACTIVE SOCIETY WALKTHROUGH</span>
-              <button type="button" onclick="showProjectInspector('${soc.project_id}', false)" style="background:rgba(255,255,255,0.14); color:#e2e8f0; border:1px solid rgba(255,255,255,0.28); border-radius:999px; padding:2px 8px; font-size:0.66rem; font-weight:700; cursor:pointer;">📋 5-Sec GIS Profile</button>
-            </div>
-            <h3 style="margin:4px 0 2px; font-size:1.02rem; color:#fff;">${soc.name} (${soc.project_id})</h3>
-            <div style="font-size:0.73rem; color:#a7f3d0; font-weight:600;">${soc.developer} · ${soc.area_summary}</div>
-            <div style="font-size:0.71rem; color:#cbd5e1; margin-top:4px;">GDV / Awards: <strong>${soc.headline_gdv}</strong></div>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px; margin-top:9px;">
-              <button type="button" onclick="setSocietyWalkMode('street')" style="background:#10b981; color:#022c22; border:none; border-radius:8px; padding:7px 8px; font-size:0.73rem; font-weight:900; cursor:pointer;">🚶 Walk Streets (10 Stops)</button>
-              <button type="button" onclick="openVillaInteriorModal('${selZ ? selZ.default_typology_id : typologiesForProj[0].id}')" style="background:#38bdf8; color:#082f49; border:none; border-radius:8px; padding:7px 8px; font-size:0.73rem; font-weight:900; cursor:pointer;">🏠 Inside Villa &amp; Plans</button>
-            </div>
-          </div>
-
-          ${selZ ? `
-            <div class="prof-sec-hdr"><span>📍 Selected Enclave Contractor Dossier</span><span style="color:#059669; font-weight:800;">${selZ.zone_id}</span></div>
-            <div class="kv-grid" style="margin-bottom:10px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:10px; padding:9px;">
-              <div style="font-size:0.86rem; font-weight:800; color:#0f172a; margin-bottom:4px;">${selZ.name}</div>
-              <div style="font-size:0.73rem; line-height:1.45; color:#1e293b;">
-                • <strong>Main Building Contractor:</strong> <span style="color:#047857; font-weight:800;">${selZ.main_contractor}</span><br/>
-                • <strong>Contract Value / Package:</strong> <strong>${selZ.contract_value}</strong><br/>
-                • <strong>Infrastructure / Marine Contractor:</strong> ${selZ.infrastructure_contractor}<br/>
-                • <strong>Lead Architects:</strong> ${selZ.architects}<br/>
-                • <strong>Interior Designer:</strong> ${selZ.interior_designer}<br/>
-                • <strong>Engineering Consultants (AOR):</strong> ${selZ.consultants}<br/>
-                • <strong>Units &amp; Typologies:</strong> ${selZ.units_count} (${selZ.unit_types})<br/>
-                • <strong>BUA / Plot / Levels:</strong> BUA ${String(selZ.bua_range_sqft || "").replace(/\s*sq\.?ft\.?/ig, "").trim()} sq.ft. · Plot ${String(selZ.plot_range_sqft || "").replace(/\s*sq\.?ft\.?/ig, "").trim()} sq.ft. · ${selZ.floors_spec}<br/>
-                • <strong>Key Highlights:</strong> ${Array.isArray(selZ.highlights) ? selZ.highlights.join(" · ") : selZ.highlights}<br/>
-                • <strong>Source Basis:</strong> <span style="color:#64748b;">${selZ.source_note}</span>
-              </div>
-              <button type="button" onclick="openVillaInteriorModal('${selZ.default_typology_id}')" style="margin-top:8px; width:100%; background:linear-gradient(135deg,#2563eb,#7c3aed); color:#fff; border:none; border-radius:8px; padding:8px; font-size:0.75rem; font-weight:800; cursor:pointer;">🏠 Open ${selZ.short_label} 3D Cutaway &amp; All Floor Plans →</button>
-            </div>
-          ` : ""}
-
-          <div class="prof-sec-hdr"><span>🏗️ All Villa Floor-Plan Collections (${typologiesForProj.length})</span><span>3D + CAD</span></div>
-          <div style="display:flex; flex-direction:column; gap:5px; margin-bottom:10px;">
-            ${typologiesForProj.map(t => `
-              <button type="button" onclick="openVillaInteriorModal('${t.id}')" style="display:flex; justify-content:space-between; align-items:center; text-align:left; background:#fff; border:1px solid #cbd5e1; border-radius:8px; padding:7px 9px; cursor:pointer;">
-                <div>
-                  <strong style="font-size:0.74rem; color:#0f172a; display:block;">${t.title}</strong>
-                  <span style="font-size:0.68rem; color:#475569;">BUA ${t.bua_sqft} · ${t.levels_label} · ${t.contractor.split('(')[0].trim()}</span>
-                </div>
-                <span style="background:#eff6ff; color:#1d4ed8; font-weight:800; font-size:0.68rem; padding:3px 7px; border-radius:6px;">Open 3D →</span>
-              </button>
-            `).join("")}
-          </div>
-
-          ${frondTableHtml}
-
-          <div class="prof-sec-hdr"><span>🗺️ All ${soc.zones.length} Society Contractor Zones</span><span>Click Card</span></div>
-          ${zoneCardsHtml}
-        </div>
-      `;
-    }
-
-    // ---------------- STREET-BY-STREET WALKTHROUGH ENGINE ----------------
-    function renderStreetStopDots(soc) {
-      const row = document.getElementById("wtStopDotsRow");
-      if (!row || !soc || !soc.street_tour) return;
-      row.innerHTML = `<span style="font-size:0.67rem; color:#94a3b8; margin-right:4px;">Checkpoints:</span>` +
-        soc.street_tour.map((s, idx) => {
-          const words = String(s.title || "").split(" ");
-          const shortLbl = (words[0] === "Frond" && words[1]) ? `${words[0]} ${words[1]}` : words[0];
-          return `<button type="button" class="wt-stop-dot ${idx === wtState.stopIndex ? 'active' : ''}" onclick="stopStreetAutoWalk(); goToStreetStop(${idx}, 750)" title="${s.stop}. ${s.title}">${s.stop}. ${shortLbl}</button>`;
-        }).join("");
-    }
-
-    function updateStreetHudFromStopOrCoord(soc, stopObj, lat, lon, progressFloat) {
-      const z = (stopObj && stopObj.zone_id)
-        ? ((soc.zones || []).find(x => x.zone_id === stopObj.zone_id) || detectZoneForLatLon(soc, lat, lon))
-        : detectZoneForLatLon(soc, lat, lon);
-
-      if (z && z.zone_id !== wtState.selectedZoneId) {
-        wtState.selectedZoneId = z.zone_id;
-        renderSocietyInspectorPanel(soc);
-      }
-
-      document.getElementById("wtHudStopBadge").textContent = stopObj
-        ? `STOP ${stopObj.stop} / ${soc.street_tour.length}`
-        : `FREE-ROAM GPS`;
-      document.getElementById("wtHudTitle").textContent = stopObj ? stopObj.title : `${soc.name} Street-Level View`;
-      document.getElementById("wtHudStreetName").textContent = stopObj ? `· ${stopObj.street}` : `· [${lat.toFixed(5)}, ${lon.toFixed(5)}]`;
-      document.getElementById("wtHudNote").textContent = stopObj ? stopObj.note : (z ? z.highlights : "");
-
-      document.getElementById("wtHudZoneName").textContent = z ? `${z.short_label} (${z.units_count})` : "Masterplan Corridor";
-      document.getElementById("wtHudContractor").textContent = z ? `${z.main_contractor} · ${z.contract_value}` : soc.developer;
-      document.getElementById("wtHudArchitect").textContent = z ? `${z.architects} · Int: ${z.interior_designer}` : "Masterplan Consultant";
-
-      if (typeof progressFloat === "number") {
-        const pct = Math.round(progressFloat * 100);
-        const scr = document.getElementById("wtStreetScrubber");
-        if (scr) scr.value = String(Math.round(progressFloat * 1000));
-        document.getElementById("wtStreetPct").textContent = `${pct}%`;
-      }
-      renderStreetStopDots(soc);
-    }
-
-    function goToStreetStop(idx, durationMs = 800) {
-      const soc = getSocietyData(wtState.projectId);
-      if (!soc || !soc.street_tour || !soc.street_tour.length) return;
-      const n = soc.street_tour.length;
-      const cleanIdx = ((idx % n) + n) % n;
-      wtState.stopIndex = cleanIdx;
-      wtState.routeProgress = n > 1 ? cleanIdx / (n - 1) : 0;
-      const st = soc.street_tour[cleanIdx];
-      updateStreetWalkerPosition(st.lat, st.lon, st.bearing);
-      wtFlyCamera(st.lat, st.lon, st.zoom || 17.5, st.pitch || 67, st.bearing || 0, durationMs);
-      updateStreetHudFromStopOrCoord(soc, st, st.lat, st.lon, wtState.routeProgress);
-    }
-
-    function stepStreetTour(delta) {
-      stopStreetAutoWalk();
-      goToStreetStop((wtState.stopIndex || 0) + delta, 800);
-    }
-
-    function applyInterpolatedStreetProgress(tNorm, durationMs = 0) {
-      const soc = getSocietyData(wtState.projectId);
-      if (!soc || !soc.street_tour || soc.street_tour.length < 2) return;
-      const clamped = Math.max(0, Math.min(1, tNorm));
-      wtState.routeProgress = clamped;
-      const maxSeg = soc.street_tour.length - 1;
-      const scaled = clamped * maxSeg;
-      const i0 = Math.min(maxSeg - 1, Math.floor(scaled));
-      const frac = scaled - i0;
-      const a = soc.street_tour[i0], b = soc.street_tour[i0 + 1];
-
-      const lat = a.lat + (b.lat - a.lat) * frac;
-      const lon = a.lon + (b.lon - a.lon) * frac;
-      const zoom = (a.zoom || 17.5) + ((b.zoom || 17.5) - (a.zoom || 17.5)) * frac;
-      const pitch = (a.pitch || 67) + ((b.pitch || 67) - (a.pitch || 67)) * frac;
-      // Shortest angular interpolation for bearing
-      let dBear = ((b.bearing - a.bearing + 540) % 360) - 180;
-      const bearing = a.bearing + dBear * frac;
-
-      wtState.stopIndex = frac < 0.5 ? i0 : i0 + 1;
-      const activeStop = soc.street_tour[wtState.stopIndex];
-      updateStreetWalkerPosition(lat, lon, bearing);
-      wtFlyCamera(lat, lon, zoom, pitch, bearing, durationMs);
-      updateStreetHudFromStopOrCoord(soc, activeStop, lat, lon, clamped);
-    }
-
-    function onStreetScrubberInput(rawVal) {
-      stopStreetAutoWalk();
-      applyInterpolatedStreetProgress(parseFloat(rawVal) / 1000.0, 60);
-    }
-
-    function toggleStreetAutoWalk() {
-      if (wtState.autoWalkRaf) {
-        stopStreetAutoWalk();
-        return;
-      }
-      const btn = document.getElementById("wtAutoWalkBtn");
-      if (btn) btn.textContent = "⏸ Pause Walk";
-      if (wtState.routeProgress >= 0.995) wtState.routeProgress = 0;
-      wtState.lastAutoTs = performance.now();
-
-      const tick = (now) => {
-        if (!wtState.active || wtState.mode !== "street") {
-          stopStreetAutoWalk();
-          return;
-        }
-        const dt = Math.min(0.1, (now - wtState.lastAutoTs) / 1000);
-        wtState.lastAutoTs = now;
-        const nextP = wtState.routeProgress + dt * 0.028; // ~36 seconds full community tour
-        if (nextP >= 1.0) {
-          applyInterpolatedStreetProgress(1.0, 0);
-          stopStreetAutoWalk();
-          return;
-        }
-        applyInterpolatedStreetProgress(nextP, 0);
-        wtState.autoWalkRaf = requestAnimationFrame(tick);
-      };
-      wtState.autoWalkRaf = requestAnimationFrame(tick);
-    }
-
-    function stopStreetAutoWalk() {
-      if (wtState.autoWalkRaf) {
-        cancelAnimationFrame(wtState.autoWalkRaf);
-        wtState.autoWalkRaf = null;
-      }
-      const btn = document.getElementById("wtAutoWalkBtn");
-      if (btn) btn.textContent = "▶ Auto-Walk";
-    }
-
-    function stepFreeRoamStreet(forwardSign, turnDeg) {
-      if (!wtState.active) return;
-      stopStreetAutoWalk();
-      const soc = getSocietyData(wtState.projectId);
-      if (!soc) return;
-      const curLL = wtState.walkerLatLon || [soc.center[0], soc.center[1]];
-      const newBearing = ((wtState.walkerBearing || 0) + turnDeg + 360) % 360;
-      const stepMeters = forwardSign * 24.0;
-      const rad = (newBearing * Math.PI) / 180.0;
-      const dLat = (stepMeters * Math.cos(rad)) / 111320.0;
-      const dLon = (stepMeters * Math.sin(rad)) / (111320.0 * Math.cos((curLL[0] * Math.PI) / 180.0));
-      const nLat = curLL[0] + dLat;
-      const nLon = curLL[1] + dLon;
-      updateStreetWalkerPosition(nLat, nLon, newBearing);
-      wtFlyCamera(nLat, nLon, 17.7, 68, newBearing, 260);
-      updateStreetHudFromStopOrCoord(soc, null, nLat, nLon, null);
-    }
-
-    window.addEventListener("keydown", (ev) => {
-      if (!wtState.active || wtState.mode !== "street" || vimState.open) return;
-      const tag = (ev.target && ev.target.tagName) ? ev.target.tagName.toLowerCase() : "";
-      if (tag === "input" || tag === "textarea" || tag === "select") return;
-      const k = ev.key.toLowerCase();
-      if (k === "w" || ev.key === "ArrowUp") { ev.preventDefault(); stepFreeRoamStreet(1, 0); }
-      else if (k === "s" || ev.key === "ArrowDown") { ev.preventDefault(); stepFreeRoamStreet(-1, 0); }
-      else if (k === "a" || ev.key === "ArrowLeft") { ev.preventDefault(); stepFreeRoamStreet(0, -16); }
-      else if (k === "d" || ev.key === "ArrowRight") { ev.preventDefault(); stepFreeRoamStreet(0, 16); }
-    });
-
-    function openCurrentSocietyVillaModal() {
-      const soc = getSocietyData(wtState.projectId || "PRJ-D19");
-      if (!soc) {
-        openVillaInteriorModal("TYP-TAG-SERENITY-6BR");
-        return;
-      }
-      const z = (soc.zones || []).find(x => x.zone_id === wtState.selectedZoneId) || soc.zones[0];
-      openVillaInteriorModal(z ? z.default_typology_id : "TYP-TAG-SERENITY-6BR");
-    }
-
-    // =========================================================================
-    // MODE 3: INSIDE-THE-VILLA 3D CUTAWAY DOLLHOUSE & CAD SVG FLOOR-PLAN STUDIO
-    // Zero-WebGL-conflict 60fps Retina 3D Perspective Engine + Architectural SVG
-    // =========================================================================
-    const ROOM_PALETTE = {
-      living:  { fill: "#dbeafe", wall: "#93c5fd", stroke: "#2563eb", label: "Living / Reception" },
-      dining:  { fill: "#e0e7ff", wall: "#a5b4fc", stroke: "#4f46e5", label: "Formal Dining" },
-      kitchen: { fill: "#fef3c7", wall: "#fcd34d", stroke: "#d97706", label: "Kitchen & Prep" },
-      bedroom: { fill: "#ede9fe", wall: "#c4b5fd", stroke: "#7c3aed", label: "Bedroom Suite" },
-      master:  { fill: "#fae8ff", wall: "#f0abfc", stroke: "#a21caf", label: "Master Suite" },
-      bath:    { fill: "#cffafe", wall: "#67e8f9", stroke: "#0891b2", label: "En-Suite / Spa Bath" },
-      spa:     { fill: "#ccfbf1", wall: "#5eead4", stroke: "#0d9488", label: "Wellness / Hammam" },
-      garage:  { fill: "#e2e8f0", wall: "#94a3b8", stroke: "#475569", label: "Garage / Carport" },
-      maid:    { fill: "#f1f5f9", wall: "#cbd5e1", stroke: "#64748b", label: "Staff / Utility" },
-      cinema:  { fill: "#fce7f3", wall: "#f9a8d4", stroke: "#be185d", label: "Private Cinema" },
-      gym:     { fill: "#dcfce7", wall: "#86efac", stroke: "#16a34a", label: "Fitness / Gym" },
-      office:  { fill: "#ffedd5", wall: "#fdba74", stroke: "#ea580c", label: "Study / Sky Lounge" },
-      pool:    { fill: "#67e8f9", wall: "#06b6d4", stroke: "#0284c7", label: "Infinity Pool" },
-      terrace: { fill: "#ecfccb", wall: "#bef264", stroke: "#65a30d", label: "Terrace / Deck" },
-      garden:  { fill: "#dcfce7", wall: "#86efac", stroke: "#15803d", label: "Landscaped Lawn" },
-      hall:    { fill: "#f8fafc", wall: "#cbd5e1", stroke: "#64748b", label: "Gallery / Foyer" },
-      stair:   { fill: "#fef9c3", wall: "#fde047", stroke: "#ca8a04", label: "Sculptural Stair & Lift" },
-      courtyard:{ fill: "#d1fae5", wall: "#6ee7b7", stroke: "#059669", label: " Courtyards" }
-    };
-
-    function getRoomStyle(rType) {
-      return ROOM_PALETTE[rType] || ROOM_PALETTE.hall;
-    }
-
-    function openVillaInteriorModal(typologyId) {
-      stopStreetAutoWalk();
-      stopVillaRoomAutoTour();
-      const allTyps = (DATA.walkthroughs && DATA.walkthroughs.typologies) || {};
-      const typ = allTyps[typologyId] || Object.values(allTyps)[0];
-      if (!typ) return;
-
-      vimState.open = true;
-      vimState.typologyId = typ.id;
-      const gFloor = typ.floors.find(f => f.level === "G") || typ.floors[0];
-      vimState.floorKey = gFloor ? gFloor.level : "ALL";
-      vimState.selectedRoomId = gFloor && gFloor.rooms[0] ? gFloor.rooms[0].id : null;
-      resetVilla3DCamera(false);
-
-      const modal = document.getElementById("villaInteriorModal");
-      modal.style.display = "flex";
-
-      // Populate typology selector grouped by project
-      const sel = document.getElementById("vimTypologySelect");
-      sel.innerHTML = Object.values(allTyps).map(t => {
-        const prefix = t.project_id === "PRJ-D2" ? "🌴 Palm Jebel Ali" : "🌊 Tilal Al Ghaf";
-        return `<option value="${t.id}" ${t.id === typ.id ? "selected" : ""}>${prefix} — ${t.title} (${t.bua_sqft})</option>`;
-      }).join("");
-
-      bindVillaCanvasInteractionsOnce();
-      refreshVillaStudioUI();
-    }
-
-    function closeVillaInteriorModal() {
-      stopVillaRoomAutoTour();
-      vimState.open = false;
-      const modal = document.getElementById("villaInteriorModal");
-      if (modal) modal.style.display = "none";
-    }
-
-    function selectVillaTypology(typId) {
-      stopVillaRoomAutoTour();
-      const typ = DATA.walkthroughs.typologies[typId];
-      if (!typ) return;
-      vimState.typologyId = typ.id;
-      const gFloor = typ.floors.find(f => f.level === "G") || typ.floors[0];
-      vimState.floorKey = gFloor ? gFloor.level : "ALL";
-      vimState.selectedRoomId = gFloor && gFloor.rooms[0] ? gFloor.rooms[0].id : null;
-      resetVilla3DCamera(false);
-      refreshVillaStudioUI();
-    }
-
-    function selectVillaFloor(fKey) {
-      stopVillaRoomAutoTour();
-      vimState.floorKey = fKey;
-      const typ = DATA.walkthroughs.typologies[vimState.typologyId];
-      if (typ && fKey !== "ALL") {
-        const fl = typ.floors.find(f => f.level === fKey);
-        if (fl && fl.rooms[0]) vimState.selectedRoomId = fl.rooms[0].id;
-      }
-      refreshVillaStudioUI();
-    }
-
-    function focusVillaRoom(roomId, floorLevel) {
-      const typ = DATA.walkthroughs.typologies[vimState.typologyId];
-      if (!typ) return;
-      if (floorLevel && vimState.floorKey !== floorLevel && vimState.floorKey !== "ALL") {
-        vimState.floorKey = floorLevel;
-      }
-      vimState.selectedRoomId = roomId;
-      // Smoothly pan 3D target toward room center
-      let targetRoom = null, targetFloor = null;
-      for (const fl of typ.floors) {
-        const r = fl.rooms.find(x => x.id === roomId);
-        if (r) { targetRoom = r; targetFloor = fl; break; }
-      }
-      if (targetRoom) {
-        vimState.targetX = (targetRoom.x + targetRoom.w * 0.5) - typ.plot_w * 0.5;
-        vimState.targetZ = (targetRoom.z + targetRoom.d * 0.5) - typ.plot_d * 0.5;
-        vimState.targetY = vimState.floorKey === "ALL" ? (targetFloor.elevation_m || 0) : 0;
-        vimState.zoom = 1.28;
-      }
-      refreshVillaStudioUI();
-    }
-
-    function resetVilla3DCamera(redraw = true) {
-      vimState.yaw = -0.62;
-      vimState.pitch = 0.54;
-      vimState.zoom = 1.24;
-      vimState.targetX = 0;
-      vimState.targetY = 0;
-      vimState.targetZ = 0;
-      if (redraw) renderVilla3DDollhouse();
-    }
-
-    function toggleVillaRoomAutoTour() {
-      if (vimState.autoTourTimer) {
-        stopVillaRoomAutoTour();
-        return;
-      }
-      const typ = DATA.walkthroughs.typologies[vimState.typologyId];
-      if (!typ) return;
-      const seq = [];
-      typ.floors.forEach(fl => {
-        fl.rooms.forEach(r => seq.push({ roomId: r.id, level: fl.level }));
-      });
-      if (!seq.length) return;
-      let idx = 0;
-      const btn = document.getElementById("vimAutoRoomBtn");
-      if (btn) btn.textContent = "⏸ Stop Room Tour";
-      const step = () => {
-        if (!vimState.open) { stopVillaRoomAutoTour(); return; }
-        const item = seq[idx % seq.length];
-        vimState.floorKey = item.level;
-        vimState.yaw = -0.64 + (idx % 6) * 0.22;
-        focusVillaRoom(item.roomId, item.level);
-        idx++;
-      };
-      step();
-      vimState.autoTourTimer = setInterval(step, 1900);
-    }
-
-    function stopVillaRoomAutoTour() {
-      if (vimState.autoTourTimer) {
-        clearInterval(vimState.autoTourTimer);
-        vimState.autoTourTimer = null;
-      }
-      const btn = document.getElementById("vimAutoRoomBtn");
-      if (btn) btn.textContent = "▶ Auto-Tour Every Room";
-    }
-
-    function refreshVillaStudioUI() {
-      const typ = DATA.walkthroughs.typologies[vimState.typologyId];
-      if (!typ) return;
-      const selEl = document.getElementById("vimTypologySelect");
-      if (selEl && selEl.value !== typ.id) selEl.value = typ.id;
-
-      // Floor selector pills
-      const pillsEl = document.getElementById("vimFloorPills");
-      pillsEl.innerHTML = [
-        `<button type="button" class="vim-floor-btn ${vimState.floorKey === 'ALL' ? 'active' : ''}" onclick="selectVillaFloor('ALL')">🏢 All Floors 3D (${typ.floors.length})</button>`,
-        ...typ.floors.map(fl => `<button type="button" class="vim-floor-btn ${vimState.floorKey === fl.level ? 'active' : ''}" onclick="selectVillaFloor('${fl.level}')">${fl.level} · ${fl.name.split('—')[0].trim()}</button>`)
-      ].join("");
-
-      // Contractor & Architect header strip
-      document.getElementById("vimContractorSummary").innerHTML = `
-        <span>🏗️ <strong>Main Contractor:</strong> <strong style="color:#34d399;">${typ.contractor}</strong></span>
-        <span>📐 <strong>Architect / Design:</strong> <strong style="color:#38bdf8;">${typ.architect}</strong></span>
-        <span>📏 <strong>BUA:</strong> ${typ.bua_sqft} · <strong>Plot:</strong> ${typ.plot_sqft} (${typ.plot_w}m × ${typ.plot_d}m) · <strong>Config:</strong> ${typ.levels_label}</span>
-      `;
-
-      renderVillaCadSvg(typ);
-      renderVillaRoomSchedule(typ);
-      requestAnimationFrame(() => renderVilla3DDollhouse());
-    }
-
-    // Renders Dimensioned CAD-Style Architectural SVG Floor Plan with Grid Bubbles, Door Swings & Title Block
-    function renderVillaCadSvg(typ) {
-      const container = document.getElementById("villaSvgContainer");
-      if (!container) return;
-      const activeFloor = vimState.floorKey === "ALL"
-        ? (typ.floors.find(f => f.level === "G") || typ.floors[0])
-        : (typ.floors.find(f => f.level === vimState.floorKey) || typ.floors[0]);
-
-      const pw = typ.plot_w, pd = typ.plot_d;
-      const scale = Math.max(13.5, Math.min(28, 540 / Math.max(pw, pd))); // adaptive px per meter so every mansion fits crisply
-      const padL = 56, padT = 52, padR = 46, padB = 68;
-      const W = Math.round(pw * scale + padL + padR);
-      const H = Math.round(pd * scale + padT + padB);
-
-      const gridCols = ["A", "B", "C", "D", "E"];
-      const gridLinesX = [0, 0.25, 0.5, 0.75, 1.0].map((f, i) => {
-        const gx = padL + pw * f * scale;
-        return `
-          <line x1="${gx}" y1="${padT - 14}" x2="${gx}" y2="${padT + pd * scale + 10}" stroke="#cbd5e1" stroke-width="0.8" stroke-dasharray="4,4"/>
-          <circle cx="${gx}" cy="${padT - 24}" r="9" fill="#f8fafc" stroke="#475569" stroke-width="1.1"/>
-          <text x="${gx}" y="${padT - 20.5}" text-anchor="middle" font-size="9" font-weight="800" fill="#0f172a">${gridCols[i]}</text>
-        `;
-      }).join("");
-
-      const gridLinesY = [0, 0.25, 0.5, 0.75, 1.0].map((f, i) => {
-        const gy = padT + pd * f * scale;
-        return `
-          <line x1="${padL - 14}" y1="${gy}" x2="${padL + pw * scale + 10}" y2="${gy}" stroke="#cbd5e1" stroke-width="0.8" stroke-dasharray="4,4"/>
-          <circle cx="${padL - 24}" cy="${gy}" r="9" fill="#f8fafc" stroke="#475569" stroke-width="1.1"/>
-          <text x="${padL - 24}" y="${gy + 3.2}" text-anchor="middle" font-size="9" font-weight="800" fill="#0f172a">${i + 1}</text>
-        `;
-      }).join("");
-
-      const roomsSvg = activeFloor.rooms.map(r => {
-        const rx = padL + r.x * scale;
-        const ry = padT + r.z * scale;
-        const rw = r.w * scale;
-        const rd = r.d * scale;
-        const st = getRoomStyle(r.type);
-        const isSel = r.id === vimState.selectedRoomId;
-        const areaSqm = (r.w * r.d).toFixed(1);
-        const areaSqft = Math.round(r.w * r.d * 10.7639);
-
-        // Architectural detail symbols (stair treads, pool ripples, or door arc)
-        let detailSvg = "";
-        if (r.type === "stair") {
-          for (let s = 1; s < 7; s++) {
-            const sy = ry + (rd * s) / 7;
-            detailSvg += `<line x1="${rx + 3}" y1="${sy}" x2="${rx + rw - 3}" y2="${sy}" stroke="#ca8a04" stroke-width="1"/>`;
-          }
-          detailSvg += `<line x1="${rx + rw * 0.5}" y1="${ry + rd - 5}" x2="${rx + rw * 0.5}" y2="${ry + 6}" stroke="#854d0e" stroke-width="1.3"/>`;
-        } else if (r.type === "pool") {
-          detailSvg += `<rect x="${rx + 4}" y="${ry + 4}" width="${Math.max(4, rw - 8)}" height="${Math.max(4, rd - 8)}" fill="none" stroke="#0284c7" stroke-width="1" stroke-dasharray="5,3"/>`;
-        } else if (r.type !== "garden" && r.type !== "terrace" && rw > 34 && rd > 34) {
-          // 90-degree architectural door swing arc
-          const dr = Math.min(15, rw * 0.24, rd * 0.24);
-          detailSvg += `<path d="M ${rx + 6} ${ry + rd} L ${rx + 6} ${ry + rd - dr} A ${dr} ${dr} 0 0 1 ${rx + 6 + dr} ${ry + rd}" fill="none" stroke="#475569" stroke-width="1"/>`;
-        }
-
-        // Curtain-wall cyan glazing line along lagoon/sea-facing top/bottom outer edges
-        if (r.z + r.d >= pd * 0.72 && r.type !== "pool" && r.type !== "garden") {
-          detailSvg += `<line x1="${rx + 2}" y1="${ry + rd}" x2="${rx + rw - 2}" y2="${ry + rd}" stroke="#06b6d4" stroke-width="3.5"/>`;
-        }
-
-        const wallStroke = isSel ? "#1d4ed8" : (r.type === "garden" || r.type === "terrace" ? "#65a30d" : "#1e293b");
-        const wallWidth = isSel ? 3.2 : (r.type === "garden" || r.type === "pool" || r.type === "terrace" ? 1.4 : 2.2);
-
-        return `
-          <g style="cursor:pointer;" onclick="focusVillaRoom('${r.id}', '${activeFloor.level}')">
-            <rect x="${rx}" y="${ry}" width="${rw}" height="${rd}" fill="${st.fill}" fill-opacity="${isSel ? '0.96' : '0.82'}" stroke="${wallStroke}" stroke-width="${wallWidth}"/>
-            ${detailSvg}
-            <text x="${rx + rw * 0.5}" y="${ry + rd * 0.44}" text-anchor="middle" font-size="${rw < 72 ? 8.2 : 9.6}" font-weight="800" fill="#0f172a">${r.name.length > 20 && rw < 110 ? r.name.slice(0, 18) + '…' : r.name}</text>
-            <text x="${rx + rw * 0.5}" y="${ry + rd * 0.44 + 11}" text-anchor="middle" font-size="7.8" font-weight="700" fill="#334155">${r.w.toFixed(1)}m × ${r.d.toFixed(1)}m</text>
-            ${rd >= 48 ? `<text x="${rx + rw * 0.5}" y="${ry + rd * 0.44 + 21}" text-anchor="middle" font-size="7.3" fill="#0369a1" font-weight="700">${areaSqm} m² (${areaSqft} sf)</text>` : ""}
-          </g>
-        `;
-      }).join("");
-
-      container.innerHTML = `
-        <svg viewBox="0 0 ${W} ${H}" style="width:100%; max-height:100%; font-family:Inter,system-ui,sans-serif; user-select:none;">
-          <rect x="2" y="2" width="${W - 4}" height="${H - 4}" rx="8" fill="#ffffff" stroke="#94a3b8" stroke-width="1.5"/>
-          ${gridLinesX}
-          ${gridLinesY}
-          <!-- Plot Boundary Envelope -->
-          <rect x="${padL}" y="${padT}" width="${pw * scale}" height="${pd * scale}" fill="#f8fafc" stroke="#0f172a" stroke-width="2.5" stroke-dasharray="6,3"/>
-          ${roomsSvg}
-          <!-- Overall Plot Metric Dimension Callouts -->
-          <text x="${padL + (pw * scale) * 0.5}" y="${padT - 37}" text-anchor="middle" font-size="9.5" font-weight="800" fill="#0f172a">◄─── OVERALL PLOT WIDTH: ${pw.toFixed(1)} m (${(pw * 3.28084).toFixed(0)} ft) ───►</text>
-          <text x="${padL + pw * scale + 24}" y="${padT + (pd * scale) * 0.5}" text-anchor="middle" font-size="9.2" font-weight="800" fill="#0f172a" transform="rotate(90, ${padL + pw * scale + 24}, ${padT + (pd * scale) * 0.5})">◄── PLOT DEPTH: ${pd.toFixed(1)} m ──►</text>
-          <!-- Architectural CAD Title Block -->
-          <g transform="translate(${padL}, ${padT + pd * scale + 16})">
-            <rect x="0" y="0" width="${pw * scale}" height="42" rx="5" fill="#0f172a"/>
-            <text x="10" y="16" font-size="9.5" font-weight="800" fill="#38bdf8">${activeFloor.level} — ${activeFloor.name}</text>
-            <text x="10" y="31" font-size="8.2" fill="#cbd5e1">Slab Elev: +${activeFloor.elevation_m.toFixed(1)}m · Clear Ceiling: ${activeFloor.height_m.toFixed(1)}m · Contractor: ${typ.contractor.split('(')[0].trim()}</text>
-            <!-- North Arrow & Scale Bar -->
-            <g transform="translate(${pw * scale - 95}, 9)">
-              <line x1="0" y1="18" x2="52" y2="18" stroke="#34d399" stroke-width="2.5"/>
-              <line x1="0" y1="13" x2="0" y2="22" stroke="#34d399" stroke-width="2"/>
-              <line x1="52" y1="13" x2="52" y2="22" stroke="#34d399" stroke-width="2"/>
-              <text x="26" y="11" text-anchor="middle" font-size="7.5" font-weight="800" fill="#a7f3d0">2.0m SCALE</text>
-              <circle cx="74" cy="13" r="10" fill="none" stroke="#f8fafc" stroke-width="1.2"/>
-              <polygon points="74,4 78,17 74,14 70,17" fill="#38bdf8"/>
-              <text x="74" y="29" text-anchor="middle" font-size="7" font-weight="800" fill="#f8fafc">N</text>
-            </g>
-          </g>
-        </svg>
-      `;
-    }
-
-    function renderVillaRoomSchedule(typ) {
-      const box = document.getElementById("villaRoomScheduleContainer");
-      if (!box) return;
-      const activeFloor = vimState.floorKey === "ALL"
-        ? (typ.floors.find(f => f.level === "G") || typ.floors[0])
-        : (typ.floors.find(f => f.level === vimState.floorKey) || typ.floors[0]);
-
-      let selRoom = null, selFl = activeFloor;
-      for (const fl of typ.floors) {
-        const hit = fl.rooms.find(r => r.id === vimState.selectedRoomId);
-        if (hit) { selRoom = hit; selFl = fl; break; }
-      }
-      if (!selRoom && activeFloor.rooms[0]) selRoom = activeFloor.rooms[0];
-
-      const selSqm = selRoom ? (selRoom.w * selRoom.d).toFixed(1) : "0";
-      const selSqft = selRoom ? Math.round(selRoom.w * selRoom.d * 10.7639) : 0;
-
-      box.innerHTML = `
-        ${selRoom ? `
-          <div style="background:#0f172a; color:#f8fafc; border-radius:10px; padding:10px 12px; margin-bottom:10px; border-left:4px solid #38bdf8;">
-            <div style="display:flex; justify-content:space-between; align-items:center; gap:8px;">
-              <strong style="font-size:0.84rem; color:#38bdf8;">🔍 Selected Space: ${selRoom.name} (${selFl.level})</strong>
-              <span style="background:#0284c7; color:#fff; font-size:0.68rem; font-weight:800; padding:2px 8px; border-radius:999px;">${selSqm} m² · ${selSqft} sq.ft.</span>
-            </div>
-            <div style="font-size:0.73rem; color:#e2e8f0; margin-top:4px;">
-              Dimensions: <strong>${selRoom.w.toFixed(1)}m × ${selRoom.d.toFixed(1)}m × ${selFl.height_m.toFixed(1)}m H</strong> · Finish &amp; MEP Spec: <strong style="color:#6ee7b7;">${selRoom.spec}</strong>
-            </div>
-          </div>
-        ` : ""}
-        <div style="font-size:0.73rem; font-weight:800; color:#334155; text-transform:uppercase; margin-bottom:6px;">
-          📋 ${activeFloor.level} Room-by-Room Schedule (${activeFloor.rooms.length} Spaces — Click to Fly 3D Camera)
-        </div>
-        ${activeFloor.rooms.map(r => {
-          const st = getRoomStyle(r.type);
-          const sqm = (r.w * r.d).toFixed(1);
-          const sqft = Math.round(r.w * r.d * 10.7639);
-          return `
-            <div class="vim-room-chip ${r.id === vimState.selectedRoomId ? 'active' : ''}" onclick="focusVillaRoom('${r.id}', '${activeFloor.level}')">
-              <div style="display:flex; align-items:center; gap:7px;">
-                <span style="width:10px; height:10px; border-radius:3px; background:${st.fill}; border:1.5px solid ${st.stroke}; display:inline-block;"></span>
-                <div>
-                  <strong style="color:#0f172a;">${r.name}</strong>
-                  <div style="font-size:0.68rem; color:#64748b;">${r.spec}</div>
-                </div>
-              </div>
-              <div style="text-align:right; white-space:nowrap;">
-                <strong style="color:#0369a1;">${sqm} m² (${sqft} sf)</strong>
-                <div style="font-size:0.67rem; color:#64748b;">${r.w.toFixed(1)}×${r.d.toFixed(1)}m</div>
-              </div>
-            </div>
-          `;
-        }).join("")}
-      `;
-    }
-
-    // Dedicated Retina 2D-Canvas 3D Perspective Cutaway Dollhouse Renderer (Zero WebGL Context Contention)
-    function renderVilla3DDollhouse() {
-      if (!vimState.open) return;
-      const canvas = document.getElementById("villaInterior3DCanvas");
-      if (!canvas) return;
-      const typ = DATA.walkthroughs.typologies[vimState.typologyId];
-      if (!typ) return;
-
-      const rect = canvas.getBoundingClientRect();
-      const cw = Math.max(320, rect.width || 680);
-      const ch = Math.max(280, rect.height || 520);
-      const dpr = Math.min(2, window.devicePixelRatio || 1);
-      if (canvas.width !== Math.round(cw * dpr) || canvas.height !== Math.round(ch * dpr)) {
-        canvas.width = Math.round(cw * dpr);
-        canvas.height = Math.round(ch * dpr);
-      }
-      const ctx = canvas.getContext("2d");
-      ctx.save();
-      ctx.scale(dpr, dpr);
-
-      // Rich architectural twilight studio gradient
-      const bg = ctx.createLinearGradient(0, 0, 0, ch);
-      bg.addColorStop(0, "#0f172a");
-      bg.addColorStop(0.55, "#1e293b");
-      bg.addColorStop(1, "#090d16");
-      ctx.fillStyle = bg;
-      ctx.fillRect(0, 0, cw, ch);
-
-      const pw = typ.plot_w, pd = typ.plot_d;
-      const cosY = Math.cos(vimState.yaw), sinY = Math.sin(vimState.yaw);
-      const cosP = Math.cos(vimState.pitch), sinP = Math.sin(vimState.pitch);
-      const maxSpan = Math.max(pw, pd, 16);
-      const camDist = maxSpan * 1.95 / Math.max(0.45, vimState.zoom);
-      const fov = Math.min(cw, ch) * 1.08;
-
-      const projectPt = (wx, wy, wz) => {
-        const dx = wx - vimState.targetX;
-        const dy = wy - vimState.targetY;
-        const dz = wz - vimState.targetZ;
-        const rx = dx * cosY - dz * sinY;
-        const rz1 = dx * sinY + dz * cosY;
-        const ry = dy * cosP - rz1 * sinP;
-        const rz = dy * sinP + rz1 * cosP + camDist;
-        if (rz < 1.0) return null;
-        const sc = fov / rz;
-        return { x: cw * 0.5 + rx * sc, y: ch * 0.54 - ry * sc, depth: rz };
-      };
-
-      const faces = [];
-      const pushFace = (pts3d, fillStyle, strokeStyle, lineWidth = 0.8, alpha = 1.0) => {
-        const proj = [];
-        let depthSum = 0;
-        for (const p of pts3d) {
-          const pr = projectPt(p[0], p[1], p[2]);
-          if (!pr) return;
-          proj.push(pr);
-          depthSum += pr.depth;
-        }
-        faces.push({ proj, depth: depthSum / proj.length, fillStyle, strokeStyle, lineWidth, alpha });
-      };
-
-      const pushBox3D = (x0, y0, z0, x1, y1, z1, topCol, sideColA, sideColB, strokeCol, alpha = 1.0, drawTop = true) => {
-        // Bottom/Floor
-        pushFace([[x0,y0,z0],[x1,y0,z0],[x1,y0,z1],[x0,y0,z1]], topCol, strokeCol, 0.6, alpha);
-        if (y1 - y0 > 0.02) {
-          pushFace([[x0,y0,z0],[x1,y0,z0],[x1,y1,z0],[x0,y1,z0]], sideColA, strokeCol, 0.7, alpha);
-          pushFace([[x0,y0,z1],[x1,y0,z1],[x1,y1,z1],[x0,y1,z1]], sideColA, strokeCol, 0.7, alpha);
-          pushFace([[x0,y0,z0],[x0,y0,z1],[x0,y1,z1],[x0,y1,z0]], sideColB, strokeCol, 0.7, alpha);
-          pushFace([[x1,y0,z0],[x1,y0,z1],[x1,y1,z1],[x1,y1,z0]], sideColB, strokeCol, 0.7, alpha);
-          if (drawTop) {
-            pushFace([[x0,y1,z0],[x1,y1,z0],[x1,y1,z1],[x0,y1,z1]], topCol, strokeCol, 0.7, alpha);
-          }
-        }
-      };
-
-      const floorsToDraw = vimState.floorKey === "ALL"
-        ? typ.floors
-        : typ.floors.filter(f => f.level === vimState.floorKey);
-      const explodedGap = Math.max(11.0, Math.min(20.0, maxSpan * 0.34));
-      const baseFloorY = vimState.floorKey === "ALL" ? -((floorsToDraw.length - 1) * 0.5) * explodedGap : 0;
-
-      // Ground Plot Plinth + Waterfront Sea/Lagoon Strip at back of plot (+Z)
-      const hx = pw * 0.5, hz = pd * 0.5;
-      pushBox3D(-hx - 1.2, baseFloorY - 0.38, -hz - 1.2, hx + 1.2, baseFloorY - 0.04, hz + 1.2, "#1e293b", "#0f172a", "#020617", "#475569", 1.0, true);
-      pushFace([[-hx - 3, baseFloorY - 0.03, hz + 1.2], [hx + 3, baseFloorY - 0.03, hz + 1.2], [hx + 3, baseFloorY - 0.03, hz + 6.5], [-hx - 3, baseFloorY - 0.03, hz + 6.5]], "#0891b2", "#22d3ee", 1.0, 0.72);
-
-      const roomCallouts = [];
-      const floorBadges = [];
-
-      floorsToDraw.forEach((fl, fIdx) => {
-        const baseY = vimState.floorKey === "ALL" ? (baseFloorY + fIdx * explodedGap) : 0;
-        const wallH = vimState.floorKey === "ALL" ? 1.85 : 1.75;
-        const fbPt = projectPt(-hx - 2.6, baseY + 0.6, 0);
-        if (fbPt && vimState.floorKey === "ALL") {
-          floorBadges.push({ x: fbPt.x, y: fbPt.y, text: `${fl.level} · ${fl.name.split('—')[0].trim()}` });
-        }
-
-        // Structural Floor Slab
-        pushBox3D(-hx, baseY - 0.16, -hz, hx, baseY, hz, "#e2e8f0", "#94a3b8", "#64748b", "#475569", 0.95, true);
-
-        fl.rooms.forEach(r => {
-          const x0 = r.x - hx, x1 = (r.x + r.w) - hx;
-          const z0 = r.z - hz, z1 = (r.z + r.d) - hz;
-          const st = getRoomStyle(r.type);
-          const isSel = r.id === vimState.selectedRoomId;
-
-          // Room Finished Floor Tile
-          pushFace(
-            [[x0, baseY + 0.02, z0], [x1, baseY + 0.02, z0], [x1, baseY + 0.02, z1], [x0, baseY + 0.02, z1]],
-            isSel ? "#bae6fd" : st.fill,
-            isSel ? "#2563eb" : st.stroke,
-            isSel ? 2.2 : 1.0,
-            0.96
-          );
-
-          if (r.type === "pool") {
-            pushBox3D(x0 + 0.2, baseY + 0.03, z0 + 0.2, x1 - 0.2, baseY + 0.35, z1 - 0.2, "#06b6d4", "#0284c7", "#0369a1", "#67e8f9", 0.85, true);
-          } else if (r.type !== "garden" && r.type !== "terrace" && r.type !== "courtyard") {
-            // Extruded Cutaway Partition Walls (12cm thickness)
-            const wt = 0.13;
-            const wColA = isSel ? "#60a5fa" : "#f8fafc";
-            const wColB = isSel ? "#3b82f6" : "#cbd5e1";
-            const wTop = isSel ? "#1d4ed8" : "#94a3b8";
-            // North/Back wall: translucent cyan glass if lagoon-facing, else solid partition
-            const isSeaGlass = (r.z + r.d >= pd * 0.72);
-            pushBox3D(x0, baseY, z0, x1, baseY + wallH, z0 + wt, wTop, wColA, wColB, "#64748b", 0.92, true);
-            if (isSeaGlass) {
-              pushBox3D(x0, baseY, z1 - wt, x1, baseY + wallH * 1.25, z1, "#67e8f9", "#22d3ee", "#06b6d4", "#0891b2", 0.42, true);
-            } else {
-              // Leave central doorway gap on front wall
-              const doorW = Math.min(1.1, r.w * 0.28);
-              const midX = (x0 + x1) * 0.5;
-              pushBox3D(x0, baseY, z1 - wt, midX - doorW * 0.5, baseY + wallH, z1, wTop, wColA, wColB, "#64748b", 0.92, true);
-              pushBox3D(midX + doorW * 0.5, baseY, z1 - wt, x1, baseY + wallH, z1, wTop, wColA, wColB, "#64748b", 0.92, true);
-            }
-            pushBox3D(x0, baseY, z0, x0 + wt, baseY + wallH, z1, wTop, wColA, wColB, "#64748b", 0.92, true);
-            pushBox3D(x1 - wt, baseY, z0, x1, baseY + wallH, z1, wTop, wColA, wColB, "#64748b", 0.92, true);
-          }
-
-          // 3D Procedural Architectural Furniture inside each room
-          const cx = (x0 + x1) * 0.5, cz = (z0 + z1) * 0.5;
-          if (r.type === "bedroom" || r.type === "master") {
-            const bw = Math.min(2.1, r.w * 0.48), bd = Math.min(2.2, r.d * 0.52);
-            pushBox3D(cx - bw * 0.5, baseY + 0.03, cz - bd * 0.5, cx + bw * 0.5, baseY + 0.55, cz + bd * 0.5, "#f8fafc", "#cbd5e1", "#94a3b8", "#64748b", 1.0, true);
-            pushBox3D(cx - bw * 0.46, baseY + 0.56, cz - bd * 0.46, cx + bw * 0.46, baseY + 0.72, cz - bd * 0.18, "#c084fc", "#a855f7", "#9333ea", "#7e22ce", 1.0, true);
-          } else if (r.type === "living") {
-            const sw = Math.min(3.2, r.w * 0.55), sd = Math.min(1.9, r.d * 0.42);
-            pushBox3D(cx - sw * 0.5, baseY + 0.03, cz - sd * 0.5, cx + sw * 0.5, baseY + 0.52, cz - sd * 0.5 + 0.85, "#e2e8f0", "#94a3b8", "#64748b", "#475569", 1.0, true);
-            pushBox3D(cx - sw * 0.3, baseY + 0.03, cz + 0.15, cx + sw * 0.3, baseY + 0.36, cz + 0.85, "#fde68a", "#f59e0b", "#d97706", "#b45309", 1.0, true);
-          } else if (r.type === "dining") {
-            const tw = Math.min(2.6, r.w * 0.55), td = Math.min(1.3, r.d * 0.45);
-            pushBox3D(cx - tw * 0.5, baseY + 0.03, cz - td * 0.5, cx + tw * 0.5, baseY + 0.76, cz + td * 0.5, "#fef3c7", "#d97706", "#b45309", "#78350f", 1.0, true);
-          } else if (r.type === "kitchen") {
-            const kw = Math.min(2.6, r.w * 0.58), kd = Math.min(1.0, r.d * 0.36);
-            pushBox3D(cx - kw * 0.5, baseY + 0.03, cz - kd * 0.5, cx + kw * 0.5, baseY + 0.90, cz + kd * 0.5, "#f8fafc", "#64748b", "#475569", "#334155", 1.0, true);
-          } else if (r.type === "garage") {
-            const carW = Math.min(2.0, r.w * 0.34), carD = Math.min(4.2, r.d * 0.68);
-            pushBox3D(cx - carW - 0.3, baseY + 0.08, cz - carD * 0.5, cx - 0.3, baseY + 0.85, cz + carD * 0.5, "#38bdf8", "#0284c7", "#0369a1", "#0f172a", 0.95, true);
-            if (r.w >= 5.2) {
-              pushBox3D(cx + 0.3, baseY + 0.08, cz - carD * 0.5, cx + carW + 0.3, baseY + 0.85, cz + carD * 0.5, "#e2e8f0", "#94a3b8", "#64748b", "#0f172a", 0.95, true);
-            }
-          } else if (r.type === "stair") {
-            for (let s = 0; s < 5; s++) {
-              const sz0 = z0 + (r.d * s) / 5, sz1 = z0 + (r.d * (s + 0.9)) / 5;
-              pushBox3D(x0 + 0.25, baseY + s * 0.28, sz0, x1 - 0.25, baseY + (s + 1) * 0.28, sz1, "#fde047", "#eab308", "#ca8a04", "#854d0e", 0.95, true);
-            }
-          }
-
-          if (vimState.floorKey !== "ALL" || isSel || fIdx === floorsToDraw.length - 1) {
-            const lblPt = projectPt(cx, baseY + 0.85, cz);
-            if (lblPt) {
-              roomCallouts.push({
-                x: lblPt.x,
-                y: lblPt.y,
-                roomId: r.id,
-                level: fl.level,
-                name: r.name,
-                sqm: (r.w * r.d).toFixed(0),
-                isSel
-              });
-            }
-          }
-        });
-      });
-
-      // Painter's Algorithm back-to-front depth sort
-      faces.sort((a, b) => b.depth - a.depth);
-      for (const f of faces) {
-        ctx.globalAlpha = f.alpha;
-        ctx.beginPath();
-        ctx.moveTo(f.proj[0].x, f.proj[0].y);
-        for (let i = 1; i < f.proj.length; i++) ctx.lineTo(f.proj[i].x, f.proj[i].y);
-        ctx.closePath();
-        ctx.fillStyle = f.fillStyle;
-        ctx.fill();
-        if (f.strokeStyle) {
-          ctx.strokeStyle = f.strokeStyle;
-          ctx.lineWidth = f.lineWidth;
-          ctx.stroke();
-        }
-      }
-      ctx.globalAlpha = 1.0;
-
-      // Draw crisp floating 3D room callout pills & record click hitboxes
-      vimState.roomHitBoxes = [];
-      ctx.font = "700 10.5px Inter, system-ui, sans-serif";
-      roomCallouts.forEach(rc => {
-        const txt = `${rc.name.length > 18 ? rc.name.slice(0, 16) + "…" : rc.name} · ${rc.sqm}m²`;
-        const tw = ctx.measureText(txt).width + 12;
-        const th = 19;
-        const bx = rc.x - tw * 0.5, by = rc.y - th * 0.5;
-        ctx.fillStyle = rc.isSel ? "#2563eb" : "rgba(15, 23, 42, 0.84)";
-        ctx.strokeStyle = rc.isSel ? "#93c5fd" : "rgba(148, 163, 184, 0.45)";
-        ctx.lineWidth = rc.isSel ? 1.8 : 1.0;
-        ctx.beginPath();
-        ctx.roundRect(bx, by, tw, th, 9);
-        ctx.fill();
-        ctx.stroke();
-        ctx.fillStyle = "#ffffff";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(txt, rc.x, rc.y + 0.5);
-        vimState.roomHitBoxes.push({ x: bx, y: by, w: tw, h: th, roomId: rc.roomId, level: rc.level });
-      });
-
-      const rd = document.getElementById("vim3DCameraReadout");
-      if (floorBadges.length) {
-        ctx.font = "800 11px Inter, system-ui, sans-serif";
-        floorBadges.forEach(fb => {
-          const fw = ctx.measureText(fb.text).width + 14;
-          ctx.fillStyle = "rgba(2, 132, 199, 0.92)";
-          ctx.strokeStyle = "#7dd3fc";
-          ctx.lineWidth = 1.2;
-          ctx.beginPath();
-          ctx.roundRect(fb.x - fw * 0.5, fb.y - 10, fw, 20, 10);
-          ctx.fill();
-          ctx.stroke();
-          ctx.fillStyle = "#ffffff";
-          ctx.textAlign = "center";
-          ctx.textBaseline = "middle";
-          ctx.fillText(fb.text, fb.x, fb.y + 0.5);
-        });
-      }
-      if (rd) {
-        rd.textContent = `${vimState.floorKey === 'ALL' ? 'Full Multi-Floor 3D Stack' : 'Floor ' + vimState.floorKey + ' Cutaway'} · Orbit ${Math.round((vimState.yaw * 180) / Math.PI)}° · Zoom ${vimState.zoom.toFixed(2)}×`;
-      }
-      ctx.restore();
-    }
-
-    let __vimCanvasBound = false;
-    function bindVillaCanvasInteractionsOnce() {
-      if (__vimCanvasBound) return;
-      const canvas = document.getElementById("villaInterior3DCanvas");
-      if (!canvas) return;
-      __vimCanvasBound = true;
-
-      let downX = 0, downY = 0;
-      canvas.addEventListener("pointerdown", (e) => {
-        stopVillaRoomAutoTour();
-        vimState.dragging = true;
-        vimState.lastMouseX = downX = e.clientX;
-        vimState.lastMouseY = downY = e.clientY;
-        canvas.setPointerCapture(e.pointerId);
-      });
-      canvas.addEventListener("pointermove", (e) => {
-        if (!vimState.dragging) return;
-        const dx = e.clientX - vimState.lastMouseX;
-        const dy = e.clientY - vimState.lastMouseY;
-        vimState.lastMouseX = e.clientX;
-        vimState.lastMouseY = e.clientY;
-        vimState.yaw += dx * 0.0085;
-        vimState.pitch = Math.max(0.26, Math.min(1.28, vimState.pitch + dy * 0.0065));
-        renderVilla3DDollhouse();
-      });
-      canvas.addEventListener("pointerup", (e) => {
-        const moved = Math.hypot(e.clientX - downX, e.clientY - downY);
-        vimState.dragging = false;
-        if (moved < 5) {
-          const r = canvas.getBoundingClientRect();
-          const mx = e.clientX - r.left, my = e.clientY - r.top;
-          for (let i = vimState.roomHitBoxes.length - 1; i >= 0; i--) {
-            const hb = vimState.roomHitBoxes[i];
-            if (mx >= hb.x && mx <= hb.x + hb.w && my >= hb.y && my <= hb.y + hb.h) {
-              focusVillaRoom(hb.roomId, hb.level);
-              break;
-            }
-          }
-        }
-      });
-      canvas.addEventListener("wheel", (e) => {
-        e.preventDefault();
-        vimState.zoom = Math.max(0.55, Math.min(2.4, vimState.zoom * (e.deltaY < 0 ? 1.09 : 0.92)));
-        renderVilla3DDollhouse();
-      }, { passive: false });
-      window.addEventListener("resize", () => {
-        if (vimState.open) renderVilla3DDollhouse();
-      });
-    }
-
+    __ARCHVIZ_WALKTHROUGH_JS__
 
     window.addEventListener("haio-vendor-ready", () => {
       if (!window.__haioPlatformBooted) {
@@ -12349,7 +10469,7 @@ def main():
   </script>
 </body>
 </html>
-""".replace("__PAYLOAD_JSON__", payload_json)
+""".replace("__ARCHVIZ_WALKTHROUGH_JS__", archviz_js).replace("__PAYLOAD_JSON__", payload_json)
 
     full_html = html_doc + js_code
     out_path = WEB_DIR / "task2_gis_intelligence.html"
