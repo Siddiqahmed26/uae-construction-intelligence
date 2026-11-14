@@ -2127,7 +2127,7 @@ def main():
       }}
     }}
 
-    /* === UNREAL-STYLE THREE.JS PBR ARCHVIZ WALKTHROUGH & RIGHT-SIDE-UP CAD STUDIO === */
+    /* === V3.0 UNREAL / TWINMOTION ARCHVIZ WALKTHROUGH & EFFORTLESS 3-STEP HUD === */
     body.wt-society-active #geoZoomLevelBar,
     body.wt-society-active #photoreal3DAttribution {{
       display: none !important;
@@ -2144,70 +2144,75 @@ def main():
     }}
     .wt-quick-dropdown summary::-webkit-details-marker {{ display: none; }}
     .wt-quick-menu {{
-      position: absolute; top: calc(100% + 8px); left: 0; width: 330px;
-      background: rgba(15, 23, 42, 0.97); backdrop-filter: blur(14px);
+      position: absolute; top: calc(100% + 8px); left: 0; width: 340px;
+      background: rgba(9, 13, 22, 0.97); backdrop-filter: blur(18px);
       border: 1px solid rgba(56, 189, 248, 0.45); border-radius: 14px;
-      padding: 10px; box-shadow: 0 18px 42px rgba(2, 6, 23, 0.65);
+      padding: 11px; box-shadow: 0 20px 48px rgba(2, 6, 23, 0.75);
       z-index: 950; color: #f8fafc;
     }}
     .wt-quick-item {{
-      display: flex; flex-direction: column; gap: 2px; width: 100%; text-align: left;
-      background: rgba(30, 41, 59, 0.85); border: 1px solid rgba(148, 163, 184, 0.25);
+      display: flex; flex-direction: column; gap: 3px; width: 100%; text-align: left;
+      background: rgba(30, 41, 59, 0.78); border: 1px solid rgba(148, 163, 184, 0.25);
       border-radius: 10px; padding: 9px 11px; color: #f8fafc; cursor: pointer;
       margin-top: 6px; transition: all 0.16s ease;
     }}
     .wt-quick-item:hover {{ background: rgba(16, 185, 129, 0.22); border-color: #34d399; transform: translateY(-1px); }}
 
+    /* MAP-MODE FLOATING 3-STEP COMMAND BAR */
     #wtTopBanner {{
       position: absolute; top: 60px; left: 16px; z-index: 845;
       max-width: calc(100% - 452px);
-      background: rgba(15, 23, 42, 0.94); backdrop-filter: blur(14px);
-      border: 1px solid rgba(56, 189, 248, 0.48); border-radius: 14px;
-      padding: 8px 12px; color: #f8fafc; display: none;
-      align-items: center; gap: 8px; flex-wrap: wrap;
-      box-shadow: 0 14px 36px rgba(2, 6, 23, 0.55);
+      background: rgba(9, 13, 22, 0.92); backdrop-filter: blur(16px);
+      border: 1px solid rgba(56, 189, 248, 0.42); border-radius: 999px;
+      padding: 6px 10px; color: #f8fafc; display: none;
+      align-items: center; gap: 7px; flex-wrap: wrap;
+      box-shadow: 0 16px 40px rgba(2, 6, 23, 0.60);
     }}
     .wt-exit-btn {{
-      background: #ef4444; color: #ffffff; border: none;
-      padding: 6px 12px; border-radius: 999px; font-size: 0.74rem; font-weight: 800;
-      cursor: pointer; white-space: nowrap;
+      background: rgba(239, 68, 68, 0.92); color: #ffffff; border: 1px solid rgba(252, 165, 165, 0.35);
+      padding: 6px 13px; border-radius: 999px; font-size: 0.73rem; font-weight: 800;
+      cursor: pointer; white-space: nowrap; transition: all 0.15s ease;
     }}
     .wt-exit-btn:hover {{ background: #dc2626; }}
     .wt-soc-switch {{
-      background: rgba(30, 41, 59, 0.95); color: #cbd5e1;
-      border: 1px solid rgba(148, 163, 184, 0.35);
+      background: rgba(30, 41, 59, 0.85); color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, 0.28);
       padding: 5px 11px; border-radius: 999px; font-size: 0.73rem; font-weight: 700;
-      cursor: pointer; white-space: nowrap;
+      cursor: pointer; white-space: nowrap; transition: all 0.15s ease;
     }}
-    .wt-soc-switch.active {{ background: #0284c7; color: #ffffff; border-color: #38bdf8; }}
+    .wt-soc-switch.active {{ background: #0284c7; color: #ffffff; border-color: #7dd3fc; box-shadow: 0 0 14px rgba(2, 132, 199, 0.45); }}
     .wt-mode-group {{
-      display: inline-flex; background: rgba(2, 6, 23, 0.65);
-      border: 1px solid rgba(148, 163, 184, 0.3); border-radius: 999px; padding: 2px; gap: 2px;
+      display: inline-flex; background: rgba(2, 6, 23, 0.72);
+      border: 1px solid rgba(148, 163, 184, 0.28); border-radius: 999px; padding: 3px; gap: 3px;
     }}
     .wt-mode-pill {{
       background: transparent; color: #cbd5e1; border: none;
-      padding: 5px 11px; border-radius: 999px; font-size: 0.73rem; font-weight: 700;
-      cursor: pointer; white-space: nowrap;
+      padding: 5px 12px; border-radius: 999px; font-size: 0.73rem; font-weight: 800;
+      cursor: pointer; white-space: nowrap; transition: all 0.15s ease;
     }}
+    .wt-mode-pill:hover {{ color: #ffffff; background: rgba(255, 255, 255, 0.08); }}
     .wt-mode-pill.active {{
       background: linear-gradient(135deg, #10b981 0%, #059669 100%);
-      color: #ffffff; box-shadow: 0 2px 10px rgba(16, 185, 129, 0.4);
+      color: #022c22; box-shadow: 0 2px 12px rgba(16, 185, 129, 0.45);
     }}
     .wt-btn {{
-      background: #1e293b; color: #f8fafc; border: 1px solid #475569;
-      padding: 6px 11px; border-radius: 8px; font-size: 0.73rem; font-weight: 700; cursor: pointer;
+      background: rgba(30, 41, 59, 0.88); color: #f8fafc; border: 1px solid rgba(148, 163, 184, 0.35);
+      padding: 6px 12px; border-radius: 999px; font-size: 0.73rem; font-weight: 700; cursor: pointer;
+      transition: all 0.15s ease; white-space: nowrap;
     }}
     .wt-btn:hover {{ background: #334155; border-color: #94a3b8; }}
-    .wt-btn.primary {{ background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #34d399; color: #ffffff; }}
-    .wt-btn.inside-cta {{ background: linear-gradient(135deg, #2563eb 0%, #7c3aed 100%); border-color: #60a5fa; color: #ffffff; }}
+    .wt-btn.primary {{ background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-color: #6ee7b7; color: #022c22; font-weight: 900; }}
+    .wt-btn.inside-cta {{ background: linear-gradient(135deg, #0ea5e9 0%, #2563eb 100%); border-color: #7dd3fc; color: #ffffff; font-weight: 800; }}
     .wt-stop-dot {{
-      background: rgba(30, 41, 59, 0.9); color: #cbd5e1;
-      border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 6px;
-      padding: 3px 8px; font-size: 0.69rem; font-weight: 700; cursor: pointer;
+      background: rgba(15, 23, 42, 0.85); color: #cbd5e1;
+      border: 1px solid rgba(148, 163, 184, 0.30); border-radius: 999px;
+      padding: 4px 10px; font-size: 0.70rem; font-weight: 700; cursor: pointer;
+      transition: all 0.15s ease; white-space: nowrap;
     }}
-    .wt-stop-dot.active {{ background: #10b981; color: #022c22; border-color: #6ee7b7; }}
+    .wt-stop-dot:hover {{ border-color: #38bdf8; color: #ffffff; }}
+    .wt-stop-dot.active {{ background: #10b981; color: #022c22; border-color: #6ee7b7; font-weight: 900; }}
     .wt-zone-map-pill {{
-      background: rgba(15, 23, 42, 0.92); color: #f8fafc; border: 1.5px solid #38bdf8;
+      background: rgba(9, 13, 22, 0.92); color: #f8fafc; border: 1.5px solid #38bdf8;
       border-radius: 999px; padding: 4px 10px; font-size: 0.68rem; font-weight: 800;
       white-space: nowrap; cursor: pointer; box-shadow: 0 6px 16px rgba(2, 6, 23, 0.55);
     }}
@@ -2219,89 +2224,129 @@ def main():
     .wt-zone-card:hover {{ background: #f8fafc; transform: translateX(2px); }}
     .wt-zone-card.active {{ background: #eff6ff; border-color: #3b82f6; box-shadow: 0 4px 14px rgba(37, 99, 235, 0.14); }}
 
-    /* UNREAL ARCHVIZ STUDIO MODAL (FULL-VIEWPORT STREET + SPLIT/FULL VILLA + RIGHT-SIDE-UP CAD) */
+    /* === TWINMOTION / UNREAL ARCHVIZ FULL-VIEWPORT DARK-GLASS STUDIO === */
     #archvizStudioModal {{
       position: fixed; inset: 0; z-index: 9600;
-      background: #020617; display: none; flex-direction: column; color: #f8fafc;
+      background: #05080f; display: none; flex-direction: column; color: #f8fafc;
+      font-family: Inter, -apple-system, BlinkMacSystemFont, sans-serif;
     }}
+    /* Single Sleek 50px Top Bar — Zero Multi-Row Button Clutter */
     .avz-topbar {{
-      display: flex; justify-content: space-between; align-items: center; gap: 8px;
-      padding: 9px 16px; background: rgba(15, 23, 42, 0.98);
-      border-bottom: 1px solid rgba(56, 189, 248, 0.35); flex-wrap: wrap;
+      display: flex; justify-content: space-between; align-items: center; gap: 10px;
+      padding: 7px 16px; background: rgba(7, 11, 20, 0.94); backdrop-filter: blur(18px);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18); min-height: 50px; z-index: 40;
     }}
     .vim-floor-pills {{
-      display: inline-flex; background: #020617; border: 1px solid #334155;
+      display: inline-flex; background: rgba(2, 6, 23, 0.82); border: 1px solid rgba(148, 163, 184, 0.28);
       border-radius: 999px; padding: 2px; gap: 2px;
     }}
     .vim-floor-btn {{
       background: transparent; color: #cbd5e1; border: none;
-      padding: 5px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; cursor: pointer;
+      padding: 5px 11px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; cursor: pointer;
+      transition: all 0.15s ease; white-space: nowrap;
     }}
-    .vim-floor-btn.active {{ background: #0284c7; color: #ffffff; }}
+    .vim-floor-btn:hover {{ color: #ffffff; background: rgba(255, 255, 255, 0.08); }}
+    .vim-floor-btn.active {{ background: #0284c7; color: #ffffff; box-shadow: 0 2px 10px rgba(2, 132, 199, 0.45); }}
     .avz-tod-btn {{
-      background: #0f172a; color: #cbd5e1; border: 1px solid #334155;
-      padding: 4px 9px; border-radius: 999px; font-size: 0.69rem; font-weight: 700; cursor: pointer;
+      background: rgba(15, 23, 42, 0.85); color: #cbd5e1; border: 1px solid rgba(148, 163, 184, 0.25);
+      padding: 5px 10px; border-radius: 999px; font-size: 0.70rem; font-weight: 700; cursor: pointer;
+      transition: all 0.15s ease;
     }}
-    .avz-tod-btn.active {{ background: #f59e0b; color: #0f172a; border-color: #fde68a; font-weight: 900; }}
-    .avz-meta-strip {{
-      display: flex; justify-content: space-between; align-items: center; gap: 10px;
-      padding: 6px 16px; background: rgba(30, 41, 59, 0.92);
-      border-bottom: 1px solid rgba(148, 163, 184, 0.22); font-size: 0.73rem; flex-wrap: wrap;
-    }}
+    .avz-tod-btn:hover {{ color: #fff; border-color: #64748b; }}
+    .avz-tod-btn.active {{ background: #f59e0b; color: #090d16; border-color: #fde68a; font-weight: 900; }}
+
+    /* Main Cinematic Stage: 68% 3D / 32% Dark Architectural Radar in Villa Mode, 100% 3D in Street/Full Mode */
     .avz-body {{
-      flex: 1; min-height: 0; display: grid; grid-template-columns: 60% 40%;
+      flex: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 390px;
     }}
     #archvizStudioModal.street-full-mode .avz-body,
     #archvizStudioModal.villa-full3d .avz-body {{
-      grid-template-columns: 100% 0%;
+      grid-template-columns: 100% 0px;
     }}
     #archvizStudioModal.street-full-mode .avz-right-cad,
     #archvizStudioModal.villa-full3d .avz-right-cad {{
       display: none !important;
     }}
     .avz-left-3d {{
-      position: relative; overflow: hidden; background: #090d16;
+      position: relative; overflow: hidden; background: #05080f;
     }}
     #archvizWebglCanvas {{
-      width: 100%; height: 100%; display: block; cursor: grab;
+      width: 100%; height: 100%; display: block; cursor: crosshair;
     }}
     #archvizWebglCanvas:active {{ cursor: grabbing; }}
+
+    /* Floating Top-Left Glass Provenance & Collection Card inside 3D Viewport */
+    #avzFloatingInfoCard {{
+      position: absolute; top: 14px; left: 14px; z-index: 28;
+      max-width: 430px; background: rgba(7, 11, 20, 0.78); backdrop-filter: blur(16px);
+      border: 1px solid rgba(148, 163, 184, 0.26); border-radius: 14px;
+      padding: 10px 13px; color: #f8fafc; box-shadow: 0 12px 32px rgba(0, 0, 0, 0.50);
+    }}
+    /* Subtle Top-Right Navigation Helper Pill */
     .avz-walk-pad {{
-      position: absolute; top: 14px; right: 14px; z-index: 25;
-      display: flex; gap: 4px; align-items: center;
-      background: rgba(15, 23, 42, 0.84); backdrop-filter: blur(10px);
-      border: 1px solid rgba(148, 163, 184, 0.35); border-radius: 999px; padding: 4px 10px;
-      font-size: 0.70rem; color: #e2e8f0;
+      position: absolute; top: 14px; right: 14px; z-index: 28;
+      display: flex; gap: 5px; align-items: center;
+      background: rgba(7, 11, 20, 0.76); backdrop-filter: blur(14px);
+      border: 1px solid rgba(148, 163, 184, 0.28); border-radius: 999px; padding: 5px 11px;
+      font-size: 0.70rem; color: #e2e8f0; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
     }}
-    #avzStreetBottomHud {{
-      position: absolute; bottom: 16px; left: 16px; right: 16px; z-index: 30;
-      max-width: 960px; margin: 0 auto;
-      background: rgba(15, 23, 42, 0.92); backdrop-filter: blur(16px);
-      border: 1px solid rgba(16, 185, 129, 0.55); border-radius: 14px;
-      padding: 11px 15px; box-shadow: 0 18px 44px rgba(0, 0, 0, 0.65); display: none;
+    /* Projected 3D Interactive World Pins (Enter Villa Gates / Room Portals) */
+    #avzWorldPinsLayer {{
+      position: absolute; inset: 0; pointer-events: none; overflow: hidden; z-index: 22;
     }}
+    .avz-world-pin {{
+      position: absolute; transform: translate(-50%, -100%); pointer-events: auto;
+      background: rgba(7, 11, 20, 0.86); backdrop-filter: blur(12px);
+      color: #f8fafc; border: 1.5px solid #34d399; border-radius: 999px;
+      padding: 5px 12px; font-size: 0.71rem; font-weight: 800; white-space: nowrap;
+      cursor: pointer; box-shadow: 0 8px 24px rgba(0, 0, 0, 0.65);
+      transition: transform 0.14s ease, background 0.14s ease;
+    }}
+    .avz-world-pin:hover {{
+      background: #10b981; color: #022c22; transform: translate(-50%, -106%) scale(1.04);
+    }}
+
+    /* Twinmotion-Style Bottom Floating Dock (Camera Modes + 1-Click Room / Street Presets) */
+    #avzBottomDock {{
+      position: absolute; bottom: 16px; left: 50%; transform: translateX(-50%); z-index: 30;
+      width: max-content; max-width: calc(100% - 28px);
+      background: rgba(7, 11, 20, 0.84); backdrop-filter: blur(20px);
+      border: 1px solid rgba(148, 163, 184, 0.28); border-radius: 18px;
+      padding: 9px 14px; box-shadow: 0 20px 50px rgba(0, 0, 0, 0.70);
+      display: flex; flex-direction: column; gap: 7px; align-items: center;
+    }}
+
+    /* Dark-Studio Right Floor-Plan & Room Radar (Zero Blinding White Glare!) */
     .avz-right-cad {{
-      display: flex; flex-direction: column; min-height: 0; background: #f8fafc; color: #0f172a;
-      border-left: 1px solid #334155;
+      display: flex; flex-direction: column; min-height: 0;
+      background: #080d19; color: #f8fafc;
+      border-left: 1px solid rgba(148, 163, 184, 0.20);
+    }}
+    .avz-cad-header {{
+      display: flex; justify-content: space-between; align-items: center; gap: 6px;
+      padding: 8px 12px; background: rgba(15, 23, 42, 0.95);
+      border-bottom: 1px solid rgba(148, 163, 184, 0.18); font-size: 0.72rem;
     }}
     .vim-svg-stage {{
-      flex: 1 1 60%; min-height: 280px; background: #ffffff;
-      border-bottom: 1px solid #cbd5e1; padding: 8px;
+      flex: 1 1 64%; min-height: 280px; background: #060b16;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16); padding: 8px;
       display: flex; align-items: center; justify-content: center; overflow: auto;
     }}
     .vim-room-schedule {{
-      flex: 1 1 40%; min-height: 160px; overflow-y: auto; padding: 10px 12px; background: #f1f5f9;
+      flex: 1 1 36%; min-height: 150px; overflow-y: auto; padding: 9px 11px; background: #0a101f;
     }}
     .vim-room-chip {{
       display: flex; justify-content: space-between; align-items: center; gap: 8px;
-      padding: 6px 9px; background: #ffffff; border: 1px solid #e2e8f0; border-radius: 8px;
-      margin-bottom: 5px; cursor: pointer; font-size: 0.73rem;
+      padding: 6px 10px; background: rgba(30, 41, 59, 0.55);
+      border: 1px solid rgba(148, 163, 184, 0.18); border-radius: 9px;
+      margin-bottom: 5px; cursor: pointer; font-size: 0.72rem; color: #e2e8f0;
+      transition: all 0.14s ease;
     }}
-    .vim-room-chip:hover {{ border-color: #38bdf8; background: #f0f9ff; }}
-    .vim-room-chip.active {{ border-color: #10b981; background: #ecfdf5; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.16); }}
+    .vim-room-chip:hover {{ border-color: #38bdf8; background: rgba(14, 165, 233, 0.16); }}
+    .vim-room-chip.active {{ border-color: #10b981; background: rgba(16, 185, 129, 0.18); box-shadow: 0 2px 10px rgba(16, 185, 129, 0.18); }}
     @media (max-width: 1024px) {{
       .avz-body {{ grid-template-columns: 1fr; overflow-y: auto; }}
-      .avz-left-3d {{ min-height: 400px; }}
+      .avz-left-3d {{ min-height: 440px; }}
     }}
 
   </style>
@@ -2406,19 +2451,19 @@ def main():
           <span>⚙ Layers &amp; Presets (11)</span>
         </button>
         <details class="wt-quick-dropdown" id="wtQuickDropdown">
-          <summary title="Enter Full Unreal-Style 3D Society, Street &amp; Villa Interior Walkthrough">
+          <summary title="Enter Photorealistic 3D Society, Street &amp; Villa Interior Walkthrough">
             <span>🏘️ 3D Walkthroughs (2) ▾</span>
           </summary>
           <div class="wt-quick-menu">
-            <div style="font-size:0.70rem; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.04em;">Unreal-Style PBR 3D Society &amp; Villa Tours</div>
-            <div style="font-size:0.69rem; color:#94a3b8; margin-bottom:4px;">Click a masterplan on the map or launch below:</div>
-            <button type="button" class="wt-quick-item" onclick="document.getElementById('wtQuickDropdown').removeAttribute('open'); enterSocietyWalkthrough('PRJ-D2', 'zones')">
-              <strong style="font-size:0.80rem; color:#38bdf8;">🌴 PRJ-D2 · Palm Jebel Ali (13.4 km²)</strong>
-              <span style="font-size:0.69rem; color:#cbd5e1;">Nakheel · 16 Fronds A–P · Ginco, Shapoorji, UNEC, DBB, Jan De Nul · Real-Time 3D Walk</span>
-            </button>
-            <button type="button" class="wt-quick-item" onclick="document.getElementById('wtQuickDropdown').removeAttribute('open'); enterSocietyWalkthrough('PRJ-D19', 'zones')">
+            <div style="font-size:0.70rem; font-weight:800; color:#38bdf8; text-transform:uppercase; letter-spacing:0.04em;">Real-Time 3D ArchViz Digital Twins</div>
+            <div style="font-size:0.69rem; color:#94a3b8; margin-bottom:5px;">Pick a masterplan below — then switch freely between <strong>① Aerial Map</strong>, <strong>② Street Walk</strong>, and <strong>③ Villa Interior</strong>:</div>
+            <button type="button" class="wt-quick-item" onclick="document.getElementById('wtQuickDropdown').removeAttribute('open'); enterSocietyWalkthrough('PRJ-D19', 'street')">
               <strong style="font-size:0.80rem; color:#34d399;">🌊 PRJ-D19 · Tilal Al Ghaf (3.0 km²)</strong>
-              <span style="font-size:0.69rem; color:#cbd5e1;">Majid Al Futtaim · 9 Enclaves · ASGC, Dutco, Innovo, UNEC · 3D Boulevard &amp; Villa Walk</span>
+              <span style="font-size:0.69rem; color:#cbd5e1;">Majid Al Futtaim · 9 Enclaves · Dutco, ASGC, Innovo, UNEC · Launch 3D Walk →</span>
+            </button>
+            <button type="button" class="wt-quick-item" onclick="document.getElementById('wtQuickDropdown').removeAttribute('open'); enterSocietyWalkthrough('PRJ-D2', 'street')">
+              <strong style="font-size:0.80rem; color:#38bdf8;">🌴 PRJ-D2 · Palm Jebel Ali (13.4 km²)</strong>
+              <span style="font-size:0.69rem; color:#cbd5e1;">Nakheel · 16 Fronds A–P · Ginco, Shapoorji, UNEC, Jan De Nul · Launch 3D Walk →</span>
             </button>
           </div>
         </details>
@@ -2667,17 +2712,17 @@ def main():
         </div>
       </div>
 
-      <!-- SOCIETY WALKTHROUGH TOP COMMAND BAR -->
+      <!-- SOCIETY WALKTHROUGH 3-STEP TOP COMMAND BAR (AERIAL MAP MODE) -->
       <div id="wtTopBanner" role="region" aria-label="Society Walkthrough Controls">
-        <button type="button" class="wt-exit-btn" onclick="exitSocietyWalkthrough(true)">← Exit Society</button>
-        <button type="button" class="wt-soc-switch" id="wtSwitchD2" onclick="enterSocietyWalkthrough('PRJ-D2', 'zones')">🌴 Palm Jebel Ali · 13.4 km²</button>
-        <button type="button" class="wt-soc-switch" id="wtSwitchD19" onclick="enterSocietyWalkthrough('PRJ-D19', 'zones')">🌊 Tilal Al Ghaf · 3.0 km²</button>
+        <button type="button" class="wt-soc-switch" id="wtSwitchD19" onclick="enterSocietyWalkthrough('PRJ-D19', 'zones')">🌊 Tilal Al Ghaf</button>
+        <button type="button" class="wt-soc-switch" id="wtSwitchD2" onclick="enterSocietyWalkthrough('PRJ-D2', 'zones')">🌴 Palm Jebel Ali</button>
         <div class="wt-mode-group" role="tablist">
-          <button type="button" class="wt-mode-pill active" id="wtModeZonesBtn" onclick="setSocietyWalkMode('zones')">🗺️ 1. Masterplan &amp; Contractors</button>
-          <button type="button" class="wt-mode-pill" id="wtModeStreetBtn" onclick="setSocietyWalkMode('street')">🚶 2. Unreal 3D Street Walk</button>
-          <button type="button" class="wt-mode-pill" id="wtModeInsideBtn" onclick="setSocietyWalkMode('villa')">🏠 3. Inside 3D Villa &amp; CAD</button>
+          <button type="button" class="wt-mode-pill active" id="wtModeZonesBtn" onclick="setSocietyWalkMode('zones')">① 🗺️ Aerial Masterplan</button>
+          <button type="button" class="wt-mode-pill" id="wtModeStreetBtn" onclick="setSocietyWalkMode('street')">② 🚶 Walk Streets (3D)</button>
+          <button type="button" class="wt-mode-pill" id="wtModeInsideBtn" onclick="setSocietyWalkMode('villa')">③ 🏠 Walk Inside Villa</button>
         </div>
         <span id="wtTopStatsChip" style="font-size:0.70rem; color:#93c5fd; font-weight:700; padding:0 4px;"></span>
+        <button type="button" class="wt-exit-btn" onclick="exitSocietyWalkthrough(true)">✕ Exit to UAE Map</button>
       </div>
 
     </section>
@@ -2749,35 +2794,36 @@ def main():
     </aside>
   </main>
 
-  <!-- REAL-TIME THREE.JS r170 PBR UNREAL-STYLE STREET & VILLA ARCHVIZ STUDIO -->
-  <div id="archvizStudioModal" role="dialog" aria-modal="true" aria-label="Unreal 3D ArchViz Street and Villa Walkthrough Studio">
+  <!-- V3.0 REAL-TIME THREE.JS r170 HDR POST-FX & PLANAR-REFLECTION ARCHVIZ STUDIO -->
+  <div id="archvizStudioModal" role="dialog" aria-modal="true" aria-label="3D ArchViz Street and Villa Walkthrough Studio">
     <div class="avz-topbar">
-      <div id="avzModeSpecificTop" style="display:flex; align-items:center; gap:7px; flex-wrap:wrap;"></div>
+      <div id="avzModeSpecificTop" style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;"></div>
       <div style="display:flex; align-items:center; gap:5px; flex-wrap:wrap;">
         <button type="button" class="avz-tod-btn active" data-tod="golden" onclick="setArchvizTimeOfDay('golden')">🌅 Golden Hour</button>
-        <button type="button" class="avz-tod-btn" data-tod="noon" onclick="setArchvizTimeOfDay('noon')">☀️ Noon</button>
-        <button type="button" class="avz-tod-btn" data-tod="dusk" onclick="setArchvizTimeOfDay('dusk')">🌆 Dusk</button>
+        <button type="button" class="avz-tod-btn" data-tod="noon" onclick="setArchvizTimeOfDay('noon')">☀️ Daylight</button>
+        <button type="button" class="avz-tod-btn" data-tod="dusk" onclick="setArchvizTimeOfDay('dusk')">🌆 Blue Hour</button>
         <button type="button" class="avz-tod-btn" data-tod="night" onclick="setArchvizTimeOfDay('night')">🌙 Night</button>
-        <button type="button" class="wt-exit-btn" onclick="closeArchvizStudioModal(true)">✕ Back to GIS Map</button>
+        <button type="button" class="wt-exit-btn" onclick="closeArchvizStudioModal(true)" title="Return to 3D GIS Aerial Map">✕ Back to Map</button>
       </div>
     </div>
-
-    <div class="avz-meta-strip" id="avzMetaStrip"></div>
 
     <div class="avz-body">
       <div class="avz-left-3d">
         <canvas id="archvizWebglCanvas"></canvas>
+        <div id="avzWorldPinsLayer"></div>
+        <div id="avzFloatingInfoCard"></div>
         <div class="avz-walk-pad">
-          <span>🖱️ Drag Look · ⌨️ W/A/S/D Walk</span>
-          <button type="button" class="wt-btn" style="padding:2px 7px;" onclick="stepArchvizPad(1, 0)">⬆</button>
-          <button type="button" class="wt-btn" style="padding:2px 7px;" onclick="stepArchvizPad(0, 1)">↺</button>
-          <button type="button" class="wt-btn" style="padding:2px 7px;" onclick="stepArchvizPad(0, -1)">↻</button>
-          <button type="button" class="wt-btn" style="padding:2px 7px;" onclick="stepArchvizPad(-1, 0)">⬇</button>
+          <span>🖱️ <strong>Click floor</strong> to walk · <strong>Drag</strong> to look</span>
+          <button type="button" class="wt-btn" style="padding:2px 8px;" title="Walk Forward" onclick="stepArchvizPad(1, 0)">⬆</button>
+          <button type="button" class="wt-btn" style="padding:2px 8px;" title="Turn Left" onclick="stepArchvizPad(0, 1)">↺</button>
+          <button type="button" class="wt-btn" style="padding:2px 8px;" title="Turn Right" onclick="stepArchvizPad(0, -1)">↻</button>
+          <button type="button" class="wt-btn" style="padding:2px 8px;" title="Step Back" onclick="stepArchvizPad(-1, 0)">⬇</button>
         </div>
-        <div id="avzStreetBottomHud"></div>
+        <div id="avzBottomDock"></div>
       </div>
 
       <div class="avz-right-cad">
+        <div class="avz-cad-header" id="avzMetaStrip"></div>
         <div class="vim-svg-stage" id="archvizSvgContainer"></div>
         <div class="vim-room-schedule" id="archvizRoomSchedule"></div>
       </div>
@@ -7331,7 +7377,7 @@ def main():
           el.style.fontSize = isSel ? "0.75rem" : "0.69rem";
           el.style.borderLeft = `4px solid ${st.fillColor}`;
           const isWtProj = (typeof hasSocietyWalkthrough === "function" && hasSocietyWalkthrough(p.project_id));
-          el.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${st.fillColor};display:inline-block;"></span><span><strong>${p.project_id}</strong>: ${shortName}${isWtProj ? ' <em style="font-style:normal;background:#10b981;color:#022c22;padding:1px 5px;border-radius:999px;font-weight:900;font-size:0.62rem;margin-left:3px;">🚶 3D Walk</em>' : ''}</span>`;
+          el.innerHTML = `<span style="width:7px;height:7px;border-radius:50%;background:${st.fillColor};display:inline-block;"></span><span><strong>${p.project_id}</strong>: ${shortName}${isWtProj ? ' <em style="font-style:normal;background:#10b981;color:#022c22;padding:1px 6px;border-radius:999px;font-weight:900;font-size:0.62rem;margin-left:3px;">🚶 3D Walk</em>' : ''}</span>`;
           el.onclick = (ev) => {
             ev.stopPropagation();
             if (isWtProj) enterSocietyWalkthrough(p.project_id, "zones");
@@ -9692,11 +9738,11 @@ def main():
           <div class="haio-card-sub">${subHeaderSummary}</div>
           ${(typeof hasSocietyWalkthrough === "function" && hasSocietyWalkthrough(p.project_id)) ? `
             <div style="background:linear-gradient(135deg,#0f172a 0%,#064e3b 100%); border:1.5px solid #10b981; border-radius:12px; padding:11px; margin:8px 0 12px; color:#f8fafc;">
-              <div style="font-size:0.68rem; font-weight:900; color:#34d399; text-transform:uppercase;">✨ Unreal-Style PBR 3D Street &amp; Villa Walkthrough</div>
-              <div style="font-size:0.73rem; color:#e2e8f0; margin:3px 0 8px;">Walk down 3D streets at 1.70m eye-level, step inside furnished PBR 3D villas, and inspect right-side-up CAD plans.</div>
+              <div style="font-size:0.68rem; font-weight:900; color:#34d399; text-transform:uppercase;">✨ Real-Time 3D ArchViz Street &amp; Villa Walkthrough</div>
+              <div style="font-size:0.73rem; color:#e2e8f0; margin:3px 0 8px;">Explore ① Masterplan Contractors, ② Eye-Level 3D Streets, and ③ Furnished 3D Villas + Right-Side-Up Plans.</div>
               <div style="display:grid; grid-template-columns:1fr 1fr; gap:6px;">
-                <button type="button" onclick="enterSocietyWalkthrough('${p.project_id}', 'street')" style="background:#10b981; color:#022c22; border:none; border-radius:8px; padding:7px 8px; font-size:0.73rem; font-weight:900; cursor:pointer;">🚶 3D Street Walk</button>
-                <button type="button" onclick="enterSocietyWalkthrough('${p.project_id}', 'villa')" style="background:#38bdf8; color:#082f49; border:none; border-radius:8px; padding:7px 8px; font-size:0.73rem; font-weight:900; cursor:pointer;">🏠 Inside 3D Villa</button>
+                <button type="button" onclick="enterSocietyWalkthrough('${p.project_id}', 'street')" style="background:#10b981; color:#022c22; border:none; border-radius:8px; padding:7px 8px; font-size:0.73rem; font-weight:900; cursor:pointer;">② 🚶 Walk Streets</button>
+                <button type="button" onclick="enterSocietyWalkthrough('${p.project_id}', 'villa')" style="background:#38bdf8; color:#082f49; border:none; border-radius:8px; padding:7px 8px; font-size:0.73rem; font-weight:900; cursor:pointer;">③ 🏠 Inside Villa</button>
               </div>
             </div>
           ` : ""}
